@@ -1,0 +1,15 @@
+{
+  "name": "s4tk-dbpf-interface",
+  "version": "1.0.0",
+  "description": "An interface for The Sims 4's DBPF file.",
+  "scripts": {
+    "clear": "rm -rf ./dst/**",
+    "dev": "npm run clear ; tsc --watch",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "frankkulak",
+  "license": "MIT",
+  "devDependencies": {
+    "typescript": "^4.4.4"
+  }
+}
