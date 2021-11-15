@@ -1,112 +1,98 @@
+import type { Resource } from './ResourceBase';
 
-export interface StringTableEntry {
+
+export type StringEntryPredicate = (entry: StringEntry) => boolean;
+
+export interface StringSearchOptions {
+  caseSensitive?: boolean;
+  includeSubstrings?: boolean;
+}
+
+export interface StringEntry {
+  readonly id: number;
   key: number;
   string: string;
 }
 
-export interface StringSearchOptions {
-  includeSubstrings?: boolean;
-  caseSensitive?: boolean;
-}
-
-/**
- * A String Table that appears in a DBPF. Since there is no strict
- * requirement for string entries to have a unique key or string,
- * every entry has its own unique identifier as well. This indentifier
- * is specific to this program, and is not persisted in a DBPF.
- */
-export interface StringTableResource {
+export interface StringTableResource extends Resource {
   //#region Create
 
   /**
-   * Adds a new entry to this String Table and returns
-   * its unique ID.
+   * Adds an entry to this string table and returns its generated ID.
    * 
-   * @param entry The entry to add
+   * @param key The string's key
+   * @param string The string
    */
-  addEntry(entry: StringTableEntry): number;
+  addEntry(key: number, string: string): number;
 
   //#endregion Create
 
   //#region Read
 
   /**
-   * Returns the number of entries in this string table.
+   * Returns the number of entries that match the given predicate, or the total
+   * number of entries if none is given.
+   * 
+   * @param predicate Optional predicate to filter strings by
    */
-  numEntries(): number;
+  numEntries(predicate?: StringEntryPredicate): number;
 
   /**
-   * Gets the first entry that passes the given predicate.
+   * Returns the first entry that matches the given predicate, or undefined if
+   * none match.
    * 
-   * @param predicate Function to find an entry
+   * @param predicate Predicate to filter strings by
    */
-  getEntry(predicate: (entry: StringTableEntry) => boolean): StringTableEntry;
+  getEntry(predicate: StringEntryPredicate): StringEntry;
 
   /**
-   * Gets an entry from its unique ID in this table.
+   * Returns all entries that match the given predicate if there if one. If
+   * there is no predicate, all strings are returned. If no strings match the
+   * predicate, an empty array is returned.
    * 
-   * @param id The unique ID of the string to get
+   * @param predicate Optional predicate to filter strings by
    */
-  getEntryById(id: number): StringTableEntry;
+  getEntries(predicate?: StringEntryPredicate): StringEntry[];
 
   /**
-   * Gets the first entry that has the given key. Ideally, all
-   * entries should have a unique key, however, this is not strictly
-   * enforced, so it should not be assumed.
+   * Returns the entry that has the given ID, or undefined if there isn't one.
    * 
-   * @param key The key of the string to get
+   * @param id The unique identifier for a string entry
    */
-  getEntryByKey(key: number): StringTableEntry;
+  getEntryById(id: number): StringEntry;
 
   /**
-   * Gets the first entry that contains the given string following
-   * the rules set forth by the options. All options are assumed
-   * to be false unless set to true.
+   * Returns the first entry that has the given key, or undefined if none do.
    * 
-   * @param key The key of the string to get
+   * @param key The key for a string entry
    */
-  getEntryByString(string: string, options?: StringSearchOptions): StringTableEntry;
+  getEntryByKey(key: number): StringEntry;
 
   /**
-   * Gets all entries in this String Table that pass the given
-   * predicate. If the predicate is undefined, then all of the
-   * entries will be returned.
+   * Returns all entries that have the given key, or an empty list if there are
+   * none that do.
    * 
-   * @param predicate Optional function to filter the results with
+   * @param key The key for a string entry
    */
-  getEntries(predicate?: (entry: StringTableEntry) => boolean): StringTableEntry[];
+  getEntriesByKey(key: number): StringEntry[];
 
   /**
-   * Gets all entries in this String Table that have the given
-   * key. Ideally, all entries should have a unique key, however,
-   * this is not strictly enforced, so it should not be assumed.
+   * Returns the first entry that contains the given string following the given
+   * options. All options are false by default, so if no options are passed,
+   * the search will be for a case-insensitive exact match.
    * 
-   * @param key Key to find entries for
+   * @param string String to search for
    */
-  getEntriesByKey(key: number): StringTableEntry[];
+  getEntryByString(string: string, options?: StringSearchOptions): StringEntry;
 
   /**
-   * Gets all entries in this String Table that contain the given
-   * string following the rules set forth by the options. All
-   * options are assumed to be false unless set to true.
+   * Returns all entries that contain the given string following the given
+   * options. All options are false by default, so if no options are passed,
+   * the search will be for a case-insensitive exact match.
    * 
-   * @param string String to find entries for
-   * @param options Optional arguments to refine the search
+   * @param string String to search for
    */
-  getEntriesByString(string: string, options?: StringSearchOptions): StringTableEntry[];
+  getEntriesByString(string: string, options?: StringSearchOptions): StringEntry[];
 
   //#endregion Read
-
-  //#region Update
-
-  // TODO:
-
-  //#endregion Update
-
-  //#region Delete
-
-  deleteEntry(entry: StringTableEntry): void;
-  deleteEntryById(id: number): void;
-
-  //#endregion Delete
 }

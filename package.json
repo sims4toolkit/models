@@ -5,7 +5,7 @@
   "scripts": {
     "clear": "rm -rf ./dst/**",
     "dev": "npm run clear ; tsc --watch",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "node test/test.js"
   },
   "author": "frankkulak",
   "license": "MIT",

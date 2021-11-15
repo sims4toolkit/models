@@ -4,7 +4,7 @@ import type { Resource } from "../../types/resources";
 /**
  * A base class for records in a DBPF.
  */
-export abstract class BaseResource implements Resource {
+export abstract class ResourceBase implements Resource {
   abstract renderType: RecordType;
   abstract displayName: string;
   private _cachedBuffer: Buffer | undefined;
