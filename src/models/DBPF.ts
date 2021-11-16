@@ -1,7 +1,8 @@
 import * as zlib from 'zlib';
 import { BinaryDecoder, BinaryEncoder } from '../utils/encoding';
 import { makeList } from '../utils/helpers';
-import { Resource, ResourceEntry, ResourceKey } from './resources/ResourceBase';
+import { BinaryResourceType, TuningResourceType } from '../enums/ResourceType';
+import { Resource, ResourceEntry } from './resources/ResourceBase';
 import SimData from './resources/SimData';
 import StringTable from './resources/StringTable';
 import Tuning from './resources/Tuning';
@@ -68,29 +69,33 @@ function getResourceModel(entry: IndexEntry, rawBuffer: Buffer): Resource {
 
   if (entry.isCompressed) {
     if (entry.compressionType === 23106) {
-      // TODO:
+      buffer = zlib.unzipSync(rawBuffer);
     } else {
-      return Unsupported.from(rawBuffer);
+      return Unsupported.from(rawBuffer, `Compression: ${entry.compressionType}`);
     }
+  } else {
+    buffer = rawBuffer;
   }
-  const buffer = entry.isCompressed
-  let buffer: Buffer = indexEntry.mnCompressionType === 23106 ? zlib.unzipSync(rawRecord.data) : rawRecord.data;
 
-  // FIXME: this should take in the type of the record, and determine the file type that way
-  // FIXME: using the first 4 chars is just a temporary hack and can NOT go into production
-
-  if (buffer.length < 4) return Unsupported.from(buffer);
-  const firstFour = buffer.slice(0, 4).toString('utf-8');
-  switch (firstFour) {
-    case "<?xm":
-      return Tuning.from(buffer);
-    case "STBL":
-      return StringTable.from(buffer);
-    case "DATA":
-      return SimData.from(buffer);
-    default:
-      return Unsupported.from(buffer);
+  if (entry.type === BinaryResourceType.StringTable) {
+    return StringTable.from(buffer);
+  } else if (entry.type === BinaryResourceType.SimData) {
+    return SimData.from(buffer);
+  } else if (entry.type in TuningResourceType || isXML(buffer)) {
+    return Tuning.from(buffer);
+  } else {
+    return Unsupported.from(buffer, `Unrecognized non-XML type: ${entry.type}`);
   }
+}
+
+/**
+ * Determines whether this buffer has an XML header.
+ * 
+ * @param buffer Buffer to check the contents of
+ * @returns True if XML header present, else false
+ */
+function isXML(buffer: Buffer): boolean {
+  return buffer.length >= 5 && buffer.slice(0, 5).toString('utf-8') === '<?xml';
 }
 
 //#endregion Functions
