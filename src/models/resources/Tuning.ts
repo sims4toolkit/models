@@ -1,9 +1,5 @@
-import type { ResourceType } from "../../types/resources";
+import type { ResourceType } from "../../types/DBPF";
 
-
-abstract class ResourceBase {
-  
-}
 
 export default class TuningResource extends ResourceBase {
   renderType: RecordType = 'XML';

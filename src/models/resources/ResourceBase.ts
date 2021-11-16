@@ -1,39 +1,68 @@
-import type { Resource } from "../../types/resources";
+/** How the resource file is encoded. */
+export type ResourceVariant = 'XML' | 'DATA' | 'STBL' | undefined;
 
+/**
+ * The combination of type, group, and instance used to identify individual
+ * resources by the game. There is no guarantee that resource keys are unique
+ * within a DBPF, and resource keys are allowed to be changed. For reliable
+ * uniqueness and stability, use the ResourceEntry's `id` property.
+ */
+export interface ResourceKey {
+  /** The resource type. Must be 32-bit or smaller. */
+  type: number;
+
+  /** The resource group. Must be 32-bit or smaller. */
+  group: number;
+
+  /** The resource instance. Must be 64-bit or smaller. */
+  instance: bigint;
+}
+
+/**
+ * A wrapper for a resource to track its metadata within a DBPF.
+ */
+export interface ResourceEntry {
+  readonly id: number;
+  key: ResourceKey;
+  resource: Resource;
+}
+
+/**
+ * A resource file that contains data. This object knows nothing about its
+ * metadata in a DBPF.
+ */
+export interface Resource {
+  /** How this resource is encoded. */
+  readonly variant: ResourceVariant;
+
+  /**
+   * Returns a buffer that can be used to write this resource in a DBPF. The
+   * buffer is NOT compressed – compression is the DBPF's responsibility.
+   * 
+   * @returns Buffer to write to DBPF
+   */
+  getBuffer(): Buffer;
+}
 
 /**
  * A base class for records in a DBPF.
  */
 export abstract class ResourceBase implements Resource {
-  abstract renderType: RecordType;
-  abstract displayName: string;
-  private _cachedBuffer: Buffer | undefined;
+  abstract readonly variant: ResourceVariant;
+  private _cachedBuffer?: Buffer;
 
-  protected constructor(buffer: Buffer | undefined) {
+  protected constructor(buffer?: Buffer) {
     this._cachedBuffer = buffer;
   }
 
-  abstract renderData(): any;
-
   getBuffer(): Buffer {
-    // return this.serialize(); // FIXME: do not keep like this
-    if (this.hasChanged()) this._cachedBuffer = this.serialize();
+    if (this._cachedBuffer === undefined) this._cachedBuffer = this.serialize();
     return this._cachedBuffer;
   }
 
-  hasChanged(): boolean {
-    return this._cachedBuffer === undefined;
-  }
-
-  /**
-   * Serializes the record into a buffer that can be written to a DBPF.
-   */
   protected abstract serialize(): Buffer;
 
-  /**
-   * Notifies the base class that a change has been made and the cache must be cleared.
-   */
-  protected onChange() {
+  protected uncache() {
     this._cachedBuffer = undefined;
   }
 }
