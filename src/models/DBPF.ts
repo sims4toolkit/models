@@ -2,7 +2,7 @@ import * as zlib from 'zlib';
 import { BinaryDecoder, BinaryEncoder } from '../utils/encoding';
 import { makeList } from '../utils/helpers';
 import { BinaryResourceType, TuningResourceType } from '../enums/ResourceType';
-import { Resource, ResourceEntry } from './resources/ResourceBase';
+import { Resource } from './resources/ResourceBase';
 import SimData from './resources/SimData';
 import StringTable from './resources/StringTable';
 import Tuning from './resources/Tuning';
@@ -38,10 +38,45 @@ export default class DBPF {
   static from(buffer: Buffer): DBPF {
     return new DBPF(readDBPF(buffer), buffer);
   }
+
+  /**
+   * Returns a buffer that contains this DBPF in binary form.
+   * 
+   * @returns This DBPF serialized in a buffer
+   */
+  getBuffer(): Buffer {
+    if (this._cachedBuffer === undefined) this._cachedBuffer = writeDBPF(this);
+    return this._cachedBuffer;
+  }
 }
 
 //#region Interfaces
 
+/**
+ * The combination of type, group, and instance used to identify individual
+ * resources by the game. There is no guarantee that resource keys are unique
+ * within a DBPF, and resource keys are allowed to be changed. For reliable
+ * uniqueness and stability, use the ResourceEntry's `id` property.
+ */
+interface ResourceKey {
+  type: number;
+  group: number;
+  instance: bigint;
+}
+
+/**
+ * A wrapper for a resource to track its metadata within a DBPF.
+ */
+interface ResourceEntry {
+  readonly id: number;
+  key: ResourceKey;
+  resource: Resource;
+  cachedBuffer?: Buffer;
+}
+
+/**
+ * An entry that appears in the index of a binary DBPF.
+ */
 interface IndexEntry {
   type: number;
   group: number;
@@ -140,7 +175,7 @@ function readDBPF(buffer: Buffer, ignoreErrors?: boolean): ResourceEntry[] {
 
   const mnIndexRecordEntryCount = decoder.uint32();
   const mnIndexRecordPositionLow = decoder.uint32();
-  const mnIndexRecordSize = decoder.uint32();
+  decoder.skip(4); // mnIndexRecordSize (uint32; 4 bytes)
   decoder.skip(12); // unused3 (three uint32s; 12 bytes)
   const unused4 = decoder.uint32();
   if (unused4 !== 3) {
@@ -152,41 +187,26 @@ function readDBPF(buffer: Buffer, ignoreErrors?: boolean): ResourceEntry[] {
 
   //#endregion Header
 
-  //#region Flags
+  //#region Entries
 
   decoder.seek(mnIndexRecordPosition || mnIndexRecordPositionLow);
 
-  const flags = decoder.uint32();
-  // TODO: uncomment when flags are testable
-  // let constantTypeId: number, constantGroupId: number, constantInstanceIdEx: number;
-  // const constantType = flags & 0x10000000;
-  // const constantGroup = flags & 0x20000000;
-  // const constantInstanceEx = flags & 0x40000000;
-  // if (constantType) constantTypeId = decoder.uint32();
-  // if (constantGroup) constantGroupId = decoder.uint32();
-  // if (constantInstanceEx) constantInstanceIdEx = decoder.uint32();
-  // TODO: do not throw error for non-zero flags, just doing this for now 
-  // because I cannot find any packages that contain flags, and I therefore
-  // cannot test it, and cannot put untested code into production
-  if (flags !== 0) {
-    // intentionally not checking for !ignoreErrors
-    throw new ReadDBPFError("Flags are non-zero.");
-  }
-
-  //#endregion Flags
-
-  //#region Entries
+  // flags is a uint32, but only first 3 bits are used
+  const flags = decoder.uint8();
+  decoder.skip(3);
+  let constantTypeId: number, constantGroupId: number, constantInstanceIdEx: number;
+  const constantType = flags & 0x80;
+  const constantGroup = flags & 0x40;
+  const constantInstanceEx = flags & 0x20;
+  if (constantType) constantTypeId = decoder.uint32();
+  if (constantGroup) constantGroupId = decoder.uint32();
+  if (constantInstanceEx) constantInstanceIdEx = decoder.uint32();
 
   const index = makeList<IndexEntry>(mnIndexRecordEntryCount, () => {
-    // TODO: uncomment when flags are implemented and testable
-    // let mType: number, mGroup: number, mInstanceEx: number;
-    // if (!constantType) mType = decoder.uint32();
-    // if (!constantGroup) mGroup = decoder.uint32();
-    // if (!constantInstanceEx) mInstanceEx = decoder.uint32();
     const entry: { [key: string]: any; } = {};
-    entry.type = decoder.uint32(); // mType
-    entry.group = decoder.uint32(); // mGroup
-    const mInstanceEx = decoder.uint32();
+    entry.type = constantType ? constantTypeId : decoder.uint32();
+    entry.group = constantGroup ? constantGroupId : decoder.uint32();
+    const mInstanceEx = constantInstanceEx ? constantInstanceIdEx : decoder.uint32();
     const mInstance = decoder.uint32();
     entry.instance = (BigInt(mInstanceEx) << 32n) + BigInt(mInstance);
     entry.position = decoder.uint32(); // mnPosition
@@ -217,6 +237,16 @@ function readDBPF(buffer: Buffer, ignoreErrors?: boolean): ResourceEntry[] {
   });
 
   //#endregion Entries
+}
+
+/**
+ * Writes the given DBPF into a buffer.
+ * 
+ * @param dbpf DBPF model to serialize into a buffer
+ */
+function writeDBPF(dbpf: DBPF): Buffer {
+  // TODO: impl
+  return undefined;
 }
 
 //#endregion Serialization

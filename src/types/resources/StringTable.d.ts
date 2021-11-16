@@ -1,4 +1,4 @@
-import type { Resource } from './ResourceBase';
+// import type { Resource } from './ResourceBase';
 
 
 export type StringEntryPredicate = (entry: StringEntry) => boolean;
@@ -14,7 +14,7 @@ export interface StringEntry {
   string: string;
 }
 
-export interface StringTableResource extends Resource {
+export interface StringTableResource {
   //#region Create
 
   /**

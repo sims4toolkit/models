@@ -1,9 +1,9 @@
-import type { Resource } from './ResourceBase';
+// import type { Resource } from './ResourceBase';
 
 /**
  * A resource that consists of plain-text XML.
  */
-export interface TuningResource extends Resource {
+export interface TuningResource {
   /**
    * Gets the XML contents of this resource.
    */
