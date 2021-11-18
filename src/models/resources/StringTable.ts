@@ -6,8 +6,14 @@ import { BinaryEncoder, BinaryDecoder } from "../../utils/encoding";
  * A resource that contains string table data.
  */
 export default class StringTableResource extends Resource {
+  //#region Properties
+
   readonly variant: ResourceVariant = 'STBL';
   private _stbl: BinarySTBL;
+
+  //#endregion Properties
+
+  //#region Initialization
 
   private constructor(stbl: BinarySTBL, cachedBuffer?: Buffer) {
     super(cachedBuffer);
@@ -17,7 +23,7 @@ export default class StringTableResource extends Resource {
   /**
    * Returns a new, empty String Table resource.
    */
-  static create(): StringTableResource {
+  public static create(): StringTableResource {
     return new StringTableResource(defaultBinarySTBL());
   }
 
@@ -26,13 +32,25 @@ export default class StringTableResource extends Resource {
    * 
    * @param buffer Buffer to read as a string table
    */
-  static from(buffer: Buffer): StringTableResource {
+  public static from(buffer: Buffer): StringTableResource {
     return new StringTableResource(readSTBL(buffer), buffer);
   }
+
+  //#endregion Initialization
+
+  //#region Abstract Methods
 
   protected _serialize(): Buffer {
     return writeSTBL(this._stbl);
   }
+
+  //#endregion Abstract Methods
+
+  //#region Public Methods
+
+  // TODO: impl
+
+  //#endregion Public Methods
 }
 
 /**
