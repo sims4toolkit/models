@@ -1,16 +1,30 @@
 import type Record from "../Record";
 
+/** How a resource file is encoded. */
+export type ResourceVariant = 'RAW' | 'XML' | 'DATA' | 'STBL' | undefined;
+
 /**
  * A base class for resources that contain data. Resources know nothing about
  * their metadata in a DBPF, but do containg a reference to their owning record,
  * if they have one.
  */
 export default abstract class Resource {
+  /** How this resource is encoded. */
+  readonly variant: ResourceVariant;
+
   private _cachedBuffer: Buffer;
   private _owner?: Record;
 
-  protected constructor(buffer: Buffer, owner?: Record) {
+  protected constructor(buffer: Buffer) {
     this._cachedBuffer = buffer;
+  }
+
+  /**
+   * Sets the given record as the owner of this resource.
+   * 
+   * @param owner Record that contains this resource
+   */
+  public setOwner(owner: Record) {
     this._owner = owner;
   }
 

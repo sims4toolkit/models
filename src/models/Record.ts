@@ -2,10 +2,6 @@ import type DBPF from "./DBPF";
 import type Resource from "./resources/Resource";
 
 
-/** How a resource file is encoded. */
-export type ResourceVariant = 'XML' | 'RAW' | 'DATA' | 'STBL' | undefined;
-
-
 /**
  * TODO:
  */
@@ -20,19 +16,25 @@ export interface ResourceKey {
  * TODO:
  */
 export default class Record {
-  /** The kind of resource that this record contains. */
-  readonly variant: ResourceVariant;
 
   private _owner?: DBPF;
   private _key: ResourceKey;
   private _resource: Resource;
   private _cachedCompressedBuffer: Buffer;
 
-  private constructor(key: ResourceKey, resource: Resource, owner?: DBPF) {
+  private constructor(key: ResourceKey, resource: Resource) {
     this._key = key;
     this._resource = resource;
+    resource.setOwner(this);
+  }
+
+  /**
+   * Sets the given DBPF as the owner of this record.
+   * 
+   * @param owner DBPF that contains this record
+   */
+   public setOwner(owner: DBPF) {
     this._owner = owner;
-    // TODO: variant
   }
 
   /**
