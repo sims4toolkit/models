@@ -1,6 +1,10 @@
-import { ResourceBase, ResourceVariant } from "./Resource";
+import Resource from "./Resource";
+import type { ResourceVariant } from "./Resource";
 
-export default class StringTableResource extends ResourceBase {
+/**
+ * A resource that contains string table data.
+ */
+export default class StringTableResource extends Resource {
   readonly variant: ResourceVariant = 'STBL';
 
   private constructor(cachedBuffer?: Buffer) {
@@ -11,7 +15,7 @@ export default class StringTableResource extends ResourceBase {
     return new StringTableResource(buffer); // TODO: impl
   }
 
-  protected serialize(): Buffer {
+  protected _serialize(): Buffer {
     return undefined; // TODO: impl
   }
 }

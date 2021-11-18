@@ -1,6 +1,10 @@
-import { ResourceBase, ResourceVariant } from "./Resource";
+import Resource from "./Resource";
+import type { ResourceVariant } from "./Resource";
 
-export default class SimDataResource extends ResourceBase {
+/**
+ * A resource that contains binary tuning (SimData).
+ */
+export default class SimDataResource extends Resource {
   readonly variant: ResourceVariant = 'DATA';
 
   private constructor(cachedBuffer?: Buffer) {
@@ -11,7 +15,7 @@ export default class SimDataResource extends ResourceBase {
     return 
   }
 
-  protected serialize(): Buffer {
+  protected _serialize(): Buffer {
     return undefined; // TODO: impl
   }
 }
