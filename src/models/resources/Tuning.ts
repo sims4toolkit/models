@@ -8,22 +8,22 @@ const DEFAULT_CONTENT = `<?xml version="1.0" encoding="utf-8"?>\n<I c="" i="" m=
  */
 export default class TuningResource extends Resource {
   readonly variant: ResourceVariant = 'XML';
-  private _contents: string;
+  private _content: string;
 
   private constructor(contents: string, cachedBuffer?: Buffer) {
     super(cachedBuffer);
-    this._contents = contents;
+    this._content = contents;
   }
 
   /**
-   * Creates a new, empty tuning resource. If makeBlank is false (default), then
+   * Creates a new, empty tuning resource. If `blank` is false (default), then
    * the tuning resource will contain boilerplate XML. If it is true, the tuning
    * resource will be entirely blank.
    * 
-   * @param makeBlank Whether or not boilerplate XML should be added in
+   * @param blank Whether or not boilerplate XML should be left out
    */
-  static create(makeBlank?: boolean): TuningResource {
-    return new TuningResource(DEFAULT_CONTENT);
+  static create(blank?: boolean): TuningResource {
+    return new TuningResource(blank ? '' : DEFAULT_CONTENT);
   }
 
   /**
@@ -38,16 +38,23 @@ export default class TuningResource extends Resource {
   }
 
   protected _serialize(): Buffer {
-    return Buffer.from(this._contents, 'utf-8');
+    return Buffer.from(this._content, 'utf-8');
   }
 
   /**
-   * Updates the contents of this resource to a new string containing XML.
-   * 
-   * @param contents New contents of this resource
+   * Returns the current content of this tuning resource.
    */
-  update(contents: string) {
-    this._contents = contents;
+  getContent(): string {
+    return this._content;
+  }
+
+  /**
+   * Updates the content of this resource to a new string containing XML.
+   * 
+   * @param content New content of this resource
+   */
+  update(content: string) {
+    this._content = content;
     this._uncache();
   }
 }

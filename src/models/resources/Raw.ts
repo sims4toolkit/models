@@ -16,8 +16,7 @@ export default class RawResource extends Resource {
   }
 
   /**
-   * Returns this resource in plain text form. The encoding to use was set when
-   * this resource was created.
+   * Returns this resource in plain text form.
    */
   plainText(): string {
     if (this._content === undefined)
