@@ -2,6 +2,7 @@
   "name": "sims4toolkit-pi",
   "version": "1.0.0",
   "description": "The DBPF interface used by Sims 4 Toolkit.",
+  "main": "api.js",
   "scripts": {
     "clear": "rm -rf ./dst/**",
     "dev": "npm run clear ; tsc --watch",

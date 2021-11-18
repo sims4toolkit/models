@@ -7,8 +7,14 @@ const DEFAULT_CONTENT = `<?xml version="1.0" encoding="utf-8"?>\n<I c="" i="" m=
  * A resource that contains plaintext XML.
  */
 export default class TuningResource extends Resource {
+  //#region Properties
+
   readonly variant: ResourceVariant = 'XML';
   private _content: string;
+
+  //#endregion Properties
+
+  //#region Initialization
 
   private constructor(contents: string, cachedBuffer?: Buffer) {
     super(cachedBuffer);
@@ -16,19 +22,18 @@ export default class TuningResource extends Resource {
   }
 
   /**
-   * Creates a new, empty tuning resource. If `blank` is false (default), then
-   * the tuning resource will contain boilerplate XML. If it is true, the tuning
-   * resource will be entirely blank.
+   * Creates a new tuning resource. It will come with boilerplate XML unless 
+   * `blank` is set to `true`.
    * 
-   * @param blank Whether or not boilerplate XML should be left out
+   * @param blank Whether or not the tuning file should be empty
    */
   static create(blank?: boolean): TuningResource {
     return new TuningResource(blank ? '' : DEFAULT_CONTENT);
   }
 
   /**
-   * Creates a tuning resource from a buffer containing XML code. If not passed
-   * an encoding, it is assumed to be UTF-8.
+   * Creates a tuning resource from a buffer containing XML code that is encoded
+   * with the given encoding. If no encoding is given, it will be read as UTF-8.
    * 
    * @param buffer Buffer to create a tuning resource from
    * @param encoding How the buffer is encoded (UTF-8 by default)
@@ -37,14 +42,22 @@ export default class TuningResource extends Resource {
     return new TuningResource(buffer.toString(encoding), buffer);
   }
 
+  //#endregion Initialization
+
+  //#region Abstract Methods
+
   protected _serialize(): Buffer {
     return Buffer.from(this._content, 'utf-8');
   }
 
+  //#endregion Abstract Methods
+
+  //#region Public Methods
+
   /**
-   * Returns the current content of this tuning resource.
+   * Returns the content of this tuning resource.
    */
-  getContent(): string {
+  public getContent(): string {
     return this._content;
   }
 
@@ -53,8 +66,10 @@ export default class TuningResource extends Resource {
    * 
    * @param content New content of this resource
    */
-  update(content: string) {
+  public updateContent(content: string) {
     this._content = content;
     this._uncache();
   }
+
+  //#endregion Public Methods
 }
