@@ -1,10 +1,9 @@
-import { ResourceBase } from './ResourceBase';
-import type { ResourceVariant } from './ResourceBase';
+import Resource from './Resource';
 
 /**
  * Model for unsupported resource types.
  */
-export default class UnsupportedResource extends ResourceBase {
+export default class UnsupportedResource extends Resource {
   readonly variant: ResourceVariant = undefined;
   readonly reason?: string;
 

@@ -1,4 +1,4 @@
-import { ResourceBase, ResourceVariant } from "./ResourceBase";
+import { ResourceBase, ResourceVariant } from "./Resource";
 
 export default class StringTableResource extends ResourceBase {
   readonly variant: ResourceVariant = 'STBL';

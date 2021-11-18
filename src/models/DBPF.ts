@@ -2,11 +2,21 @@ import * as zlib from 'zlib';
 import { BinaryDecoder, BinaryEncoder } from '../utils/encoding';
 import { makeList } from '../utils/helpers';
 import { BinaryResourceType, TuningResourceType } from '../enums/ResourceType';
-import { Resource } from './resources/ResourceBase';
+import { Resource } from './resources/Resource';
 import SimData from './resources/SimData';
 import StringTable from './resources/StringTable';
 import Tuning from './resources/Tuning';
 import Unsupported from './resources/Unsupported';
+import { buffer } from 'stream/consumers';
+import RawResource from './resources/Raw';
+
+/**
+ * Options to configure when creating a new DBPF.
+ */
+interface DBPFOptions {
+  ignoreErrors: boolean;
+  loadRaw: boolean;
+}
 
 /**
  * Model for a Database Packed File (DBPF).
@@ -22,35 +32,61 @@ export default class DBPF {
 
   /**
    * Creates and returns a new, empty DBPF.
-   * 
-   * @returns New DBPF object
    */
   static create(): DBPF {
     return new DBPF([]);
   }
 
   /**
-   * Creates a new DBPF from the given buffer.
-   * 
-   * @param buffer Buffer to read as DBPF
-   * @returns New DBPF object from given buffer
+   * Creates a new DBPF from a buffer that contains binary data.
    */
-  static from(buffer: Buffer): DBPF {
-    return new DBPF(readDBPF(buffer), buffer);
+  static from(buffer: Buffer, options?: DBPFOptions): DBPF {
+    return new DBPF(readDBPF(buffer, options), buffer);
   }
 
   /**
    * Returns a buffer that contains this DBPF in binary form.
-   * 
-   * @returns This DBPF serialized in a buffer
    */
   getBuffer(): Buffer {
     if (this._cachedBuffer === undefined) this._cachedBuffer = writeDBPF(this);
     return this._cachedBuffer;
   }
+
+  /**
+   * TODO:
+   * 
+   * @param predicate TODO:
+   * @returns TODO:
+   */
+  numEntries(predicate?: ResourceEntryPredicate): number {
+    return this.getEntries(predicate).length;
+  }
+
+  /**
+   * TODO:
+   * 
+   * @param predicate TODO:
+   * @returns TODO:
+   */
+  getEntries(predicate?: ResourceEntryPredicate): ResourceEntry[] {
+    if (predicate === undefined) return this._entries;
+    return this._entries.filter(predicate);
+  }
+
+  /**
+   * Clears the cached buffer for this DBPF. This should be called by any of the
+   * contained records when they are updated.
+   */
+  protected _uncache() {
+    // TODO: impl
+  }
 }
 
-//#region Interfaces
+//#region Types & Interfaces
+
+class ReadDBPFError extends Error { }
+
+type ResourceEntryPredicate = (entry: ResourceEntry) => boolean;
 
 /**
  * The combination of type, group, and instance used to identify individual
@@ -88,7 +124,7 @@ interface IndexEntry {
   committed?: number; // only if isCompressed
 }
 
-//#endregion Interfaces
+//#endregion Types & Interfaces
 
 //#region Functions
 
@@ -135,13 +171,6 @@ function isXML(buffer: Buffer): boolean {
 
 //#endregion Functions
 
-//#region Exceptions
-
-class ReadDBPFError extends Error { }
-class WriteDBPFError extends Error { }
-
-//#endregion Exceptions
-
 //#region Serialization
 
 /**
@@ -150,39 +179,34 @@ class WriteDBPFError extends Error { }
  * @param buffer Buffer to read as a DBPF
  * @param ignoreErrors Whether or not non-fatal errors should be ignored
  */
-function readDBPF(buffer: Buffer, ignoreErrors?: boolean): ResourceEntry[] {
+function readDBPF(buffer: Buffer, options?: DBPFOptions): ResourceEntry[] {
   const decoder = new BinaryDecoder(buffer);
+
+  const validateErrors = options === undefined ? true : !options.ignoreErrors;
+  const loadFilesAsRaw = options === undefined ? false : options.loadRaw;
 
   //#region Header
 
   if (decoder.charsUtf8(4) !== "DBPF") {
-    if (!ignoreErrors) throw new ReadDBPFError("Not a package file");
+    if (validateErrors) throw new ReadDBPFError("Not a package file");
   }
 
-  // reading mnFileVersion
   const versionMajor = decoder.uint32();
   const versionMinor = decoder.uint32();
   if (versionMajor !== 2 || versionMinor !== 1) {
-    if (!ignoreErrors) throw new ReadDBPFError("File version must be 2.1");
+    if (validateErrors) throw new ReadDBPFError("File version must be 2.1");
   }
   
-  // mnUserVersion (two uint32s; 8 bytes)
-  // unused1 (uint32; 4 bytes)
-  // mnCreationTime (time_t; 4 bytes)
-  // mnUpdatedTime (time_t; 4 bytes)
-  // unused2 (uint32; 4 bytes)
-  decoder.skip(24);
-
+  decoder.skip(24); // mnUserVersion through unused2
   const mnIndexRecordEntryCount = decoder.uint32();
   const mnIndexRecordPositionLow = decoder.uint32();
   decoder.skip(4); // mnIndexRecordSize (uint32; 4 bytes)
   decoder.skip(12); // unused3 (three uint32s; 12 bytes)
   const unused4 = decoder.uint32();
   if (unused4 !== 3) {
-    if (!ignoreErrors) throw new ReadDBPFError("Unused4 must be 3");
+    if (validateErrors) throw new ReadDBPFError("Unused4 must be 3");
   }
   const mnIndexRecordPosition = decoder.uint64();
-  // unused5 (six uint32s; 24 bytes)
   // don't need to skip unused5 because decoder is about to seek
 
   //#endregion Header
@@ -193,11 +217,11 @@ function readDBPF(buffer: Buffer, ignoreErrors?: boolean): ResourceEntry[] {
 
   // flags is a uint32, but only first 3 bits are used
   const flags = decoder.uint8();
-  decoder.skip(3);
+  decoder.skip(3); // skip 3 bytes to keep math simple
   let constantTypeId: number, constantGroupId: number, constantInstanceIdEx: number;
-  const constantType = flags & 0x80;
-  const constantGroup = flags & 0x40;
-  const constantInstanceEx = flags & 0x20;
+  const constantType = flags & 0b1;
+  const constantGroup = flags & 0b10;
+  const constantInstanceEx = flags & 0b100;
   if (constantType) constantTypeId = decoder.uint32();
   if (constantGroup) constantGroupId = decoder.uint32();
   if (constantInstanceEx) constantInstanceIdEx = decoder.uint32();
@@ -221,6 +245,10 @@ function readDBPF(buffer: Buffer, ignoreErrors?: boolean): ResourceEntry[] {
     return entry as IndexEntry;
   });
 
+  const getResourceFn: (entry: IndexEntry, buffer: Buffer) => Resource =
+    loadFilesAsRaw ? (_, buffer) => RawResource.from(buffer)
+                   : getResourceModel;
+
   return index.map((entry, id) => {
     decoder.seek(entry.position);
     const buffer = decoder.slice(entry.size);
@@ -232,7 +260,7 @@ function readDBPF(buffer: Buffer, ignoreErrors?: boolean): ResourceEntry[] {
         group: entry.group,
         instance: entry.instance
       },
-      resource: getResourceModel(entry, buffer)
+      resource: getResourceFn(entry, buffer)
     };
   });
 
@@ -245,8 +273,61 @@ function readDBPF(buffer: Buffer, ignoreErrors?: boolean): ResourceEntry[] {
  * @param dbpf DBPF model to serialize into a buffer
  */
 function writeDBPF(dbpf: DBPF): Buffer {
-  // TODO: impl
-  return undefined;
+  const recordsBuffer: Buffer = (() => {
+    const buffer = Buffer.alloc(0); // FIXME: find size
+    const encoder = new BinaryEncoder(buffer);
+
+    // TODO:
+
+    return buffer;
+  })();
+
+  const indexBuffer: Buffer = (() => {
+    // each entry is 32 bytes, and flags are 4
+    const buffer = Buffer.alloc(dbpf.numEntries() * 32 + 4);
+    const encoder = new BinaryEncoder(buffer);
+
+    encoder.uint32(0); // flags will always be null
+
+    dbpf.getEntries().forEach(entry => {
+      encoder.uint32(entry.key.type);
+      encoder.uint32(entry.key.group);
+      // TODO: instance ex
+      // TODO: instance
+      // TODO: position
+      // TODO: size & compressed flag (size | 0x80000000)
+      // TODO: size decompressed
+      encoder.uint16(23106); // ZLIB compression
+      encoder.uint32(1); // committed FIXME: is this always 1?
+    });
+
+    return buffer;
+  })();
+
+  const headerBuffer: Buffer = (() => {
+    const buffer = Buffer.alloc(96);
+    const encoder = new BinaryEncoder(buffer);
+
+    encoder.charsUtf8("DBPF");
+    encoder.uint32(2); // version major
+    encoder.uint32(1); // version minor
+    encoder.skip(24); // mnUserVersion through unused2
+    encoder.uint32(dbpf.numEntries());
+    encoder.uint32(0); // FIXME: what is the low pos?
+    encoder.uint32(indexBuffer.length); // index size
+    encoder.skip(12); // unused3
+    encoder.uint32(3); // unused4
+    encoder.uint64(recordsBuffer.length + 96); // index position
+    // intentionally ignoring unused5
+
+    return buffer;
+  })();
+
+  return Buffer.concat([
+    headerBuffer,
+    recordsBuffer,
+    indexBuffer
+  ]);
 }
 
 //#endregion Serialization

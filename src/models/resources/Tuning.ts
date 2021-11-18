@@ -1,4 +1,4 @@
-import { ResourceBase, ResourceVariant } from "./ResourceBase";
+import { ResourceBase, ResourceVariant } from "./Resource";
 
 const DEFAULT_CONTENT = `<?xml version="1.0" encoding="utf-8"?>\n<I c="" i="" m="" n="" s="">\n  \n</I>`;
 
