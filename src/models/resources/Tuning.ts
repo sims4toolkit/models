@@ -27,7 +27,7 @@ export default class TuningResource extends Resource {
    * 
    * @param blank Whether or not the tuning file should be empty
    */
-  static create(blank?: boolean): TuningResource {
+  public static create(blank?: boolean): TuningResource {
     return new TuningResource(blank ? '' : DEFAULT_CONTENT);
   }
 
@@ -38,7 +38,7 @@ export default class TuningResource extends Resource {
    * @param buffer Buffer to create a tuning resource from
    * @param encoding How the buffer is encoded (UTF-8 by default)
    */
-  static from(buffer: Buffer, encoding: BufferEncoding = 'utf-8'): TuningResource {
+  public static from(buffer: Buffer, encoding: BufferEncoding = 'utf-8'): TuningResource {
     return new TuningResource(buffer.toString(encoding), buffer);
   }
 

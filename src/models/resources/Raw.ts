@@ -2,8 +2,10 @@ import Resource from './Resource';
 import type { ResourceVariant } from './Resource';
 
 /**
- * Model for resource types that may or may not be supported, but have
- * intentionally not been parsed any further than their raw buffer.
+ * Model for resource types that may or may not be supported by the library, but
+ * have intentionally not been parsed. These models are read-only, and can be
+ * read either with their buffer or as plain text (legibility is not guaranteed,
+ * as it may contain binary data).
  */
 export default class RawResource extends Resource {
   readonly variant: ResourceVariant = 'RAW';
@@ -16,9 +18,11 @@ export default class RawResource extends Resource {
   }
 
   /**
-   * Returns this resource in plain text form.
+   * Returns this resource as plain text, using the encoding that was given when
+   * it was originally created. Content is loaded lazily, meaning that it will
+   * not actually be decoded until this function is called for the first time.
    */
-  plainText(): string {
+  public getPlainText(): string {
     if (this._content === undefined)
       this._content = this.getBuffer().toString(this._encoding);
     return this._content;
@@ -32,7 +36,7 @@ export default class RawResource extends Resource {
    * @param buffer Buffer to create a raw resource from
    * @param encoding How the buffer is encoded
    */
-  static from(buffer: Buffer, encoding: BufferEncoding = 'utf-8'): RawResource {
+  public static from(buffer: Buffer, encoding: BufferEncoding = 'utf-8'): RawResource {
     return new RawResource(buffer, encoding);
   }
 
