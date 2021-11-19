@@ -2,7 +2,7 @@ import * as zlib from 'zlib';
 import { BinaryDecoder, BinaryEncoder } from '../utils/encoding';
 import { makeList } from '../utils/helpers';
 import { BinaryResourceType, TuningResourceType } from '../enums/ResourceType';
-import { Resource } from './resources/Resource';
+import Resource from './resources/Resource';
 import SimData from './resources/SimData';
 import StringTable from './resources/StringTable';
 import Tuning from './resources/Tuning';

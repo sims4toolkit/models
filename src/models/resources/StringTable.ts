@@ -24,7 +24,7 @@ export default class StringTableResource extends Resource {
    * Returns a new, empty String Table resource.
    */
   public static create(): StringTableResource {
-    return new StringTableResource({ nextID: 0, entryList: [], entryMap: {} });
+    return new StringTableResource({ nextID: 0, entries: [] });
   }
 
   /**
@@ -58,10 +58,7 @@ export default class StringTableResource extends Resource {
   addEntry(key: number, string: string): number {
     const id = this._stblContent.nextID++;
     const entry = { id, key, string };
-    this._stblContent.entryList.push(entry);
-    let entriesWithKey = this._stblContent.entryMap[key];
-    if (entriesWithKey === undefined) entriesWithKey = [];
-    entriesWithKey.push(entry);
+    this._stblContent.entries.push(entry);
     return id;
   }
 
@@ -72,7 +69,7 @@ export default class StringTableResource extends Resource {
    * @param predicate Predicate to determine which string to remove
    */
   removeEntry(predicate: StringEntryPredicate): StringEntry {
-    const index = this._stblContent.entryList.findIndex(predicate);
+    const index = this._stblContent.entries.findIndex(predicate);
     return this.removeEntryByIndex(index);
   }
 
@@ -85,10 +82,10 @@ export default class StringTableResource extends Resource {
    */
   removeEntries(predicate: StringEntryPredicate): StringEntry[] {
     const indices: number[] = [];
-    this._stblContent.entryList.forEach((entry, i) => {
+    this._stblContent.entries.forEach((entry, i) => {
       if (predicate(entry)) indices.push(i);
     });
-    
+
     const deletedEntries: StringEntry[] = [];
     indices.forEach(index => {
       const entry = this.removeEntryByIndex(index - deletedEntries.length);
@@ -127,11 +124,7 @@ export default class StringTableResource extends Resource {
   removeEntryByIndex(index: number): StringEntry {
     const entry = this.getEntryByIndex(index);
     if (entry === undefined) return undefined;
-    this._stblContent.entryList.splice(index, 1);
-    const entriesByKey = this.getEntriesByKey(entry.key);
-    const keyIndex = entriesByKey.findIndex(e => e.id === entry.id);
-    entriesByKey.splice(keyIndex, 1);
-    if (entriesByKey.length === 0) delete this._stblContent.entryMap[entry.key];
+    this._stblContent.entries.splice(index, 1);
     return entry;
   }
 
@@ -154,7 +147,7 @@ export default class StringTableResource extends Resource {
   * @param predicate Predicate to filter strings by
   */
   getEntry(predicate: StringEntryPredicate): StringEntry {
-    return this._stblContent.entryList.find(predicate);
+    return this._stblContent.entries.find(predicate);
   }
 
   /**
@@ -168,9 +161,9 @@ export default class StringTableResource extends Resource {
   */
   getEntries(predicate?: StringEntryPredicate): StringEntry[] {
     if (predicate === undefined) {
-      return this._stblContent.entryList;
+      return this._stblContent.entries;
     } else {
-      return this._stblContent.entryList.filter(predicate);
+      return this._stblContent.entries.filter(predicate);
     }
   }
 
@@ -194,9 +187,7 @@ export default class StringTableResource extends Resource {
   * @param key The key for a string entry
   */
   getEntryByKey(key: number): StringEntry {
-    const entries = this.getEntriesByKey(key);
-    if (entries === undefined) return undefined;
-    return entries[0];
+    return this.getEntry(entry => entry.key === key);
   }
 
   /**
@@ -208,9 +199,7 @@ export default class StringTableResource extends Resource {
   * @param key The key for a string entry
   */
   getEntriesByKey(key: number): StringEntry[] {
-    const entries = this._stblContent.entryMap[key];
-    if (entries === undefined || entries.length < 1) return undefined;
-    return entries;
+    return this.getEntries(entry => entry.key === key);
   }
 
   /**
@@ -226,7 +215,7 @@ export default class StringTableResource extends Resource {
     const checkCase = options !== undefined && options.caseSensitive;
     const checkSubstrings = options !== undefined && options.includeSubstrings;
 
-    return this._stblContent.entryList.filter(entry => {
+    return this._stblContent.entries.filter(entry => {
       if (checkSubstrings) {
         // substring
         return checkCase ?
@@ -249,7 +238,7 @@ export default class StringTableResource extends Resource {
    */
   getEntryByIndex(index: number): StringEntry {
     if (index < 0 || index >= this.numEntries()) return undefined;
-    return this._stblContent.entryList[index];
+    return this._stblContent.entries[index];
   }
 
   //#endregion Public Methods
@@ -275,10 +264,7 @@ interface StringTableContent {
   nextID: number;
 
   /** An array of entries sorted by ID. */
-  entryList: StringEntry[];
-
-  /** A mapping of string keys to all entries that have that key. */
-  entryMap: { [key: number]: StringEntry[]; };
+  entries: StringEntry[];
 }
 
 class ReadStringTableError extends Error { }
@@ -316,23 +302,16 @@ function readSTBL(buffer: Buffer, options?: ReadStringTableOptions): StringTable
   const mnNumEntries = decoder.uint64();
   decoder.skip(6); // mReserved (2 bytes) + mnStringLength (uint32; 4 bytes)
 
-  const entryList: StringEntry[] = [];
+  const entries: StringEntry[] = [];
   for (let id = 0; id < mnNumEntries; id++) {
     const key = decoder.uint32();
     decoder.skip(1); // mnFlags (uint8; has no use, will never be set)
     const stringLength = decoder.uint16();
     const string = stringLength > 0 ? decoder.charsUtf8(stringLength) : '';
-    entryList.push({ id, key, string });
+    entries.push({ id, key, string });
   }
 
-  const entryMap: { [key: number]: StringEntry[] } = {};
-  entryList.forEach(entry => {
-    let entries = entryMap[entry.key];
-    if (entries === undefined) entries = [];
-    entries.push(entry);
-  });
-
-  return { nextID: entryList.length, entryList, entryMap };
+  return { nextID: entries.length, entries };
 }
 
 /**
@@ -344,7 +323,7 @@ function writeSTBL(stbl: StringTableContent): Buffer {
   let totalBytes = 21; // num bytes in header
   let totalStringLength = 0;
   const stringLengths: number[] = [];
-  stbl.entryList.forEach(entry => {
+  stbl.entries.forEach(entry => {
     const stringLength = Buffer.byteLength(entry.string);
     stringLengths.push(stringLength);
     totalStringLength += stringLength + 1;
@@ -357,10 +336,10 @@ function writeSTBL(stbl: StringTableContent): Buffer {
   encoder.charsUtf8('STBL'); // mnFileIdentifier
   encoder.uint16(5); // mnVersion
   encoder.skip(1); // mnCompressed (should be null)
-  encoder.uint64(stbl.entryList.length); // mnNumEntries
+  encoder.uint64(stbl.entries.length); // mnNumEntries
   encoder.skip(2); // mReserved (should be null)
   encoder.uint32(totalStringLength); // mnStringLength
-  stbl.entryList.forEach((entry, index) => {
+  stbl.entries.forEach((entry, index) => {
     encoder.uint32(entry.key);
     encoder.skip(1); // mnFlags (should be null)
     encoder.uint16(stringLengths[index]);
