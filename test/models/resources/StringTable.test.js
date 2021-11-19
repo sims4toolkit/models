@@ -101,7 +101,45 @@ describe('StringTableResource', function() {
   });
 
   describe('#addEntry()', function() {
-    // TODO:
+    it('should add the entry correctly to a new STBL', function() {
+      const stbl = StringTableResource.create();
+      expect(stbl.numEntries()).to.equal(0);
+      const id = stbl.addEntry(1234, 'New string');
+      expect(stbl.numEntries()).to.equal(1);
+      assertEntry(stbl.getEntryById(id), id, 1234, 'New string');
+    });
+
+    it('should add the entry correctly to an existing STBL', function() {
+      const stbl = getSTBL('SmallSTBL');
+      expect(stbl.numEntries()).to.equal(3);
+      const id = stbl.addEntry(1234, 'New string');
+      expect(stbl.numEntries()).to.equal(4);
+      assertEntry(stbl.getEntryById(id), id, 1234, 'New string');
+    });
+
+    it('should throw if key exceeds 32-bit', function() {
+      const stbl = StringTableResource.create();
+      expect(() => stbl.addEntry(0x100000000, "Test")).to.throw("Key must be 32-bit.");
+    });
+
+    it('should return the correct ID on a new STBL', function() {
+      const stbl = StringTableResource.create();
+      expect(stbl.addEntry(1234, "First")).to.equal(0);
+      expect(stbl.addEntry(5678, "Second")).to.equal(1);
+      expect(stbl.addEntry(2468, "Third")).to.equal(2);
+    });
+
+    it('should return the correct ID on an existing STBL', function() {
+      const stbl = getSTBL('SmallSTBL');
+      expect(stbl.addEntry(1234, "New string")).to.equal(3);
+    });
+
+    it('should not recycle IDs after removing an entry', function() {
+      const stbl = getSTBL('SmallSTBL');
+      expect(stbl.addEntry(1234, "New string")).to.equal(3);
+      stbl.removeEntryByIndex(3);
+      expect(stbl.addEntry(5678, "Another string")).to.equal(4);
+    });
   });
 
   describe('#removeEntry()', function() {

@@ -61,17 +61,21 @@ export default class StringTableResource extends Resource {
   //#region Public Methods
 
   /**
-   * Adds an entry to this string table and returns its generated ID.
+   * Adds an entry to this string table and returns its generated ID. Will throw
+   * if the given key is larger than 32-bit.
    * 
    * @param key The string's key
    * @param string The string
    */
   addEntry(key: number, string: string): number {
+    if (key > 0xFFFFFFFF) throw new Error("Key must be 32-bit.");
     const id = this._stblContent.nextID++;
     const entry = { id, key, string };
     this._stblContent.entries.push(entry);
     return id;
   }
+
+  // TODO: update entry
 
   /**
    * Removes and returns the entry that matches the given predicate. If no
