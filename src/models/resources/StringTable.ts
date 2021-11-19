@@ -110,7 +110,7 @@ function readSTBL(buffer: Buffer, options?: ReadStringTableOptions): StringTable
   
   decoder.skip(1); // mnCompressed (uint8; has no use, will never be set)
   const mnNumEntries = decoder.uint64();
-  decoder.skip(2); // mReserved (2 bytes) + mnStringLength (uint32; 4 bytes)
+  decoder.skip(6); // mReserved (2 bytes) + mnStringLength (uint32; 4 bytes)
 
   const entryList: StringEntry[] = [];
   for (let id = 0; id < mnNumEntries; id++) {
@@ -132,27 +132,35 @@ function readSTBL(buffer: Buffer, options?: ReadStringTableOptions): StringTable
 }
 
 /**
- * Writes a STBL to a Buffer following the String Table binary template.
+ * Writes STBL content to a buffer.
  * 
- * @param stbl The STBL to turn into a Buffer
+ * @param stbl STBL content to serialize
  */
 function writeSTBL(stbl: StringTableContent): Buffer {
   let totalBytes = 21; // num bytes in header
-  stbl.mStrings.forEach(stringEntry => { totalBytes += 7 + stringEntry.mnLength });
+  let totalStringLength = 0;
+  const stringLengths: number[] = [];
+  stbl.entryList.forEach(entry => {
+    const stringLength = Buffer.byteLength(entry.string);
+    stringLengths.push(stringLength);
+    totalStringLength += stringLength + 1;
+    totalBytes += stringLength + 7;
+  });
+
   const buffer = Buffer.alloc(totalBytes);
   const encoder = new BinaryEncoder(buffer);
 
-  encoder.charsUtf8(stbl.mnFileIdentifier);
-  encoder.uint16(stbl.mnVersion);
-  encoder.uint8(stbl.mnCompressed);
-  encoder.uint64(stbl.mnNumEntries);
-  stbl.mReserved.forEach(byte => { encoder.uint8(byte); });
-  encoder.uint32(stbl.mnStringLength);
-  stbl.mStrings.forEach(stringEntry => {
-    encoder.uint32(stringEntry.mnKeyHash);
-    encoder.uint8(stringEntry.mnFlags);
-    encoder.uint16(stringEntry.mnLength);
-    encoder.charsUtf8(stringEntry.mString);
+  encoder.charsUtf8('STBL'); // mnFileIdentifier
+  encoder.uint16(5); // mnVersion
+  encoder.skip(1); // mnCompressed (should be null)
+  encoder.uint64(stbl.entryList.length); // mnNumEntries
+  encoder.skip(2); // mReserved (should be null)
+  encoder.uint32(totalStringLength); // mnStringLength
+  stbl.entryList.forEach((entry, index) => {
+    encoder.uint32(entry.key);
+    encoder.skip(1); // mnFlags (should be null)
+    encoder.uint16(stringLengths[index]);
+    encoder.charsUtf8(entry.string);
   });
 
   return buffer;
