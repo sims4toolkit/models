@@ -1,4 +1,4 @@
 const assert = require('assert');
-const { DBPF } = require('../../../dst/api');
+const { DBPF } = require('../../dst/api');
 
 // TODO:
