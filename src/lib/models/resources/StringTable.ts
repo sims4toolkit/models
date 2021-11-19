@@ -75,7 +75,61 @@ export default class StringTableResource extends Resource {
     return id;
   }
 
-  // TODO: update entry
+  /**
+   * Updates the first entry that matches the given predicate with the given
+   * data in `value`. If either `key` or `string` is left out, it will not be
+   * modified (for example, if you just want to change the string, simply leave
+   * out the `key` argument). The previous key and string of the entry will be
+   * returned; if none matched the predicate, undefined is returned.
+   * 
+   * @param predicate Predicate to determine which entry to update
+   * @param value New key and/or string for the entry
+   */
+  updateEntry(predicate: StringEntryPredicate, value: { key?: number; string?: string; }): { key: number; string: string; } {
+    return this._updateEntry(this.getEntry(predicate), value);
+  }
+
+  /**
+   * Updates the entry that has the given ID with the data in `value`. If either
+   * `key` or `string` is left out, it will not be modified (for example, if you
+   * just want to change the string, simply leave out the `key` argument). The
+   * previous key and string of the entry will be returned; if none have the 
+   * given ID, then undefined is returned.
+   * 
+   * @param id ID of the entry to update
+   * @param value New key and/or string for the entry
+   */
+  updateEntryById(id: number, value: { key?: number; string?: string; }): { key: number; string: string; } {
+    return this._updateEntry(this.getEntryById(id), value);
+  }
+
+  /**
+   * Updates the first entry that has the given key with the data in `value`. If
+   * either `key` or `string` is left out, it will not be modified (for example,
+   * if you just want to change the string, simply leave out the `key`
+   * argument). The previous key and string of the entry will be returned; if
+   * none have the given key, then undefined is returned.
+   * 
+   * @param key Key of the entry to update
+   * @param value New key and/or string for the entry
+   */
+  updateEntryByKey(key: number, value: { key?: number; string?: string; }): { key: number; string: string; } {
+    return this._updateEntry(this.getEntryByKey(key), value);
+  }
+
+  /**
+   * Updates the entry at the given index with the data in `value`. If either 
+   * `key` or `string` is left out, it will not be modified (for example, if you
+   * just want to change the string, simply leave out the `key` argument). The
+   * previous key and string of the entry will be returned; the given index is
+   * out of bounds, then undefined is returned.
+   * 
+   * @param index Index of the entry to update
+   * @param value New key and/or string for the entry
+   */
+  updateEntryByIndex(index: number, value: { key?: number; string?: string; }): { key: number; string: string; } {
+    return this._updateEntry(this.getEntryByIndex(index), value);
+  }
 
   /**
    * Removes and returns the entry that matches the given predicate. If no
@@ -257,6 +311,24 @@ export default class StringTableResource extends Resource {
   }
 
   //#endregion Public Methods
+
+  //#region Private Methods
+
+  /**
+   * Updates the entry with the given values, and returns the previous value.
+   * 
+   * @param entry Entry to update
+   * @param value New value of entry
+   */
+  private _updateEntry(entry: StringEntry, value: { key?: number; string?: string }): { key: number; string: string } {
+    if (entry === undefined) return undefined;
+    const prev = { key: entry.key, string: entry.string };
+    if (value.key !== undefined) entry.key = value.key;
+    if (value.string !== undefined) entry.string = value.string;
+    return prev;
+  }
+
+  //#endregion Private Methods
 }
 
 //#region Interfaces & Types
