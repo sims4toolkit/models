@@ -1,25 +1,32 @@
-// const { StringTableResource, TuningResource } = require('../dst/api');
+const fs = require('fs');
+const expect = require('chai').expect;
+const { StringTableResource } = require('../../../dst/api');
 
-// const stbl = StringTableResource.create();
-// stbl.addEntry(123456, "Hello");
-// stbl.addEntry(67890, "World");
-// stbl.addEntry(2468, "foo");
-// stbl.addEntry(1357, "bar");
-// const entries = stbl.getEntries();
-// console.log("all:", entries);
-// console.log("get by key:", stbl.getEntryByKey(123456));
-// console.log("removed:", stbl.removeEntries(entry => entry.key <= 2468));
-// console.log("all:", stbl.getEntries());
+const path = require('path').resolve(__dirname, '../../data/stbls/SmallSTBL.stbl');
+const buffer = fs.readFileSync(path);
 
+function assertEntry(entry, id, key, string) {
+  expect(entry.id).to.equal(id);
+  expect(entry.key).to.equal(key);
+  expect(entry.string).to.equal(string);
+}
 
-// const stbl2 = new StringTableResource();
+describe('StringTableResource', function() {
+  describe('#from()', function() {
+    /** @type {StringTableResource} */
+    let stbl;
 
-// var assert = require('assert');
+    this.beforeEach(function() {
+      stbl = StringTableResource.from(buffer);
+    });
 
-// describe('Array', function() {
-//   describe('#indexOf()', function() {
-//     it('should return -1 when the value is not present', function() {
-//       assert.equal([1, 2, 3].indexOf(4), -1);
-//     });
-//   });
-// });
+    it('should load the contents correctly', function() {
+      const entries = stbl.getEntries();
+      expect(entries).to.be.an('Array');
+      expect(entries).to.have.length(3);
+      assertEntry(entries[0], 0, 0x7E08629A, 'This is a string.');
+      assertEntry(entries[1], 1, 0xF098F4B5, 'This is another string!');
+      assertEntry(entries[2], 2, 0x8D6D117D, 'And this, this is a third.');
+    });
+  });
+});
