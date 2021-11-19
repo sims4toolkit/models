@@ -7,12 +7,13 @@
   "scripts": {
     "clear": "rm -rf ./dst/**",
     "dev": "npm run clear ; tsc --watch",
-    "test": "node test/test.js"
+    "test": "mocha 'test/**/**.test.js'"
   },
   "author": "frankkulak",
   "license": "MIT",
   "devDependencies": {
     "@types/node": "^16.11.7",
+    "mocha": "^9.1.3",
     "typescript": "^4.4.4"
   }
 }
