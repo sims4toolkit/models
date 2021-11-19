@@ -16,6 +16,14 @@ function assertEntry(entry, id, key, string) {
 }
 
 describe('StringTableResource', function() {
+  describe('#create()', function() {
+    it('should create a valid, empty string table', function() {
+      const stbl = StringTableResource.create();
+      expect(stbl).to.not.be.undefined;
+      expect(stbl.getEntries()).to.have.lengthOf(0);
+    });
+  });
+
   describe('#from()', function() {
     context('file is valid', function() {
       it('should load the contents correctly', function() {
