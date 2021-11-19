@@ -99,4 +99,62 @@ describe('StringTableResource', function() {
       });
     });
   });
+
+  describe('#addEntry()', function() {
+    // TODO:
+  });
+
+  describe('#removeEntry()', function() {
+    // TODO:
+  });
+
+  describe('#removeEntries()', function() {
+    // TODO:
+  });
+
+  describe('#removeEntryById()', function() {
+    // TODO:
+  });
+
+  describe('#removeEntryByKey()', function() {
+    // TODO:
+  });
+
+  describe('#removeEntryByIndex()', function() {
+    // TODO:
+  });
+
+  describe('#numEntries()', function() {
+    // TODO:
+  });
+
+  describe('#getEntry()', function() {
+    // TODO:
+  });
+
+  describe('#getEntries()', function() {
+    // TODO:
+  });
+
+  describe('#getEntryById()', function() {
+    // TODO:
+  });
+
+  describe('#getEntryByKey()', function() {
+    // TODO:
+  });
+
+  describe('#getEntriesByKey()', function() {
+    // TODO:
+  });
+
+  describe('#getEntriesByString()', function() {
+    // TODO:
+  });
+
+  describe('#getEntryByIndex()', function() {
+    // TODO:
+  });
+
+  // TODO: add tests for saving
 });
