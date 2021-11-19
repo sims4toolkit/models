@@ -9,11 +9,12 @@
  */
 function fnv(value: string, offset: bigint, prime: bigint, max: bigint): bigint {
   let hash = offset;
-  Buffer.from(value.toLowerCase(), 'utf-8').forEach(byte => {
+  const lowerString = value.toLowerCase();
+  for (let i = 0; i < value.length; i++) {
     hash *= prime;
     hash %= max;
-    hash ^= BigInt(byte);
-  });
+    hash ^= BigInt(lowerString.charCodeAt(i));
+  }
   return hash;
 }
 
