@@ -7,18 +7,21 @@ const DEFAULT_CONTENT = `<?xml version="1.0" encoding="utf-8"?>\n<I c="" i="" m=
  * A resource that contains plaintext XML.
  */
 export default class TuningResource extends Resource {
-  //#region Properties
-
   readonly variant: ResourceVariant = 'XML';
   private _content: string;
 
-  //#endregion Properties
-
   //#region Initialization
 
-  private constructor(contents: string, cachedBuffer?: Buffer) {
+  /**
+   * Constructor. This should NOT be used by external code. Please use the
+   * static `create()` and `from()` methods to create new instances.
+   * 
+   * @param content The XML content of this resource
+   * @param cachedBuffer The pre-serialized buffer for this resource
+   */
+  private constructor(content: string, cachedBuffer?: Buffer) {
     super(cachedBuffer);
-    this._content = contents;
+    this._content = content;
   }
 
   /**

@@ -6,15 +6,18 @@ import { BinaryEncoder, BinaryDecoder } from "../../utils/encoding";
  * A resource that contains string table data.
  */
 export default class StringTableResource extends Resource {
-  //#region Properties
-
   readonly variant: ResourceVariant = 'STBL';
   private _stblContent: StringTableContent;
 
-  //#endregion Properties
-
   //#region Initialization
 
+  /**
+   * Constructor. This should NOT be used by external code. Please use the
+   * static `create()` and `from()` methods to create new instances.
+   * 
+   * @param content The content of this STBL
+   * @param cachedBuffer The pre-serialized buffer for this STBL
+   */
   private constructor(content: StringTableContent, cachedBuffer?: Buffer) {
     super(cachedBuffer);
     this._stblContent = content;

@@ -12,6 +12,13 @@ export default class UnsupportedResource extends Resource {
   /** Reason why this resource is not supported by the library. */
   readonly reason?: string;
 
+  /**
+   * Constructor. This should NOT be used by external code. Please use the
+   * static `from()` method to create new instances.
+   * 
+   * @param buffer The buffer that contains this resource's data
+   * @param reason Optional reason why this resource is unsupported
+   */
   private constructor(buffer: Buffer, reason?: string) {
     super(buffer);
     this.reason = reason;

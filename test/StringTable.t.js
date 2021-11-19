@@ -1,4 +1,4 @@
-const { StringTableResource } = require('../dst/api');
+const { StringTableResource, TuningResource } = require('../dst/api');
 
 const stbl = StringTableResource.create();
 stbl.addEntry(123456, "Hello");
@@ -10,3 +10,6 @@ console.log("all:", entries);
 console.log("get by key:", stbl.getEntryByKey(123456));
 console.log("removed:", stbl.removeEntries(entry => entry.key <= 2468));
 console.log("all:", stbl.getEntries());
+
+
+// const stbl2 = new StringTableResource();

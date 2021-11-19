@@ -12,20 +12,16 @@ export default class RawResource extends Resource {
   private _encoding: BufferEncoding;
   private _content?: string;
 
+  /**
+   * Constructor. This should NOT be used by external code. Please use the
+   * static `from()` method to create new instances.
+   * 
+   * @param buffer Buffer that contains this resource's raw data
+   * @param encoding How the given buffer is encoded
+   */
   private constructor(buffer: Buffer, encoding: BufferEncoding) {
     super(buffer);
     this._encoding = encoding;
-  }
-
-  /**
-   * Returns this resource as plain text, using the encoding that was given when
-   * it was originally created. Content is loaded lazily, meaning that it will
-   * not actually be decoded until this function is called for the first time.
-   */
-  public getPlainText(): string {
-    if (this._content === undefined)
-      this._content = this.getBuffer().toString(this._encoding);
-    return this._content;
   }
 
   /**
@@ -42,5 +38,16 @@ export default class RawResource extends Resource {
 
   protected _serialize(): Buffer {
     throw new Error("Cannot serialize a raw resource.");
+  }
+
+  /**
+   * Returns this resource as plain text, using the encoding that was given when
+   * it was originally created. Content is loaded lazily, meaning that it will
+   * not actually be decoded until this function is called for the first time.
+   */
+  public getPlainText(): string {
+    if (this._content === undefined)
+      this._content = this.getBuffer().toString(this._encoding);
+    return this._content;
   }
 }
