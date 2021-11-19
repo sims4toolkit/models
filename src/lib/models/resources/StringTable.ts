@@ -37,7 +37,15 @@ export default class StringTableResource extends Resource {
    * @param options Options to configure for reading a STBL resource
    */
   public static from(buffer: Buffer, options?: ReadStringTableOptions): StringTableResource {
-    return new StringTableResource(readSTBL(buffer, options), buffer);
+    try {
+      return new StringTableResource(readSTBL(buffer, options), buffer);
+    } catch (e) {
+      if (options !== undefined && options.dontThrow) {
+        return undefined;
+      } else {
+        throw e;
+      }
+    }
   }
 
   //#endregion Initialization
@@ -274,6 +282,7 @@ class ReadStringTableError extends Error { }
 
 interface ReadStringTableOptions {
   ignoreErrors: boolean;
+  dontThrow: boolean;
 }
 
 //#endregion Interfaces & Types

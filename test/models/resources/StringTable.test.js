@@ -59,6 +59,16 @@ describe('StringTableResource', function() {
       it('should not throw when options ignore non-fatal errors', function() {
         expect(() => getSTBL('CorruptHeader', { ignoreErrors: true })).to.not.throw();
       });
+
+      it("should return undefined when options don't throw", function() {
+        let stbl;
+        function stblWrapper() {
+          stbl = getSTBL('CorruptHeader', { dontThrow: true });
+        }
+
+        expect(stblWrapper).to.not.throw();
+        expect(stbl).to.be.undefined;
+      });
     });
 
     context('file is corrupt', function() {
@@ -68,6 +78,16 @@ describe('StringTableResource', function() {
 
       it('should throw when options ignore non-fatal errors', function() {
         expect(() => getSTBL('Corrupt', { ignoreErrors: true })).to.throw();
+      });
+
+      it("should return undefined when options don't throw", function() {
+        let stbl;
+        function stblWrapper() {
+          stbl = getSTBL('Corrupt', { dontThrow: true });
+        }
+
+        expect(stblWrapper).to.not.throw();
+        expect(stbl).to.be.undefined;
       });
     });
   });
