@@ -15,8 +15,6 @@ export interface StringEntry {
 }
 
 export interface StringTableResource {
-  //#region Create
-
   /**
    * Adds an entry to this string table and returns its generated ID.
    * 
@@ -24,10 +22,6 @@ export interface StringTableResource {
    * @param string The string
    */
   addEntry(key: number, string: string): number;
-
-  //#endregion Create
-
-  //#region Read
 
   /**
    * Returns the number of entries that match the given predicate, or the total
@@ -93,6 +87,4 @@ export interface StringTableResource {
    * @param string String to search for
    */
   getEntriesByString(string: string, options?: StringSearchOptions): StringEntry[];
-
-  //#endregion Read
 }

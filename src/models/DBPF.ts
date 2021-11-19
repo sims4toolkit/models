@@ -11,14 +11,6 @@ import { buffer } from 'stream/consumers';
 import RawResource from './resources/Raw';
 
 /**
- * Options to configure when creating a new DBPF.
- */
-interface DBPFOptions {
-  ignoreErrors: boolean;
-  loadRaw: boolean;
-}
-
-/**
  * Model for a Database Packed File (DBPF).
  */
 export default class DBPF {
@@ -87,6 +79,14 @@ export default class DBPF {
 class ReadDBPFError extends Error { }
 
 type ResourceEntryPredicate = (entry: ResourceEntry) => boolean;
+
+/**
+ * Options to configure when creating a new DBPF.
+ */
+ interface DBPFOptions {
+  ignoreErrors: boolean;
+  loadRaw: boolean;
+}
 
 /**
  * The combination of type, group, and instance used to identify individual

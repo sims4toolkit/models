@@ -9,31 +9,32 @@ export default class StringTableResource extends Resource {
   //#region Properties
 
   readonly variant: ResourceVariant = 'STBL';
-  private _stbl: BinarySTBL;
+  private _stblContent: StringTableContent;
 
   //#endregion Properties
 
   //#region Initialization
 
-  private constructor(stbl: BinarySTBL, cachedBuffer?: Buffer) {
+  private constructor(content: StringTableContent, cachedBuffer?: Buffer) {
     super(cachedBuffer);
-    this._stbl = stbl;
+    this._stblContent = content;
   }
 
   /**
    * Returns a new, empty String Table resource.
    */
   public static create(): StringTableResource {
-    return new StringTableResource(defaultBinarySTBL());
+    return new StringTableResource({ entryList: [], entryMap: {} });
   }
 
   /**
    * Returns a new String Table resource read from the given buffer.
    * 
    * @param buffer Buffer to read as a string table
+   * @param options Options to configure for reading a STBL resource
    */
-  public static from(buffer: Buffer): StringTableResource {
-    return new StringTableResource(readSTBL(buffer), buffer);
+  public static from(buffer: Buffer, options?: ReadStringTableOptions): StringTableResource {
+    return new StringTableResource(readSTBL(buffer, options), buffer);
   }
 
   //#endregion Initialization
@@ -41,7 +42,7 @@ export default class StringTableResource extends Resource {
   //#region Abstract Methods
 
   protected _serialize(): Buffer {
-    return writeSTBL(this._stbl);
+    return writeSTBL(this._stblContent);
   }
 
   //#endregion Abstract Methods
@@ -53,84 +54,81 @@ export default class StringTableResource extends Resource {
   //#endregion Public Methods
 }
 
-/**
- * Data structure for the value output by the STBL binary template.
- */
-interface BinarySTBL {
-  mnFileIdentifier: string; // 4 chars, utf8
-  mnVersion: number; // uint16
-  mnCompressed: number; // uint8
-  mnNumEntries: bigint; // uint64
-  mReserved: number[]; // 2 bytes
-  mnStringLength: number; // uint32
-  mStrings: {
-    mnKeyHash: number; // uint32
-    mnFlags: number; // uint8
-    mnLength: number; // uint16
-    mString: string; // chars of length mnLength
-  }[];
+//#region Interfaces & Types
+
+type StringEntryPredicate = (entry: StringEntry) => boolean;
+
+interface StringSearchOptions {
+  caseSensitive?: boolean;
+  includeSubstrings?: boolean;
 }
 
-/**
- * Creates an empty BinarySTBL for use in the making of a new StringTable.
- */
-function defaultBinarySTBL(): BinarySTBL {
-  return {
-    mnFileIdentifier: 'STBL',
-    mnVersion: 5,
-    mnCompressed: 1,
-    mnNumEntries: 0n,
-    mReserved: [0, 0],
-    mnStringLength: 0,
-    mStrings: []
-  }
+interface StringEntry {
+  readonly id: number;
+  key: number;
+  string: string;
 }
 
+interface StringTableContent {
+  /** An array of entries sorted by ID. */
+  entryList: StringEntry[];
+
+  /** A mapping of string keys to all entries that have that key. */
+  entryMap: { [key: number]: StringEntry[]; };
+}
+
+class ReadStringTableError extends Error { }
+
+interface ReadStringTableOptions {
+  ignoreErrors: boolean;
+}
+
+//#endregion Interfaces & Types
+
+//#region Serialization
+
 /**
- * Reads a STBL from a Buffer following the String Table binary template.
+ * Reads STBL content from the given buffer.
  * 
- * @param buffer The Buffer to read a STBL from
- * @returns The STBL read from the Buffer
+ * @param buffer Buffer to read as a STBL
+ * @param options Options to configure
  */
-function readSTBL(buffer: Buffer): BinarySTBL {
+function readSTBL(buffer: Buffer, options?: ReadStringTableOptions): StringTableContent {
   const decoder = new BinaryDecoder(buffer);
+
+  if (options === undefined || !options.ignoreErrors) {
+    // mnFileIdentifier
+    if (decoder.charsUtf8(4) !== "STBL")
+      throw new ReadStringTableError("Not a string table.");
+
+    // mnVersion
+    if (decoder.uint16() !== 5)
+      throw new ReadStringTableError("Version must be 5.");
+  } else {
+    decoder.skip(6);
+  }
   
-  const mnFileIdentifier = decoder.charsUtf8(4);
-  if (mnFileIdentifier !== "STBL")
-    throw new Error("[STBL-000] Not a string table.");
-
-  const mnVersion = decoder.uint16();
-  if (mnVersion !== 5)
-    throw new Error("[STBL-001] Version number is incorrect.");
-
-  const mnCompressed = decoder.uint8();
+  decoder.skip(1); // mnCompressed (uint8; has no use, will never be set)
   const mnNumEntries = decoder.uint64();
-  const mReserved = decoder.bytes(2);
-  const mnStringLength = decoder.uint32();
+  decoder.skip(2); // mReserved (2 bytes) + mnStringLength (uint32; 4 bytes)
 
-  const mStrings = [];
-  for (let i = 0; i < mnNumEntries; i++) {
-    const mnKeyHash = decoder.uint32();
-    const mnFlags = decoder.uint8();
-    const mnLength = decoder.uint16();
-    const mString = mnLength > 0 ? decoder.charsUtf8(mnLength) : '';
-    mStrings.push({
-      mnKeyHash,
-      mnFlags,
-      mnLength,
-      mString
-    });
+  const entryList: StringEntry[] = [];
+  for (let id = 0; id < mnNumEntries; id++) {
+    const key = decoder.uint32();
+    decoder.skip(1); // mnFlags (uint8; has no use, will never be set)
+    const stringLength = decoder.uint16();
+    const string = stringLength > 0 ? decoder.charsUtf8(stringLength) : '';
+    entryList.push({ id, key, string });
   }
 
-  return {
-    mnFileIdentifier,
-    mnVersion,
-    mnCompressed,
-    mnNumEntries,
-    mReserved,
-    mnStringLength,
-    mStrings
-  };
+  const entryMap: { [key: number]: StringEntry[] } = {};
+  entryList.forEach(entry => {
+    let entries = entryMap[entry.key];
+    if (entries === undefined) entries = [];
+    entries.push(entry);
+  });
+
+  return { entryList, entryMap };
 }
 
 /**
@@ -138,7 +136,7 @@ function readSTBL(buffer: Buffer): BinarySTBL {
  * 
  * @param stbl The STBL to turn into a Buffer
  */
-function writeSTBL(stbl: BinarySTBL): Buffer {
+function writeSTBL(stbl: StringTableContent): Buffer {
   let totalBytes = 21; // num bytes in header
   stbl.mStrings.forEach(stringEntry => { totalBytes += 7 + stringEntry.mnLength });
   const buffer = Buffer.alloc(totalBytes);
@@ -159,3 +157,5 @@ function writeSTBL(stbl: BinarySTBL): Buffer {
 
   return buffer;
 }
+
+//#endregion Serialization
