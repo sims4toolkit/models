@@ -66,40 +66,73 @@ export default class StringTableResource extends Resource {
   }
 
   /**
-   * TODO:
+   * Removes and returns the entry that matches the given predicate. If no
+   * entries match, then nothing will change and `undefined` will be returned.
    * 
-   * @param predicate TODO:
+   * @param predicate Predicate to determine which string to remove
    */
   removeEntry(predicate: StringEntryPredicate): StringEntry {
-    // TODO:
+    const index = this._stblContent.entryList.findIndex(predicate);
+    return this.removeEntryByIndex(index);
   }
 
   /**
-   * TODO:
+   * Removes and returns all entries that match the given predicate. If no
+   * entries match the predicate, nothing will change and an empty array will
+   * be returned.
    * 
-   * @param predicate TODO:
-   * @param limit TODO:
+   * @param predicate Predicate to determine which strings to remove
    */
-  removeEntries(predicate: StringEntryPredicate, limit?: number): StringEntry[] {
-    // TODO:
+  removeEntries(predicate: StringEntryPredicate): StringEntry[] {
+    const indices: number[] = [];
+    this._stblContent.entryList.forEach((entry, i) => {
+      if (predicate(entry)) indices.push(i);
+    });
+    
+    const deletedEntries: StringEntry[] = [];
+    indices.forEach(index => {
+      const entry = this.removeEntryByIndex(index - deletedEntries.length);
+      deletedEntries.push(entry);
+    });
+
+    return deletedEntries;
   }
 
   /**
-   * TODO:
+   * Removes and returns the entry with the given ID. If no entries have this
+   * ID, then nothing will change and `undefined` will be returned.
    * 
-   * @param id TODO:
+   * @param id The ID of the entry to remove
    */
   removeEntryById(id: number): StringEntry {
-    // TODO:
+    return this.removeEntry(entry => entry.id === id);
   }
 
   /**
-   * TODO:
+   * Removes and returns the entry with the given key. If no entries have this
+   * key, then nothing will change and `undefined` will be returned.
    * 
-   * @param id TODO:
+   * @param key The key of the entry to remove
    */
   removeEntryByKey(key: number): StringEntry {
-    // TODO:
+    return this.removeEntry(entry => entry.key === key);
+  }
+
+  /**
+   * Removes and returns the entry at the given index. If this index is out of
+   * bounds, nothing changes and `undefined` is returned.
+   * 
+   * @param index Index of the entry to remove
+   */
+  removeEntryByIndex(index: number): StringEntry {
+    const entry = this.getEntryByIndex(index);
+    if (entry === undefined) return undefined;
+    this._stblContent.entryList.splice(index, 1);
+    const entriesByKey = this.getEntriesByKey(entry.key);
+    const keyIndex = entriesByKey.findIndex(e => e.id === entry.id);
+    entriesByKey.splice(keyIndex, 1);
+    if (entriesByKey.length === 0) delete this._stblContent.entryMap[entry.key];
+    return entry;
   }
 
   /**
@@ -161,8 +194,8 @@ export default class StringTableResource extends Resource {
   * @param key The key for a string entry
   */
   getEntryByKey(key: number): StringEntry {
-    const entries = this._stblContent.entryMap[key];
-    if (entries === undefined || entries.length < 1) return undefined;
+    const entries = this.getEntriesByKey(key);
+    if (entries === undefined) return undefined;
     return entries[0];
   }
 
@@ -175,19 +208,10 @@ export default class StringTableResource extends Resource {
   * @param key The key for a string entry
   */
   getEntriesByKey(key: number): StringEntry[] {
-    // TODO:
+    const entries = this._stblContent.entryMap[key];
+    if (entries === undefined || entries.length < 1) return undefined;
+    return entries;
   }
-
-  /**
-  * Returns the first entry that contains the given string following the given
-  * options. All options are false by default, so if no options are passed,
-  * the search will be for a case-insensitive exact match.
-  * 
-  * Do not mutate the object that is output. Doing so will break things.
-  * 
-  * @param string String to search for
-  */
-  getEntryByString(string: string, options?: StringSearchOptions): StringEntry;
 
   /**
   * Returns all entries that contain the given string following the given
@@ -198,7 +222,35 @@ export default class StringTableResource extends Resource {
   * 
   * @param string String to search for
   */
-  getEntriesByString(string: string, options?: StringSearchOptions): StringEntry[];
+  getEntriesByString(string: string, options?: StringSearchOptions): StringEntry[] {
+    const checkCase = options !== undefined && options.caseSensitive;
+    const checkSubstrings = options !== undefined && options.includeSubstrings;
+
+    return this._stblContent.entryList.filter(entry => {
+      if (checkSubstrings) {
+        // substring
+        return checkCase ?
+          entry.string.includes(string) :
+          entry.string.toLowerCase().includes(string.toLowerCase());
+      } else {
+        // exact match
+        return checkCase ?
+          entry.string === string :
+          entry.string.toLowerCase() === string.toLowerCase();
+      }
+    });
+  }
+
+  /**
+   * Returns the entry at the given index. If the index is out of bounds, then
+   * `undefined` is returned.
+   * 
+   * @param index Index of entry to get
+   */
+  getEntryByIndex(index: number): StringEntry {
+    if (index < 0 || index >= this.numEntries()) return undefined;
+    return this._stblContent.entryList[index];
+  }
 
   //#endregion Public Methods
 }
