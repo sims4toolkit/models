@@ -25,7 +25,9 @@ export default class Record {
   private constructor(key: ResourceKey, resource: Resource) {
     this._key = key;
     this._resource = resource;
-    resource.setOwner(this);
+    //@ts-ignore The _setOwner method is meant to be private so that outside
+    // code knows not to call it, but it is totally fine to be called here.
+    resource._setOwner(this);
   }
 
   /**
@@ -33,7 +35,7 @@ export default class Record {
    * 
    * @param owner DBPF that contains this record
    */
-   public setOwner(owner: DBPF) {
+  private _setOwner(owner: DBPF) {
     this._owner = owner;
   }
 

@@ -20,15 +20,6 @@ export default abstract class Resource {
   }
 
   /**
-   * Sets the given record as the owner of this resource.
-   * 
-   * @param owner Record that contains this resource
-   */
-  public setOwner(owner: Record) {
-    this._owner = owner;
-  }
-
-  /**
    * Returns a buffer that can be used to write this resource. The buffer is NOT
    * compressed -- compression is the responsibility of a record.
    */
@@ -52,5 +43,17 @@ export default abstract class Resource {
     //@ts-ignore The _uncache method is meant to be protected so that outside
     // code knows not to call it, but it is totally fine to be called here.
     this._owner?._uncache();
+  }
+
+  /**
+   * Sets the given record as the owner of this resource.
+   * 
+   * This is marked as private so that external code knows not to call it, but
+   * it is called by the constructor of records.
+   * 
+   * @param owner Record that contains this resource
+   */
+  private _setOwner(owner: Record) {
+    this._owner = owner;
   }
 }
