@@ -1,4 +1,4 @@
-const { StringTableResource } = require('../dst/api').default;
+const { StringTableResource } = require('../dst/api');
 
 const stbl = StringTableResource.create();
 stbl.addEntry(123456, "Hello");
