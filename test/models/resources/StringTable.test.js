@@ -142,6 +142,22 @@ describe('StringTableResource', function() {
     });
   });
 
+  describe('#updateEntry()', function() {
+    // TODO:
+  });
+
+  describe('#updateEntryById()', function() {
+    // TODO:
+  });
+
+  describe('#updateEntryByKey()', function() {
+    // TODO:
+  });
+
+  describe('#updateEntryByIndex()', function() {
+    // TODO:
+  });
+
   describe('#removeEntry()', function() {
     // TODO:
   });
