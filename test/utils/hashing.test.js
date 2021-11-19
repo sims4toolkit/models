@@ -58,4 +58,24 @@ describe('Hashing', function() {
       ['Hé110 : wør!D', 17661114212433175598n]
     ]);
   });
+
+  describe('#fnv32to24()', function() {
+    it('should return 2405745 for 2133112078', function() {
+      expect(hashing.fnv32to24(2133112078)).to.equal(2405745);
+    });
+
+    it('should return 1875268 for 2166136261', function() {
+      expect(hashing.fnv32to24(2166136261)).to.equal(1875268);
+    });
+  });
+
+  describe('#fnv64to56()', function() {
+    it('should return 68289449647285230n for 14695981039346656037n', function() {
+      expect(hashing.fnv64to56(14695981039346656037n)).to.equal(68289449647285230n);
+    });
+
+    it('should return 45046755487557328n for 4440559991801161453n', function() {
+      expect(hashing.fnv64to56(4440559991801161453n)).to.equal(45046755487557328n);
+    });
+  });
 });
