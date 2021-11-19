@@ -27,6 +27,28 @@ describe('StringTableResource', function() {
       assertEntry(entries[2], 2, 0x8D6D117D, 'And this, this is a third.');
     });
 
+    it('should load repeated entries uniquely', function() {
+      const stbl = getSTBL('RepeatedStrings.stbl');
+      const entries = stbl.getEntries();
+      expect(entries).to.be.an('Array');
+      expect(entries).to.have.length(6);
+
+      // 0 & 1 have same key and string
+      expect(entries[0].key).to.equal(entries[1].key);
+      expect(entries[0].string).to.equal(entries[1].string);
+      expect(entries[0].id).to.not.equal(entries[1].id);
+
+      // 2 & 3 have same string, but different key
+      expect(entries[2].key).to.not.equal(entries[3].key);
+      expect(entries[2].string).to.equal(entries[3].string);
+      expect(entries[2].id).to.not.equal(entries[3].id);
+
+      // 4 & 5 have same key, but different string
+      expect(entries[4].key).to.equal(entries[5].key);
+      expect(entries[4].string).to.not.equal(entries[5].string);
+      expect(entries[4].id).to.not.equal(entries[5].id);
+    });
+
     // TODO: test for failure
   });
 });
