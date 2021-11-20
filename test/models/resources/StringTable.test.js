@@ -685,5 +685,49 @@ describe('StringTableResource', function() {
 
   //#endregion Utility
 
-  // TODO: add tests for saving
+  //#region Serializing
+
+  describe('#getBuffer()', function() {
+    context('fresh string table', function() {
+      context('stbl is empty', function() {
+        it('should return a binary that can be re-read as a STBL', function() {
+          // TODO:
+        });
+      });
+
+      context('stbl had entries added', function() {
+        it('should return a binary that can be re-read as a STBL', function() {
+          // TODO:
+        });
+      });
+    });
+
+    context('loaded string table', function() {
+      context('stbl was untouched', function() {
+        it('should return a binary that can be re-read as a STBL', function() {
+          // TODO:
+        });
+      });
+
+      context('stbl had entries added', function() {
+        it('should return a binary that can be re-read as a STBL', function() {
+          // TODO:
+        });
+      });
+
+      context('stbl had entries updated', function() {
+        it('should return a binary that can be re-read as a STBL', function() {
+          // TODO:
+        });
+      });
+
+      context('stbl had entries removed', function() {
+        it('should return a binary that can be re-read as a STBL', function() {
+          // TODO:
+        });
+      });
+    });
+  });
+
+  //#endregion Serializing
 });
