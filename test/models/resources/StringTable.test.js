@@ -368,32 +368,44 @@ describe('StringTableResource', function() {
       stbl.removeEntryByIndex(3);
       expect(stbl.addEntry(5678, "Another string")).to.equal(4);
     });
+
+    it('should uncache the buffer if successful', function() {
+      // TODO:
+    });
+
+    it('should not uncache the buffer if failed', function() {
+      // TODO:
+    });
   });
 
   describe('#addStringAndHash()', function() {
-    context('name is given', function() {
-      it("should add one entry with the name's 32-bit hash", function() {
-        const stbl = StringTableResource.create();
-        const string = "This is the string";
-        const name = "frankk_TEST:string_Name";
-        stbl.addStringAndHash(string, name);
-        expect(stbl.numEntries()).to.equal(1);
-        const entry = stbl.getEntryByIndex(0);
-        expect(entry.key).to.equal(Hashing.fnv32(name));
-        expect(entry.string).to.equal(string);
-      });
+    it("should add one entry with the name's 32-bit hash if name given", function() {
+      const stbl = StringTableResource.create();
+      const string = "This is the string";
+      const name = "frankk_TEST:string_Name";
+      stbl.addStringAndHash(string, name);
+      expect(stbl.numEntries()).to.equal(1);
+      const entry = stbl.getEntryByIndex(0);
+      expect(entry.key).to.equal(Hashing.fnv32(name));
+      expect(entry.string).to.equal(string);
     });
 
-    context('name is not given', function() {
-      it("should add one entry with the string's 32-bit hash", function() {
-        const stbl = StringTableResource.create();
-        const string = "This is the string";
-        stbl.addStringAndHash(string);
-        expect(stbl.numEntries()).to.equal(1);
-        const entry = stbl.getEntryByIndex(0);
-        expect(entry.key).to.equal(Hashing.fnv32(string));
-        expect(entry.string).to.equal(string);
-      });
+    it("should add the entry with the string's hash if no name given", function() {
+      const stbl = StringTableResource.create();
+      const string = "This is the string";
+      stbl.addStringAndHash(string);
+      expect(stbl.numEntries()).to.equal(1);
+      const entry = stbl.getEntryByIndex(0);
+      expect(entry.key).to.equal(Hashing.fnv32(string));
+      expect(entry.string).to.equal(string);
+    });
+
+    it('should uncache the buffer if successful', function() {
+      // TODO:
+    });
+
+    it('should not uncache the buffer if failed', function() {
+      // TODO:
     });
   });
 
@@ -405,6 +417,10 @@ describe('StringTableResource', function() {
           const empty = StringTableResource.create();
           stbl.combine(empty);
           expect(stbl.numEntries()).to.equal(0);
+        });
+
+        it('should not uncache the buffer', function() {
+          // TODO:
         });
       });
   
@@ -437,6 +453,10 @@ describe('StringTableResource', function() {
           empty.combine(withEntries);
           expectNoMutationOnRemove(empty, withEntries);
         });
+
+        it('should uncache the buffer', function() {
+          // TODO:
+        });
       });
 
       context('adding multiple stbls with entries', function() {
@@ -449,6 +469,10 @@ describe('StringTableResource', function() {
           const merged = StringTableResource.merge(stbl1, stbl2);
           expectSameContents(empty, merged);
         });
+
+        it('should uncache the buffer', function() {
+          // TODO:
+        });
       });
     });
 
@@ -460,6 +484,10 @@ describe('StringTableResource', function() {
           const empty = StringTableResource.create();
           smallStbl.combine(empty);
           expectSameContents(smallStbl, clone);
+        });
+
+        it('should not uncache the buffer', function() {
+          // TODO:
         });
       });
   
@@ -474,6 +502,10 @@ describe('StringTableResource', function() {
           smallStbl.combine(other);
           expect(smallStbl.numEntries()).to.equal(originalEntries + 2);
           expectSameContents(smallStbl, merged);
+        });
+
+        it('should uncache the buffer', function() {
+          // TODO:
         });
       });
 
@@ -494,6 +526,10 @@ describe('StringTableResource', function() {
 
           expectSameContents(smallStbl, merged);
         });
+
+        it('should uncache the buffer', function() {
+          // TODO:
+        });
       });
     });
   });
@@ -504,18 +540,50 @@ describe('StringTableResource', function() {
 
   describe('#updateEntry()', function() {
     // TODO:
+
+    it('should uncache the buffer if successful', function() {
+      // TODO:
+    });
+
+    it('should not uncache the buffer if failed', function() {
+      // TODO:
+    });
   });
 
   describe('#updateEntryById()', function() {
     // TODO:
+
+    it('should uncache the buffer if successful', function() {
+      // TODO:
+    });
+
+    it('should not uncache the buffer if failed', function() {
+      // TODO:
+    });
   });
 
   describe('#updateEntryByKey()', function() {
     // TODO:
+
+    it('should uncache the buffer if successful', function() {
+      // TODO:
+    });
+
+    it('should not uncache the buffer if failed', function() {
+      // TODO:
+    });
   });
 
   describe('#updateEntryByIndex()', function() {
     // TODO:
+
+    it('should uncache the buffer if successful', function() {
+      // TODO:
+    });
+
+    it('should not uncache the buffer if failed', function() {
+      // TODO:
+    });
   });
 
   //#endregion Update
@@ -523,23 +591,117 @@ describe('StringTableResource', function() {
   //#region Remove
 
   describe('#removeEntry()', function() {
-    // TODO:
+    it('should return the entry that was removed', function() {
+      // TODO:
+    });
+
+    it('should remove the first entry that matches the predicate', function() {
+      // TODO:
+    });
+
+    it('should return undefined if no entries were matched', function() {
+      // TODO:
+    });
+
+    it('should uncache the buffer if successful', function() {
+      // TODO:
+    });
+
+    it('should not uncache the buffer if failed', function() {
+      // TODO:
+    });
   });
 
   describe('#removeEntries()', function() {
-    // TODO:
+    it('should return the entries that were removed', function() {
+      // TODO:
+    });
+
+    it('should remove the entries that match the predicate', function() {
+      // TODO:
+    });
+
+    it('should return an empty array if no entries were matched', function() {
+      // TODO:
+    });
+
+    it('should uncache the buffer if successful', function() {
+      // TODO:
+    });
+
+    it('should not uncache the buffer if failed', function() {
+      // TODO:
+    });
   });
 
   describe('#removeEntryById()', function() {
-    // TODO:
+    it('should return the entry that was removed', function() {
+      // TODO:
+    });
+
+    it('should remove the entry with the given ID', function() {
+      // TODO:
+    });
+
+    it('should return undefined if no entry has the given ID', function() {
+      // TODO:
+    });
+
+    it('should uncache the buffer if successful', function() {
+      // TODO:
+    });
+
+    it('should not uncache the buffer if failed', function() {
+      // TODO:
+    });
   });
 
   describe('#removeEntryByKey()', function() {
-    // TODO:
+    it('should return the entry that was removed', function() {
+      // TODO:
+    });
+
+    it('should remove the entry with the given key', function() {
+      // TODO:
+    });
+
+    it('should return undefined if no entry has the given key', function() {
+      // TODO:
+    });
+
+    it('should uncache the buffer if successful', function() {
+      // TODO:
+    });
+
+    it('should not uncache the buffer if failed', function() {
+      // TODO:
+    });
   });
 
   describe('#removeEntryByIndex()', function() {
-    // TODO:
+    it('should return the entry that was removed', function() {
+      // TODO:
+    });
+
+    it('should remove the entry at the given index', function() {
+      // TODO:
+    });
+
+    it('should return undefined if index is negative', function() {
+      // TODO:
+    });
+
+    it('should return undefined if index is out of bounds', function() {
+      // TODO:
+    });
+
+    it('should uncache the buffer if successful', function() {
+      // TODO:
+    });
+
+    it('should not uncache the buffer if failed', function() {
+      // TODO:
+    });
   });
 
   //#endregion Remove
