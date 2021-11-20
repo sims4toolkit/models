@@ -11,6 +11,10 @@ export default class SimDataResource extends Resource {
     super(cachedBuffer);
   }
 
+  clone(): SimDataResource {
+    return undefined;
+  }
+
   static from(buffer: Buffer): SimDataResource {
     return 
   }

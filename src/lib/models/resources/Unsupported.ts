@@ -24,13 +24,17 @@ export default class UnsupportedResource extends Resource {
     this.reason = reason;
   }
 
+  clone(): UnsupportedResource {
+    return UnsupportedResource.from(this.getBuffer());
+  }
+
   /**
    * Creates a new unsupported resource from the given buffer.
    * 
    * @param buffer Buffer to create an unsupported resource from
    * @param reason Reason why this resource is unsupported
    */
-  public static from(buffer: Buffer, reason?: string): UnsupportedResource {
+  static from(buffer: Buffer, reason?: string): UnsupportedResource {
     return new UnsupportedResource(buffer, reason);
   }
 

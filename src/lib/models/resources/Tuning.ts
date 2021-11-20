@@ -24,13 +24,17 @@ export default class TuningResource extends Resource {
     this._content = content;
   }
 
+  clone(): TuningResource {
+    return new TuningResource(this._content);
+  }
+
   /**
    * Creates a new tuning resource. It will come with boilerplate XML unless 
    * `blank` is set to `true`.
    * 
    * @param blank Whether or not the tuning file should be empty
    */
-  public static create(blank?: boolean): TuningResource {
+  static create(blank?: boolean): TuningResource {
     return new TuningResource(blank ? '' : DEFAULT_CONTENT);
   }
 
@@ -41,7 +45,7 @@ export default class TuningResource extends Resource {
    * @param buffer Buffer to create a tuning resource from
    * @param encoding How the buffer is encoded (UTF-8 by default)
    */
-  public static from(buffer: Buffer, encoding: BufferEncoding = 'utf-8'): TuningResource {
+  static from(buffer: Buffer, encoding: BufferEncoding = 'utf-8'): TuningResource {
     return new TuningResource(buffer.toString(encoding), buffer);
   }
 
@@ -60,7 +64,7 @@ export default class TuningResource extends Resource {
   /**
    * Returns the content of this tuning resource.
    */
-  public getContent(): string {
+  getContent(): string {
     return this._content;
   }
 
@@ -69,7 +73,7 @@ export default class TuningResource extends Resource {
    * 
    * @param content New content of this resource
    */
-  public updateContent(content: string) {
+  updateContent(content: string) {
     this._content = content;
     this._uncache();
   }

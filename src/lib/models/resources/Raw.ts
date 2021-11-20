@@ -24,6 +24,10 @@ export default class RawResource extends Resource {
     this._encoding = encoding;
   }
 
+  clone(): RawResource {
+    return RawResource.from(this.getBuffer());
+  }
+
   /**
    * Creates a new raw resource from the given buffer, and reads it in the given
    * encoding (UTF-8 if not provided). Reading the buffer is done lazily, it
@@ -32,7 +36,7 @@ export default class RawResource extends Resource {
    * @param buffer Buffer to create a raw resource from
    * @param encoding How the buffer is encoded
    */
-  public static from(buffer: Buffer, encoding: BufferEncoding = 'utf-8'): RawResource {
+  static from(buffer: Buffer, encoding: BufferEncoding = 'utf-8'): RawResource {
     return new RawResource(buffer, encoding);
   }
 
@@ -45,7 +49,7 @@ export default class RawResource extends Resource {
    * it was originally created. Content is loaded lazily, meaning that it will
    * not actually be decoded until this function is called for the first time.
    */
-  public getPlainText(): string {
+  getPlainText(): string {
     if (this._content === undefined)
       this._content = this.getBuffer().toString(this._encoding);
     return this._content;
