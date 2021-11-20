@@ -22,6 +22,15 @@ function assertEntry(entry, id, key, string) {
   expect(entry.string).to.equal(string);
 }
 
+function expectSameContents(stbl1, stbl2) {
+  expect(stbl1.numEntries()).to.equal(stbl2.numEntries());
+  stbl1.getEntries((entry, i) => {
+    const other = stbl2.getEntryByIndex(i);
+    expect(entry.key).to.equal(other.key);
+    expect(entry.string).to.equal(other.string);
+  });
+}
+
 describe('StringTableResource', function() {
   describe('#create()', function() {
     it('should create a valid, empty string table', function() {
@@ -127,11 +136,7 @@ describe('StringTableResource', function() {
       it('should return a stbl with the same entries', function() {
         const stbl = getSTBL('SmallSTBL');
         const stblClone = stbl.clone();
-        expect(stblClone.numEntries()).to.equal(stbl.numEntries());
-        stblClone.getEntries().forEach((entry, i) => {
-          expect(entry.key).to.equal(stbl.getEntryByIndex(i).key);
-          expect(entry.string).to.equal(stbl.getEntryByIndex(i).string);
-        });
+        expectSameContents(stbl, stblClone);
       });
 
       it('should not mutate the original stbl when adding', function() {
@@ -175,7 +180,7 @@ describe('StringTableResource', function() {
       it('should return a copy', function() {
         const smallStbl = getSTBL('SmallSTBL');
         const stbl = StringTableResource.merge(smallStbl);
-        // TODO:
+        expectSameContents(smallStbl, stbl);
       });
 
       it('should not mutate the original when adding', function() {
