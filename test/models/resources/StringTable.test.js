@@ -24,6 +24,11 @@ function assertEntry(entry, id, key, string) {
   expect(entry.string).to.equal(string);
 }
 
+function expectEntriesToBeSame(entry1, entry2) {
+  expect(entry1.key).to.equal(entry2.key);
+  expect(entry1.string).to.equal(entry2.string);
+}
+
 function expectSameContents(stbl1, stbl2) {
   expect(stbl1.numEntries()).to.equal(stbl2.numEntries());
   stbl1.getEntries((entry, i) => {
@@ -555,15 +560,27 @@ describe('StringTableResource', function() {
 
   describe('#getEntryById()', function() {
     it('should return the correct entry', function() {
-      // TODO:
+      const stbl = StringTableResource.create();
+      const firstId = stbl.addEntry(123, "First");
+      const secondId = stbl.addEntry(456, "Second");
+      const first = stbl.getEntryById(firstId);
+      const second = stbl.getEntryById(secondId);
+      expect(first.key).to.equal(123);
+      expect(second.key).to.equal(456);
     });
 
     it('should return undefined when the id doesn\'t exist', function() {
-      // TODO:
+      const stbl = getSTBL('SmallSTBL');
+      const entry = stbl.getEntryById(3);
+      expect(entry).to.be.undefined;
     });
 
     it('should return undefined when there was an entry with this id, but it was removed', function() {
-      // TODO:
+      const stbl = getSTBL('SmallSTBL');
+      const entry = stbl.getEntryById(0);
+      expect(entry).to.not.be.undefined;
+      stbl.removeEntryById(0);
+      expect(entry).to.be.undefined;
     });
   });
 
