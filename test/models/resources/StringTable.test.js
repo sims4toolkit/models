@@ -115,7 +115,11 @@ describe('StringTableResource', function() {
       });
 
       it('should not mutate the original stbl when edited', function() {
-        // TODO:
+        const stbl = StringTableResource.create();
+        const clone = stbl.clone();
+        clone.addEntry(1234, "New String");
+        expect(stbl.numEntries()).to.equal(0);
+        expect(clone.numEntries()).to.equal(1);
       });
     });
 
@@ -131,7 +135,10 @@ describe('StringTableResource', function() {
       });
 
       it('should not mutate the original stbl when edited', function() {
-        // TODO:
+        const stbl = getSTBL('SmallSTBL');
+        const clone = stbl.clone();
+        clone.addEntry(1234, "New String");
+        expect(clone.numEntries()).to.equal(stbl.numEntries() + 1);
       });
     });
   });
