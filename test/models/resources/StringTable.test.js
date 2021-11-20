@@ -376,31 +376,53 @@ describe('StringTableResource', function() {
     context('original is empty', function() {
       context('adding empty stbl', function() {
         it('should still be empty', function() {
-          // TODO:
+          const stbl = StringTableResource.create();
+          const empty = StringTableResource.create();
+          stbl.combine(empty);
+          expect(stbl.numEntries()).to.equal(0);
         });
       });
   
       context('adding stbl with entries', function() {
         it('should contain the same entries as the given one', function() {
-          // TODO:
+          const empty = StringTableResource.create();
+          const withEntries = getSTBL('SmallSTBL');
+          empty.combine(withEntries);
+          expect(empty.numEntries()).to.not.equal(0);
+          expectSameContents(empty, withEntries);
         });
 
         it('should not mutate the given one on add', function() {
-          // TODO:
+          const empty = StringTableResource.create();
+          const withEntries = getSTBL('SmallSTBL');
+          empty.combine(withEntries);
+          expectNoMutationOnAdd(empty, withEntries);
         });
 
         it('should not mutate the given one on update', function() {
-          // TODO:
+          const empty = StringTableResource.create();
+          const withEntries = getSTBL('SmallSTBL');
+          empty.combine(withEntries);
+          expectNoMutationOnUpdate(empty, withEntries);
         });
 
         it('should not mutate the given one on remove', function() {
-          // TODO:
+          const empty = StringTableResource.create();
+          const withEntries = getSTBL('SmallSTBL');
+          empty.combine(withEntries);
+          expectNoMutationOnRemove(empty, withEntries);
         });
       });
 
       context('adding multiple stbls with entries', function() {
         it('should contain the same entries as the given ones', function() {
-          // TODO:
+          const empty = StringTableResource.create();
+          const stbl1 = getSTBL('SmallSTBL');
+          const stbl2 = StringTableResource.create();
+          stbl2.addEntry(1234, "Test");
+          empty.combine(stbl1, stbl2);
+          const merged = StringTableResource.merge(stbl1, stbl2);
+          expectSameContents(empty, merged);
         });
       });
     });
@@ -408,31 +430,44 @@ describe('StringTableResource', function() {
     context('original has entries', function() {
       context('adding empty stbl', function() {
         it('should stay exactly the same', function() {
-          // TODO:
+          const smallStbl = getSTBL('SmallSTBL');
+          const clone = smallStbl.clone();
+          const empty = StringTableResource.create();
+          smallStbl.combine(empty);
+          expectSameContents(smallStbl, clone);
         });
       });
   
       context('adding stbl with entries', function() {
         it('should add the entries from the given one', function() {
-          // TODO:
-        });
-
-        it('should not mutate the given one on add', function() {
-          // TODO:
-        });
-
-        it('should not mutate the given one on update', function() {
-          // TODO:
-        });
-
-        it('should not mutate the given one on remove', function() {
-          // TODO:
+          const smallStbl = getSTBL('SmallSTBL');
+          const originalEntries = smallStbl.numEntries();
+          const other = StringTableResource.create();
+          other.addEntry(1234, "Test");
+          other.addEntry(5678, "Test 2");
+          const merged = StringTableResource.merge(smallStbl, other);
+          smallStbl.combine(other);
+          expect(smallStbl.numEntries()).to.equal(originalEntries + 2);
+          expectSameContents(smallStbl, merged);
         });
       });
 
       context('adding multiple stbls with entries', function() {
         it('should add all entries from all given ones', function() {
-          // TODO:
+          const smallStbl = getSTBL('SmallSTBL');
+
+          const other1 = StringTableResource.create();
+          other1.addEntry(1234, "Test 1");
+          other1.addEntry(5678, "Test 2");
+
+          const other2 = StringTableResource.create();
+          other2.addEntry(2468, "Test 3");
+          other2.addEntry(1357, "Test 4");
+
+          const merged = StringTableResource.merge(smallStbl, other1, other2);
+          smallStbl.combine(other1, other2);
+          
+          expectSameContents(smallStbl, merged);
         });
       });
     });
