@@ -1,4 +1,48 @@
-const assert = require('assert');
+const expect = require('chai').expect;
 const { TuningResource } = require('../../../dst/api');
 
-// TODO:
+function getTuning(content) {
+  return TuningResource.from(Buffer.from(content));
+}
+
+describe('TuningResource', function() {
+  describe('#variant', function() {
+    it('should be "XML" when created', function() {
+      const tun = TuningResource.create();
+      expect(tun.variant).to.equal("XML");
+    });
+
+    it('should be "XML" when loaded', function() {
+      const tun = getTuning("file content");
+      expect(tun.variant).to.equal("XML");
+    });
+  });
+
+  describe('#clone()', function() {
+    // TODO:
+  });
+
+  describe('#from()', function() {
+    // TODO:
+  });
+
+  describe('#create()', function() {
+    // TODO:
+  });
+
+  describe('#getContent()', function() {
+    // TODO:
+  });
+
+  describe('#updateContent()', function() {
+    // TODO:
+  });
+
+  describe('#hasChanged()', function() {
+    // TODO:
+  });
+
+  describe('#getBuffer()', function() {
+    // TODO:
+  });
+});
