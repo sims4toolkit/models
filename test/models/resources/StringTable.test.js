@@ -100,6 +100,14 @@ describe('StringTableResource', function() {
     });
   });
 
+  describe('#clone()', function() {
+    // TODO:
+  });
+
+  describe('#merge()', function() {
+    // TODO:
+  });
+
   describe('#addEntry()', function() {
     it('should add the entry correctly to a new STBL', function() {
       const stbl = StringTableResource.create();

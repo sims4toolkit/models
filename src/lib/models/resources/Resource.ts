@@ -23,11 +23,16 @@ export default abstract class Resource {
    * Returns a buffer that can be used to write this resource. The buffer is NOT
    * compressed -- compression is the responsibility of a record.
    */
-  public getBuffer(): Buffer {
+  getBuffer(): Buffer {
     if (this._cachedBuffer === undefined)
       this._cachedBuffer = this._serialize();
     return this._cachedBuffer;
   }
+
+  /**
+   * Returns a deep copy of this resource.
+   */
+  abstract clone(): Resource;
 
   /**
    * Serializes this resource into a new buffer if a cached one is unavailable.

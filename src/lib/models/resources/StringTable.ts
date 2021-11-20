@@ -26,7 +26,7 @@ export default class StringTableResource extends Resource {
   /**
    * Returns a new, empty String Table resource.
    */
-  public static create(): StringTableResource {
+  static create(): StringTableResource {
     return new StringTableResource({ nextID: 0, entries: [] });
   }
 
@@ -36,7 +36,7 @@ export default class StringTableResource extends Resource {
    * @param buffer Buffer to read as a string table
    * @param options Options to configure for reading a STBL resource
    */
-  public static from(buffer: Buffer, options?: ReadStringTableOptions): StringTableResource {
+  static from(buffer: Buffer, options?: ReadStringTableOptions): StringTableResource {
     try {
       return new StringTableResource(readSTBL(buffer, options), buffer);
     } catch (e) {
@@ -48,15 +48,36 @@ export default class StringTableResource extends Resource {
     }
   }
 
-  //#endregion Initialization
-
-  //#region Abstract Methods
-
-  protected _serialize(): Buffer {
-    return writeSTBL(this._stblContent);
+  /**
+   * Merges a variable number of string tables into one. Does not mutate the 
+   * orignal STBLs, just creates a new one.
+   * 
+   * @param stbls String tables to merge
+   */
+  static merge(...stbls: StringTableResource[]): StringTableResource {
+    const mergedStbl = StringTableResource.create();
+    stbls.forEach(stbl => {
+      stbl.getEntries().forEach(entry => {
+        mergedStbl.addEntry(entry.key, entry.string);
+      });
+    });
+    return mergedStbl;
   }
 
-  //#endregion Abstract Methods
+  clone(): StringTableResource {
+    const content: StringTableContent = {
+      nextID: 0,
+      entries: this._stblContent.entries.map((entry, id) => ({
+        id,
+        key: entry.key,
+        string: entry.string
+      }))
+    };
+
+    return new StringTableResource(content);
+  }
+
+  //#endregion Initialization
 
   //#region Public Methods
 
@@ -311,6 +332,14 @@ export default class StringTableResource extends Resource {
   }
 
   //#endregion Public Methods
+
+  //#region Protected Methods
+
+  protected _serialize(): Buffer {
+    return writeSTBL(this._stblContent);
+  }
+
+  //#endregion Protected Methods
 
   //#region Private Methods
 
