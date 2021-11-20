@@ -532,15 +532,27 @@ describe('StringTableResource', function() {
 
   describe('#getEntry()', function() {
     it('should return the only entry that matches the predicate', function() {
-      // TODO:
+      const stbl = StringTableResource.create();
+      stbl.addEntry(123, "First");
+      const secondId = stbl.addEntry(456, "Second");
+      const entry = stbl.getEntry(entry => entry.string === "Second");
+      expectEntriesToBeSame(entry, stbl.getEntryById(secondId));
     });
 
     it('should return the first entry that matches the predicate', function() {
-      // TODO:
+      const stbl = StringTableResource.create();
+      const firstId = stbl.addEntry(123, "First");
+      stbl.addEntry(456, "Second");
+      const entry = stbl.getEntry(entry => entry.key > 1);
+      expectEntriesToBeSame(entry, stbl.getEntryById(firstId));
     });
 
     it('should return undefined if none match the predicate', function() {
-      // TODO:
+      const stbl = StringTableResource.create();
+      stbl.addEntry(123, "First");
+      stbl.addEntry(456, "Second");
+      const entry = stbl.getEntry(entry => entry.key === 789);
+      expect(entry).to.be.undefined;
     });
   });
 
