@@ -375,29 +375,65 @@ describe('StringTableResource', function() {
   describe('#combine()', function() {
     context('original is empty', function() {
       context('adding empty stbl', function() {
-        // TODO:
+        it('should still be empty', function() {
+          // TODO:
+        });
       });
   
       context('adding stbl with entries', function() {
-        // TODO:
+        it('should contain the same entries as the given one', function() {
+          // TODO:
+        });
+
+        it('should not mutate the given one on add', function() {
+          // TODO:
+        });
+
+        it('should not mutate the given one on update', function() {
+          // TODO:
+        });
+
+        it('should not mutate the given one on remove', function() {
+          // TODO:
+        });
       });
 
       context('adding multiple stbls with entries', function() {
-        // TODO:
+        it('should contain the same entries as the given ones', function() {
+          // TODO:
+        });
       });
     });
 
     context('original has entries', function() {
       context('adding empty stbl', function() {
-        // TODO:
+        it('should stay exactly the same', function() {
+          // TODO:
+        });
       });
   
       context('adding stbl with entries', function() {
-        // TODO:
+        it('should add the entries from the given one', function() {
+          // TODO:
+        });
+
+        it('should not mutate the given one on add', function() {
+          // TODO:
+        });
+
+        it('should not mutate the given one on update', function() {
+          // TODO:
+        });
+
+        it('should not mutate the given one on remove', function() {
+          // TODO:
+        });
       });
 
       context('adding multiple stbls with entries', function() {
-        // TODO:
+        it('should add all entries from all given ones', function() {
+          // TODO:
+        });
       });
     });
   });
