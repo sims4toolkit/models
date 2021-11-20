@@ -3,6 +3,8 @@ const path = require('path');
 const expect = require('chai').expect;
 const { StringTableResource, Hashing } = require('../../../dst/api');
 
+//#region Helpers
+
 const cachedBuffers = {};
 
 function getSTBL(filename, options = undefined) {
@@ -57,6 +59,8 @@ function expectNoMutationOnRemove(stbl1, stbl2) {
   expect(stbl1.numEntries()).to.equal(originalLength);
   expect(stbl2.numEntries()).to.equal(originalLength - 1);
 }
+
+//#endregion Helpers
 
 describe('StringTableResource', function() {
   //#region Initialization
@@ -466,7 +470,7 @@ describe('StringTableResource', function() {
 
           const merged = StringTableResource.merge(smallStbl, other1, other2);
           smallStbl.combine(other1, other2);
-          
+
           expectSameContents(smallStbl, merged);
         });
       });
@@ -605,7 +609,31 @@ describe('StringTableResource', function() {
   });
 
   describe('#findErrors()', function() {
-    // TODO:
+    context('stbl has no errors', function() {
+      it('should return an empty array', function() {
+        // TODO:
+      });
+    });
+
+    context('stbl has one error', function() {
+      it('should return "Duplicate Keys" error', function() {
+        // TODO:
+      });
+
+      it('should return "Duplicate Strings" error', function() {
+        // TODO:
+      });
+
+      it('should return "Empty String" error', function() {
+        // TODO:
+      });
+    });
+
+    context('stbl has multiple errors', function() {
+      it('should return all errors', function() {
+        // TODO:
+      });
+    });
   });
 
   //#endregion Utility
