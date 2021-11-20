@@ -577,10 +577,9 @@ describe('StringTableResource', function() {
 
     it('should return undefined when there was an entry with this id, but it was removed', function() {
       const stbl = getSTBL('SmallSTBL');
-      const entry = stbl.getEntryById(0);
-      expect(entry).to.not.be.undefined;
+      expect(stbl.getEntryById(0)).to.not.be.undefined;
       stbl.removeEntryById(0);
-      expect(entry).to.be.undefined;
+      expect(stbl.getEntryById(0)).to.be.undefined;
     });
   });
 
