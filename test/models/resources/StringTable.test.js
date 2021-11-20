@@ -622,15 +622,33 @@ describe('StringTableResource', function() {
 
   describe('#getEntriesByKey()', function() {
     it('should return an empty array if there are none with this key', function() {
-      // TODO:
+      const stbl = StringTableResource.create();
+      stbl.addEntry(123, "First");
+      stbl.addEntry(456, "Second");
+      const entries = stbl.getEntriesByKey(789);
+      expect(entries).to.be.an('Array');
+      expect(entries).to.be.empty;
     });
 
     it('should return an array with one entry if there is one with this key', function() {
-      // TODO:
+      const stbl = StringTableResource.create();
+      stbl.addEntry(123, "First");
+      stbl.addEntry(456, "Second");
+      const entries = stbl.getEntriesByKey(123);
+      expect(entries).to.be.an('Array');
+      expect(entries).to.have.lengthOf(1);
+      expect(entries[0].string).to.equal("First");
     });
 
     it('should return an array of all entries with this key', function() {
-      // TODO:
+      const stbl = StringTableResource.create();
+      stbl.addEntry(123, "First");
+      stbl.addEntry(123, "Second");
+      const entries = stbl.getEntriesByKey(123);
+      expect(entries).to.be.an('Array');
+      expect(entries).to.have.lengthOf(2);
+      expect(entries[0].string).to.equal("First");
+      expect(entries[1].string).to.equal("Second");
     });
   });
 
