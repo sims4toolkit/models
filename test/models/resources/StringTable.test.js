@@ -281,9 +281,18 @@ describe('StringTableResource', function() {
     });
 
     context('merging three', function() {
-      it('', function() {
-        const stbl = StringTableResource.merge();
-        // TODO:
+      it('should return new stbl with entries from all three', function() {
+        const stbl1 = StringTableResource.create();
+        stbl1.addEntry(123, "First");
+        const stbl2 = StringTableResource.create();
+        stbl2.addEntry(456, "Second");
+        const stbl3 = StringTableResource.create();
+        stbl3.addEntry(789, "Third");
+        const merged = StringTableResource.merge(stbl1, stbl2, stbl3);
+        expect(merged.numEntries()).to.equal(3);
+        expect(merged.getEntryByIndex(0).string).to.equal("First");
+        expect(merged.getEntryByIndex(1).string).to.equal("Second");
+        expect(merged.getEntryByIndex(2).string).to.equal("Third");
       });
     });
   });
