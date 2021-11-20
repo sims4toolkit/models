@@ -558,15 +558,33 @@ describe('StringTableResource', function() {
 
   describe('#getEntries()', function() {
     it('should return all entries when there is no predicate', function() {
-      // TODO:
+      const stbl = StringTableResource.create();
+      stbl.addEntry(123, "First");
+      stbl.addEntry(456, "Second");
+      stbl.addEntry(789, "Third");
+      expect(stbl.getEntries()).to.be.an('Array').and.to.have.lengthOf(3);
     });
 
     it('should return all entries that match the predicate', function() {
-      // TODO:
+      const stbl = StringTableResource.create();
+      stbl.addEntry(123, "First");
+      stbl.addEntry(456, "Second");
+      stbl.addEntry(789, "Third");
+      const entries = stbl.getEntries(entry => entry.key >= 456);
+      expect(entries).to.be.an('Array').and.to.have.lengthOf(2);
+      expect(entries[0].string).to.equal("Second");
+      expect(entries[1].string).to.equal("Third");
     });
 
     it('should return an empty array if none match the predicate', function() {
-      // TODO:
+      const stbl = getSTBL('SmallSTBL');
+      const entries = stbl.getEntries(entry => entry.id === 500);
+      expect(entries).to.be.an('Array').and.to.be.empty;
+    });
+
+    it('should return an empty array if the stbl is empty', function() {
+      const stbl = StringTableResource.create();
+      expect(stbl.getEntries()).to.be.an('Array').and.to.be.empty;
     });
   });
 
