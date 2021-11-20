@@ -219,9 +219,64 @@ describe('StringTableResource', function() {
     });
 
     context('merging two', function() {
-      it('', function() {
-        const stbl = StringTableResource.merge();
-        // TODO:
+      context('both empty', function() {
+        it('should return an empty stbl', function() {
+          const empty1 = StringTableResource.create();
+          const empty2 = StringTableResource.create();
+          const merged = StringTableResource.merge(empty1, empty2);
+          expect(merged.numEntries()).to.equal(0);
+        });
+
+        it('should not mutate original on add', function() {
+          const empty1 = StringTableResource.create();
+          const empty2 = StringTableResource.create();
+          const merged = StringTableResource.merge(empty1, empty2);
+          expectNoMutationOnAdd(empty1, merged);
+        });
+      });
+
+      context('one empty, one with entries', function() {
+        it('should return a copy of the one with entries', function() {
+          const smallSTBL = getSTBL('SmallSTBL');
+          const emptySTBL = StringTableResource.create();
+          const merged = StringTableResource.merge(smallSTBL, emptySTBL);
+          expectSameContents(smallSTBL, merged);
+        });
+
+        it('should not mutate original on add', function() {
+          const smallSTBL = getSTBL('SmallSTBL');
+          const emptySTBL = StringTableResource.create();
+          const merged = StringTableResource.merge(smallSTBL, emptySTBL);
+          expectNoMutationOnAdd(smallSTBL, merged);
+        });
+
+        it('should not mutate original on update', function() {
+          const smallSTBL = getSTBL('SmallSTBL');
+          const emptySTBL = StringTableResource.create();
+          const merged = StringTableResource.merge(smallSTBL, emptySTBL);
+          expectNoMutationOnUpdate(smallSTBL, merged);
+        });
+
+        it('should not mutate original on remove', function() {
+          const smallSTBL = getSTBL('SmallSTBL');
+          const emptySTBL = StringTableResource.create();
+          const merged = StringTableResource.merge(smallSTBL, emptySTBL);
+          expectNoMutationOnRemove(smallSTBL, merged);
+        });
+      });
+
+      context('both with entries', function() {
+        it('should return a new stbl with entries from both', function() {
+          const smallSTBL = getSTBL('SmallSTBL');
+          const freshSTBL = StringTableResource.create();
+          freshSTBL.addEntry(1234, "First");
+          freshSTBL.addEntry(5678, "Second");
+          const merged = StringTableResource.merge(smallSTBL, freshSTBL);
+          expect(merged.numEntries()).to.equal(smallSTBL.numEntries() + 2);
+          smallSTBL.addEntry(1234, "First");
+          smallSTBL.addEntry(5678, "Second");
+          expectSameContents(smallSTBL, merged);
+        });
       });
     });
 
