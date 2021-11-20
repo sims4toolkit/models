@@ -586,19 +586,38 @@ describe('StringTableResource', function() {
 
   describe('#getEntryByKey()', function() {
     it('should return the correct entry', function() {
-      // TODO:
+      const stbl = StringTableResource.create();
+      stbl.addEntry(123, "First");
+      stbl.addEntry(456, "Second");
+      const first = stbl.getEntryByKey(123);
+      const second = stbl.getEntryByKey(456);
+      expect(first.string).to.equal("First");
+      expect(second.string).to.equal("Second");
     });
 
     it('should return the first entry if there is more than one with this key', function() {
-      // TODO:
+      const stbl = StringTableResource.create();
+      stbl.addEntry(123, "First");
+      stbl.addEntry(123, "Second");
+      const entry = stbl.getEntryByKey(123);
+      expect(entry.string).to.equal("First");
     });
 
     it('should return undefined when the key doesn\'t exist', function() {
-      // TODO:
+      const stbl = StringTableResource.create();
+      stbl.addEntry(123, "First");
+      stbl.addEntry(456, "Second");
+      const entry = stbl.getEntryByKey(789);
+      expect(entry).to.be.undefined;
     });
 
     it('should return undefined when there was an entry with this key, but it was removed', function() {
-      // TODO:
+      const stbl = StringTableResource.create();
+      stbl.addEntry(123, "First");
+      stbl.addEntry(456, "Second");
+      expect(stbl.getEntryByKey(123)).to.not.be.undefined;
+      stbl.removeEntryByKey(123);
+      expect(stbl.getEntryByKey(123)).to.be.undefined;
     });
   });
 
