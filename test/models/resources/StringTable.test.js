@@ -773,37 +773,72 @@ describe('StringTableResource', function() {
     
     context('return value after adding', function() {
       it('should return true after addEntry()', function() {
-        // TODO:
+        const stbl = getSTBL('SmallSTBL');
+        expect(stbl.hasChanged()).to.be.false;
+        stbl.addEntry(1234, "Test");
+        expect(stbl.hasChanged()).to.be.true;
       });
   
       it('should return true after addStringAndHash()', function() {
-        // TODO:
+        const stbl = getSTBL('SmallSTBL');
+        expect(stbl.hasChanged()).to.be.false;
+        stbl.addStringAndHash("Test");
+        expect(stbl.hasChanged()).to.be.true;
       });
   
-      it('should return true after combine()', function() {
-        // TODO:
+      it('should return true after combine() an empty stbl', function() {
+        const stbl = getSTBL('SmallSTBL');
+        expect(stbl.hasChanged()).to.be.false;
+        const newStbl = StringTableResource.create();
+        stbl.combine(newStbl);
+        expect(stbl.hasChanged()).to.be.true;
+      });
+
+      it('should return true after combine() a non-empty stbl', function() {
+        const stbl = getSTBL('SmallSTBL');
+        expect(stbl.hasChanged()).to.be.false;
+        const newStbl = StringTableResource.create();
+        newStbl.addEntry(123, "Test");
+        stbl.combine(newStbl);
+        expect(stbl.hasChanged()).to.be.true;
       });
     });
 
     context('return value after updating', function() {
       it('should return true after updateEntry()', function() {
-        // TODO:
+        const stbl = getSTBL('SmallSTBL');
+        expect(stbl.hasChanged()).to.be.false;
+        stbl.updateEntry(entry => entry.id === 0, { string: "Test" });
+        expect(stbl.hasChanged()).to.be.true;
       });
   
       it('should return true after updateEntryByKey()', function() {
-        // TODO:
+        const stbl = getSTBL('SmallSTBL');
+        expect(stbl.hasChanged()).to.be.false;
+        stbl.updateEntryByKey(0x7E08629A, { string: "Test" });
+        expect(stbl.hasChanged()).to.be.true;
       });
   
       it('should return true after updateEntryById()', function() {
-        // TODO:
+        const stbl = getSTBL('SmallSTBL');
+        expect(stbl.hasChanged()).to.be.false;
+        stbl.updateEntryById(0, { string: "Test" });
+        expect(stbl.hasChanged()).to.be.true;
       });
 
       it('should return true after updateEntryByIndex()', function() {
-        // TODO:
+        const stbl = getSTBL('SmallSTBL');
+        expect(stbl.hasChanged()).to.be.false;
+        stbl.updateEntryByIndex(0, { string: "Test" });
+        expect(stbl.hasChanged()).to.be.true;
       });
 
       it('should return false after failing to update', function() {
-        // TODO:
+        const stbl = getSTBL('SmallSTBL');
+        expect(stbl.hasChanged()).to.be.false;
+        const result = stbl.updateEntryByIndex(10, { string: "Test" });
+        expect(result).to.be.undefined;
+        expect(stbl.hasChanged()).to.be.false;
       });
     });
 
