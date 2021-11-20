@@ -654,23 +654,39 @@ describe('StringTableResource', function() {
 
   describe('#getEntryByIndex()', function() {
     it('should return the correct entry', function() {
-      // TODO:
+      const stbl = StringTableResource.create();
+      stbl.addEntry(123, "First");
+      stbl.addEntry(456, "Second");
+      const first = stbl.getEntryByIndex(0);
+      const second = stbl.getEntryByIndex(1);
+      expect(first.key).to.equal(123);
+      expect(second.key).to.equal(456);
     });
 
     it('should return the correct entry after one before it is deleted', function() {
-      // TODO:
+      const stbl = getSTBL('SmallSTBL');
+      const entry1 = stbl.getEntryByIndex(1);
+      stbl.removeEntryByIndex(0);
+      const entry2 = stbl.getEntryByIndex(0);
+      expectEntriesToBeSame(entry1, entry2);
     });
 
     it('should return the same entry after one is added', function() {
-      // TODO:
+      const stbl = getSTBL('SmallSTBL');
+      const entry1 = stbl.getEntryByIndex(2);
+      stbl.addEntry(123, "Test");
+      const entry2 = stbl.getEntryByIndex(2);
+      expectEntriesToBeSame(entry1, entry2);
     });
 
     it('should return undefined when index is negative', function() {
-      // TODO:
+      const stbl = getSTBL('SmallSTBL');
+      expect(stbl.getEntryByIndex(-1)).to.be.undefined;
     });
 
     it('should return undefined when index is out of bounds', function() {
-      // TODO:
+      const stbl = getSTBL('SmallSTBL');
+      expect(stbl.getEntryByIndex(10)).to.be.undefined;
     });
   });
 
