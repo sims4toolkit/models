@@ -751,6 +751,103 @@ describe('StringTableResource', function() {
 
   //#region Serializing
 
+  describe('#hasChanged()', function() {
+    context('return value when unedited', function() {
+      it('should return true for a fresh stbl', function() {
+        const stbl = StringTableResource.create();
+        expect(stbl.hasChanged()).to.be.true;
+      });
+  
+      it('should return false for a loaded stbl', function() {
+        const stbl = getSTBL('SmallSTBL');
+        expect(stbl.hasChanged()).to.be.false;
+      });
+
+      it('should return true for a merged stbl', function() {
+        const stbl1 = StringTableResource.create();
+        const stbl2 = StringTableResource.create();
+        const merged = StringTableResource.merge(stbl1, stbl2);
+        expect(merged.hasChanged()).to.be.true;
+      });
+    });
+    
+    context('return value after adding', function() {
+      it('should return true after addEntry()', function() {
+        // TODO:
+      });
+  
+      it('should return true after addStringAndHash()', function() {
+        // TODO:
+      });
+  
+      it('should return true after combine()', function() {
+        // TODO:
+      });
+    });
+
+    context('return value after updating', function() {
+      it('should return true after updateEntry()', function() {
+        // TODO:
+      });
+  
+      it('should return true after updateEntryByKey()', function() {
+        // TODO:
+      });
+  
+      it('should return true after updateEntryById()', function() {
+        // TODO:
+      });
+
+      it('should return true after updateEntryByIndex()', function() {
+        // TODO:
+      });
+
+      it('should return false after failing to update', function() {
+        // TODO:
+      });
+    });
+
+    context('return value after removing', function() {
+      it('should return true after removeEntry()', function() {
+        // TODO:
+      });
+  
+      it('should return true after removeEntries()', function() {
+        // TODO:
+      });
+  
+      it('should return true after removeEntryById()', function() {
+        // TODO:
+      });
+
+      it('should return true after removeEntryByKey()', function() {
+        // TODO:
+      });
+
+      it('should return true after removeEntryByIndex()', function() {
+        // TODO:
+      });
+
+      it('should return false after failing to remove', function() {
+        // TODO:
+      });
+    });
+
+    context('return value after editing and getting buffer', function() {
+      it('should return false after adding an entry and getting the buffer', function() {
+        // TODO:
+      });
+  
+      it('should return false after updating an entry and getting the buffer', function() {
+        // TODO:
+      });
+  
+      it('should return false after removing an entry and getting the buffer', function() {
+        // TODO:
+      });
+    });
+  });
+
   describe('#getBuffer()', function() {
     context('fresh string table', function() {
       context('stbl is empty', function() {

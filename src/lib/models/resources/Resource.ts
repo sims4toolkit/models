@@ -24,9 +24,16 @@ export default abstract class Resource {
    * compressed -- compression is the responsibility of a record.
    */
   getBuffer(): Buffer {
-    if (this._cachedBuffer === undefined)
-      this._cachedBuffer = this._serialize();
+    if (this.hasChanged()) this._cachedBuffer = this._serialize();
     return this._cachedBuffer;
+  }
+
+  /**
+   * Returns `true` if this resource has been modified since the last time it
+   * was serialized, and `false` otherwise.
+   */
+  hasChanged(): boolean {
+    return this._cachedBuffer === undefined;
   }
 
   /**
