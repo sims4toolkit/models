@@ -379,7 +379,28 @@ export default class StringTableResource extends Resource {
    * empty array if there are no errors.
    */
   findErrors(): { error: StringTableError; entries: StringEntry[]; }[] {
-    // TODO: impl
+    const keyMap: { [key: number]: StringEntry[] } = {};
+    const stringMap: { [key: string]: StringEntry[] } = {};
+
+    this.getEntries().forEach(entry => {
+      if (keyMap[entry.key] === undefined) keyMap[entry.key] = [];
+      keyMap[entry.key].push(entry);
+      if (stringMap[entry.string] === undefined) stringMap[entry.string] = [];
+      stringMap[entry.string].push(entry);
+    });
+
+    const result: { error: StringTableError; entries: StringEntry[]; }[] = [];
+    for (const key in keyMap) {
+      if (keyMap[key].length > 1)
+        result.push({ error: 'Duplicate Keys', entries: keyMap[key] });
+    }
+    for (const string in stringMap) {
+      if (stringMap[string].length > 1)
+        result.push({ error: 'Duplicate Strings', entries: stringMap[string] });
+      if (string === '')
+        result.push({ error: 'Empty String', entries: stringMap[string] });
+    }
+    return result;
   }
 
   //#endregion Public Methods - Utility
