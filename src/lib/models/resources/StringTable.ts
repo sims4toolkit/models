@@ -1,6 +1,7 @@
 import Resource from "./Resource";
 import type { ResourceVariant } from "./Resource";
 import { BinaryEncoder, BinaryDecoder } from "../../utils/encoding";
+import { fnv32 } from "../../utils/hashing";
 
 /**
  * A resource that contains string table data.
@@ -79,7 +80,7 @@ export default class StringTableResource extends Resource {
 
   //#endregion Initialization
 
-  //#region Public Methods
+  //#region Public Methods - Add
 
   /**
    * Adds an entry to this string table and returns its generated ID. Will throw
@@ -97,6 +98,36 @@ export default class StringTableResource extends Resource {
   }
 
   /**
+   * Adds the given `string` to this table, using the FNV-32 hash generated from
+   * the given `name`. If no name is given, the string itself is hashed.
+   * 
+   * @param string String to add to this table
+   * @param name Text to get the hash from
+   */
+  addStringAndHash(string: string, name?: string): number {
+    const key = fnv32(name === undefined ? string : name);
+    return this.addEntry(key, string);
+  }
+
+  /**
+   * Adds all entries from all given string tables into this one. Entries are
+   * cloned and are given new IDs relative to this table.
+   * 
+   * @param stbls String tables to add entries from
+   */
+  combine(...stbls: StringTableResource[]) {
+    stbls.forEach(stbl => {
+      stbl.getEntries().forEach(entry => {
+        this.addEntry(entry.key, entry.string);
+      });
+    });
+  }
+
+  //#endregion Public Methods - Add
+
+  //#region Public Methods - Update
+
+  /**
    * Updates the first entry that matches the given predicate with the given
    * data in `value`. If either `key` or `string` is left out, it will not be
    * modified (for example, if you just want to change the string, simply leave
@@ -106,7 +137,7 @@ export default class StringTableResource extends Resource {
    * @param predicate Predicate to determine which entry to update
    * @param value New key and/or string for the entry
    */
-  updateEntry(predicate: StringEntryPredicate, value: { key?: number; string?: string; }): { key: number; string: string; } {
+  updateEntry(predicate: StringEntryPredicate, value: { key?: number; string?: string; }): KeyStringPair {
     return this._updateEntry(this.getEntry(predicate), value);
   }
 
@@ -120,7 +151,7 @@ export default class StringTableResource extends Resource {
    * @param id ID of the entry to update
    * @param value New key and/or string for the entry
    */
-  updateEntryById(id: number, value: { key?: number; string?: string; }): { key: number; string: string; } {
+  updateEntryById(id: number, value: { key?: number; string?: string; }): KeyStringPair {
     return this._updateEntry(this.getEntryById(id), value);
   }
 
@@ -134,7 +165,7 @@ export default class StringTableResource extends Resource {
    * @param key Key of the entry to update
    * @param value New key and/or string for the entry
    */
-  updateEntryByKey(key: number, value: { key?: number; string?: string; }): { key: number; string: string; } {
+  updateEntryByKey(key: number, value: { key?: number; string?: string; }): KeyStringPair {
     return this._updateEntry(this.getEntryByKey(key), value);
   }
 
@@ -148,9 +179,13 @@ export default class StringTableResource extends Resource {
    * @param index Index of the entry to update
    * @param value New key and/or string for the entry
    */
-  updateEntryByIndex(index: number, value: { key?: number; string?: string; }): { key: number; string: string; } {
+  updateEntryByIndex(index: number, value: { key?: number; string?: string; }): KeyStringPair {
     return this._updateEntry(this.getEntryByIndex(index), value);
   }
+
+  //#endregion Public Methods - Update
+
+  //#region Public Methods - Remove
 
   /**
    * Removes and returns the entry that matches the given predicate. If no
@@ -218,15 +253,9 @@ export default class StringTableResource extends Resource {
     return entry;
   }
 
-  /**
-  * Returns the number of entries that match the given predicate, or the total
-  * number of entries if none is given.
-  * 
-  * @param predicate Optional predicate to filter strings by
-  */
-  numEntries(predicate?: StringEntryPredicate): number {
-    return this.getEntries(predicate).length;
-  }
+  //#endregion Public Methods - Remove
+
+  //#region Public Methods - Get
 
   /**
   * Returns the first entry that matches the given predicate, or undefined if
@@ -331,7 +360,29 @@ export default class StringTableResource extends Resource {
     return this._stblContent.entries[index];
   }
 
-  //#endregion Public Methods
+  //#endregion Public Methods - Get
+
+  //#region Public Methods - Utility
+
+  /**
+  * Returns the number of entries that match the given predicate, or the total
+  * number of entries if none is given.
+  * 
+  * @param predicate Optional predicate to filter strings by
+  */
+  numEntries(predicate?: StringEntryPredicate): number {
+    return this.getEntries(predicate).length;
+  }
+
+  /**
+   * Finds and returns any errors that are in this string table. Returns an
+   * empty array if there are no errors.
+   */
+  findErrors(): { error: StringTableError; entries: StringEntry[]; }[] {
+    // TODO: impl
+  }
+
+  //#endregion Public Methods - Utility
 
   //#region Protected Methods
 
@@ -349,10 +400,13 @@ export default class StringTableResource extends Resource {
    * @param entry Entry to update
    * @param value New value of entry
    */
-  private _updateEntry(entry: StringEntry, value: { key?: number; string?: string }): { key: number; string: string } {
+  private _updateEntry(entry: StringEntry, value: { key?: number; string?: string }): KeyStringPair {
     if (entry === undefined) return undefined;
     const prev = { key: entry.key, string: entry.string };
-    if (value.key !== undefined) entry.key = value.key;
+    if (value.key !== undefined) {
+      if (value.key > 0xFFFFFFFF) throw new Error("Key must be 32-bit.");
+      entry.key = value.key;
+    }
     if (value.string !== undefined) entry.string = value.string;
     return prev;
   }
@@ -361,6 +415,8 @@ export default class StringTableResource extends Resource {
 }
 
 //#region Interfaces & Types
+
+type StringTableError = 'Duplicate Keys' | 'Duplicate Strings' | 'Empty String';
 
 type StringEntryPredicate = (entry: StringEntry) => boolean;
 
@@ -371,6 +427,11 @@ interface StringSearchOptions {
 
 interface StringEntry {
   readonly id: number;
+  key: number;
+  string: string;
+}
+
+interface KeyStringPair {
   key: number;
   string: string;
 }

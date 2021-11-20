@@ -108,6 +108,8 @@ describe('StringTableResource', function() {
     // TODO:
   });
 
+  //#region Add
+
   describe('#addEntry()', function() {
     it('should add the entry correctly to a new STBL', function() {
       const stbl = StringTableResource.create();
@@ -150,6 +152,18 @@ describe('StringTableResource', function() {
     });
   });
 
+  describe('#addStringAndHash()', function() {
+    // TODO:
+  });
+
+  describe('#combine()', function() {
+    // TODO:
+  });
+
+  //#endregion Add
+
+  //#region Update
+
   describe('#updateEntry()', function() {
     // TODO:
   });
@@ -165,6 +179,10 @@ describe('StringTableResource', function() {
   describe('#updateEntryByIndex()', function() {
     // TODO:
   });
+
+  //#endregion Update
+
+  //#region Remove
 
   describe('#removeEntry()', function() {
     // TODO:
@@ -185,6 +203,42 @@ describe('StringTableResource', function() {
   describe('#removeEntryByIndex()', function() {
     // TODO:
   });
+
+  //#endregion Remove
+
+  //#region Get
+
+  describe('#getEntry()', function() {
+    // TODO:
+  });
+
+  describe('#getEntries()', function() {
+    // TODO:
+  });
+
+  describe('#getEntryById()', function() {
+    // TODO:
+  });
+
+  describe('#getEntryByKey()', function() {
+    // TODO:
+  });
+
+  describe('#getEntriesByKey()', function() {
+    // TODO:
+  });
+
+  describe('#getEntriesByString()', function() {
+    // TODO:
+  });
+
+  describe('#getEntryByIndex()', function() {
+    // TODO:
+  });
+
+  //#endregion Get
+
+  //#region Utility
 
   describe('#numEntries()', function() {
     context('empty STBL', function() {
@@ -237,33 +291,11 @@ describe('StringTableResource', function() {
     });
   });
 
-  describe('#getEntry()', function() {
+  describe('#findErrors()', function() {
     // TODO:
   });
 
-  describe('#getEntries()', function() {
-    // TODO:
-  });
-
-  describe('#getEntryById()', function() {
-    // TODO:
-  });
-
-  describe('#getEntryByKey()', function() {
-    // TODO:
-  });
-
-  describe('#getEntriesByKey()', function() {
-    // TODO:
-  });
-
-  describe('#getEntriesByString()', function() {
-    // TODO:
-  });
-
-  describe('#getEntryByIndex()', function() {
-    // TODO:
-  });
+  //#endregion Utility
 
   // TODO: add tests for saving
 });
