@@ -755,13 +755,23 @@ describe('StringTableResource', function() {
     context('fresh string table', function() {
       context('stbl is empty', function() {
         it('should return a binary that can be re-read as a STBL', function() {
-          // TODO:
+          const created = StringTableResource.create();
+          const buffer = created.getBuffer();
+          const loaded = StringTableResource.from(buffer);
+          expect(loaded.numEntries()).to.equal(0);
+          expectSameContents(created, loaded);
         });
       });
 
       context('stbl had entries added', function() {
         it('should return a binary that can be re-read as a STBL', function() {
-          // TODO:
+          const created = StringTableResource.create();
+          created.addEntry(1234, "First");
+          created.addEntry(5678, "Second");
+          const buffer = created.getBuffer();
+          const loaded = StringTableResource.from(buffer);
+          expect(loaded.numEntries()).to.equal(2);
+          expectSameContents(created, loaded);
         });
       });
     });
@@ -769,25 +779,43 @@ describe('StringTableResource', function() {
     context('loaded string table', function() {
       context('stbl was untouched', function() {
         it('should return a binary that can be re-read as a STBL', function() {
-          // TODO:
+          const stbl = getSTBL('SmallSTBL');
+          const buffer = stbl.getBuffer();
+          const loaded = StringTableResource.from(buffer);
+          expectSameContents(stbl, loaded);
         });
       });
 
       context('stbl had entries added', function() {
         it('should return a binary that can be re-read as a STBL', function() {
-          // TODO:
+          const stbl = getSTBL('SmallSTBL');
+          const originalLength = stbl.numEntries();
+          stbl.addEntry(1234, "Test");
+          const buffer = stbl.getBuffer();
+          const loaded = StringTableResource.from(buffer);
+          expect(loaded.numEntries()).to.equal(originalLength + 1);
         });
       });
 
       context('stbl had entries updated', function() {
         it('should return a binary that can be re-read as a STBL', function() {
-          // TODO:
+          const stbl = getSTBL('SmallSTBL');
+          const originalFirstString = stbl.getEntryByIndex(0).string;
+          stbl.updateEntryByIndex(0, originalFirstString + ".");
+          const buffer = stbl.getBuffer();
+          const loaded = StringTableResource.from(buffer);
+          expect(loaded.getEntryByIndex(0)).to.not.equal(originalFirstString);
         });
       });
 
       context('stbl had entries removed', function() {
         it('should return a binary that can be re-read as a STBL', function() {
-          // TODO:
+          const stbl = getSTBL('SmallSTBL');
+          const originalLength = stbl.numEntries();
+          stbl.removeEntryByIndex(0);
+          const buffer = stbl.getBuffer();
+          const loaded = StringTableResource.from(buffer);
+          expect(loaded.numEntries()).to.equal(originalLength - 1);
         });
       });
     });
