@@ -31,6 +31,33 @@ function expectSameContents(stbl1, stbl2) {
   });
 }
 
+function expectNoMutationOnAdd(stbl1, stbl2) {
+  const originalLength = stbl1.numEntries();
+  expect(stbl2.numEntries()).to.equal(originalLength);
+  stbl2.addEntry(1234, "Test");
+  expect(stbl1.numEntries()).to.equal(originalLength);
+  expect(stbl2.numEntries()).to.equal(originalLength + 1);
+}
+
+function expectNoMutationOnUpdate(stbl1, stbl2) {
+  const originalEntry = stbl1.getEntryByIndex(0);
+  const originalKey = originalEntry.key;
+  const originalString = originalEntry.string;
+  stbl2.updateEntryByIndex(0, { key: originalKey + 1, string: originalString + "." });
+  const resultEntry = stbl1.getEntryByIndex(0);
+  stbl1.getEntryByIndex(0);
+  expect(resultEntry.key).to.equal(originalKey);
+  expect(resultEntry.string).to.equal(originalString);
+}
+
+function expectNoMutationOnRemove(stbl1, stbl2) {
+  const originalLength = stbl1.numEntries();
+  expect(stbl2.numEntries()).to.equal(originalLength);
+  stbl2.removeEntryByIndex(0);
+  expect(stbl1.numEntries()).to.equal(originalLength);
+  expect(stbl2.numEntries()).to.equal(originalLength - 1);
+}
+
 describe('StringTableResource', function() {
   describe('#create()', function() {
     it('should create a valid, empty string table', function() {
@@ -126,9 +153,7 @@ describe('StringTableResource', function() {
       it('should not mutate the original stbl when adding', function() {
         const stbl = StringTableResource.create();
         const clone = stbl.clone();
-        clone.addEntry(1234, "New String");
-        expect(stbl.numEntries()).to.equal(0);
-        expect(clone.numEntries()).to.equal(1);
+        expectNoMutationOnAdd(stbl, clone);
       });
     });
 
@@ -142,28 +167,19 @@ describe('StringTableResource', function() {
       it('should not mutate the original stbl when adding', function() {
         const stbl = getSTBL('SmallSTBL');
         const clone = stbl.clone();
-        clone.addEntry(1234, "New String");
-        expect(clone.numEntries()).to.equal(stbl.numEntries() + 1);
+        expectNoMutationOnAdd(stbl, clone);
       });
 
       it('should not mutate the original stbl when updating', function() {
         const stbl = getSTBL('SmallSTBL');
         const clone = stbl.clone();
-        clone.updateEntryByIndex(1, { key: 1234 });
-        expect(stbl.getEntryByIndex(1).key).to.not.equal(1234);
-        expect(clone.getEntryByIndex(1).key).to.equal(1234);
-        clone.updateEntryByIndex(2, { string: "ABCDEF" });
-        expect(stbl.getEntryByIndex(2).string).to.not.equal("ABCDEF");
-        expect(clone.getEntryByIndex(2).string).to.equal("ABCDEF");
+        expectNoMutationOnUpdate(stbl, clone);
       });
 
       it('should not mutate the original stbl when removing', function() {
         const stbl = getSTBL('SmallSTBL');
-        const orignalNumEntries = stbl.numEntries();
         const clone = stbl.clone();
-        clone.removeEntryByIndex(0);
-        expect(stbl.numEntries()).to.equal(orignalNumEntries);
-        expect(clone.numEntries()).to.equal(orignalNumEntries - 1);
+        expectNoMutationOnRemove(stbl, clone);
       });
     });
   });
@@ -186,19 +202,19 @@ describe('StringTableResource', function() {
       it('should not mutate the original when adding', function() {
         const smallStbl = getSTBL('SmallSTBL');
         const stbl = StringTableResource.merge(smallStbl);
-        // TODO:
+        expectNoMutationOnAdd(smallStbl, stbl);
       });
 
       it('should not mutate the original when updating', function() {
         const smallStbl = getSTBL('SmallSTBL');
         const stbl = StringTableResource.merge(smallStbl);
-        // TODO:
+        expectNoMutationOnUpdate(smallStbl, stbl);
       });
 
       it('should not mutate the original when removing', function() {
         const smallStbl = getSTBL('SmallSTBL');
         const stbl = StringTableResource.merge(smallStbl);
-        // TODO:
+        expectNoMutationOnRemove(smallStbl, stbl);
       });
     });
 
