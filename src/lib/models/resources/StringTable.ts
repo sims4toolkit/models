@@ -330,7 +330,7 @@ export default class StringTableResource extends Resource {
   * 
   * @param string String to search for
   */
-  getEntriesByString(string: string, options?: StringSearchOptions): StringEntry[] {
+  searchByString(string: string, options?: StringSearchOptions): StringEntry[] {
     const checkCase = options !== undefined && options.caseSensitive;
     const checkSubstrings = options !== undefined && options.includeSubstrings;
 

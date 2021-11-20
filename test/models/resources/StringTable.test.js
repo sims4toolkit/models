@@ -545,12 +545,76 @@ describe('StringTableResource', function() {
     // TODO:
   });
 
-  describe('#getEntriesByString()', function() {
-    // TODO:
+  describe('#getEntryByIndex()', function() {
+    it('should return the correct entry', function() {
+      // TODO:
+    });
+
+    it('should return the correct entry after one before it is deleted', function() {
+      // TODO:
+    });
+
+    it('should return the same entry after one is added', function() {
+      // TODO:
+    });
+
+    it('should return undefined when index is negative', function() {
+      // TODO:
+    });
+
+    it('should return undefined when index is out of bounds', function() {
+      // TODO:
+    });
   });
 
-  describe('#getEntryByIndex()', function() {
-    // TODO:
+  describe('#searchByString()', function() {
+    context('no options are passed', function() {
+      it('should return empty array on empty stbl', function() {
+        // TODO:
+      });
+
+      it('should return empty array when there are no case-insentive exact matches', function() {
+        // TODO:
+      });
+
+      it('should return array of all case-insentive exact matches', function() {
+        // TODO:
+      });
+    });
+
+    context('case sensitive set to true', function() {
+      it('should return all exact matches in same case', function() {
+        // TODO:
+      });
+
+      it('should return empty array when there are exact matches in different case', function() {
+        // TODO:
+      });
+    });
+
+    context('search for substrings', function() {
+      it('should return empty array when none contain the substring', function() {
+        // TODO:
+      });
+
+      it('should return all entries that contain the substring in same case', function() {
+        // TODO:
+      });
+
+      it('should return all entries that contain the substring in different case', function() {
+        // TODO:
+      });
+    });
+
+    context('case sensitive set to true & search for substrings', function() {
+      it('should return empty array when contains substring, but not in right case', function() {
+        // TODO:
+      });
+
+      it('should return all entries that contain substring in right case', function() {
+        // TODO:
+      });
+    });
   });
 
   //#endregion Get
