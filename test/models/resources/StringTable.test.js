@@ -786,12 +786,12 @@ describe('StringTableResource', function() {
         expect(stbl.hasChanged()).to.be.true;
       });
   
-      it('should return true after combine() an empty stbl', function() {
+      it('should return false after combine() an empty stbl', function() {
         const stbl = getSTBL('SmallSTBL');
         expect(stbl.hasChanged()).to.be.false;
         const newStbl = StringTableResource.create();
         stbl.combine(newStbl);
-        expect(stbl.hasChanged()).to.be.true;
+        expect(stbl.hasChanged()).to.be.false;
       });
 
       it('should return true after combine() a non-empty stbl', function() {
@@ -870,15 +870,30 @@ describe('StringTableResource', function() {
 
     context('return value after editing and getting buffer', function() {
       it('should return false after adding an entry and getting the buffer', function() {
-        // TODO:
+        const stbl = getSTBL('SmallSTBL');
+        expect(stbl.hasChanged()).to.be.false;
+        stbl.addEntry(123, "Test");
+        expect(stbl.hasChanged()).to.be.true;
+        stbl.getBuffer();
+        expect(stbl.hasChanged()).to.be.false;
       });
   
       it('should return false after updating an entry and getting the buffer', function() {
-        // TODO:
+        const stbl = getSTBL('SmallSTBL');
+        expect(stbl.hasChanged()).to.be.false;
+        stbl.updateEntryByIndex(0, { string: "Test" });
+        expect(stbl.hasChanged()).to.be.true;
+        stbl.getBuffer();
+        expect(stbl.hasChanged()).to.be.false;
       });
   
       it('should return false after removing an entry and getting the buffer', function() {
-        // TODO:
+        const stbl = getSTBL('SmallSTBL');
+        expect(stbl.hasChanged()).to.be.false;
+        stbl.removeEntryByIndex(0);
+        expect(stbl.hasChanged()).to.be.true;
+        stbl.getBuffer();
+        expect(stbl.hasChanged()).to.be.false;
       });
     });
   });
