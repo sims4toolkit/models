@@ -68,6 +68,22 @@ function expectNoMutationOnRemove(stbl1, stbl2) {
 //#endregion Helpers
 
 describe('StringTableResource', function() {
+  //#region Properties
+
+  describe('#variant', function() {
+    it('should be "STBL" when created', function() {
+      const stbl = StringTableResource.create();
+      expect(stbl.variant).to.equal("STBL");
+    });
+
+    it('should be "STBL" when loaded', function() {
+      const stbl = getSTBL('SmallSTBL');
+      expect(stbl.variant).to.equal("STBL");
+    });
+  });
+
+  //#endregion Properties
+
   //#region Initialization
 
   describe('#create()', function() {
