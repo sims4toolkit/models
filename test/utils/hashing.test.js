@@ -70,11 +70,11 @@ describe('Hashing', function() {
   });
 
   describe('#fnv64to56()', function() {
-    it('should return 68289449647285230n for 14695981039346656037n', function() {
+    it('should return 68289449647285230 for 14695981039346656037', function() {
       expect(hashing.fnv64to56(14695981039346656037n)).to.equal(68289449647285230n);
     });
 
-    it('should return 45046755487557328n for 4440559991801161453n', function() {
+    it('should return 45046755487557328 for 4440559991801161453', function() {
       expect(hashing.fnv64to56(4440559991801161453n)).to.equal(45046755487557328n);
     });
   });

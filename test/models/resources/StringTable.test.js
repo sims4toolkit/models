@@ -114,12 +114,32 @@ describe('StringTableResource', function() {
         expect(stbl.clone().numEntries()).to.equal(0);
       });
 
-      it('should not mutate the original stbl when edited', function() {
+      it('should not mutate the original stbl when adding', function() {
         const stbl = StringTableResource.create();
         const clone = stbl.clone();
         clone.addEntry(1234, "New String");
         expect(stbl.numEntries()).to.equal(0);
         expect(clone.numEntries()).to.equal(1);
+      });
+
+      it('should not mutate the original stbl when updating', function() {
+        const stbl = getSTBL('SmallSTBL');
+        const clone = stbl.clone();
+        clone.updateEntryByIndex(1, { key: 1234 });
+        expect(stbl.getEntryByIndex(1).key).to.not.equal(1234);
+        expect(clone.getEntryByIndex(1).key).to.equal(1234);
+        clone.updateEntryByIndex(2, { string: "ABCDEF" });
+        expect(stbl.getEntryByIndex(2).string).to.not.equal("ABCDEF");
+        expect(clone.getEntryByIndex(2).string).to.equal("ABCDEF");
+      });
+
+      it('should not mutate the original stbl when removing', function() {
+        const stbl = getSTBL('SmallSTBL');
+        const orignalNumEntries = stbl.numEntries();
+        const clone = stbl.clone();
+        clone.removeEntryByIndex(0);
+        expect(stbl.numEntries()).to.equal(orignalNumEntries);
+        expect(clone.numEntries()).to.equal(orignalNumEntries - 1);
       });
     });
 
@@ -144,7 +164,52 @@ describe('StringTableResource', function() {
   });
 
   describe('#merge()', function() {
-    // TODO:
+    context('merging nothing', function() {
+      it('should return an empty stbl', function() {
+        const stbl = StringTableResource.merge();
+        expect(stbl.numEntries()).to.equal(0);
+      });
+    });
+
+    context('merging one', function() {
+      it('should return a copy', function() {
+        const smallStbl = getSTBL('SmallSTBL');
+        const stbl = StringTableResource.merge(smallStbl);
+        // TODO:
+      });
+
+      it('should not mutate the original when adding', function() {
+        const smallStbl = getSTBL('SmallSTBL');
+        const stbl = StringTableResource.merge(smallStbl);
+        // TODO:
+      });
+
+      it('should not mutate the original when updating', function() {
+        const smallStbl = getSTBL('SmallSTBL');
+        const stbl = StringTableResource.merge(smallStbl);
+        // TODO:
+      });
+
+      it('should not mutate the original when removing', function() {
+        const smallStbl = getSTBL('SmallSTBL');
+        const stbl = StringTableResource.merge(smallStbl);
+        // TODO:
+      });
+    });
+
+    context('merging two', function() {
+      it('', function() {
+        const stbl = StringTableResource.merge();
+        // TODO:
+      });
+    });
+
+    context('merging three', function() {
+      it('', function() {
+        const stbl = StringTableResource.merge();
+        // TODO:
+      });
+    });
   });
 
   //#region Add
