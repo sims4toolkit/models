@@ -611,27 +611,74 @@ describe('StringTableResource', function() {
   describe('#findErrors()', function() {
     context('stbl has no errors', function() {
       it('should return an empty array', function() {
-        // TODO:
+        const stbl = getSTBL('SmallSTBL');
+        const errors = stbl.findErrors();
+        expect(errors).to.be.an('Array');
+        expect(errors).to.be.empty;
       });
     });
 
     context('stbl has one error', function() {
       it('should return "Duplicate Keys" error', function() {
-        // TODO:
+        const stbl = StringTableResource.create();
+        stbl.addEntry(1234, "String 1");
+        stbl.addEntry(1234, "String 2");
+        const errors = stbl.findErrors();
+        expect(errors).to.be.an('Array');
+        expect(errors).to.have.lengthOf(1);
+        const errorObj = errors[0];
+        expect(errorObj.error).to.equal('Duplicate Keys');
+        expect(errorObj.entries).to.have.lengthOf(2);
+        expect(errorObj.entries[0].string).to.equal("String 1");
+        expect(errorObj.entries[1].string).to.equal("String 2");
       });
 
       it('should return "Duplicate Strings" error', function() {
-        // TODO:
+        const stbl = StringTableResource.create();
+        stbl.addEntry(1234, "String 1");
+        stbl.addEntry(5678, "String 1");
+        const errors = stbl.findErrors();
+        expect(errors).to.be.an('Array');
+        expect(errors).to.have.lengthOf(1);
+        const errorObj = errors[0];
+        expect(errorObj.error).to.equal('Duplicate Strings');
+        expect(errorObj.entries).to.have.lengthOf(2);
+        expect(errorObj.entries[0].key).to.equal(1234);
+        expect(errorObj.entries[1].key).to.equal(5678);
       });
 
       it('should return "Empty String" error', function() {
-        // TODO:
+        const stbl = StringTableResource.create();
+        stbl.addEntry(1234, "String");
+        stbl.addEntry(5678, "");
+        const errors = stbl.findErrors();
+        expect(errors).to.be.an('Array');
+        expect(errors).to.have.lengthOf(1);
+        const errorObj = errors[0];
+        expect(errorObj.error).to.equal('Empty String');
+        expect(errorObj.entries).to.have.lengthOf(1);
+        expect(errorObj.entries[0].key).to.equal(5678);
       });
     });
 
     context('stbl has multiple errors', function() {
       it('should return all errors', function() {
-        // TODO:
+        const stbl = StringTableResource.create();
+        stbl.addEntry(123, "String 1");
+        stbl.addEntry(123, "String 2");
+        stbl.addEntry(456, "String 2");
+        stbl.addEntry(789, "");
+        const errors = stbl.findErrors();
+        expect(errors).to.be.an('Array');
+        expect(errors).to.have.lengthOf(3);
+        const dupKeyErr = errors.find(e => e.error === 'Duplicate Keys');
+        expect(dupKeyErr.entries[0].string).to.equal("String 1");
+        expect(dupKeyErr.entries[1].string).to.equal("String 2");
+        const dupStrErr = errors.find(e => e.error === 'Duplicate Strings');
+        expect(dupStrErr.entries[0].key).to.equal(123);
+        expect(dupStrErr.entries[1].key).to.equal(456);
+        const empStrErr = errors.find(e => e.error === 'Empty String');
+        expect(empStrErr.entries[0].key).to.equal(789);
       });
     });
   });
