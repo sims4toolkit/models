@@ -1,7 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const expect = require('chai').expect;
-const { StringTableResource } = require('../../../dst/api');
+const { StringTableResource, Hashing } = require('../../../dst/api');
 
 const cachedBuffers = {};
 
@@ -59,6 +59,8 @@ function expectNoMutationOnRemove(stbl1, stbl2) {
 }
 
 describe('StringTableResource', function() {
+  //#region Initialization
+
   describe('#create()', function() {
     it('should create a valid, empty string table', function() {
       const stbl = StringTableResource.create();
@@ -297,6 +299,8 @@ describe('StringTableResource', function() {
     });
   });
 
+  //#endregion Initialization
+
   //#region Add
 
   describe('#addEntry()', function() {
@@ -343,22 +347,27 @@ describe('StringTableResource', function() {
 
   describe('#addStringAndHash()', function() {
     context('name is given', function() {
-      it('should add an entry to the table', function() {
-        // TODO:
-      });
-  
-      it('should use the 32-bit hash of the name', function() {
-        // TODO:
+      it("should add one entry with the name's 32-bit hash", function() {
+        const stbl = StringTableResource.create();
+        const string = "This is the string";
+        const name = "frankk_TEST:string_Name";
+        stbl.addStringAndHash(string, name);
+        expect(stbl.numEntries()).to.equal(1);
+        const entry = stbl.getEntryByIndex(0);
+        expect(entry.key).to.equal(Hashing.fnv32(name));
+        expect(entry.string).to.equal(string);
       });
     });
 
     context('name is not given', function() {
-      it('should add an entry to the table', function() {
-        // TODO:
-      });
-  
-      it('should use the 32-bit hash of the string', function() {
-        // TODO:
+      it("should add one entry with the string's 32-bit hash", function() {
+        const stbl = StringTableResource.create();
+        const string = "This is the string";
+        stbl.addStringAndHash(string);
+        expect(stbl.numEntries()).to.equal(1);
+        const entry = stbl.getEntryByIndex(0);
+        expect(entry.key).to.equal(Hashing.fnv32(string));
+        expect(entry.string).to.equal(string);
       });
     });
   });
