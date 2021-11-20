@@ -526,23 +526,77 @@ describe('StringTableResource', function() {
   //#region Get
 
   describe('#getEntry()', function() {
-    // TODO:
+    it('should return the only entry that matches the predicate', function() {
+      // TODO:
+    });
+
+    it('should return the first entry that matches the predicate', function() {
+      // TODO:
+    });
+
+    it('should return undefined if none match the predicate', function() {
+      // TODO:
+    });
   });
 
   describe('#getEntries()', function() {
-    // TODO:
+    it('should return all entries when there is no predicate', function() {
+      // TODO:
+    });
+
+    it('should return all entries that match the predicate', function() {
+      // TODO:
+    });
+
+    it('should return an empty array if none match the predicate', function() {
+      // TODO:
+    });
   });
 
   describe('#getEntryById()', function() {
-    // TODO:
+    it('should return the correct entry', function() {
+      // TODO:
+    });
+
+    it('should return undefined when the id doesn\'t exist', function() {
+      // TODO:
+    });
+
+    it('should return undefined when there was an entry with this id, but it was removed', function() {
+      // TODO:
+    });
   });
 
   describe('#getEntryByKey()', function() {
-    // TODO:
+    it('should return the correct entry', function() {
+      // TODO:
+    });
+
+    it('should return the first entry if there is more than one with this key', function() {
+      // TODO:
+    });
+
+    it('should return undefined when the key doesn\'t exist', function() {
+      // TODO:
+    });
+
+    it('should return undefined when there was an entry with this key, but it was removed', function() {
+      // TODO:
+    });
   });
 
   describe('#getEntriesByKey()', function() {
-    // TODO:
+    it('should return an empty array if there are none with this key', function() {
+      // TODO:
+    });
+
+    it('should return an array with one entry if there is one with this key', function() {
+      // TODO:
+    });
+
+    it('should return an array of all entries with this key', function() {
+      // TODO:
+    });
   });
 
   describe('#getEntryByIndex()', function() {
