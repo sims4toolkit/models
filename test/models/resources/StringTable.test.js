@@ -844,27 +844,45 @@ describe('StringTableResource', function() {
 
     context('return value after removing', function() {
       it('should return true after removeEntry()', function() {
-        // TODO:
+        const stbl = getSTBL('SmallSTBL');
+        expect(stbl.hasChanged()).to.be.false;
+        stbl.removeEntry(entry => entry.id === 0);
+        expect(stbl.hasChanged()).to.be.true;
       });
   
       it('should return true after removeEntries()', function() {
-        // TODO:
+        const stbl = getSTBL('SmallSTBL');
+        expect(stbl.hasChanged()).to.be.false;
+        stbl.removeEntries(entry => entry.id > 1);
+        expect(stbl.hasChanged()).to.be.true;
       });
   
       it('should return true after removeEntryById()', function() {
-        // TODO:
+        const stbl = getSTBL('SmallSTBL');
+        expect(stbl.hasChanged()).to.be.false;
+        stbl.removeEntryById(0);
+        expect(stbl.hasChanged()).to.be.true;
       });
 
       it('should return true after removeEntryByKey()', function() {
-        // TODO:
+        const stbl = getSTBL('SmallSTBL');
+        expect(stbl.hasChanged()).to.be.false;
+        stbl.removeEntryByKey(0x7E08629A);
+        expect(stbl.hasChanged()).to.be.true;
       });
 
       it('should return true after removeEntryByIndex()', function() {
-        // TODO:
+        const stbl = getSTBL('SmallSTBL');
+        expect(stbl.hasChanged()).to.be.false;
+        stbl.removeEntryByIndex(0);
+        expect(stbl.hasChanged()).to.be.true;
       });
 
       it('should return false after failing to remove', function() {
-        // TODO:
+        const stbl = getSTBL('SmallSTBL');
+        expect(stbl.hasChanged()).to.be.false;
+        stbl.removeEntryByIndex(10);
+        expect(stbl.hasChanged()).to.be.false;
       });
     });
 
