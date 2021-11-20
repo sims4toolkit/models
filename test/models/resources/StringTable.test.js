@@ -192,11 +192,35 @@ describe('StringTableResource', function() {
   });
 
   describe('#addStringAndHash()', function() {
-    // TODO:
+    context('name is given', function() {
+      it('should add an entry to the table', function() {
+        // TODO:
+      });
+  
+      it('should use the 32-bit hash of the name', function() {
+        // TODO:
+      });
+    });
+
+    context('name is not given', function() {
+      it('should add an entry to the table', function() {
+        // TODO:
+      });
+  
+      it('should use the 32-bit hash of the string', function() {
+        // TODO:
+      });
+    });
   });
 
   describe('#combine()', function() {
-    // TODO:
+    context('adding one string table', function() {
+      // TODO:
+    });
+
+    context('adding multiple string tables', function() {
+      // TODO:
+    });
   });
 
   //#endregion Add
