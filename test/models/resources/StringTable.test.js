@@ -3,9 +3,16 @@ const path = require('path');
 const expect = require('chai').expect;
 const { StringTableResource } = require('../../../dst/api');
 
+const cachedBuffers = {};
+
 function getSTBL(filename, options = undefined) {
+  if (cachedBuffers[filename] !== undefined) {
+    return StringTableResource.from(cachedBuffers[filename], options);
+  }
+
   const filepath = path.resolve(__dirname, `../../data/stbls/${filename}.stbl`);
   const buffer = fs.readFileSync(filepath);
+  cachedBuffers[filename] = buffer;
   return StringTableResource.from(buffer, options);
 }
 
@@ -101,7 +108,32 @@ describe('StringTableResource', function() {
   });
 
   describe('#clone()', function() {
-    // TODO:
+    context('stbl is empty', function() {
+      it('should return an empty stbl', function() {
+        const stbl = StringTableResource.create();
+        expect(stbl.clone().numEntries()).to.equal(0);
+      });
+
+      it('should not mutate the original stbl when edited', function() {
+        // TODO:
+      });
+    });
+
+    context('stbl has entries', function() {
+      it('should return a stbl with the same entries', function() {
+        const stbl = getSTBL('SmallSTBL');
+        const stblClone = stbl.clone();
+        expect(stblClone.numEntries()).to.equal(stbl.numEntries());
+        stblClone.getEntries().forEach((entry, i) => {
+          expect(entry.key).to.equal(stbl.getEntryByIndex(i).key);
+          expect(entry.string).to.equal(stbl.getEntryByIndex(i).string);
+        });
+      });
+
+      it('should not mutate the original stbl when edited', function() {
+        // TODO:
+      });
+    });
   });
 
   describe('#merge()', function() {
