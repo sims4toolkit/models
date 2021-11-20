@@ -121,6 +121,25 @@ describe('StringTableResource', function() {
         expect(stbl.numEntries()).to.equal(0);
         expect(clone.numEntries()).to.equal(1);
       });
+    });
+
+    context('stbl has entries', function() {
+      it('should return a stbl with the same entries', function() {
+        const stbl = getSTBL('SmallSTBL');
+        const stblClone = stbl.clone();
+        expect(stblClone.numEntries()).to.equal(stbl.numEntries());
+        stblClone.getEntries().forEach((entry, i) => {
+          expect(entry.key).to.equal(stbl.getEntryByIndex(i).key);
+          expect(entry.string).to.equal(stbl.getEntryByIndex(i).string);
+        });
+      });
+
+      it('should not mutate the original stbl when adding', function() {
+        const stbl = getSTBL('SmallSTBL');
+        const clone = stbl.clone();
+        clone.addEntry(1234, "New String");
+        expect(clone.numEntries()).to.equal(stbl.numEntries() + 1);
+      });
 
       it('should not mutate the original stbl when updating', function() {
         const stbl = getSTBL('SmallSTBL');
@@ -140,25 +159,6 @@ describe('StringTableResource', function() {
         clone.removeEntryByIndex(0);
         expect(stbl.numEntries()).to.equal(orignalNumEntries);
         expect(clone.numEntries()).to.equal(orignalNumEntries - 1);
-      });
-    });
-
-    context('stbl has entries', function() {
-      it('should return a stbl with the same entries', function() {
-        const stbl = getSTBL('SmallSTBL');
-        const stblClone = stbl.clone();
-        expect(stblClone.numEntries()).to.equal(stbl.numEntries());
-        stblClone.getEntries().forEach((entry, i) => {
-          expect(entry.key).to.equal(stbl.getEntryByIndex(i).key);
-          expect(entry.string).to.equal(stbl.getEntryByIndex(i).string);
-        });
-      });
-
-      it('should not mutate the original stbl when edited', function() {
-        const stbl = getSTBL('SmallSTBL');
-        const clone = stbl.clone();
-        clone.addEntry(1234, "New String");
-        expect(clone.numEntries()).to.equal(stbl.numEntries() + 1);
       });
     });
   });
