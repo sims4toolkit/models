@@ -373,12 +373,32 @@ describe('StringTableResource', function() {
   });
 
   describe('#combine()', function() {
-    context('adding one string table', function() {
-      // TODO:
+    context('original is empty', function() {
+      context('adding empty stbl', function() {
+        // TODO:
+      });
+  
+      context('adding stbl with entries', function() {
+        // TODO:
+      });
+
+      context('adding multiple stbls with entries', function() {
+        // TODO:
+      });
     });
 
-    context('adding multiple string tables', function() {
-      // TODO:
+    context('original has entries', function() {
+      context('adding empty stbl', function() {
+        // TODO:
+      });
+  
+      context('adding stbl with entries', function() {
+        // TODO:
+      });
+
+      context('adding multiple stbls with entries', function() {
+        // TODO:
+      });
     });
   });
 
