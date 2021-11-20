@@ -370,11 +370,17 @@ describe('StringTableResource', function() {
     });
 
     it('should uncache the buffer if successful', function() {
-      // TODO:
+      const stbl = getSTBL('SmallSTBL');
+      expect(stbl.hasChanged()).to.be.false;
+      stbl.addEntry(123, "Test");
+      expect(stbl.hasChanged()).to.be.true;
     });
 
     it('should not uncache the buffer if failed', function() {
-      // TODO:
+      const stbl = getSTBL('SmallSTBL');
+      expect(stbl.hasChanged()).to.be.false;
+      expect(() => stbl.addEntry(0x100000000, "Test")).to.throw();
+      expect(stbl.hasChanged()).to.be.false;
     });
   });
 
@@ -400,12 +406,11 @@ describe('StringTableResource', function() {
       expect(entry.string).to.equal(string);
     });
 
-    it('should uncache the buffer if successful', function() {
-      // TODO:
-    });
-
-    it('should not uncache the buffer if failed', function() {
-      // TODO:
+    it('should uncache the buffer', function() {
+      const stbl = getSTBL('SmallSTBL');
+      expect(stbl.hasChanged()).to.be.false;
+      stbl.addStringAndHash("Hello");
+      expect(stbl.hasChanged()).to.be.true;
     });
   });
 
@@ -417,10 +422,6 @@ describe('StringTableResource', function() {
           const empty = StringTableResource.create();
           stbl.combine(empty);
           expect(stbl.numEntries()).to.equal(0);
-        });
-
-        it('should not uncache the buffer', function() {
-          // TODO:
         });
       });
   
@@ -453,10 +454,6 @@ describe('StringTableResource', function() {
           empty.combine(withEntries);
           expectNoMutationOnRemove(empty, withEntries);
         });
-
-        it('should uncache the buffer', function() {
-          // TODO:
-        });
       });
 
       context('adding multiple stbls with entries', function() {
@@ -468,10 +465,6 @@ describe('StringTableResource', function() {
           empty.combine(stbl1, stbl2);
           const merged = StringTableResource.merge(stbl1, stbl2);
           expectSameContents(empty, merged);
-        });
-
-        it('should uncache the buffer', function() {
-          // TODO:
         });
       });
     });
@@ -487,7 +480,11 @@ describe('StringTableResource', function() {
         });
 
         it('should not uncache the buffer', function() {
-          // TODO:
+          const smallStbl = getSTBL('SmallSTBL');
+          const empty = StringTableResource.create();
+          expect(smallStbl.hasChanged()).to.be.false;
+          smallStbl.combine(empty);
+          expect(smallStbl.hasChanged()).to.be.false;
         });
       });
   
@@ -505,7 +502,13 @@ describe('StringTableResource', function() {
         });
 
         it('should uncache the buffer', function() {
-          // TODO:
+          const smallStbl = getSTBL('SmallSTBL');
+          expect(smallStbl.hasChanged()).to.be.false;
+          const other = StringTableResource.create();
+          other.addEntry(1234, "Test");
+          other.addEntry(5678, "Test 2");
+          smallStbl.combine(other);
+          expect(smallStbl.hasChanged()).to.be.true;
         });
       });
 
@@ -528,7 +531,20 @@ describe('StringTableResource', function() {
         });
 
         it('should uncache the buffer', function() {
-          // TODO:
+          const smallStbl = getSTBL('SmallSTBL');
+          expect(smallStbl.hasChanged()).to.be.false;
+
+          const other1 = StringTableResource.create();
+          other1.addEntry(1234, "Test 1");
+          other1.addEntry(5678, "Test 2");
+
+          const other2 = StringTableResource.create();
+          other2.addEntry(2468, "Test 3");
+          other2.addEntry(1357, "Test 4");
+
+          smallStbl.combine(other1, other2);
+
+          expect(smallStbl.hasChanged()).to.be.true;
         });
       });
     });
