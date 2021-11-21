@@ -339,6 +339,21 @@ describe('StringTableResource', function() {
   //#region Add
 
   describe('#addEntry()', function() {
+    it("should add the entry correctly when it has non-latin text", function() {
+      const stbl = StringTableResource.create();
+      stbl.addEntry(123, "Héllö wørłd!");
+      stbl.addEntry(456, "日本語"); // japanese
+      stbl.addEntry(789, "繁體中文"); // chinese
+      stbl.addEntry(246, "Русский"); // russian
+      stbl.addEntry(135, "한국어"); // korean
+      expect(stbl.numEntries()).to.equal(5);
+      expect(stbl.getEntryByIndex(0).string).to.equal("Héllö wørłd!");
+      expect(stbl.getEntryByIndex(1).string).to.equal("日本語");
+      expect(stbl.getEntryByIndex(2).string).to.equal("繁體中文");
+      expect(stbl.getEntryByIndex(3).string).to.equal("Русский");
+      expect(stbl.getEntryByIndex(4).string).to.equal("한국어");
+    });
+
     it('should add the entry correctly to a new STBL', function() {
       const stbl = StringTableResource.create();
       expect(stbl.numEntries()).to.equal(0);
@@ -395,6 +410,21 @@ describe('StringTableResource', function() {
   });
 
   describe('#addStringAndHash()', function() {
+    it("should add the entry correctly when it has non-latin text", function() {
+      const stbl = StringTableResource.create();
+      stbl.addStringAndHash("Héllö wørłd!");
+      stbl.addStringAndHash("日本語"); // japanese
+      stbl.addStringAndHash("繁體中文"); // chinese
+      stbl.addStringAndHash("Русский"); // russian
+      stbl.addStringAndHash("한국어"); // korean
+      expect(stbl.numEntries()).to.equal(5);
+      expect(stbl.getEntryByIndex(0).string).to.equal("Héllö wørłd!");
+      expect(stbl.getEntryByIndex(1).string).to.equal("日本語");
+      expect(stbl.getEntryByIndex(2).string).to.equal("繁體中文");
+      expect(stbl.getEntryByIndex(3).string).to.equal("Русский");
+      expect(stbl.getEntryByIndex(4).string).to.equal("한국어");
+    });
+
     it("should add one entry with the name's 32-bit hash if name given", function() {
       const stbl = StringTableResource.create();
       const string = "This is the string";
@@ -1457,6 +1487,20 @@ describe('StringTableResource', function() {
           const loaded = StringTableResource.from(buffer);
           expect(loaded.numEntries()).to.equal(2);
           expectSameContents(created, loaded);
+        });
+
+        it('should serialize a stbl with non-latin writing correctly', function() {
+          const stbl = StringTableResource.create();
+          stbl.addEntry(123, "日本語"); // japanese
+          stbl.addEntry(456, "繁體中文"); // chinese
+          stbl.addEntry(789, "Русский"); // russian
+          stbl.addEntry(246, "한국어"); // korean
+          const buffer = stbl.getBuffer();
+          const loaded = StringTableResource.from(buffer);
+          expect(loaded.getEntryByKey(123).string).to.equal("日本語");
+          expect(loaded.getEntryByKey(456).string).to.equal("繁體中文");
+          expect(loaded.getEntryByKey(789).string).to.equal("Русский");
+          expect(loaded.getEntryByKey(246).string).to.equal("한국어");
         });
       });
     });
