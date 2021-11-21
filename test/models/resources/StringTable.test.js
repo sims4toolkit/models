@@ -127,6 +127,11 @@ describe('StringTableResource', function() {
         expect(entries[4].string).to.not.equal(entries[5].string);
         expect(entries[4].id).to.not.equal(entries[5].id);
       });
+
+      it('should load stbls with special characters correctly', function() {
+        // TODO:
+        expect(false).to.be.true;
+      });
     });
 
     context('header is corrupt', function() {
@@ -773,11 +778,18 @@ describe('StringTableResource', function() {
 
   describe('#removeEntryById()', function() {
     it('should remove the entry with the given ID', function() {
-      // TODO:
+      const stbl = getSTBL('SmallSTBL');
+      expect(stbl.numEntries()).to.equal(3);
+      expect(stbl.getEntryById(0)).to.not.be.undefined;
+      stbl.removeEntryById(0);
+      expect(stbl.numEntries()).to.equal(2);
+      expect(stbl.getEntryById(0)).to.be.undefined;
     });
 
     it('should return the entry with the given ID', function() {
-      // TODO:
+      const stbl = getSTBL('SmallSTBL');
+      const entry = stbl.removeEntryById(0);
+      assertEntry(entry, 0, 0x7E08629A, "This is a string.")
     });
 
     it('should return undefined if no entry has the given ID', function() {
@@ -1408,6 +1420,11 @@ describe('StringTableResource', function() {
           expect(loaded.numEntries()).to.equal(2);
           expectSameContents(created, loaded);
         });
+
+        it('should serialize a stbl with special characters correctly', function() {
+          // TODO:
+          expect(false).to.be.true;
+        });
       });
     });
 
@@ -1419,6 +1436,11 @@ describe('StringTableResource', function() {
           const loaded = StringTableResource.from(buffer);
           expectSameContents(stbl, loaded);
         });
+
+        it('should serialize a stbl with special characters correctly', function() {
+          // TODO:
+          expect(false).to.be.true;
+        });
       });
 
       context('stbl had entries added', function() {
@@ -1429,6 +1451,11 @@ describe('StringTableResource', function() {
           const buffer = stbl.getBuffer();
           const loaded = StringTableResource.from(buffer);
           expect(loaded.numEntries()).to.equal(originalLength + 1);
+        });
+
+        it('should serialize a stbl with special characters correctly', function() {
+          // TODO:
+          expect(false).to.be.true;
         });
       });
 
