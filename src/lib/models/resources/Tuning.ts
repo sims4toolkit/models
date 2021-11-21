@@ -9,6 +9,13 @@ const DEFAULT_CONTENT = `<?xml version="1.0" encoding="utf-8"?>\n<I c="" i="" m=
 export default class TuningResource extends Resource {
   readonly variant: ResourceVariant = 'XML';
   private _content: string;
+  private _attrs: {
+    n?: string; // file name
+    c?: string; // class name
+    i?: string; // type name
+    m?: string; // module path
+    s?: string; // decimal tuning id
+  };
 
   //#region Initialization
 
@@ -22,6 +29,7 @@ export default class TuningResource extends Resource {
   private constructor(content: string, cachedBuffer?: Buffer) {
     super(cachedBuffer);
     this._content = content;
+    this._attrs = {};
   }
 
   clone(): TuningResource {
@@ -51,14 +59,6 @@ export default class TuningResource extends Resource {
 
   //#endregion Initialization
 
-  //#region Abstract Methods
-
-  protected _serialize(): Buffer {
-    return Buffer.from(this._content, 'utf-8');
-  }
-
-  //#endregion Abstract Methods
-
   //#region Public Methods
 
   /**
@@ -78,5 +78,93 @@ export default class TuningResource extends Resource {
     this._uncache();
   }
 
+  /**
+   * Returns the filename in the `n` attribute. If there is no name, `undefined`
+   * will be returned.
+   */
+  getFileName(): string {
+    return this._getAttr('n');
+  }
+
+  /**
+   * Returns the class name in the `c` attribute. If there is no class,
+   * `undefined` will be returned.
+   */
+  getClassName(): string {
+    return this._getAttr('c');
+  }
+
+  /**
+   * Returns the type name in the `i` attribute. If there is no type name,
+   * `undefined` will be returned.
+   */
+  getTypeName(): string {
+    return this._getAttr('i');
+  }
+
+  /**
+   * Returns the module path in the `m` attribute. If there is no module path,
+   * undefined will be returned.
+   */
+  getModulePath(): string {
+    return this._getAttr('m');
+  }
+
+  /**
+   * Returns the tuning ID in the `s` attribute. If there is no tuning ID,
+   * then `undefined` is returned. Note that the tuning ID will be returned as
+   * a decimal number in a string, as may not be equal to the instance ID in
+   * this resource's record.
+   */
+  getTuningId(): string {
+    return this._getAttr('s');
+  }
+
   //#endregion Public Methods
+
+  //#region Protected Methods
+
+  protected _serialize(): Buffer {
+    return Buffer.from(this._content, 'utf-8');
+  }
+
+  protected _uncache() {
+    super._uncache();
+    this._attrs = {};
+  }
+
+  //#endregion Protected Methods
+
+  //#region Private Methods
+
+  /**
+   * Returns the value of the given attribute.
+   * 
+   * @param attr Name of attribute to get
+   */
+  private _getAttr(attr: string): string {
+    if (this._attrs[attr] === undefined)
+      this._attrs[attr] = this._getAttrValue(attr);
+    return this._attrs[attr];
+  }
+
+  /**
+   * Finds and returns the value of the given attribute.
+   * 
+   * @param attr Name of attribute to get
+   */
+  private _getAttrValue(attr: string): string {
+    // Yes, I am aware of how ugly this code is. But, it is way more efficient
+    // than parsing the entire file as XML or using a regex. These attributes
+    // are usually in the second line of the file, and this method will short
+    // circuit as soon as they are found.
+
+    try {
+      return this._content.split(`${attr}="`)[1].split('"')[0];
+    } catch (e) {
+      return undefined;
+    }
+  }
+
+  //#endregion Private Methods
 }
