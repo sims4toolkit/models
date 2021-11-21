@@ -1164,17 +1164,36 @@ describe('StringTableResource', function() {
 
     context('case sensitive set to true', function() {
       it('should return all exact matches in same case', function() {
-        // TODO:
+        const stbl = StringTableResource.create();
+        stbl.addEntry(12, 'String');
+        stbl.addEntry(34, 'string');
+        stbl.addEntry(56, 'String');
+        stbl.addEntry(78, 'sTRING');
+        const result1 = stbl.searchByString('String', { caseSensitive: true });
+        expect(result1).to.be.an('Array').with.lengthOf(2);
+        expect(result1[0].key).to.equal(12);
+        expect(result1[1].key).to.equal(56);
+        const result2 = stbl.searchByString('sTRING', { caseSensitive: true });
+        expect(result2).to.be.an('Array').with.lengthOf(1);
+        expect(result2[0].key).to.equal(78);
       });
 
       it('should return empty array when there are exact matches in different case', function() {
-        // TODO:
+        const stbl = StringTableResource.create();
+        stbl.addEntry(34, 'string');
+        stbl.addEntry(78, 'sTRING');
+        const result = stbl.searchByString('String', { caseSensitive: true });
+        expect(result).to.be.an('Array').and.to.be.empty;
       });
     });
 
     context('search for substrings', function() {
       it('should return empty array when none contain the substring', function() {
-        // TODO:
+        const stbl = StringTableResource.create();
+        stbl.addEntry(12, 'Hello');
+        stbl.addEntry(34, 'Hello world');
+        const result = stbl.searchByString('foo', { includeSubstrings: true });
+        expect(result).to.be.an('Array').that.is.empty;
       });
 
       it('should return all entries that contain the substring in same case', function() {
