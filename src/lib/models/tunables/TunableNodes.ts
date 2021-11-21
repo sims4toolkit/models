@@ -189,7 +189,7 @@ export function U(args: {
  */
 export function V({ name, type, child }: {
   name?: string,
-  type?: string,
+  type: string,
   child?: TunableNode
 }): TunableVariant {
   return parentNode('V', { name, type, children: [child] }) as TunableVariant;
