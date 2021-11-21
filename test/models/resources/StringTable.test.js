@@ -129,8 +129,13 @@ describe('StringTableResource', function() {
       });
 
       it('should load stbls with special characters correctly', function() {
-        // TODO:
-        expect(false).to.be.true;
+        const stbl = getSTBL('SpecialChars');
+        const entries = stbl.getEntries();
+        expect(entries).to.be.an('Array').with.lengthOf(4);
+        assertEntry(entries[0], 0, 0x7E08629A, 'This is a string.');
+        assertEntry(entries[1], 1, 0xF098F4B5, 'This is another string!');
+        assertEntry(entries[2], 2, 0x8D6D117D, 'And this, this is a third.');
+        assertEntry(entries[3], 3, 0x753A781E, 'Thís iš å strįñg w/ spêçiāl chars.');
       });
     });
 
@@ -1445,8 +1450,13 @@ describe('StringTableResource', function() {
         });
 
         it('should serialize a stbl with special characters correctly', function() {
-          // TODO:
-          expect(false).to.be.true;
+          const created = StringTableResource.create();
+          created.addEntry(1234, "Héllö");
+          created.addEntry(5678, "Wørłd");
+          const buffer = created.getBuffer();
+          const loaded = StringTableResource.from(buffer);
+          expect(loaded.numEntries()).to.equal(2);
+          expectSameContents(created, loaded);
         });
       });
     });
@@ -1461,8 +1471,10 @@ describe('StringTableResource', function() {
         });
 
         it('should serialize a stbl with special characters correctly', function() {
-          // TODO:
-          expect(false).to.be.true;
+          const stbl = getSTBL('SpecialChars');
+          const buffer = stbl.getBuffer();
+          const loaded = StringTableResource.from(buffer);
+          expectSameContents(stbl, loaded);
         });
       });
 
@@ -1477,8 +1489,13 @@ describe('StringTableResource', function() {
         });
 
         it('should serialize a stbl with special characters correctly', function() {
-          // TODO:
-          expect(false).to.be.true;
+          const stbl = getSTBL('SpecialChars');
+          const originalLength = stbl.numEntries();
+          stbl.addEntry(1234, "Tést");
+          const buffer = stbl.getBuffer();
+          const loaded = StringTableResource.from(buffer);
+          expect(loaded.numEntries()).to.equal(originalLength + 1);
+          expect(loaded.getEntryByKey(1234).string).to.equal("Tést");
         });
       });
 
