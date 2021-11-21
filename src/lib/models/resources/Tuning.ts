@@ -87,12 +87,12 @@ export default class TuningResource extends Resource {
   }
 
   /**
-   * TODO:
+   * Updates the filename in the `n` attribute.
    * 
-   * @param value TODO:
+   * @param value New filename to use
    */
   updateFileName(value: string) {
-    // TODO:
+    this._updateAttr('n', value);
   }
 
   /**
@@ -130,12 +130,12 @@ export default class TuningResource extends Resource {
   }
 
   /**
-   * TODO:
+   * Updates the tuning ID in the `s` attribute.
    * 
-   * @param value TODO:
+   * @param value New tuning ID to use
    */
   updateTuningId(value: string) {
-    // TODO:
+    this._updateAttr('s', value);
   }
 
   //#endregion Public Methods
@@ -181,6 +181,24 @@ export default class TuningResource extends Resource {
       return this._content.split(`${attr}="`)[1].split('"')[0];
     } catch (e) {
       return undefined;
+    }
+  }
+
+  /**
+   * Updates the value of an attribute.
+   * 
+   * @param attr Name of attribute to update
+   * @param value New value of attribute
+   */
+  private _updateAttr(attr: string, value: string) {
+    try {
+      const [before, mid] = this._content.split(`${attr}="`);
+      const after = mid.split('"')[1];
+      this._content = `${before}"${value}"${after}`;
+      this._uncache();
+      this._attrs[attr] = value;
+    } catch (e) {
+      throw new Error(`Cannot update "${attr}" attribute: ${e}`);
     }
   }
 
