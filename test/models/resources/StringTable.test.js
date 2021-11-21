@@ -736,31 +736,72 @@ describe('StringTableResource', function() {
 
   describe('#updateEntryByKey()', function() {
     it('should update the key', function() {
-      // TODO:
+      const stbl = getSTBL('SmallSTBL');
+      expect(stbl.getEntryById(1).key).to.equal(0xF098F4B5);
+      stbl.updateEntryByKey(0xF098F4B5, { key: 123 });
+      expect(stbl.getEntryById(1).key).to.equal(123);
+      expect(stbl.getEntryByKey(0xF098F4B5)).to.be.undefined;
     });
 
     it('should update the string', function() {
-      // TODO:
+      const stbl = getSTBL('SmallSTBL');
+      expect(stbl.getEntryByKey(0xF098F4B5).string).to.not.equal("new text");
+      stbl.updateEntryByKey(0xF098F4B5, { string: "new text" });
+      expect(stbl.getEntryByKey(0xF098F4B5).string).to.equal("new text");
     });
 
     it('should update the key and string', function() {
-      // TODO:
+      const stbl = getSTBL('SmallSTBL');
+      expect(stbl.getEntryById(1).key).to.equal(0xF098F4B5);
+      expect(stbl.getEntryById(1).string).to.not.equal("new text");
+
+      stbl.updateEntryByKey(0xF098F4B5, {
+        key: 123,
+        string: "new text"
+      });
+
+      expect(stbl.getEntryById(1).key).to.equal(123);
+      expect(stbl.getEntryById(1).string).to.equal("new text");
     });
 
     it('should return the original entry', function() {
-      // TODO:
+      const stbl = getSTBL('SmallSTBL');
+      const { key, string } = stbl.getEntryByKey(0xF098F4B5);
+      const previous = stbl.updateEntryByKey(0xF098F4B5, {
+        key: 123,
+        string: "new text"
+      });
+      expect(previous.key).to.equal(key);
+      expect(previous.string).to.equal(string);
     });
 
     it('should return undefined if no entries have the key', function() {
-      // TODO:
+      const stbl = getSTBL('SmallSTBL');
+      const previous = stbl.updateEntryByKey(0x12345678, {
+        key: 123,
+        string: "new text"
+      });
+      expect(previous).to.be.undefined;
     });
 
     it('should uncache the buffer if successful', function() {
-      // TODO:
+      const stbl = getSTBL('SmallSTBL');
+      expect(stbl.hasChanged()).to.be.false;
+      stbl.updateEntryByKey(0xF098F4B5, {
+        key: 123,
+        string: "new text"
+      });
+      expect(stbl.hasChanged()).to.be.true;
     });
 
     it('should not uncache the buffer if failed', function() {
-      // TODO:
+      const stbl = getSTBL('SmallSTBL');
+      expect(stbl.hasChanged()).to.be.false;
+      stbl.updateEntryByKey(0x12345678, {
+        key: 123,
+        string: "new text"
+      });
+      expect(stbl.hasChanged()).to.be.false;
     });
   });
 
