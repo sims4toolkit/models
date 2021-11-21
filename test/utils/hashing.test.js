@@ -1,5 +1,5 @@
 const expect = require('chai').expect;
-const hashing = require('../../dst/lib/utils/hashing');
+const { Hashing } = require('../../dst/api');
 
 function getTestFuncs(hashFn) {
   return {
@@ -20,7 +20,7 @@ function getTestFuncs(hashFn) {
 
 describe('Hashing', function() {
   describe('#fnv24()', function() {
-    const fns = getTestFuncs(value => hashing.fnv24(value));
+    const fns = getTestFuncs(value => Hashing.fnv24(value));
     fns.assertIgnoreCase();
     fns.assertHashes([
       ['', 0x001C9D44],
@@ -31,7 +31,7 @@ describe('Hashing', function() {
 
   describe('#fnv32()', function() {
     context('no high bit', function() {
-      const fns = getTestFuncs(value => hashing.fnv32(value));
+      const fns = getTestFuncs(value => Hashing.fnv32(value));
       fns.assertIgnoreCase();
       fns.assertHashes([
         ['', 0x811C9DC5],
@@ -41,7 +41,7 @@ describe('Hashing', function() {
     });
 
     context('high bit', function() {
-      const fns = getTestFuncs(value => hashing.fnv32(value, true));
+      const fns = getTestFuncs(value => Hashing.fnv32(value, true));
       fns.assertIgnoreCase();
       fns.assertHashes([
         ['', 2166136261],
@@ -52,7 +52,7 @@ describe('Hashing', function() {
   });
 
   describe('#fnv56()', function() {
-    const fns = getTestFuncs(value => hashing.fnv56(value));
+    const fns = getTestFuncs(value => Hashing.fnv56(value));
     fns.assertIgnoreCase();
     fns.assertHashes([
       ['', 0x00F29CE4842223EEn],
@@ -63,7 +63,7 @@ describe('Hashing', function() {
 
   describe('#fnv64()', function() {
     context('no high bit', function() {
-      const fns = getTestFuncs(value => hashing.fnv64(value));
+      const fns = getTestFuncs(value => Hashing.fnv64(value));
       fns.assertIgnoreCase();
       fns.assertHashes([
         ['', 0xCBF29CE484222325n],
@@ -73,7 +73,7 @@ describe('Hashing', function() {
     });
 
     context('high bit', function() {
-      const fns = getTestFuncs(value => hashing.fnv64(value, true));
+      const fns = getTestFuncs(value => Hashing.fnv64(value, true));
       fns.assertIgnoreCase();
       fns.assertHashes([
         ['', 0xCBF29CE484222325n],
@@ -85,21 +85,21 @@ describe('Hashing', function() {
 
   describe('#fnv32to24()', function() {
     it('should return 2405745 for 2133112078', function() {
-      expect(hashing.fnv32to24(2133112078)).to.equal(2405745);
+      expect(Hashing.fnv32to24(2133112078)).to.equal(2405745);
     });
 
     it('should return 1875268 for 2166136261', function() {
-      expect(hashing.fnv32to24(2166136261)).to.equal(1875268);
+      expect(Hashing.fnv32to24(2166136261)).to.equal(1875268);
     });
   });
 
   describe('#fnv64to56()', function() {
     it('should return 68289449647285230 for 14695981039346656037', function() {
-      expect(hashing.fnv64to56(14695981039346656037n)).to.equal(68289449647285230n);
+      expect(Hashing.fnv64to56(14695981039346656037n)).to.equal(68289449647285230n);
     });
 
     it('should return 45046755487557328 for 4440559991801161453', function() {
-      expect(hashing.fnv64to56(4440559991801161453n)).to.equal(45046755487557328n);
+      expect(Hashing.fnv64to56(4440559991801161453n)).to.equal(45046755487557328n);
     });
   });
 });
