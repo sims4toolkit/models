@@ -6,6 +6,8 @@ function getTuning(content) {
 }
 
 describe('TuningResource', function() {
+  //#region Properties
+
   describe('#variant', function() {
     it('should be "XML" when created', function() {
       const tun = TuningResource.create();
@@ -17,6 +19,10 @@ describe('TuningResource', function() {
       expect(tun.variant).to.equal("XML");
     });
   });
+
+  //#endregion Properties
+
+  //#region Initialization
 
   describe('#clone()', function() {
     // TODO:
@@ -30,13 +36,45 @@ describe('TuningResource', function() {
     // TODO:
   });
 
+  //#endregion Initialization
+
+  //#region Getters
+
   describe('#getContent()', function() {
     // TODO:
   });
 
+  describe('#getFileName()', function() {
+    // TODO:
+  });
+
+  describe('#getClassName()', function() {
+    // TODO:
+  });
+
+  describe('#getTypeName()', function() {
+    // TODO:
+  });
+
+  describe('#getModulePath()', function() {
+    // TODO:
+  });
+
+  describe('#getTuningId()', function() {
+    // TODO:
+  });
+
+  //#endregion Getters
+
+  //#region Setters
+
   describe('#updateContent()', function() {
     // TODO:
   });
+
+  //#endregion Setters
+
+  //#region Utility
 
   describe('#hasChanged()', function() {
     // TODO:
@@ -45,4 +83,6 @@ describe('TuningResource', function() {
   describe('#getBuffer()', function() {
     // TODO:
   });
+
+  //#endregion Utility
 });
