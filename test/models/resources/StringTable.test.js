@@ -772,11 +772,11 @@ describe('StringTableResource', function() {
   });
 
   describe('#removeEntryById()', function() {
-    it('should return the entry that was removed', function() {
+    it('should remove the entry with the given ID', function() {
       // TODO:
     });
 
-    it('should remove the entry with the given ID', function() {
+    it('should return the entry with the given ID', function() {
       // TODO:
     });
 
@@ -794,11 +794,11 @@ describe('StringTableResource', function() {
   });
 
   describe('#removeEntryByKey()', function() {
-    it('should return the entry that was removed', function() {
+    it('should remove the first entry with the given key', function() {
       // TODO:
     });
 
-    it('should remove the entry with the given key', function() {
+    it('should return the first entry with the given key', function() {
       // TODO:
     });
 
@@ -816,7 +816,7 @@ describe('StringTableResource', function() {
   });
 
   describe('#removeEntryByIndex()', function() {
-    it('should return the entry that was removed', function() {
+    it('should return the entry at the given index', function() {
       // TODO:
     });
 
