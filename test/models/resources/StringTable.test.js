@@ -837,27 +837,42 @@ describe('StringTableResource', function() {
 
   describe('#removeEntryByIndex()', function() {
     it('should return the entry at the given index', function() {
-      // TODO:
+      const stbl = getSTBL('SmallSTBL');
+      const entry = stbl.removeEntryByIndex(1);
+      assertEntry(entry, 1, 0xF098F4B5, "This is another string!");
     });
 
     it('should remove the entry at the given index', function() {
-      // TODO:
+      const stbl = getSTBL('SmallSTBL');
+      expect(stbl.numEntries()).to.equal(3);
+      expect(stbl.getEntryById(1)).to.not.be.undefined;
+      stbl.removeEntryByIndex(1);
+      expect(stbl.numEntries()).to.equal(2);
+      expect(stbl.getEntryById(1)).to.be.undefined;
     });
 
     it('should return undefined if index is negative', function() {
-      // TODO:
+      const stbl = getSTBL('SmallSTBL');
+      expect(stbl.removeEntryByIndex(-1)).to.be.undefined;
     });
 
     it('should return undefined if index is out of bounds', function() {
-      // TODO:
+      const stbl = getSTBL('SmallSTBL');
+      expect(stbl.removeEntryByIndex(3)).to.be.undefined;
     });
 
     it('should uncache the buffer if successful', function() {
-      // TODO:
+      const stbl = getSTBL('SmallSTBL');
+      expect(stbl.hasChanged()).to.be.false;
+      stbl.removeEntryByIndex(1);
+      expect(stbl.hasChanged()).to.be.true;
     });
 
     it('should not uncache the buffer if failed', function() {
-      // TODO:
+      const stbl = getSTBL('SmallSTBL');
+      expect(stbl.hasChanged()).to.be.false;
+      stbl.removeEntryByIndex(-1);
+      expect(stbl.hasChanged()).to.be.false;
     });
   });
 
