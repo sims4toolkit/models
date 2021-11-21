@@ -683,30 +683,55 @@ describe('StringTableResource', function() {
   //#region Remove
 
   describe('#removeEntry()', function() {
-    it('should return the entry that was removed', function() {
-      // TODO:
+    it('should return the first entry that matches the predicate', function() {
+      const stbl = getSTBL('SmallSTBL');
+      const entry = stbl.removeEntry(entry => entry.id > 0);
+      assertEntry(entry, 1, 0xF098F4B5, "This is another string!");
     });
 
     it('should remove the first entry that matches the predicate', function() {
-      // TODO:
+      const stbl = getSTBL('SmallSTBL');
+      expect(stbl.numEntries()).to.equal(3);
+      expect(stbl.getEntryById(1)).to.not.be.undefined;
+      stbl.removeEntry(entry => entry.id > 0);
+      expect(stbl.numEntries()).to.equal(2);
+      expect(stbl.getEntryById(1)).to.be.undefined;
     });
 
     it('should return undefined if no entries were matched', function() {
-      // TODO:
+      const stbl = getSTBL('SmallSTBL');
+      const entry = stbl.removeEntry(entry => entry.id === -1);
+      expect(entry).to.be.undefined;
+    });
+
+    it('should not remove anything if no entries were matched', function() {
+      const stbl = getSTBL('SmallSTBL');
+      expect(stbl.numEntries()).to.equal(3);
+      stbl.removeEntry(entry => entry.id === -1);
+      expect(stbl.numEntries()).to.equal(3);
     });
 
     it('should uncache the buffer if successful', function() {
-      // TODO:
+      const stbl = getSTBL('SmallSTBL');
+      expect(stbl.hasChanged()).to.be.false;
+      stbl.removeEntry(entry => entry.id === 1);
+      expect(stbl.hasChanged()).to.be.true;
     });
 
     it('should not uncache the buffer if failed', function() {
-      // TODO:
+      const stbl = getSTBL('SmallSTBL');
+      expect(stbl.hasChanged()).to.be.false;
+      stbl.removeEntry(entry => entry.id > 3);
+      expect(stbl.hasChanged()).to.be.false;
     });
   });
 
   describe('#removeEntries()', function() {
-    it('should return the entries that were removed', function() {
-      // TODO:
+    it('should return the entries that match the predicate', function() {
+      const stbl = getSTBL('SmallSTBL');
+      const entries = stbl.removeEntries(entry => entry.id > 0);
+      assertEntry(entries[0], 1, 0xF098F4B5, "This is another string!");
+      assertEntry(entries[1], 2, 0x8D6D117D, "And this, this is a third.");
     });
 
     it('should remove the entries that match the predicate', function() {
@@ -715,6 +740,13 @@ describe('StringTableResource', function() {
 
     it('should return an empty array if no entries were matched', function() {
       // TODO:
+    });
+
+    it('should not remove anything if no entries were matched', function() {
+      // const stbl = getSTBL('SmallSTBL');
+      // expect(stbl.numEntries()).to.equal(3);
+      // stbl.removeEntry(entry => entry.id === -1);
+      // expect(stbl.numEntries()).to.equal(3);
     });
 
     it('should uncache the buffer if successful', function() {
