@@ -87,6 +87,15 @@ export default class TuningResource extends Resource {
   }
 
   /**
+   * TODO:
+   * 
+   * @param value TODO:
+   */
+  updateFileName(value: string) {
+    // TODO:
+  }
+
+  /**
    * Returns the class name in the `c` attribute. If there is no class,
    * `undefined` will be returned.
    */
@@ -118,6 +127,15 @@ export default class TuningResource extends Resource {
    */
   getTuningId(): string {
     return this._getAttr('s');
+  }
+
+  /**
+   * TODO:
+   * 
+   * @param value TODO:
+   */
+  updateTuningId(value: string) {
+    // TODO:
   }
 
   //#endregion Public Methods

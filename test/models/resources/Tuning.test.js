@@ -72,9 +72,17 @@ describe('TuningResource', function() {
     // TODO:
   });
 
+  describe('#updateFileName()', function() {
+    // TODO:
+  });
+
+  describe('#updateTuningId()', function() {
+    // TODO:
+  });
+
   //#endregion Setters
 
-  //#region Utility
+  //#region Serializing
 
   describe('#hasChanged()', function() {
     // TODO:
@@ -84,5 +92,5 @@ describe('TuningResource', function() {
     // TODO:
   });
 
-  //#endregion Utility
+  //#endregion Serializing
 });
