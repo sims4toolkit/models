@@ -73,11 +73,26 @@ describe('TuningResource', function() {
   });
 
   describe('#updateFileName()', function() {
-    // TODO:
+    context('file is missing attributes', function() {
+      // TODO:
+    });
+
+    context('file has attributes', function() {
+      // TODO:
+      // const tun = TuningResource.create();
+      // tun.updateFileName("something");
+      // console.log(tun.getBuffer().toString());
+    });
   });
 
   describe('#updateTuningId()', function() {
-    // TODO:
+    context('file is missing attributes', function() {
+      // TODO:
+    });
+
+    context('file has attributes', function() {
+      // TODO:
+    });
   });
 
   //#endregion Setters

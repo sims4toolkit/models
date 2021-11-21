@@ -178,7 +178,7 @@ export default class TuningResource extends Resource {
     // circuit as soon as they are found.
 
     try {
-      return this._content.split(`${attr}="`)[1].split('"')[0];
+      return this._content.split(`${attr}="`, 2)[1].split('"', 2)[0];
     } catch (e) {
       return undefined;
     }
@@ -192,9 +192,9 @@ export default class TuningResource extends Resource {
    */
   private _updateAttr(attr: string, value: string) {
     try {
-      const [before, mid] = this._content.split(`${attr}="`);
-      const after = mid.split('"')[1];
-      this._content = `${before}"${value}"${after}`;
+      const [before, mid] = this._content.split(` ${attr}="`, 2);
+      const after = mid.split('"', 2)[1];
+      this._content = `${before} ${attr}="${value}"${after}`;
       this._uncache();
       this._attrs[attr] = value;
     } catch (e) {
