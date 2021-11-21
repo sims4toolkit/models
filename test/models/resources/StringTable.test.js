@@ -850,23 +850,45 @@ describe('StringTableResource', function() {
 
   describe('#removeEntryByKey()', function() {
     it('should remove the first entry with the given key', function() {
-      // TODO:
+      const stbl = getSTBL('SmallSTBL');
+      expect(stbl.numEntries()).to.equal(3);
+      expect(stbl.getEntryByKey(0xF098F4B5)).to.not.be.undefined;
+      stbl.removeEntryByKey(0xF098F4B5);
+      expect(stbl.numEntries()).to.equal(2);
+      expect(stbl.getEntryByKey(0xF098F4B5)).to.be.undefined;
     });
 
     it('should return the first entry with the given key', function() {
-      // TODO:
+      const stbl = getSTBL('SmallSTBL');
+      const entry = stbl.removeEntryByKey(0xF098F4B5);
+      assertEntry(entry, 1, 0xF098F4B5, "This is another string!");
     });
 
     it('should return undefined if no entry has the given key', function() {
-      // TODO:
+      const stbl = getSTBL('SmallSTBL');
+      const entry = stbl.removeEntryByKey(123);
+      expect(entry).to.be.undefined;
+    });
+
+    it('should not remove anything if no entry has the given key', function() {
+      const stbl = getSTBL('SmallSTBL');
+      expect(stbl.numEntries()).to.equal(3);
+      stbl.removeEntryByKey(123);
+      expect(stbl.numEntries()).to.equal(3);
     });
 
     it('should uncache the buffer if successful', function() {
-      // TODO:
+      const stbl = getSTBL('SmallSTBL');
+      expect(stbl.hasChanged()).to.be.false;
+      stbl.removeEntryByKey(0xF098F4B5);
+      expect(stbl.hasChanged()).to.be.true;
     });
 
     it('should not uncache the buffer if failed', function() {
-      // TODO:
+      const stbl = getSTBL('SmallSTBL');
+      expect(stbl.hasChanged()).to.be.false;
+      stbl.removeEntryByKey(123);
+      expect(stbl.hasChanged()).to.be.false;
     });
   });
 
