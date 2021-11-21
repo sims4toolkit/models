@@ -1,5 +1,7 @@
 //#region Node Interfaces
 
+export type TuningFile = InstanceTuning | ModuleTuning;
+
 interface TunableNode {
   tag: string;
   attrs?: { [key: string]: any };
@@ -19,8 +21,8 @@ interface InstanceTuning extends ParentNode {
   tag: 'I';
   attrs: {
     c: string;
-    m: string;
     i: string;
+    m: string;
     n: string;
     s: string | number | bigint;
   };
@@ -68,6 +70,12 @@ interface TunableClass extends ParentNode {
 
 //#region Helpers
 
+/**
+ * Creates and returns a value node.
+ * 
+ * @param tag Tag for this node
+ * @param args Name, ev, and value for this node 
+ */
 function valueNode(tag: string, { name, ev, value }: {
   name?: string;
   ev?: string | number | bigint;
@@ -80,6 +88,12 @@ function valueNode(tag: string, { name, ev, value }: {
   return node;
 }
 
+/**
+ * Creates and returns a parent node.
+ * 
+ * @param tag Tag for this node
+ * @param args Name, type, and children for this node 
+ */
 function parentNode(tag: string, { name, type, children }: {
   name?: string;
   type?: string;
@@ -101,10 +115,10 @@ function parentNode(tag: string, { name, type, children }: {
  * 
  * @param content Object containing the attributes and children of the instance
  */
-export function I({ c, m, i, n, s, children }: {
+export function I({ c, i, m, n, s, children }: {
   c: string;
-  m: string;
   i: string;
+  m: string;
   n: string;
   s: string | number | bigint;
   children?: TunableNode[];
