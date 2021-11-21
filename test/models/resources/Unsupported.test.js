@@ -25,10 +25,6 @@ describe('UnsupportedResource', function() {
     // TODO:
   });
 
-  describe('#getPlainText()', function() {
-    // TODO:
-  });
-
   describe('#hasChanged()', function() {
     // TODO:
   });

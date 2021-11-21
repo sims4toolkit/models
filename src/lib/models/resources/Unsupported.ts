@@ -8,7 +8,6 @@ import type { ResourceVariant } from './Resource';
  */
 export default class UnsupportedResource extends Resource {
   readonly variant: ResourceVariant = undefined;
-  private _plainText: string;
 
   /** Reason why this resource is not supported by the library. */
   readonly reason?: string;
@@ -41,16 +40,5 @@ export default class UnsupportedResource extends Resource {
 
   protected _serialize(): Buffer {
     throw new Error("Cannot serialize an unsupported resource.");
-  }
-
-  /**
-   * Returns this resource as plain text, using UTF-8 encoding. Content is
-   * loaded lazily, meaning that it will not actually be decoded until this
-   * function is called for the first time.
-   */
-  getPlainText(): string {
-    if (this._plainText === undefined)
-      this._plainText = this.getBuffer().toString('utf-8');
-    return this._plainText;
   }
 }
