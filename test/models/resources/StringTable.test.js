@@ -789,19 +789,27 @@ describe('StringTableResource', function() {
     it('should return the entry with the given ID', function() {
       const stbl = getSTBL('SmallSTBL');
       const entry = stbl.removeEntryById(0);
-      assertEntry(entry, 0, 0x7E08629A, "This is a string.")
+      assertEntry(entry, 0, 0x7E08629A, "This is a string.");
     });
 
     it('should return undefined if no entry has the given ID', function() {
-      // TODO:
+      const stbl = getSTBL('SmallSTBL');
+      const entry = stbl.removeEntryById(-1);
+      expect(entry).to.be.undefined;
     });
 
     it('should uncache the buffer if successful', function() {
-      // TODO:
+      const stbl = getSTBL('SmallSTBL');
+      expect(stbl.hasChanged()).to.be.false;
+      stbl.removeEntryById(0);
+      expect(stbl.hasChanged()).to.be.true;
     });
 
     it('should not uncache the buffer if failed', function() {
-      // TODO:
+      const stbl = getSTBL('SmallSTBL');
+      expect(stbl.hasChanged()).to.be.false;
+      stbl.removeEntryById(-1);
+      expect(stbl.hasChanged()).to.be.false;
     });
   });
 
