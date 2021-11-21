@@ -9,3 +9,9 @@ To avoid confusion with NPM packages and JavaScript's keyword `package`, all ref
 ## Getting Started
 
 TODO: Documentation
+
+## Tech Stack
+
+The library is written entirely in TypeScript, but is distributed as JavaScript with TypeScript declaration files.
+
+Units tests are written in JavaScript, using [Mocha](https://mochajs.org/) and [Chai](https://www.chaijs.com/).
