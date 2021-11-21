@@ -555,7 +555,25 @@ describe('StringTableResource', function() {
   //#region Update
 
   describe('#updateEntry()', function() {
-    // TODO:
+    it('should update the key', function() {
+      // TODO:
+    });
+
+    it('should update the string', function() {
+      // TODO:
+    });
+
+    it('should update the key and string', function() {
+      // TODO:
+    });
+
+    it('should return the original entry', function() {
+      // TODO:
+    });
+
+    it('should return undefined if no entries match the predicate', function() {
+      // TODO:
+    });
 
     it('should uncache the buffer if successful', function() {
       // TODO:
@@ -567,7 +585,25 @@ describe('StringTableResource', function() {
   });
 
   describe('#updateEntryById()', function() {
-    // TODO:
+    it('should update the key', function() {
+      // TODO:
+    });
+
+    it('should update the string', function() {
+      // TODO:
+    });
+
+    it('should update the key and string', function() {
+      // TODO:
+    });
+
+    it('should return the original entry', function() {
+      // TODO:
+    });
+
+    it('should return undefined if no entries have the ID', function() {
+      // TODO:
+    });
 
     it('should uncache the buffer if successful', function() {
       // TODO:
@@ -579,7 +615,25 @@ describe('StringTableResource', function() {
   });
 
   describe('#updateEntryByKey()', function() {
-    // TODO:
+    it('should update the key', function() {
+      // TODO:
+    });
+
+    it('should update the string', function() {
+      // TODO:
+    });
+
+    it('should update the key and string', function() {
+      // TODO:
+    });
+
+    it('should return the original entry', function() {
+      // TODO:
+    });
+
+    it('should return undefined if no entries have the key', function() {
+      // TODO:
+    });
 
     it('should uncache the buffer if successful', function() {
       // TODO:
@@ -591,7 +645,29 @@ describe('StringTableResource', function() {
   });
 
   describe('#updateEntryByIndex()', function() {
-    // TODO:
+    it('should update the key', function() {
+      // TODO:
+    });
+
+    it('should update the string', function() {
+      // TODO:
+    });
+
+    it('should update the key and string', function() {
+      // TODO:
+    });
+
+    it('should return the original entry', function() {
+      // TODO:
+    });
+
+    it('should return undefined if index is negative', function() {
+      // TODO:
+    });
+
+    it('should return undefined if index is out of bounds', function() {
+      // TODO:
+    });
 
     it('should uncache the buffer if successful', function() {
       // TODO:
@@ -917,7 +993,9 @@ describe('StringTableResource', function() {
   describe('#searchByString()', function() {
     context('no options are passed', function() {
       it('should return empty array on empty stbl', function() {
-        // TODO:
+        const stbl = StringTableResource.create();
+        const result = stbl.searchByString("test");
+        expect(result).to.be.an('Array').and.to.be.empty;
       });
 
       it('should return empty array when there are no case-insentive exact matches', function() {
