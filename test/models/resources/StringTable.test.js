@@ -1197,21 +1197,48 @@ describe('StringTableResource', function() {
       });
 
       it('should return all entries that contain the substring in same case', function() {
-        // TODO:
+        const stbl = StringTableResource.create();
+        stbl.addEntry(12, 'Hello');
+        stbl.addEntry(34, 'Hello world');
+        const result = stbl.searchByString('Hello', { includeSubstrings: true });
+        expect(result).to.be.an('Array').that.has.lengthOf(2);
       });
 
       it('should return all entries that contain the substring in different case', function() {
-        // TODO:
+        const stbl = StringTableResource.create();
+        stbl.addEntry(12, 'Hello');
+        stbl.addEntry(34, 'Hello world');
+        const result = stbl.searchByString('hello', { includeSubstrings: true });
+        expect(result).to.be.an('Array').that.has.lengthOf(2);
       });
     });
 
     context('case sensitive set to true & search for substrings', function() {
       it('should return empty array when contains substring, but not in right case', function() {
-        // TODO:
+        const stbl = StringTableResource.create();
+        stbl.addEntry(12, 'Hello');
+        stbl.addEntry(34, 'Hello world');
+
+        const result = stbl.searchByString('hello', {
+          includeSubstrings: true,
+          caseSensitive: true
+        });
+
+        expect(result).to.be.an('Array').that.is.empty;
       });
 
       it('should return all entries that contain substring in right case', function() {
-        // TODO:
+        const stbl = StringTableResource.create();
+        stbl.addEntry(12, 'Hello');
+        stbl.addEntry(34, 'Hello world');
+        stbl.addEntry(56, 'hello world');
+
+        const result = stbl.searchByString('Hello', {
+          includeSubstrings: true,
+          caseSensitive: true
+        });
+
+        expect(result).to.be.an('Array').that.has.lengthOf(2);
       });
     });
   });
