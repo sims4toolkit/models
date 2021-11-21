@@ -30,13 +30,25 @@ describe('Hashing', function() {
   });
 
   describe('#fnv32()', function() {
-    const fns = getTestFuncs(value => hashing.fnv32(value));
-    fns.assertIgnoreCase();
-    fns.assertHashes([
-      ['', 0x811C9DC5],
-      ['this is a string', 1103314317],
-      ['Hé110 : wør!D', 2133112078]
-    ]);
+    context('no high bit', function() {
+      const fns = getTestFuncs(value => hashing.fnv32(value));
+      fns.assertIgnoreCase();
+      fns.assertHashes([
+        ['', 0x811C9DC5],
+        ['this is a string', 1103314317],
+        ['Hé110 : wør!D', 2133112078]
+      ]);
+    });
+
+    context('high bit', function() {
+      const fns = getTestFuncs(value => hashing.fnv32(value, true));
+      fns.assertIgnoreCase();
+      fns.assertHashes([
+        ['', 2166136261],
+        ['this is a string', 3250797965],
+        ['Hé110 : wør!D', 4280595726]
+      ]);
+    });
   });
 
   describe('#fnv56()', function() {
@@ -50,13 +62,25 @@ describe('Hashing', function() {
   });
 
   describe('#fnv64()', function() {
-    const fns = getTestFuncs(value => hashing.fnv64(value));
-    fns.assertIgnoreCase();
-    fns.assertHashes([
-      ['', 0xCBF29CE484222325n],
-      ['this is a string', 4440559991801161453n],
-      ['Hé110 : wør!D', 17661114212433175598n]
-    ]);
+    context('no high bit', function() {
+      const fns = getTestFuncs(value => hashing.fnv64(value));
+      fns.assertIgnoreCase();
+      fns.assertHashes([
+        ['', 0xCBF29CE484222325n],
+        ['this is a string', 4440559991801161453n],
+        ['Hé110 : wør!D', 17661114212433175598n]
+      ]);
+    });
+
+    context('high bit', function() {
+      const fns = getTestFuncs(value => hashing.fnv64(value, true));
+      fns.assertIgnoreCase();
+      fns.assertHashes([
+        ['', 0xCBF29CE484222325n],
+        ['this is a string', 0xBDA009C9131EA6EDn],
+        ['Hé110 : wør!D', 0xF518E1CDB9AEA42En]
+      ]);
+    });
   });
 
   describe('#fnv32to24()', function() {

@@ -19,6 +19,17 @@ function fnv(value: string, offset: bigint, prime: bigint, max: bigint): bigint 
 }
 
 /**
+ * Sets the high bit of the given value to 1.
+ * 
+ * @param value Value to set high bit of
+ * @param bits Number of bits
+ * @returns Value with its highest bit set to 1
+ */
+function setHighBit(value: bigint, bits: bigint): bigint {
+  return value | (2n ** (bits - 1n));
+}
+
+/**
  * Gets the 24-bit FNV-1 hash of the given string.
  * 
  * @param value String to hash
@@ -32,10 +43,12 @@ export function fnv24(value: string): number {
  * Gets the 32-bit FNV-1 hash of the given string.
  * 
  * @param value String to hash
+ * @param highBit Whether or not the force the high bit to 1
  * @returns 32-bit FNV-1 hash of given string
  */
-export function fnv32(value: string): number { 
-  return Number(fnv(value, 0x811C9DC5n, 0x01000193n, 0x100000000n));
+export function fnv32(value: string, highBit = false): number { 
+  const hash = fnv(value, 0x811C9DC5n, 0x01000193n, 0x100000000n);
+  return Number(highBit ? setHighBit(hash, 32n) : hash);
 }
 
 /**
@@ -52,10 +65,12 @@ export function fnv56(value: string): bigint {
  * Gets the 64-bit FNV-1 hash of the given string.
  * 
  * @param value String to hash
+ * @param highBit Whether or not the force the high bit to 1
  * @returns 64-bit FNV-1 hash of given string
  */
-export function fnv64(value: string): bigint {
-  return fnv(value, 0xCBF29CE484222325n, 0x00000100000001B3n, 0x10000000000000000n);
+export function fnv64(value: string, highBit = false): bigint {
+  const hash = fnv(value, 0xCBF29CE484222325n, 0x00000100000001B3n, 0x10000000000000000n);
+  return highBit ? setHighBit(hash, 64n) : hash;
 }
 
 /**
