@@ -5,6 +5,7 @@ import SimDataResource from "./lib/models/resources/SimData";
 import StringTableResource from "./lib/models/resources/StringTable";
 import UnsupportedResource from "./lib/models/resources/Unsupported";
 import * as Hashing from "./lib/services/Hashing";
+import * as TunableNodes from "./lib/models/tunables/TunableNodes";
 
 
 export {
@@ -14,5 +15,6 @@ export {
   SimDataResource,
   StringTableResource,
   UnsupportedResource,
-  Hashing
+  Hashing,
+  TunableNodes
 }
