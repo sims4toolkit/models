@@ -730,31 +730,44 @@ describe('StringTableResource', function() {
     it('should return the entries that match the predicate', function() {
       const stbl = getSTBL('SmallSTBL');
       const entries = stbl.removeEntries(entry => entry.id > 0);
+      expect(entries).to.be.an('Array').and.to.have.lengthOf(2);
       assertEntry(entries[0], 1, 0xF098F4B5, "This is another string!");
       assertEntry(entries[1], 2, 0x8D6D117D, "And this, this is a third.");
     });
 
     it('should remove the entries that match the predicate', function() {
-      // TODO:
+      const stbl = getSTBL('SmallSTBL');
+      expect(stbl.numEntries()).to.equal(3);
+      stbl.removeEntries(entry => entry.id > 0);
+      expect(stbl.numEntries()).to.equal(1);
+      expect(stbl.getEntryById(0)).to.not.be.undefined;
     });
 
     it('should return an empty array if no entries were matched', function() {
-      // TODO:
+      const stbl = getSTBL('SmallSTBL');
+      const entries = stbl.removeEntries(entry => entry.id === -1);
+      expect(entries).to.be.an('Array').and.to.be.empty;
     });
 
     it('should not remove anything if no entries were matched', function() {
-      // const stbl = getSTBL('SmallSTBL');
-      // expect(stbl.numEntries()).to.equal(3);
-      // stbl.removeEntry(entry => entry.id === -1);
-      // expect(stbl.numEntries()).to.equal(3);
+      const stbl = getSTBL('SmallSTBL');
+      expect(stbl.numEntries()).to.equal(3);
+      stbl.removeEntries(entry => entry.id === -1);
+      expect(stbl.numEntries()).to.equal(3);
     });
 
     it('should uncache the buffer if successful', function() {
-      // TODO:
+      const stbl = getSTBL('SmallSTBL');
+      expect(stbl.hasChanged()).to.be.false;
+      stbl.removeEntries(entry => entry.id === 0);
+      expect(stbl.hasChanged()).to.be.true;
     });
 
     it('should not uncache the buffer if failed', function() {
-      // TODO:
+      const stbl = getSTBL('SmallSTBL');
+      expect(stbl.hasChanged()).to.be.false;
+      stbl.removeEntries(entry => entry.id === -1);
+      expect(stbl.hasChanged()).to.be.false;
     });
   });
 
