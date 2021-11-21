@@ -1136,11 +1136,29 @@ describe('StringTableResource', function() {
       });
 
       it('should return empty array when there are no case-insentive exact matches', function() {
-        // TODO:
+        const stbl = getSTBL('SmallSTBL');
+        const result = stbl.searchByString('this is another string');
+        expect(result).to.be.an('Array').and.to.be.empty;
       });
 
-      it('should return array of all case-insentive exact matches', function() {
-        // TODO:
+      it('should return array with one case-insentive exact match when there is one', function() {
+        const stbl = getSTBL('SmallSTBL');
+        const result1 = stbl.searchByString('This is another string!');
+        expect(result1).to.be.an('Array').with.lengthOf(1);
+        expect(result1[0].key).to.equal(0xF098F4B5);
+        const result2 = stbl.searchByString('this is Another string!');
+        expect(result2).to.be.an('Array').with.lengthOf(1);
+        expect(result2[0].key).to.equal(0xF098F4B5);
+        expect(result2[0].string).to.equal('This is another string!');
+      });
+
+      it('should return array of all case-insentive exact matches when there is more than one', function() {
+        const stbl = getSTBL('SmallSTBL');
+        stbl.addStringAndHash('tHiS iS aNoThEr StRiNg!')
+        const result = stbl.searchByString('this is another string!');
+        expect(result).to.be.an('Array').with.lengthOf(2);
+        expect(result[0].key).to.equal(0xF098F4B5);
+        expect(result[1].key).to.equal(Hashing.fnv32('tHiS iS aNoThEr StRiNg!'));
       });
     });
 
