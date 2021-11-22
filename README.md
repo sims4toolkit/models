@@ -10,8 +10,18 @@ To avoid confusion with NPM packages and JavaScript's keyword `package`, all ref
 
 TODO: Documentation
 
+## Troubleshooting
+
+If you encounter any issues using the `import { x } from '@s4tk/core';` syntax, try using `const { x } = require('@s4tk/core');` (it depends on your project settings which works).
+
 ## Tech Stack
 
 The library is written entirely in TypeScript, but is distributed as JavaScript with TypeScript declaration files.
 
 Units tests are written in JavaScript, using [Mocha](https://mochajs.org/) and [Chai](https://www.chaijs.com/).
+
+## Disclaimer
+
+The Sims 4™ is a registered trademark of Electronic Arts Inc. (EA).
+
+Sims 4 Toolkit is independently made and is not affiliated with or endorsed by EA.

@@ -1,4 +1,4 @@
-import * as Hashing from '../services/Hashing';
+import * as Hashing from '../utils/hashing';
 import SimData from '../models/resources/SimData';
 import type Tuning from '../models/resources/Tuning';
 

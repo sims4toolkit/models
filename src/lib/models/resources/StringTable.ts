@@ -1,7 +1,7 @@
 import Resource from "./Resource";
 import type { ResourceVariant } from "./Resource";
 import { BinaryEncoder, BinaryDecoder } from "../../utils/encoding";
-import { fnv32 } from "../../services/Hashing";
+import { fnv32 } from "../../utils/hashing";
 
 /**
  * A resource that contains string table data.
