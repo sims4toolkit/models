@@ -1,14 +1,19 @@
-const XML_DECLARATION = '<?xml version="1.0" encoding="utf-8"?>';
+import { XMLParser } from "fast-xml-parser";
 
-//#region Types
+const XML_DECLARATION = '<?xml version="1.0" encoding="utf-8"?>';
+const parser = new XMLParser({
+  ignoreAttributes: false,
+  attributeNamePrefix: "",
+  commentPropName: "#comment",
+  preserveOrder: true,
+  textNodeName: "#value"
+});
+
+//#region Types & Classes
 
 type Tag = 'I' | 'M' | 'T' | 'E' | 'V' | 'U' | 'L' | 'C';
 type AttributeKey = 'n' | 'c' | 't' | 'm' | 'i' | 'ev' | 'p';
 type TunableAttributes = { [key in AttributeKey]?: any; }
-
-//#endregion Types
-
-//#region Classes
 
 export abstract class TunableNode {
   abstract readonly tag: Tag;
@@ -27,6 +32,15 @@ export abstract class TunableNode {
     this.value = value;
     this.children = children;
     this.comment = comment;
+  }
+
+  /**
+   * TODO:
+   * 
+   * @param xml TODO:
+   */
+  static fromXML(xml: string): TunableNode {
+    // TODO:
   }
 
   /**
@@ -152,7 +166,7 @@ export class TunableTuple   extends ParentTunable { readonly tag = 'U'; }
 export class TunableList    extends ParentTunable { readonly tag = 'L'; }
 export class TunableClass   extends ParentTunable { readonly tag = 'C'; }
 
-//#endregion Classes
+//#endregion Types & Classes
 
 //#region Helpers
 
