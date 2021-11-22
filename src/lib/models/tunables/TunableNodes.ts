@@ -4,8 +4,10 @@ import type StringTable from "../resources/StringTable";
 
 export type TuningFileNode = InstanceTuning | ModuleTuning;
 
+export type Tag = 'I' | 'M' | 'T' | 'E' | 'V' | 'L' | 'U' | 'C';
+
 interface TunableNode {
-  tag: string;
+  tag: Tag;
   attrs?: { [key: string]: any };
   value?: any;
   children?: TunableNode[];
@@ -307,7 +309,7 @@ export function nodeToXML(node: TunableNode, options?: {
     });
     lines.push(`${spaces}</${node.tag}>`);
   }
-  
+
   return lines.join('\n');
 }
 

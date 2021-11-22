@@ -1,5 +1,7 @@
 const { expect } = require('chai');
+const { inspect } = require('util');
 const { TunableNodes, Hashing, StringTableResource } = require('../../../dst/api');
+const { parseXML } = require('../../../dst/lib/services/Parsing');
 
 const { I, M, T, E, V, L, U, S } = TunableNodes;
 
@@ -51,5 +53,32 @@ describe('TunableNodes', function() {
       const xml = TunableNodes.nodeToXML(node, { includeDeclaration: true });
       console.log(xml);
     });
+
+    it('temp test 2', function() {
+      const xml = `<?xml version="1.0" encoding="utf-8"?>
+<I c="Class" i="type" m="module.path" n="example_file" s="12345">
+  <L>
+    <U>
+      <T n="first">50</T>
+      <V n="third" t="disabled" />
+      <E n="enabled">ADULT</E>
+      <V n="fourth" t="enabled">
+        <T n="enabled">0x12345678<!--String--></T>
+      </V>
+    </U>
+    <U>
+      <T n="first">50</T>
+      <V n="third" t="disabled" />
+      <E n="enabled">ADULT</E>
+      <V n="fourth" t="enabled">
+        <T n="enabled">0x12345678<!--String--></T>
+      </V>
+    </U>
+  </L>
+</I>`;
+
+      const nodes = parseXML(xml);
+      console.log(inspect(nodes, {showHidden: false, depth: null, colors: true}));
+    })
   });
 });
