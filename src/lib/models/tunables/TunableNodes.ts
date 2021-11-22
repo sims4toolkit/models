@@ -109,9 +109,9 @@ function parentNode(tag: string, { name, type, children }: {
 }
 
 /**
- * TODO:
+ * Formats the given value so it can appear in tuning.
  * 
- * @param value TODO:
+ * @param value Value to format
  */
 function formatValue(value: any): string {
   const type = typeof value;
@@ -260,10 +260,11 @@ export function getStringFn(stbl: StringTable): (string: string) => string {
 }
 
 /**
- * TODO:
+ * Converts a node to an XML string. By default, it uses 2 spaces per indent,
+ * and will increase the indent count by 1 every recursive call.
  * 
- * @param node TODO:
- * @param options TODO:
+ * @param node Node to convert to XML
+ * @param options Options for indenting
  */
 export function nodeToXML(node: TunableNode, options?: {
   indents?: number;
