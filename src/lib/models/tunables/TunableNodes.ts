@@ -261,18 +261,25 @@ export function getStringFn(stbl: StringTable): (string: string) => string {
 
 /**
  * Converts a node to an XML string. By default, it uses 2 spaces per indent,
- * and will increase the indent count by 1 every recursive call.
+ * and will increase the indent count by 1 every recursive call. To include an
+ * XML declaration at the beginning of the string, set the `includeDeclaration`
+ * option to true.
  * 
  * @param node Node to convert to XML
- * @param options Options for indenting
+ * @param options Optional parameters
  */
 export function nodeToXML(node: TunableNode, options?: {
   indents?: number;
   spacesPerIndent?: number;
+  includeDeclaration?: boolean;
 }): string {
   const indents = options?.indents || 0;
   const spacesPerIndent = options?.spacesPerIndent || 2;
+  const declaration = options?.includeDeclaration || false;
   const spaces = Array(indents * spacesPerIndent).fill(' ').join('');
+
+  const lines: string[] = [];
+  if (declaration) lines.push('<?xml version="1.0" encoding="utf-8"?>');
 
   let attrsString: string = "";
   if (node.attrs !== undefined) {
@@ -284,24 +291,24 @@ export function nodeToXML(node: TunableNode, options?: {
   if (node.children === undefined || node.children.length === 0) {
     if (node.value === undefined) {
       // no value or children
-      return `${spaces}<${node.tag}${attrsString}/>`;
+      lines.push(`${spaces}<${node.tag}${attrsString}/>`);
     } else {
       // no children, but a value
-      return `${spaces}<${node.tag}${attrsString}>${formatValue(node.value)}</${node.tag}>`;
+      lines.push(`${spaces}<${node.tag}${attrsString}>${formatValue(node.value)}</${node.tag}>`);
     }
   } else {
     // don't check for value, children override it
-    return [
-      `${spaces}<${node.tag}${attrsString}>`,
-      ...node.children.map(childNode => {
-        return nodeToXML(childNode, {
-          indents: indents + 1,
-          spacesPerIndent
-        });
-      }),
-      `${spaces}</${node.tag}>`
-    ].join('\n');
+    lines.push(`${spaces}<${node.tag}${attrsString}>`);
+    node.children.forEach(childNode => {
+      lines.push(nodeToXML(childNode, {
+        indents: indents + 1,
+        spacesPerIndent
+      }));
+    });
+    lines.push(`${spaces}</${node.tag}>`);
   }
+  
+  return lines.join('\n');
 }
 
 //#endregion Functions

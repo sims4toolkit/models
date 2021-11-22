@@ -48,7 +48,7 @@ describe('TunableNodes', function() {
         ]
       });
 
-      const xml = TunableNodes.nodeToXML(node);
+      const xml = TunableNodes.nodeToXML(node, { includeDeclaration: true });
       console.log(xml);
     });
   });
