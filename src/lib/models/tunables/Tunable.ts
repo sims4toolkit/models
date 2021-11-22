@@ -1,53 +1,16 @@
-// TODO:
-
-
-// interface TunableNode {
-
-// }
-
-// class TuningElement {
-//   readonly tag: string;
-//   readonly attributes?: { [key: string]: any };
-//   readonly value?: any;
-//   readonly children?: TuningNode[];
-//   readonly comment?: string;
-
-//   constructor({ tag, attributes, values, children, comment }: {
-//     tag: string;
-//     attributes?: { [key: string]: any };
-//   })
-// }
-
-
 const XML_DECLARATION = '<?xml version="1.0" encoding="utf-8"?>';
+
+//#region Types
 
 type Tag = 'I' | 'M' | 'T' | 'E' | 'V' | 'U' | 'L' | 'C';
 type AttributeKey = 'n' | 'c' | 't' | 'm' | 'i' | 'ev' | 'p';
 type TunableAttributes = { [key in AttributeKey]?: any; }
 
+//#endregion Types
 
-/**
- * Formats the given value so it can appear in tuning XML.
- * 
- * @param value Value to format
- */
-function formatValue(value: any): string {
-  const type = typeof value;
-  switch (type) {
-    case 'boolean':
-      return value ? 'True' : 'False';
-    case 'number':
-    case 'bigint':
-      return value.toString();
-    default:
-      return value;
-  }
-}
+//#region Classes
 
-/**
- * TODO:
- */
-abstract class TunableNode {
+export abstract class TunableNode {
   abstract readonly tag: Tag;
   readonly attributes: TunableAttributes;
   readonly value?: any;
@@ -160,12 +123,7 @@ abstract class TunableNode {
   }
 }
 
-/**
- * TODO:
- */
-class Tunable extends TunableNode {
-  readonly tag: Tag = 'T';
-
+abstract class ValueTunable extends TunableNode {
   constructor({ attrs, value, comment }: {
     attrs?: TunableAttributes;
     value?: any;
@@ -175,78 +133,45 @@ class Tunable extends TunableNode {
   }
 }
 
-/**
- * TODO:
- */
- class TunableEnum extends TunableNode {
-  readonly tag: Tag = 'T';
-
-  constructor({ attrs, value, comment }: {
+abstract class ParentTunable extends TunableNode {
+  constructor({ attrs, children, comment }: {
     attrs?: TunableAttributes;
-    value?: string;
+    children?: TunableNode[];
     comment?: string;
   }) {
-    super({ attrs, value, comment });
+    super({ attrs, children, comment });
   }
 }
 
+export class InstanceTuning extends ParentTunable { readonly tag = 'I'; }
+export class ModuleTuning   extends ParentTunable { readonly tag = 'M'; }
+export class Tunable        extends ValueTunable  { readonly tag = 'T'; }
+export class TunableEnum    extends ValueTunable  { readonly tag = 'E'; }
+export class TunableVariant extends ParentTunable { readonly tag = 'V'; }
+export class TunableTuple   extends ParentTunable { readonly tag = 'U'; }
+export class TunableList    extends ParentTunable { readonly tag = 'L'; }
+export class TunableClass   extends ParentTunable { readonly tag = 'C'; }
 
+//#endregion Classes
 
+//#region Helpers
 
-// class Tunable implements TunableNode {
-//   readonly tag = 'T';
-//   private _value?: any;
-//   private _comment?: string;
-//   private _attrs: { n?: string; ev?: string | number | bigint; };
+/**
+ * Formats the given value so it can appear in tuning XML.
+ * 
+ * @param value Value to format
+ */
+function formatValue(value: any): string {
+  const type = typeof value;
+  switch (type) {
+    case 'boolean':
+      return value ? 'True' : 'False';
+    case 'number':
+    case 'bigint':
+      return value.toString();
+    default:
+      return value;
+  }
+}
 
-//   constructor({ value, comment, name, ev }: {
-//     value?: any;
-//     comment?: string;
-//     name?: string;
-//     ev?: string | number | bigint;
-//   }) {
-//     this._value = value;
-//     this._comment = comment;
-//     this._attrs = {};
-//     if (name !== undefined) this._attrs.n = name;
-//     if (ev !== undefined) this._attrs.ev = name;
-//   }
-// }
-
-// class TunableEnum {
-//   readonly tag = 'E';
-//   private _value?: string;
-//   private _comment?: string;
-//   private _attrs: { n?: string; };
-
-//   constructor({ value, comment, name }: {
-//     value?: string;
-//     comment?: string;
-//     name?: string;
-//   }) {
-//     this._value = value;
-//     this._comment = comment;
-//     this._attrs = {};
-//     if (name !== undefined) this._attrs.n = name;
-//   }
-// }
-
-// class TunableList {
-//   readonly tag = 'L';
-//   private _children?: any;
-//   private _comment?: string;
-//   private _attrs: { n?: string; ev?: string | number | bigint; };
-
-//   constructor({ value, comment, name, ev }: {
-//     value?: any;
-//     comment?: string;
-//     name?: string;
-//     ev?: string | number | bigint;
-//   }) {
-//     this._value = value;
-//     this._comment = comment;
-//     this._attrs = {};
-//     if (name !== undefined) this._attrs.n = name;
-//     if (ev !== undefined) this._attrs.ev = name;
-//   }
-// }
+//#endregion Helpers
