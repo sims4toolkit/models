@@ -315,35 +315,61 @@ export function C(args: {
   return parentNode('C', args) as TunableClass;
 }
 
-//#endregion Node Functions
-
 /**
- * Hashes the given string, puts it in the given string table, and returns the
- * string value for its hash and comment ("0x00000000<!--Like This-->"). To
- * avoid passing in the same string table every time you call this function,
- * consider importing the `getStringFn` function and adding the line
- * `const S = getStringFn(stbl);` in your generator.
+ * Creates and returns a TunableValue (T tag) node for a new string. It will put
+ * the string in the given string table, and return a node that contains its
+ * hash as a value and its string as a comment. If `textToHash` is supplied, it
+ * will be hashed. If not, then the string itself will be hashed.
  * 
- * @param string String to hash
- * @param stbl String table to put string in
+ * Arguments
+ * - `name`: Value to appear in the name attribute
+ * - `string`: The string to add to the table
+ * - `textToHash`: Text to hash instead of hashing the string itself
+ * - `stbl`: The string table to add this string to
+ * 
+ * @param args Object containing the arguments
  */
-export function S(string: string, stbl: StringTable): string {
-  const id = stbl.addStringAndHash(string);
+export function StringNode({ name, string, textToHash, stbl }: {
+  name?: string;
+  string: string;
+  textToHash?: string;
+  stbl: StringTable;
+}): TunableValue {
+  const toHash = textToHash || string;
+  const id = stbl.addStringAndHash(toHash);
   const { key } = stbl.getEntryById(id);
-  return `0x${key.toString(16).padStart(8, '0').toUpperCase()}<!--${string}-->`;
+  const formattedKey = `0x${key.toString(16).padStart(8, '0').toUpperCase()}`;
+  return T({
+    name,
+    value: formattedKey,
+    comment: string
+  });
 }
 
+//#endregion Node Functions
+
+//#region Other Functions
+
 /**
- * Will return a function that is shorthand for calling the `S` function on the
- * same string table many times. For example, instead of importing `S` and
- * calling it like `S("string", stbl)`, you can add the line
- * `const S = getStringFn(stbl);` to your generator, and then call
- * `S("string")`.
+ * Returns a version of `StringNode` that already has a string table baked into
+ * it, so that you do not need to pass it every time. Example usage is:
  * 
- * @param stbl String table to add all strings to
+ * ```ts
+ * const stbl = StringTableResource.create();
+ * const StringNode = getStringNodeFunction(stbl);
+ * const node = StringNode({ string: "This is the string!" });
+ * ```
+ *  
+ * @param stbl String table to use 
  */
-export function getStringFn(stbl: StringTable): (string: string) => string {
-  return (string: string) => S(string, stbl);
+export function getStringNodeFunction(stbl: StringTable): ({ name, textToHash, string }: {
+  name?: string;
+  textToHash?: string;
+  string: string;
+}) => TunableValue {
+  return ({ name, textToHash, string }: { name?: string; textToHash?: string; string: string }) => {
+    return StringNode({ name, string, textToHash, stbl });
+  };
 }
 
 /**
@@ -413,3 +439,5 @@ export function nodeToXML(node: TunableNode, options: {
 
   return lines.join('\n');
 }
+
+//#endregion Other Functions
