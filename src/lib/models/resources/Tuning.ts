@@ -1,5 +1,6 @@
 import Resource from "./Resource";
 import type { ResourceVariant } from "./Resource";
+import type { TuningFileNode } from "../tunables/TunableNodes";
 
 const DEFAULT_CONTENT = `<?xml version="1.0" encoding="utf-8"?>\n<I c="" i="" m="" n="" s="">\n  \n</I>`;
 
@@ -55,6 +56,16 @@ export default class TuningResource extends Resource {
    */
   static from(buffer: Buffer, encoding: BufferEncoding = 'utf-8'): TuningResource {
     return new TuningResource(buffer.toString(encoding), buffer);
+  }
+
+  /**
+   * TODO:
+   * 
+   * @param node TODO:
+   */
+  static fromNode(node: TuningFileNode): TuningResource {
+    // TODO: impl
+    return undefined;
   }
 
   //#endregion Initialization

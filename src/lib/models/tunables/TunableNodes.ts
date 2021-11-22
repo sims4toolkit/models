@@ -1,6 +1,8 @@
+import type StringTable from "../resources/StringTable";
+
 //#region Node Interfaces
 
-export type TuningFile = InstanceTuning | ModuleTuning;
+export type TuningFileNode = InstanceTuning | ModuleTuning;
 
 interface TunableNode {
   tag: string;
@@ -207,6 +209,35 @@ export function V({ name, type, child }: {
   child?: TunableNode
 }): TunableVariant {
   return parentNode('V', { name, type, children: [child] }) as TunableVariant;
+}
+
+/**
+ * Hashes the given string, puts it in the given string table, and returns the
+ * string value for its hash and comment ("0x00000000<!--Like This-->"). To
+ * avoid passing in the same string table every time you call this function,
+ * consider importing the `getStringFn` function and adding the line
+ * `const S = getStringFn(stbl);` in your generator.
+ * 
+ * @param string String to hash
+ * @param stbl String table to put string in
+ */
+export function S(string: string, stbl: StringTable): string {
+  const id = stbl.addStringAndHash(string);
+  const { key } = stbl.getEntryById(id);
+  return `0x${key.toString(16).padStart(8, '0')}<!--${string}-->`;
+}
+
+/**
+ * Will return a function that is shorthand for calling the `S` function on the
+ * same string table many times. For example, instead of importing `S` and
+ * calling it like `S("string", stbl)`, you can add the line
+ * `const S = getStringFn(stbl);` to your generator, and then call
+ * `S("string")`.
+ * 
+ * @param stbl String table to add all strings to
+ */
+export function getStringFn(stbl: StringTable): (string: string) => string {
+  return (string: string) => S(string, stbl);
 }
 
 //#endregion Node Functions

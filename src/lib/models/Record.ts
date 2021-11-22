@@ -22,7 +22,7 @@ export default class Record<ResourceType extends Resource = Resource> {
   private _resource: ResourceType;
   private _cachedCompressedBuffer: Buffer;
 
-  private constructor(key: ResourceKey, resource: ResourceType) {
+  constructor(key: ResourceKey, resource: ResourceType) {
     this._key = key;
     this._resource = resource;
     //@ts-ignore The _setOwner method is meant to be private so that outside
@@ -38,6 +38,10 @@ export default class Record<ResourceType extends Resource = Resource> {
   private _setOwner(owner: DBPF) {
     this._owner = owner;
   }
+
+  // static from<ResourceType>(key: ResourceKey, resource: ResourceType): Record<ResourceType> {
+  //   return new Record<ResourceType>(key, resource);
+  // }
 
   /**
    * Returns a buffer that can be used to write this record in a DBPF. The
