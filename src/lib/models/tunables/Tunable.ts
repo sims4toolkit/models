@@ -49,10 +49,22 @@ function formatValue(value: any): string {
  */
 abstract class TunableNode {
   abstract readonly tag: Tag;
-  readonly attributes: TunableAttributes = {};
+  readonly attributes: TunableAttributes;
   readonly value?: any;
   readonly children?: TunableNode[];
   readonly comment?: string;
+
+  constructor({ attrs = {}, value, children, comment }: {
+    attrs?: TunableAttributes;
+    value?: any;
+    children?: TunableNode[];
+    comment?: string;
+  }) {
+    this.attributes = attrs;
+    this.value = value;
+    this.children = children;
+    this.comment = comment;
+  }
 
   /**
    * Finds the first child of this node that has the given tag and attributes.
@@ -145,6 +157,36 @@ abstract class TunableNode {
     }
 
     return lines.join('\n');
+  }
+}
+
+/**
+ * TODO:
+ */
+class Tunable extends TunableNode {
+  readonly tag: Tag = 'T';
+
+  constructor({ attrs, value, comment }: {
+    attrs?: TunableAttributes;
+    value?: any;
+    comment?: string;
+  }) {
+    super({ attrs, value, comment });
+  }
+}
+
+/**
+ * TODO:
+ */
+ class TunableEnum extends TunableNode {
+  readonly tag: Tag = 'T';
+
+  constructor({ attrs, value, comment }: {
+    attrs?: TunableAttributes;
+    value?: string;
+    comment?: string;
+  }) {
+    super({ attrs, value, comment });
   }
 }
 
