@@ -150,7 +150,7 @@ function formatValue(value: any): string {
 
 //#endregion Helpers
 
-//#region Functions
+//#region Node Functions
 
 /**
  * Creates and returns an InstanceTuning (I tag).
@@ -298,6 +298,26 @@ export function V({ name, type, child, comment }: {
 }
 
 /**
+ * Creates and returns a TunableClass (C tag).
+ * 
+ * Arguments
+ * - `name`: Value to appear in the name attribute
+ * - `children`: List of nodes this one contains
+ * - `comment`: A comment to write before the first child
+ * 
+ * @param args Object containing the arguments
+ */
+export function C(args: {
+  name: string;
+  children?: TunableNode[];
+  comment?: string;
+}): TunableClass {
+  return parentNode('C', args) as TunableClass;
+}
+
+//#endregion Node Functions
+
+/**
  * Hashes the given string, puts it in the given string table, and returns the
  * string value for its hash and comment ("0x00000000<!--Like This-->"). To
  * avoid passing in the same string table every time you call this function,
@@ -368,21 +388,24 @@ export function nodeToXML(node: TunableNode, options: {
   }
 
   // child(ren) TODO:
+  const comment = node.comment === undefined ? '' : `<!--${node.comment}-->`;
   if (node.children === undefined || node.children.length === 0) {
     if (node.value === undefined) {
       // no value or children
-      lines.push(`${spaces}<${node.tag}${attrsString}/>`);
+      lines.push(`${spaces}<${node.tag}${attrsString}/>${comment}`);
     } else {
       // no children, but a value
-      lines.push(`${spaces}<${node.tag}${attrsString}>${formatValue(node.value)}</${node.tag}>`);
+      lines.push(`${spaces}<${node.tag}${attrsString}>${formatValue(node.value)}${comment}</${node.tag}>`);
     }
   } else {
     // don't check for value, children override it
+    lines.push(`${spaces}${comment}`);
     lines.push(`${spaces}<${node.tag}${attrsString}>`);
     node.children.forEach(childNode => {
       lines.push(nodeToXML(childNode, {
         indents: indents + 1,
-        spacesPerIndent
+        spacesPerIndent,
+        alphabetize
       }));
     });
     lines.push(`${spaces}</${node.tag}>`);
@@ -390,5 +413,3 @@ export function nodeToXML(node: TunableNode, options: {
 
   return lines.join('\n');
 }
-
-//#endregion Functions
