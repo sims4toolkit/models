@@ -1,26 +1,30 @@
 import type StringTable from "../resources/StringTable";
 
-//#region Node Interfaces
+//#region Interfaces
 
-export type TuningFileNode = InstanceTuning | ModuleTuning;
+/** Nodes that can form the root of a tuning file. */
+export type TuningRootNode = InstanceTuning | ModuleTuning;
 
-export type Tag = 'I' | 'M' | 'T' | 'E' | 'V' | 'L' | 'U' | 'C';
-
-interface TunableNode {
-  tag: Tag;
+/** Nodes that comprise the contents of a tuning file. */
+export interface TunableNode {
+  tag: string;
   attrs?: { [key: string]: any };
   value?: any;
   children?: TunableNode[];
+  comment?: string;
 }
 
+/** Nodes that contain a single value. */
 interface ValueNode extends TunableNode {
   value: any;
 }
 
+/** Nodes that contain other nodes. */
 interface ParentNode extends TunableNode {
   children: TunableNode[];
 }
 
+/** Root node for instance tuning. */
 interface InstanceTuning extends ParentNode {
   tag: 'I';
   attrs: {
@@ -32,45 +36,57 @@ interface InstanceTuning extends ParentNode {
   };
 }
 
+/** Root node for module tuning. */
 interface ModuleTuning extends ParentNode {
   tag: 'M';
-  attrs: { n: string; s: string | number | bigint; };
-  children: TunableClass[];
+  attrs: {
+    n: string;
+    s: string | number | bigint;
+  };
 }
 
+/** Node for a tunable value (T tag). */
 interface TunableValue extends ValueNode {
   tag: 'T';
-  attrs: { n?: string; ev?: string | number | bigint; };
+  attrs: {
+    n?: string;
+    ev?: string | number | bigint;
+  };
   value: any;
 }
 
+/** Node for a tunable enum (E tag). */
 interface TunableEnum extends ValueNode {
   tag: 'E';
   attrs: { n?: string; };
   value: string;
 }
 
+/** Node for a tunable variant (V tag). */
 interface TunableVariant extends ParentNode {
   tag: 'V';
   attrs: { n?: string; t: string; };
 }
 
+/** Node for a tunable list (L tag). */
 interface TunableList extends ParentNode {
   tag: 'L';
   attrs: { n?: string; };
 }
 
+/** Node for a tunable tuple (U tag). */
 interface TunableTuple extends ParentNode {
   tag: 'U';
   attrs: { n?: string; };
 }
 
+/** Node for a tunable class (C tag). */
 interface TunableClass extends ParentNode {
   tag: 'C';
   attrs: { n: string; };
 }
 
-//#endregion Node Interfaces
+//#endregion Interfaces
 
 //#region Helpers
 
@@ -78,17 +94,19 @@ interface TunableClass extends ParentNode {
  * Creates and returns a value node.
  * 
  * @param tag Tag for this node
- * @param args Name, ev, and value for this node 
+ * @param args Arguments for this node
  */
-function valueNode(tag: string, { name, ev, value }: {
+function valueNode(tag: string, { name, ev, value, comment }: {
   name?: string;
   ev?: string | number | bigint;
   value?: any;
+  comment?: string;
 }): ValueNode {
   const node: any = { tag, attrs: {} };
   if (name !== undefined) node.attrs.n = name;
   if (ev !== undefined) node.attrs.ev = ev;
   if (value !== undefined) node.value = value;
+  if (comment !== undefined) node.comment = comment;
   return node;
 }
 
@@ -96,17 +114,19 @@ function valueNode(tag: string, { name, ev, value }: {
  * Creates and returns a parent node.
  * 
  * @param tag Tag for this node
- * @param args Name, type, and children for this node 
+ * @param args Arguments for this node
  */
-function parentNode(tag: string, { name, type, children }: {
+function parentNode(tag: string, { name, type, children, comment }: {
   name?: string;
   type?: string;
   children?: TunableNode[];
+  comment?: string;
 }): ParentNode {
   const node: any = { tag, attrs: {} };
   if (name !== undefined) node.attrs.n = name;
   if (type !== undefined) node.attrs.t = type;
   if (children !== undefined && children.length > 0) node.children = children;
+  if (comment !== undefined) node.comment = comment;
   return node;
 }
 
@@ -135,7 +155,15 @@ function formatValue(value: any): string {
 /**
  * Creates and returns an InstanceTuning (I tag).
  * 
- * @param content Object containing the attributes and children of the instance
+ * Arguments
+ * - `c`: Value to appear in the class attribute
+ * - `i`: Value to appear in the instance type attribute
+ * - `m`: Value to appear in the module path attribute
+ * - `n`: Value to appear in the filename attribute
+ * - `s`: Value to appear in the tuning ID attribute
+ * - `children`: List of nodes that this one contains
+ * 
+ * @param args Object containing the arguments
  */
 export function I({ c, i, m, n, s, children }: {
   c: string;
@@ -155,12 +183,17 @@ export function I({ c, i, m, n, s, children }: {
 /**
  * Creates and returns a ModuleTuning (M tag).
  * 
- * @param content Object containing the attributes and children of the module
+ * Arguments
+ * - `n`: Value to appear in the filename attribute
+ * - `s`: Value to appear in the tuning ID attribute
+ * - `children`: List of nodes that this one contains
+ * 
+ * @param args Object containing the arguments
  */
 export function M({ n, s, children }: {
   n: string;
   s: string | number | bigint;
-  children?: TunableClass[];
+  children?: TunableNode[];
 }): ModuleTuning {
   return {
     tag: 'M',
@@ -172,12 +205,19 @@ export function M({ n, s, children }: {
 /**
  * Creates and returns a TunableValue (T tag).
  * 
- * @param args Object containing the attributes and value of the tunable
+ * Arguments
+ * - `name`: Value to appear in the name attribute
+ * - `ev`: The enum value of this node (only for use within `C` nodes)
+ * - `value`: The single value that this node contains
+ * - `comment`: A comment to write after the value
+ * 
+ * @param args Object containing the arguments
  */
 export function T(args: {
   name?: string;
   ev?: string | number | bigint;
   value?: any;
+  comment?: string;
 }): TunableValue {
   return valueNode('T', args) as TunableValue;
 }
@@ -185,11 +225,17 @@ export function T(args: {
 /**
  * Creates and returns a TunableEnum (E tag).
  * 
- * @param args Object containing the name and value of the enum
+ * Arguments
+ * - `name`: Value to appear in the name attribute
+ * - `value`: The single value that this node contains
+ * - `comment`: A comment to write after the value
+ * 
+ * @param args Object containing the arguments
  */
 export function E(args: {
   name?: string;
   value?: string;
+  comment?: string;
 }): TunableEnum {
   return valueNode('E', args) as TunableEnum;
 }
@@ -197,11 +243,17 @@ export function E(args: {
 /**
  * Creates and returns a TunableList (L tag).
  * 
- * @param args Object containing the name and children of the list
+ * Arguments
+ * - `name`: Value to appear in the name attribute
+ * - `children`: List of nodes this one contains
+ * - `comment`: A comment to write before the first child
+ * 
+ * @param args Object containing the arguments
  */
 export function L(args: {
-  name?: string,
-  children?: TunableNode[]
+  name?: string;
+  children?: TunableNode[];
+  comment?: string;
 }): TunableList {
   return parentNode('L', args) as TunableList;
 }
@@ -209,11 +261,17 @@ export function L(args: {
 /**
  * Creates and returns a TunableTuple (U tag).
  * 
- * @param args Object containing the name and children of the tuple
+ * Arguments
+ * - `name`: Value to appear in the name attribute
+ * - `children`: List of nodes this one contains
+ * - `comment`: A comment to write before the first child
+ * 
+ * @param args Object containing the arguments
  */
 export function U(args: {
-  name?: string,
-  children?: TunableNode[]
+  name?: string;
+  children?: TunableNode[];
+  comment?: string;
 }): TunableTuple {
   return parentNode('U', args) as TunableTuple;
 }
@@ -221,15 +279,22 @@ export function U(args: {
 /**
  * Creates and returns a TunableVariant (V tag).
  * 
- * @param args Object containing the name, type, and child of the variant
+ * Arguments
+ * - `name`: Value to appear in the name attribute
+ * - `type`: Value to appear in the type attribute
+ * - `child`: The node that this one contains
+ * - `comment`: A comment to write before the child
+ * 
+ * @param args Object containing the arguments
  */
-export function V({ name, type, child }: {
-  name?: string,
-  type: string,
-  child?: TunableNode
+export function V({ name, type, child, comment }: {
+  name?: string;
+  type: string;
+  child?: TunableNode;
+  comment?: string;
 }): TunableVariant {
   const children = child === undefined ? undefined : [child];
-  return parentNode('V', { name, type, children }) as TunableVariant;
+  return parentNode('V', { name, type, children, comment }) as TunableVariant;
 }
 
 /**
@@ -262,34 +327,47 @@ export function getStringFn(stbl: StringTable): (string: string) => string {
 }
 
 /**
- * Converts a node to an XML string. By default, it uses 2 spaces per indent,
- * and will increase the indent count by 1 every recursive call. To include an
- * XML declaration at the beginning of the string, set the `includeDeclaration`
- * option to true.
+ * Converts a node to an XML string.
+ * 
+ * Options
+ * - `indents`: Number of times to indent this node (default = 0)
+ * - `spacesPerIndent`: Number of space to use per indent (default = 2)
+ * - `declaration`: Whether an XML declaration should be added (default = false)
+ * - `alphabetize`: Whether the nodes and attributes should be sorted in
+ *   alphanumeric order before writing them (default = false)
  * 
  * @param node Node to convert to XML
  * @param options Optional parameters
  */
-export function nodeToXML(node: TunableNode, options?: {
+export function nodeToXML(node: TunableNode, options: {
   indents?: number;
   spacesPerIndent?: number;
   includeDeclaration?: boolean;
+  alphabetize?: boolean;
 }): string {
   const indents = options?.indents || 0;
   const spacesPerIndent = options?.spacesPerIndent || 2;
-  const declaration = options?.includeDeclaration || false;
+  const alphabetize = options?.alphabetize || false;
   const spaces = Array(indents * spacesPerIndent).fill(' ').join('');
-
   const lines: string[] = [];
-  if (declaration) lines.push('<?xml version="1.0" encoding="utf-8"?>');
 
+  // declaration
+  if (options?.includeDeclaration || false)
+    lines.push(`${spaces}<?xml version="1.0" encoding="utf-8"?>`);
+
+  // attributes
   let attrsString: string = "";
   if (node.attrs !== undefined) {
-    const attrs: string[] = [""];
-    for (const attr in node.attrs) attrs.push(`${attr}="${node.attrs[attr]}"`);
-    attrsString = attrs.join(' ');
+    const nodeAttrKeys = Object.keys(node.attrs);
+    if (alphabetize) nodeAttrKeys.sort();
+    const attrFields: string[] = [""];
+    nodeAttrKeys.forEach(key => {
+      attrFields.push(`${key}="${node.attrs[key]}"`);
+    });
+    attrsString = attrFields.join(' ');
   }
 
+  // child(ren) TODO:
   if (node.children === undefined || node.children.length === 0) {
     if (node.value === undefined) {
       // no value or children

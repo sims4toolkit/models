@@ -10,13 +10,7 @@ const DEFAULT_CONTENT = `<?xml version="1.0" encoding="utf-8"?>\n<I c="" i="" m=
 export default class TuningResource extends Resource {
   readonly variant: ResourceVariant = 'XML';
   private _content: string;
-  private _attrs: {
-    n?: string; // file name
-    c?: string; // class name
-    i?: string; // type name
-    m?: string; // module path
-    s?: string; // decimal tuning id
-  };
+  private _model?: TuningFileNode;
 
   //#region Initialization
 
@@ -30,7 +24,6 @@ export default class TuningResource extends Resource {
   private constructor(content: string, cachedBuffer?: Buffer) {
     super(cachedBuffer);
     this._content = content;
-    this._attrs = {};
   }
 
   clone(): TuningResource {
@@ -159,7 +152,7 @@ export default class TuningResource extends Resource {
 
   protected _uncache() {
     super._uncache();
-    this._attrs = {};
+    this._model = undefined;
   }
 
   //#endregion Protected Methods
@@ -172,8 +165,8 @@ export default class TuningResource extends Resource {
    * @param attr Name of attribute to get
    */
   private _getAttr(attr: string): string {
-    if (this._attrs[attr] === undefined)
-      this._attrs[attr] = this._getAttrValue(attr);
+    if (this._model === undefined)
+      this._model[attr] = this._getAttrValue(attr);
     return this._attrs[attr];
   }
 
