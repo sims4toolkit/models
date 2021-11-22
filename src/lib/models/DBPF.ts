@@ -2,13 +2,13 @@ import * as zlib from 'zlib';
 import { BinaryDecoder, BinaryEncoder } from '../utils/encoding';
 import { makeList } from '../utils/helpers';
 import { BinaryResourceType, TuningResourceType } from '../enums/ResourceType';
-import Resource from './resources/Resource';
-import SimData from './resources/SimData';
-import StringTable from './resources/StringTable';
-import Tuning from './resources/Tuning';
-import Unsupported from './resources/Unsupported';
+import Resource from './resources/resource';
+import SimData from './resources/simdata';
+import StringTable from './resources/stringtable';
+import Tuning from './resources/tuning';
+import Unsupported from './resources/unsupported';
 import { buffer } from 'stream/consumers';
-import RawResource from './resources/Raw';
+import RawResource from './resources/raw';
 
 /**
  * Model for a Database Packed File (DBPF).

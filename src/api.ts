@@ -1,9 +1,9 @@
-import DBPF from "./lib/models/DBPF";
-import RawResource from "./lib/models/resources/Raw";
-import TuningResource from "./lib/models/resources/Tuning";
-import SimDataResource from "./lib/models/resources/SimData";
-import StringTableResource from "./lib/models/resources/StringTable";
-import UnsupportedResource from "./lib/models/resources/Unsupported";
+import DBPF from "./lib/models/dbpf";
+import RawResource from "./lib/models/resources/raw";
+import TuningResource from "./lib/models/resources/tuning";
+import SimDataResource from "./lib/models/resources/simdata";
+import StringTableResource from "./lib/models/resources/stringtable";
+import UnsupportedResource from "./lib/models/resources/unsupported";
 import * as hashing from "./lib/utils/hashing";
 
 

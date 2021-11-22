@@ -1,5 +1,5 @@
-import type DBPF from "./DBPF";
-import type Resource from "./resources/Resource";
+import type DBPF from "./dbpf";
+import type Resource from "./resources/resource";
 
 
 /**

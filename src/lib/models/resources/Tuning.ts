@@ -1,5 +1,5 @@
-import Resource from "./Resource";
-import type { ResourceVariant } from "./Resource";
+import Resource from "./resource";
+import type { ResourceVariant } from "./resource";
 import type { TuningFileNode } from "../tunables/TunableNodes";
 
 const DEFAULT_CONTENT = `<?xml version="1.0" encoding="utf-8"?>\n<I c="" i="" m="" n="" s="">\n  \n</I>`;

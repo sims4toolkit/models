@@ -1,5 +1,5 @@
-import Resource from './Resource';
-import type { ResourceVariant } from './Resource';
+import Resource from './resource';
+import type { ResourceVariant } from './resource';
 
 /**
  * Model for resource types that are not supported by the library. This includes

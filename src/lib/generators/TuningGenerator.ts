@@ -1,6 +1,6 @@
 import type { TuningFileNode } from '../models/tunables/TunableNodes';
-import Tuning from '../models/resources/Tuning';
-import StringTable from '../models/resources/StringTable';
+import Tuning from '../models/resources/tuning';
+import StringTable from '../models/resources/stringtable';
 import Record, { ResourceKey } from '../models/Record';
 import { I, M, L, U, V, E, T, getStringFn } from '../models/tunables/TunableNodes';
 import { fnv32, fnv64 } from '../utils/hashing';

@@ -1,4 +1,4 @@
-import type StringTable from "../resources/StringTable";
+import type StringTable from "../resources/stringtable";
 
 //#region Interfaces
 

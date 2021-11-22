@@ -1,5 +1,5 @@
-import Resource from "./Resource";
-import type { ResourceVariant } from "./Resource";
+import Resource from "./resource";
+import type { ResourceVariant } from "./resource";
 import { BinaryEncoder, BinaryDecoder } from "../../utils/encoding";
 import { fnv32 } from "../../utils/hashing";
 

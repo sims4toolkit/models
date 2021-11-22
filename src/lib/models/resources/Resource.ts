@@ -1,4 +1,4 @@
-import type Record from "../Record";
+import type Record from "../record";
 
 /** How a resource file is encoded. */
 export type ResourceVariant = 'RAW' | 'XML' | 'DATA' | 'STBL' | undefined;

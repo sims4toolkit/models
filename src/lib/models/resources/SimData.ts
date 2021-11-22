@@ -1,5 +1,5 @@
-import Resource from "./Resource";
-import type { ResourceVariant } from "./Resource";
+import Resource from "./resource";
+import type { ResourceVariant } from "./resource";
 
 /**
  * A resource that contains binary tuning (SimData).
