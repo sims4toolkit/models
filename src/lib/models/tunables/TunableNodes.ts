@@ -83,7 +83,7 @@ function valueNode(tag: string, { name, ev, value }: {
   ev?: string | number | bigint;
   value?: any;
 }): ValueNode {
-  const node: any = { tag };
+  const node: any = { tag, attrs: {} };
   if (name !== undefined) node.attrs.n = name;
   if (ev !== undefined) node.attrs.ev = ev;
   if (value !== undefined) node.value = value;
@@ -101,16 +101,34 @@ function parentNode(tag: string, { name, type, children }: {
   type?: string;
   children?: TunableNode[];
 }): ParentNode {
-  const node: any = { tag };
+  const node: any = { tag, attrs: {} };
   if (name !== undefined) node.attrs.n = name;
   if (type !== undefined) node.attrs.t = type;
   if (children !== undefined && children.length > 0) node.children = children;
   return node;
 }
 
+/**
+ * TODO:
+ * 
+ * @param value TODO:
+ */
+function formatValue(value: any): string {
+  const type = typeof value;
+  switch (type) {
+    case 'boolean':
+      return value ? 'True' : 'False';
+    case 'number':
+    case 'bigint':
+      return value.toString();
+    default:
+      return value;
+  }
+}
+
 //#endregion Helpers
 
-//#region Node Functions
+//#region Functions
 
 /**
  * Creates and returns an InstanceTuning (I tag).
@@ -208,7 +226,8 @@ export function V({ name, type, child }: {
   type: string,
   child?: TunableNode
 }): TunableVariant {
-  return parentNode('V', { name, type, children: [child] }) as TunableVariant;
+  const children = child === undefined ? undefined : [child];
+  return parentNode('V', { name, type, children }) as TunableVariant;
 }
 
 /**
@@ -224,7 +243,7 @@ export function V({ name, type, child }: {
 export function S(string: string, stbl: StringTable): string {
   const id = stbl.addStringAndHash(string);
   const { key } = stbl.getEntryById(id);
-  return `0x${key.toString(16).padStart(8, '0')}<!--${string}-->`;
+  return `0x${key.toString(16).padStart(8, '0').toUpperCase()}<!--${string}-->`;
 }
 
 /**
@@ -240,4 +259,48 @@ export function getStringFn(stbl: StringTable): (string: string) => string {
   return (string: string) => S(string, stbl);
 }
 
-//#endregion Node Functions
+/**
+ * TODO:
+ * 
+ * @param node TODO:
+ * @param options TODO:
+ */
+export function nodeToXML(node: TunableNode, options?: {
+  indents?: number;
+  spacesPerIndent?: number;
+}): string {
+  const indents = options?.indents || 0;
+  const spacesPerIndent = options?.spacesPerIndent || 2;
+  const spaces = Array(indents * spacesPerIndent).fill(' ').join('');
+
+  let attrsString: string = "";
+  if (node.attrs !== undefined) {
+    const attrs: string[] = [""];
+    for (const attr in node.attrs) attrs.push(`${attr}="${node.attrs[attr]}"`);
+    attrsString = attrs.join(' ');
+  }
+
+  if (node.children === undefined || node.children.length === 0) {
+    if (node.value === undefined) {
+      // no value or children
+      return `${spaces}<${node.tag}${attrsString}/>`;
+    } else {
+      // no children, but a value
+      return `${spaces}<${node.tag}${attrsString}>${formatValue(node.value)}</${node.tag}>`;
+    }
+  } else {
+    // don't check for value, children override it
+    return [
+      `${spaces}<${node.tag}${attrsString}>`,
+      ...node.children.map(childNode => {
+        return nodeToXML(childNode, {
+          indents: indents + 1,
+          spacesPerIndent
+        });
+      }),
+      `${spaces}</${node.tag}>`
+    ].join('\n');
+  }
+}
+
+//#endregion Functions
