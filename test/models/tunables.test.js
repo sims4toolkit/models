@@ -1,7 +1,10 @@
 const { expect } = require('chai');
 const { inspect } = require('util');
-const { tunables } = require('../../dst/api');
-const { I, M, T, E, V, U, L, C } = tunables;
+const { tunables, StringTableResource } = require('../../dst/api');
+const { I, M, T, E, V, U, L, C, getStringNodeFunction } = tunables;
+
+const stbl = StringTableResource.create();
+const S = getStringNodeFunction(stbl);
 
 const inst = I({
   c: "Trait",
@@ -17,9 +20,33 @@ const inst = I({
     T({
       name: "a",
       value: 32n
+    }),
+    S({
+      name: "string",
+      string: "Hello world"
+    }),
+    L({
+      name: "some_list",
+      children: [
+        V({ type: "disabled" }),
+        V({ type: "disabled", comment: "This is a disabled variant." }),
+        V({
+          type: "enabled",
+          child: U({
+            name: "enabled",
+            comment: "This is a tuple",
+            children: [
+              E({ name: "species", value: "HUMAN" }),
+              E({ name: "age", value: "ADULT" }),
+            ]
+          })
+        })
+      ]
     })
   ]
 });
+
+console.log(stbl.getEntries());
 
 const xml = inst.toXml({ includeDeclaration: true, alphabetize: true });
 

@@ -1,6 +1,7 @@
 import { XMLParser } from "fast-xml-parser";
 import type StringTable from "./resources/stringtable";
 import { XML_DECLARATION } from "../utils/constants";
+import { formatStringKey } from "../utils/formatting";
 
 const parser = new XMLParser({
   ignoreAttributes: false,
@@ -112,7 +113,7 @@ export abstract class TunableNode {
       });
     }
 
-    // writing self & children
+    // writing self & children/value
     const attrString = attrNodes.join(' ');
     const comment = this.comment === undefined ? '' : `<!--${this.comment}-->`;
     if (this.children?.length > 0) {
@@ -405,11 +406,9 @@ export function S({ name, string, textToHash, stbl }: {
 }): Tunable {
   const toHash = textToHash || string;
   const id = stbl.addStringAndHash(toHash);
-  const { key } = stbl.getEntryById(id);
-  const formattedKey = `0x${key.toString(16).padStart(8, '0').toUpperCase()}`;
   return T({
     name,
-    value: formattedKey,
+    value: formatStringKey(stbl.getEntryById(id).key),
     comment: string
   });
 }

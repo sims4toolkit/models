@@ -6,6 +6,7 @@ import StringTableResource from "./lib/models/resources/stringtable";
 import UnsupportedResource from "./lib/models/resources/unsupported";
 import * as tunables from "./lib/models/tunables";
 import * as hashing from "./lib/utils/hashing";
+import * as formatting from "./lib/utils/formatting";
 
 
 export {
@@ -16,5 +17,6 @@ export {
   StringTableResource,
   UnsupportedResource,
   tunables,
-  hashing
+  hashing,
+  formatting
 }
