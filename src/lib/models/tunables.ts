@@ -228,7 +228,7 @@ export function I({ c, i, m, n, s, children, comment }: {
   comment?: string;
 }): InstanceTuning {
   return new InstanceTuning({
-    attributes: { c, m, i, n, s: formatValue(s) },
+    attributes: { c, i, m, n, s: formatValue(s) },
     children,
     comment
   });
