@@ -1,5 +1,5 @@
 import Resource from "./resource";
-import { TunableNode } from "../tunables/tunable";
+import { TunableNode } from "../tunables";
 
 /**
  * Model for a plaintext, XML tuning resource.
@@ -42,7 +42,7 @@ export default class TuningResource extends Resource {
   }
 
   static fromNode(node: TunableNode): TuningResource {
-
+    return undefined;
   }
 
   // /**
@@ -78,7 +78,7 @@ export default class TuningResource extends Resource {
 
   uncache() {
     super.uncache();
-    this._model = undefined;
+    this._node = undefined;
   }
 
   //#endregion Public Methods

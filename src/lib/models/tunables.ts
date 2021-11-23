@@ -1,6 +1,6 @@
-import type StringTable from "../resources/stringtable";
 import { XMLParser } from "fast-xml-parser";
-import { XML_DECLARATION } from "../constants";
+import type StringTable from "./resources/stringtable";
+import { XML_DECLARATION } from "../utils/constants";
 
 const parser = new XMLParser({
   ignoreAttributes: false,
