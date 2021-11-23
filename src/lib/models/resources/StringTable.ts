@@ -1,24 +1,16 @@
 import Resource from "./resource";
-import type { ResourceVariant } from "../types";
 import { BinaryEncoder, BinaryDecoder } from "../../utils/encoding";
 import { fnv32 } from "../../utils/hashing";
 
 /**
- * A resource that contains string table data.
+ * Model for binary string table resources.
  */
 export default class StringTableResource extends Resource {
-  readonly variant: ResourceVariant = 'STBL';
+  readonly variant = 'STBL';
   private _stblContent: StringTableContent;
 
   //#region Initialization
 
-  /**
-   * Constructor. This should NOT be used by external code. Please use the
-   * static `create()` and `from()` methods to create new instances.
-   * 
-   * @param content The content of this STBL
-   * @param cachedBuffer The pre-serialized buffer for this STBL
-   */
   private constructor(content: StringTableContent, cachedBuffer?: Buffer) {
     super(cachedBuffer);
     this._stblContent = content;
