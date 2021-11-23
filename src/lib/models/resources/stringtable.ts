@@ -103,7 +103,8 @@ export default class StringTableResource extends Resource {
 
   /**
    * Adds the given `string` to this table, using the FNV-32 hash generated from
-   * the given `name`. If no name is given, the string itself is hashed.
+   * the given `name`. If no name is given, the string itself is hashed. The
+   * ID of the entry that is created is returned.
    * 
    * @param string String to add to this table
    * @param name Text to get the hash from
@@ -112,6 +113,8 @@ export default class StringTableResource extends Resource {
     const key = fnv32(name === undefined ? string : name);
     return this.addEntry(key, string);
   }
+
+  // TODO: method for only adding a string if it doesn't already exist
 
   /**
    * Adds all entries from all given string tables into this one. Entries are
@@ -291,6 +294,11 @@ export default class StringTableResource extends Resource {
     }
   }
 
+  /** Shortcut for calling `getEntries()`. */
+  get entries() {
+    return this.getEntries();
+  }
+
   /**
   * Returns the entry that has the given ID, or undefined if there isn't one.
   * 
@@ -377,6 +385,11 @@ export default class StringTableResource extends Resource {
   */
   numEntries(predicate?: StringEntryPredicate): number {
     return this.getEntries(predicate).length;
+  }
+
+  /** Shortcut for calling `numEntries()`. */
+  get length() {
+    return this.numEntries();
   }
 
   /**
