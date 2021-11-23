@@ -88,7 +88,7 @@ export abstract class TunableNode {
    * 
    * @param options Object containing options
    */
-  toXML({ indents = 0, spacesPerIndent = 2, includeDeclaration = false, alphabetize = false }: {
+  toXml({ indents = 0, spacesPerIndent = 2, includeDeclaration = false, alphabetize = false }: {
     indents?: number;
     spacesPerIndent?: number;
     includeDeclaration?: boolean;
@@ -104,6 +104,7 @@ export abstract class TunableNode {
     const attrKeys = Object.keys(this.attributes);
     const attrNodes: string[] = [];
     if (attrKeys.length > 0) {
+      attrNodes.push(''); // just for spacing
       if (alphabetize) attrKeys.sort();
       attrKeys.forEach(key => {
         const value = formatValue(this.attributes[key]);
@@ -116,18 +117,30 @@ export abstract class TunableNode {
     const comment = this.comment === undefined ? '' : `<!--${this.comment}-->`;
     if (this.children?.length > 0) {
       // node has children
+      const children = alphabetize ? [...this.children].sort((a, b) => {
+        const aName = a.attributes.n;
+        const bName = b.attributes.n;
+        if (!(aName && bName)) return 0;
+        if (aName < bName) return -1;
+        if (aName > bName) return 1;
+        return 0;
+      }) : this.children;
+
       lines.push(`${spaces}<${this.tag}${attrString}>`);
+
       if (comment) {
         const extraSpaces = " ".repeat(spacesPerIndent);
         lines.push(`${spaces}${extraSpaces}${comment}`);
       }
-      this.children.forEach(child => {
-        lines.push(child.toXML({
+
+      children.forEach(child => {
+        lines.push(child.toXml({
           indents: indents + 1,
           spacesPerIndent,
           alphabetize
         }));
       });
+
       lines.push(`${spaces}</${this.tag}>`);
     } else if (this.value !== undefined) {
       // node has value

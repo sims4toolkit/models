@@ -1,5 +1,33 @@
-// const { expect } = require('chai');
-// const { inspect } = require('util');
+const { expect } = require('chai');
+const { inspect } = require('util');
+const { tunables } = require('../../dst/api');
+const { I, M, T, E, V, U, L, C } = tunables;
+
+const inst = I({
+  c: "Trait",
+  i: "trait",
+  m: "traits.trait",
+  n: "trait_Example",
+  s: 1234567890,
+  children: [
+    T({
+      name: "first_item",
+      value: true
+    }),
+    T({
+      name: "a",
+      value: 32n
+    })
+  ]
+});
+
+const xml = inst.toXml({ includeDeclaration: true, alphabetize: true });
+
+it('test', function() {
+  console.log(xml);
+})
+
+
 // const { TunableNodes, Hashing, StringTableResource } = require('../../../dst/api');
 // const { parseXML } = require('../../../dst/lib/services/Parsing');
 
