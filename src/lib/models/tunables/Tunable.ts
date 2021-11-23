@@ -1,7 +1,6 @@
 import { XMLParser } from "fast-xml-parser";
 import { XML_DECLARATION } from "../constants";
 
-
 const parser = new XMLParser({
   ignoreAttributes: false,
   attributeNamePrefix: "",
@@ -16,6 +15,7 @@ type Tag = 'I' | 'M' | 'T' | 'E' | 'V' | 'U' | 'L' | 'C';
 type AttributeKey = 'n' | 'c' | 't' | 'm' | 'i' | 'ev' | 'p';
 type TunableAttributes = { [key in AttributeKey]?: any; }
 
+
 export abstract class TunableNode {
   abstract readonly tag: Tag;
   readonly attributes: TunableAttributes;
@@ -23,13 +23,13 @@ export abstract class TunableNode {
   readonly children?: TunableNode[];
   readonly comment?: string;
 
-  constructor({ attrs = {}, value, children, comment }: {
-    attrs?: TunableAttributes;
+  constructor({ attributes = {}, value, children, comment }: {
+    attributes?: TunableAttributes;
     value?: any;
     children?: TunableNode[];
     comment?: string;
   }) {
-    this.attributes = attrs;
+    this.attributes = attributes;
     this.value = value;
     this.children = children;
     this.comment = comment;
@@ -58,12 +58,12 @@ export abstract class TunableNode {
    * 
    * @param args Object containing arguments
    */
-  getChild({ tag, attrs }: { tag?: Tag; attrs?: TunableAttributes; } = {}): TunableNode {
+  getChild({ tag, attributes }: { tag?: Tag; attributes?: TunableAttributes; } = {}): TunableNode {
     return this.children?.find(child => {
       if (tag && (child.tag !== tag)) return false;
-      if (attrs === undefined) return true;
-      for (const key in attrs) 
-        if (child.attributes[key] !== attrs[key]) return false;
+      if (!attributes) return true;
+      for (const key in attributes) 
+        if (child.attributes[key] !== attributes[key]) return false;
       return true;
     });
   }
@@ -140,22 +140,22 @@ export abstract class TunableNode {
 }
 
 abstract class ValueTunable extends TunableNode {
-  constructor({ attrs, value, comment }: {
-    attrs?: TunableAttributes;
+  constructor({ attributes, value, comment }: {
+    attributes?: TunableAttributes;
     value?: any;
     comment?: string;
   }) {
-    super({ attrs, value, comment });
+    super({ attributes, value, comment });
   }
 }
 
 abstract class ParentTunable extends TunableNode {
-  constructor({ attrs, children, comment }: {
-    attrs?: TunableAttributes;
+  constructor({ attributes, children, comment }: {
+    attributes?: TunableAttributes;
     children?: TunableNode[];
     comment?: string;
   }) {
-    super({ attrs, children, comment });
+    super({ attributes, children, comment });
   }
 }
 

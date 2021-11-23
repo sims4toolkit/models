@@ -1,13 +1,13 @@
 import Resource from "./resource";
-
+import { TunableNode } from "../tunables/tunable";
 
 /**
- * A resource that contains plaintext XML.
+ * Model for a plaintext, XML tuning resource.
  */
 export default class TuningResource extends Resource {
   readonly variant = 'XML';
-  private _content: string;
-  private _model?: TuningFileNode;
+  private _content?: string;
+  private _model?: TunableNode;
 
   //#region Initialization
 
@@ -69,67 +69,12 @@ export default class TuningResource extends Resource {
    */
   updateContent(content: string) {
     this._content = content;
-    this._uncache();
+    this.uncache();
   }
 
-  /**
-   * Returns the filename in the `n` attribute. If there is no name, `undefined`
-   * will be returned.
-   */
-  getFileName(): string {
-    return this._getAttr('n');
-  }
-
-  /**
-   * Updates the filename in the `n` attribute.
-   * 
-   * @param value New filename to use
-   */
-  updateFileName(value: string) {
-    this._updateAttr('n', value);
-  }
-
-  /**
-   * Returns the class name in the `c` attribute. If there is no class,
-   * `undefined` will be returned.
-   */
-  getClassName(): string {
-    return this._getAttr('c');
-  }
-
-  /**
-   * Returns the type name in the `i` attribute. If there is no type name,
-   * `undefined` will be returned.
-   */
-  getTypeName(): string {
-    return this._getAttr('i');
-  }
-
-  /**
-   * Returns the module path in the `m` attribute. If there is no module path,
-   * undefined will be returned.
-   */
-  getModulePath(): string {
-    return this._getAttr('m');
-  }
-
-  /**
-   * Returns the tuning ID in the `s` attribute. If there is no tuning ID,
-   * then `undefined` is returned. Note that the tuning ID will be returned as
-   * a decimal number in a string, as may not be equal to the instance ID in
-   * this resource's record.
-   */
-  getTuningId(): string {
-    return this._getAttr('s');
-  }
-
-  /**
-   * Updates the tuning ID in the `s` attribute.
-   * 
-   * @param value New tuning ID to use
-   */
-  updateTuningId(value: string) {
-    this._updateAttr('s', value);
+  uncache() {
+    super.uncache();
+    this._model = undefined;
   }
 
   //#endregion Public Methods
@@ -140,61 +85,11 @@ export default class TuningResource extends Resource {
     return Buffer.from(this._content, 'utf-8');
   }
 
-  protected _uncache() {
-    super._uncache();
-    this._model = undefined;
-  }
-
   //#endregion Protected Methods
 
   //#region Private Methods
 
-  /**
-   * Returns the value of the given attribute.
-   * 
-   * @param attr Name of attribute to get
-   */
-  private _getAttr(attr: string): string {
-    if (this._model === undefined)
-      this._model[attr] = this._getAttrValue(attr);
-    return this._attrs[attr];
-  }
-
-  /**
-   * Finds and returns the value of the given attribute.
-   * 
-   * @param attr Name of attribute to get
-   */
-  private _getAttrValue(attr: string): string {
-    // Yes, I am aware of how ugly this code is. But, it is way more efficient
-    // than parsing the entire file as XML or using a regex. These attributes
-    // are usually in the second line of the file, and this method will short
-    // circuit as soon as they are found.
-
-    try {
-      return this._content.split(`${attr}="`, 2)[1].split('"', 2)[0];
-    } catch (e) {
-      return undefined;
-    }
-  }
-
-  /**
-   * Updates the value of an attribute.
-   * 
-   * @param attr Name of attribute to update
-   * @param value New value of attribute
-   */
-  private _updateAttr(attr: string, value: string) {
-    try {
-      const [before, mid] = this._content.split(` ${attr}="`, 2);
-      const after = mid.split('"', 2)[1];
-      this._content = `${before} ${attr}="${value}"${after}`;
-      this._uncache();
-      this._attrs[attr] = value;
-    } catch (e) {
-      throw new Error(`Cannot update "${attr}" attribute: ${e}`);
-    }
-  }
+  // TODO:
 
   //#endregion Private Methods
 }

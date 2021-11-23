@@ -87,4 +87,3 @@ const traits = generate<string>({
     });
   }
 });
-
