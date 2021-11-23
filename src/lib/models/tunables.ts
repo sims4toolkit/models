@@ -275,7 +275,7 @@ export function T({ name, ev, value, comment }: {
   comment?: string;
 }): Tunable {
   const attributes: TunableAttributes = {};
-  if (name) attributes.n = name;
+  if (name !== undefined) attributes.n = name;
   if (ev !== undefined) attributes.ev = formatValue(ev);
   return new Tunable({ attributes, value, comment });
 }
@@ -296,7 +296,7 @@ export function E({ name, value, comment }: {
   comment?: string;
 }): TunableEnum {
   const attributes: TunableAttributes = {};
-  if (name) attributes.n = name;
+  if (name !== undefined) attributes.n = name;
   return new TunableEnum({ attributes, value, comment });
 }
 
@@ -316,7 +316,7 @@ export function L({ name, children, comment }: {
   comment?: string;
 }): TunableList {
   const attributes: TunableAttributes = {};
-  if (name) attributes.n = name;
+  if (name !== undefined) attributes.n = name;
   return new TunableList({ attributes, children, comment });
 }
 
@@ -336,7 +336,7 @@ export function U({ name, children, comment }: {
   comment?: string;
 }): TunableTuple {
   const attributes: TunableAttributes = {};
-  if (name) attributes.n = name;
+  if (name !== undefined) attributes.n = name;
   return new TunableTuple({ attributes, children, comment });
 }
 
@@ -359,8 +359,8 @@ export function V({ name, type, child, comment }: {
 }): TunableVariant {
   const children: TunableNode[] = child ? [child] : undefined;
   const attributes: TunableAttributes = {};
-  if (name) attributes.n = name;
-  if (type) attributes.t = type;
+  if (name !== undefined) attributes.n = name;
+  if (type !== undefined) attributes.t = type;
   return new TunableVariant({ attributes, children, comment });
 }
 
@@ -380,7 +380,7 @@ export function C({ name, children, comment }: {
   comment?: string;
 }): TunableClass {
   const attributes: TunableAttributes = {};
-  if (name) attributes.n = name;
+  if (name !== undefined) attributes.n = name;
   return new TunableClass({ attributes, children, comment });
 }
 
