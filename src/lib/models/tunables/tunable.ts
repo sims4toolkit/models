@@ -12,11 +12,11 @@ const parser = new XMLParser({
 //#region Types & Classes
 
 type Tag = 'I' | 'M' | 'T' | 'E' | 'V' | 'U' | 'L' | 'C';
-type AttributeKey = 'n' | 'c' | 't' | 'm' | 'i' | 'ev' | 'p';
+type AttributeKey = 'n' | 'c' | 't' | 'm' | 'i' | 'ev' | 'p' | 's';
 type TunableAttributes = { [key in AttributeKey]?: any; }
 
 
-export abstract class TunableNode {
+abstract class TunableNode {
   abstract readonly tag: Tag;
   readonly attributes: TunableAttributes;
   readonly value?: any;
@@ -40,7 +40,7 @@ export abstract class TunableNode {
    * 
    * @param xml TODO:
    */
-  static fromXML(xml: string): TunableNode {
+  static fromXml(xml: string): TunableNode {
     // TODO:
     return undefined;
   }
@@ -169,6 +169,190 @@ export class TunableList    extends ParentTunable { readonly tag = 'L'; }
 export class TunableClass   extends ParentTunable { readonly tag = 'C'; }
 
 //#endregion Types & Classes
+
+//#region Functions
+
+/**
+ * Creates and returns an InstanceTuning (I tag).
+ * 
+ * Arguments
+ * - `c`: Value to appear in the class attribute
+ * - `i`: Value to appear in the instance type attribute
+ * - `m`: Value to appear in the module path attribute
+ * - `n`: Value to appear in the filename attribute
+ * - `s`: Value to appear in the tuning ID attribute
+ * - `children`: List of nodes that this one contains
+ * - `comment`: Comment to add to this instance
+ * 
+ * @param args Object containing the arguments
+ */
+export function I({ c, i, m, n, s, children, comment }: {
+  c: string;
+  i: string;
+  m: string;
+  n: string;
+  s: string | number | bigint;
+  children?: TunableNode[];
+  comment?: string;
+}): InstanceTuning {
+  return new InstanceTuning({
+    attributes: { c, m, i, n, s: formatValue(s) },
+    children,
+    comment
+  });
+}
+
+/**
+ * Creates and returns a ModuleTuning (M tag).
+ * 
+ * Arguments
+ * - `n`: Value to appear in the filename attribute
+ * - `s`: Value to appear in the tuning ID attribute
+ * - `children`: List of nodes that this one contains
+ * 
+ * @param args Object containing the arguments
+ */
+export function M({ n, s, children, comment }: {
+  n: string;
+  s: string | number | bigint;
+  children?: TunableNode[];
+  comment?: string;
+}): ModuleTuning {
+  return new ModuleTuning({
+    attributes: { n, s: formatValue(s) },
+    children,
+    comment
+  });
+}
+
+/**
+ * Creates and returns a Tunable (T tag).
+ * 
+ * Arguments
+ * - `name`: Value to appear in the name attribute
+ * - `ev`: The enum value of this node (only for use within `C` nodes)
+ * - `value`: The single value that this node contains
+ * - `comment`: A comment to write after the value
+ * 
+ * @param args Object containing the arguments
+ */
+export function T({ name, ev, value, comment }: {
+  name?: string;
+  ev?: string | number | bigint;
+  value?: any;
+  comment?: string;
+}): Tunable {
+  const attributes: TunableAttributes = {};
+  if (name) attributes.n = name;
+  if (ev !== undefined) attributes.ev = formatValue(ev);
+  return new Tunable({ attributes, value, comment });
+}
+
+/**
+ * Creates and returns a TunableEnum (E tag).
+ * 
+ * Arguments
+ * - `name`: Value to appear in the name attribute
+ * - `value`: The single value that this node contains
+ * - `comment`: A comment to write after the value
+ * 
+ * @param args Object containing the arguments
+ */
+export function E({ name, value, comment }: {
+  name?: string;
+  value?: string;
+  comment?: string;
+}): TunableEnum {
+  const attributes: TunableAttributes = {};
+  if (name) attributes.n = name;
+  return new TunableEnum({ attributes, value, comment });
+}
+
+/**
+ * Creates and returns a TunableList (L tag).
+ * 
+ * Arguments
+ * - `name`: Value to appear in the name attribute
+ * - `children`: List of nodes this one contains
+ * - `comment`: A comment to write before the first child
+ * 
+ * @param args Object containing the arguments
+ */
+export function L({ name, children, comment }: {
+  name?: string;
+  children?: TunableNode[];
+  comment?: string;
+}): TunableList {
+  const attributes: TunableAttributes = {};
+  if (name) attributes.n = name;
+  return new TunableList({ attributes, children, comment });
+}
+
+/**
+ * Creates and returns a TunableTuple (U tag).
+ * 
+ * Arguments
+ * - `name`: Value to appear in the name attribute
+ * - `children`: List of nodes this one contains
+ * - `comment`: A comment to write before the first child
+ * 
+ * @param args Object containing the arguments
+ */
+export function U({ name, children, comment }: {
+  name?: string;
+  children?: TunableNode[];
+  comment?: string;
+}): TunableTuple {
+  const attributes: TunableAttributes = {};
+  if (name) attributes.n = name;
+  return new TunableTuple({ attributes, children, comment });
+}
+
+/**
+ * Creates and returns a TunableVariant (V tag).
+ * 
+ * Arguments
+ * - `name`: Value to appear in the name attribute
+ * - `type`: Value to appear in the type attribute
+ * - `child`: The node that this one contains
+ * - `comment`: A comment to write before the child
+ * 
+ * @param args Object containing the arguments
+ */
+export function V({ name, type, child, comment }: {
+  name?: string;
+  type: string;
+  child?: TunableNode;
+  comment?: string;
+}): TunableVariant {
+  const children: TunableNode[] = child ? [child] : undefined;
+  const attributes: TunableAttributes = {};
+  if (name) attributes.n = name;
+  if (type) attributes.t = type;
+  return new TunableVariant({ attributes, children, comment });
+}
+
+/**
+ * Creates and returns a TunableClass (C tag).
+ * 
+ * Arguments
+ * - `name`: Value to appear in the name attribute
+ * - `children`: List of nodes this one contains
+ * - `comment`: A comment to write before the first child
+ * 
+ * @param args Object containing the arguments
+ */
+export function C({ name, children, comment }: {
+  name: string;
+  children?: TunableNode[];
+  comment?: string;
+}): TunableClass {
+  const attributes: TunableAttributes = {};
+  if (name) attributes.n = name;
+  return new TunableClass({ attributes, children, comment });
+}
+
+//#endregion Functions
 
 //#region Helpers
 

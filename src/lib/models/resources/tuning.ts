@@ -7,7 +7,7 @@ import { TunableNode } from "../tunables/tunable";
 export default class TuningResource extends Resource {
   readonly variant = 'XML';
   private _content?: string;
-  private _model?: TunableNode;
+  private _node?: TunableNode;
 
   //#region Initialization
 
@@ -39,6 +39,10 @@ export default class TuningResource extends Resource {
    */
   static from(buffer: Buffer, encoding: BufferEncoding = 'utf-8'): TuningResource {
     return new TuningResource(buffer.toString(encoding), buffer);
+  }
+
+  static fromNode(node: TunableNode): TuningResource {
+
   }
 
   // /**
