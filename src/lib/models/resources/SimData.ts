@@ -1,11 +1,10 @@
 import Resource from "./resource";
-import type { ResourceVariant } from "./resource";
 
 /**
  * A resource that contains binary tuning (SimData).
  */
 export default class SimDataResource extends Resource {
-  readonly variant: ResourceVariant = 'DATA';
+  readonly variant = 'DATA';
 
   private constructor(cachedBuffer?: Buffer) {
     super(cachedBuffer);

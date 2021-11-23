@@ -1,3 +1,4 @@
+import type { ResourceKey } from "./types";
 import * as zlib from 'zlib';
 import { BinaryDecoder, BinaryEncoder } from '../utils/encoding';
 import { makeList } from '../utils/helpers';
@@ -16,11 +17,13 @@ import RawResource from './resources/raw';
  */
 export default class Dbpf {
   private _cachedBuffer?: Buffer;
+  private _nextId: number;
   private _entries: ResourceEntry[];
 
   private constructor(entries: ResourceEntry[], buffer?: Buffer) {
     this._cachedBuffer = buffer;
     this._entries = entries;
+    this._nextId = entries.length;
   }
 
   /**
@@ -76,28 +79,14 @@ export default class Dbpf {
 
 //#region Types & Interfaces
 
-class ReadDBPFError extends Error { }
-
 type ResourceEntryPredicate = (entry: ResourceEntry) => boolean;
 
 /**
  * Options to configure when creating a new DBPF.
  */
- interface DBPFOptions {
+ interface DbpfOptions {
   ignoreErrors: boolean;
   loadRaw: boolean;
-}
-
-/**
- * The combination of type, group, and instance used to identify individual
- * resources by the game. There is no guarantee that resource keys are unique
- * within a DBPF, and resource keys are allowed to be changed. For reliable
- * uniqueness and stability, use the ResourceEntry's `id` property.
- */
-interface ResourceKey {
-  type: number;
-  group: number;
-  instance: bigint;
 }
 
 /**

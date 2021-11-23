@@ -1,5 +1,5 @@
 import Resource from "./resource";
-import type { ResourceVariant } from "./resource";
+import type { ResourceVariant } from "../types";
 import { BinaryEncoder, BinaryDecoder } from "../../utils/encoding";
 import { fnv32 } from "../../utils/hashing";
 
@@ -94,7 +94,7 @@ export default class StringTableResource extends Resource {
     const id = this._stblContent.nextID++;
     const entry = { id, key, string };
     this._stblContent.entries.push(entry);
-    this._uncache();
+    this.uncache();
     return id;
   }
 
@@ -251,7 +251,7 @@ export default class StringTableResource extends Resource {
     const entry = this.getEntryByIndex(index);
     if (entry === undefined) return undefined;
     this._stblContent.entries.splice(index, 1);
-    this._uncache();
+    this.uncache();
     return entry;
   }
 
@@ -431,7 +431,7 @@ export default class StringTableResource extends Resource {
       entry.key = value.key;
     }
     if (value.string !== undefined) entry.string = value.string;
-    this._uncache();
+    this.uncache();
     return prev;
   }
 

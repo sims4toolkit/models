@@ -1,7 +1,7 @@
 import type { TuningFileNode } from '../models/tunables/TunableNodes';
 import Tuning from '../models/resources/tuning';
 import StringTable from '../models/resources/stringtable';
-import Record, { ResourceKey } from '../models/record';
+import Record, { ResourceKey } from '../models/keyResourcePair';
 import { I, M, L, U, V, E, T, getStringFn } from '../models/tunables/TunableNodes';
 import { fnv32, fnv64 } from '../utils/hashing';
 import DBPF from '../models/dbpf';

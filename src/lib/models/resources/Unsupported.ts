@@ -1,24 +1,14 @@
 import Resource from './resource';
-import type { ResourceVariant } from './resource';
 
 /**
- * Model for resource types that are not supported by the library. This includes
- * all non-XML resources that do not have a custom model. These resource are
- * read-only, and cannot be modified or reserialized.
+ * Model for resources that are not supported by S4TK.
  */
 export default class UnsupportedResource extends Resource {
-  readonly variant: ResourceVariant = undefined;
+  readonly variant = undefined;
 
-  /** Reason why this resource is not supported by the library. */
+  /** Reason why this resource is not supported. */
   readonly reason?: string;
 
-  /**
-   * Constructor. This should NOT be used by external code. Please use the
-   * static `from()` method to create new instances.
-   * 
-   * @param buffer The buffer that contains this resource's data
-   * @param reason Optional reason why this resource is unsupported
-   */
   private constructor(buffer: Buffer, reason?: string) {
     super(buffer);
     this.reason = reason;
@@ -29,7 +19,9 @@ export default class UnsupportedResource extends Resource {
   }
 
   /**
-   * Creates a new unsupported resource from the given buffer.
+   * Creates a new unsupported resource from the given buffer. This is
+   * functionally the same as the constructor, but is provided for parity with
+   * the other resource types.
    * 
    * @param buffer Buffer to create an unsupported resource from
    * @param reason Reason why this resource is unsupported

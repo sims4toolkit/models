@@ -1,15 +1,15 @@
-import type ResourceEntry from "../resourceEntry";
+import type Dbpf from "../dbpf";
 import type { ResourceVariant } from "../types";
 
 /**
- * A base for all resources.
+ * A base class for all resources.
  */
 export default abstract class Resource {
   /** How this resource is encoded. */
   abstract readonly variant: ResourceVariant;
 
   private _cachedBuffer: Buffer;
-  private _owner?: ResourceEntry;
+  private _owner?: Dbpf;
 
   constructor(buffer: Buffer) {
     this._cachedBuffer = buffer;
@@ -32,12 +32,12 @@ export default abstract class Resource {
   }
 
   /**
-   * Sets an entry as the owner of this resource. As an owner, the entry will be
-   * notified to uncache itself whenever this resource is uncached.
+   * Sets a DBPF as the owner of this resource. As an owner, the DBPF will be
+   * notified when it needs to uncache itself.
    * 
    * @param owner Entry for this record
    */
-  setOwner(owner: ResourceEntry) {
+  setOwner(owner: Dbpf) {
     this._owner = owner;
   }
 

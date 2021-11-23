@@ -1,27 +1,14 @@
 import Resource from './resource';
-import type { ResourceVariant } from './resource';
 
 /**
- * Model for resource types that may or may not be supported by the library, but
- * have intentionally not been parsed. These models are read-only, and can be
- * read either with their buffer or as plain text (legibility is not guaranteed,
- * as it may contain binary data).
+ * Model for resources that have intentionally not been parsed.
  */
 export default class RawResource extends Resource {
-  readonly variant: ResourceVariant = 'RAW';
-  private _encoding: BufferEncoding;
+  readonly variant = 'RAW';
   private _content?: string;
 
-  /**
-   * Constructor. This should NOT be used by external code. Please use the
-   * static `from()` method to create new instances.
-   * 
-   * @param buffer Buffer that contains this resource's raw data
-   * @param encoding How the given buffer is encoded
-   */
-  private constructor(buffer: Buffer, encoding: BufferEncoding) {
+  private constructor(buffer: Buffer) {
     super(buffer);
-    this._encoding = encoding;
   }
 
   clone(): RawResource {
@@ -29,15 +16,14 @@ export default class RawResource extends Resource {
   }
 
   /**
-   * Creates a new raw resource from the given buffer, and reads it in the given
-   * encoding (UTF-8 if not provided). Reading the buffer is done lazily, it
-   * will not actually be decoded until `plainText()` is called.
+   * Creates a new raw resource from the given buffer. This is functionally the
+   * same as the constructor, but is provided for parity with the other resource
+   * types.
    * 
    * @param buffer Buffer to create a raw resource from
-   * @param encoding How the buffer is encoded
    */
-  static from(buffer: Buffer, encoding: BufferEncoding = 'utf-8'): RawResource {
-    return new RawResource(buffer, encoding);
+  static from(buffer: Buffer): RawResource {
+    return new RawResource(buffer);
   }
 
   protected _serialize(): Buffer {
@@ -45,13 +31,12 @@ export default class RawResource extends Resource {
   }
 
   /**
-   * Returns this resource as plain text, using the encoding that was given when
-   * it was originally created. Content is loaded lazily, meaning that it will
-   * not actually be decoded until this function is called for the first time.
+   * Returns this resource as plain text. This is a lazy function, in that the
+   * content will not be decoded until this function is called.
    */
   getPlainText(): string {
     if (this._content === undefined)
-      this._content = this.getBuffer().toString(this._encoding);
+      this._content = this.getBuffer().toString('utf-8');
     return this._content;
   }
 }
