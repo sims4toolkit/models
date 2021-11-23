@@ -180,6 +180,10 @@ describe('StringTableResource', function() {
     });
   });
 
+  describe('#fromJson()', function() {
+    // TODO:
+  });
+
   describe('#clone()', function() {
     context('stbl is empty', function() {
       it('should return an empty stbl', function() {
