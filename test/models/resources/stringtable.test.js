@@ -119,6 +119,43 @@ describe('StringTableResource', function() {
     });
   });
 
+  describe('#entries', function() {
+    it('should return the entries of a non-empty STBL', function() {
+      const stbl = getSTBL('SmallSTBL');
+      expect(stbl.entries).to.be.an('Array').that.has.lengthOf(3);
+    });
+
+    it('should return an empty array for an empty STBL', function() {
+      const stbl = StringTableResource.create();
+      expect(stbl.entries).to.be.an('Array').that.is.empty;
+    });
+
+    it('should include new item after adding', function() {
+      const stbl = StringTableResource.create();
+      expect(stbl.entries[0]).to.be.undefined;
+      stbl.addStringAndHash("Hello");
+      expect(stbl.entries[0].string).to.equal("Hello");
+    });
+
+    it('should not include an item after it\'s removed', function() {
+      const stbl = getSTBL('SmallSTBL');
+      expect(stbl.entries.length).to.equal(3);
+      stbl.removeEntryByIndex(0);
+      expect(stbl.entries.length).to.equal(2);
+      expect(stbl.getEntryById(0)).to.be.undefined;
+    });
+
+    it('should contain an updated item after updating', function() {
+      const stbl = getSTBL('SmallSTBL');
+      stbl.updateEntryByIndex(1, { key: 123 });
+      expect(stbl.entries[1].key).to.equal(123);
+    });
+
+    it('should not be assignable', function() {
+      expect(() => stbl.entries = []).to.throw;
+    });
+  });
+
   //#endregion Properties
 
   //#region Initialization
