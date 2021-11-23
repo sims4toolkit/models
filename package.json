@@ -7,6 +7,7 @@
   "scripts": {
     "clear": "rm -rf ./dst/**",
     "dev": "npm run clear ; tsc --watch",
+    "build": "npm run clear ; tsc",
     "test": "mocha 'test/**/**.test.js'"
   },
   "author": "frankkulak",
