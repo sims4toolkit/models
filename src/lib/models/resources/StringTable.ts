@@ -42,6 +42,17 @@ export default class StringTableResource extends Resource {
   }
 
   /**
+   * Returns a new String Table resource created from a list of entries.
+   * 
+   * @param json List of entries to load into the string table
+   */
+  static fromJson(json: { key: number; string: string; }[]): StringTableResource {
+    const stbl = StringTableResource.create();
+    json.forEach(({ key, string }) => stbl.addEntry(key, string));
+    return stbl;
+  }
+
+  /**
    * Merges a variable number of string tables into one. Does not mutate the 
    * orignal STBLs, just creates a new one.
    * 
