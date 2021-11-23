@@ -7,7 +7,7 @@ import { TunableNode } from "../tunables";
 export default class TuningResource extends Resource {
   readonly variant = 'XML';
   private _content?: string;
-  private _node?: TunableNode;
+  private _dom?: TunableNode;
 
   //#region Initialization
 
@@ -41,6 +41,10 @@ export default class TuningResource extends Resource {
     return new TuningResource(buffer.toString(encoding), buffer);
   }
 
+  static fromString(content: string): TuningResource {
+    return new TuningResource(content);
+  }
+
   static fromNode(node: TunableNode): TuningResource {
     return undefined;
   }
@@ -62,7 +66,8 @@ export default class TuningResource extends Resource {
   /**
    * Returns the content of this tuning resource.
    */
-  getContent(): string {
+  getPlainText(): string {
+    if (this._content === undefined) this._content = this._dom.toXml();
     return this._content;
   }
 
@@ -76,9 +81,17 @@ export default class TuningResource extends Resource {
     this.uncache();
   }
 
+  getDom(): TunableNode {
+    return this._dom; // FIXME: parse dom if it doesn't exist
+  }
+  
+  reloadOnDomUpdate(fn: (dom: TunableNode) => void) {
+    fn(this.getDom());
+    this._content = this._dom.toXml();
+  }
+  
   uncache() {
-    super.uncache();
-    this._node = undefined;
+    super.uncache(); // TODO: dom?
   }
 
   //#endregion Public Methods

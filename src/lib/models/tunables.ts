@@ -23,19 +23,19 @@ type TunableAttributes = { [key in AttributeKey]?: any; }
 export abstract class TunableNode {
   abstract readonly tag: Tag;
   readonly attributes: TunableAttributes;
-  readonly value?: any;
   readonly children?: TunableNode[];
-  readonly comment?: string;
+  value?: any;
+  comment?: string;
 
-  constructor({ attributes = {}, value, children, comment }: {
+  constructor({ attributes = {}, value, children = [], comment }: {
     attributes?: TunableAttributes;
-    value?: any;
     children?: TunableNode[];
+    value?: any;
     comment?: string;
   }) {
     this.attributes = attributes;
-    this.value = value;
     this.children = children;
+    this.value = value;
     this.comment = comment;
   }
 
@@ -47,29 +47,6 @@ export abstract class TunableNode {
   static fromXml(xml: string): TunableNode {
     // TODO:
     return undefined;
-  }
-
-  /**
-   * Finds the first child of this node that has the given tag and attributes.
-   * Neither argument is required - if one is left out, the first child matching
-   * the other will be returned. If neither argument is supplied, the first 
-   * child will be returned. If no children match the arguments or this node
-   * does not have any children, `undefined` is returned.
-   * 
-   * Arguments
-   * - `tag`: The tag that the child must have
-   * - `attrs`: The attribute values that the child must have
-   * 
-   * @param args Object containing arguments
-   */
-  getChild({ tag, attributes }: { tag?: Tag; attributes?: TunableAttributes; } = {}): TunableNode {
-    return this.children?.find(child => {
-      if (tag && (child.tag !== tag)) return false;
-      if (!attributes) return true;
-      for (const key in attributes) 
-        if (child.attributes[key] !== attributes[key]) return false;
-      return true;
-    });
   }
 
   /**
@@ -153,6 +130,74 @@ export abstract class TunableNode {
     }
 
     return lines.join('\n');
+  }
+
+  /**
+   * Finds the first child of this node that has the given tag and attributes.
+   * Neither argument is required - if one is left out, the first child matching
+   * the other will be returned. If neither argument is supplied, the first 
+   * child will be returned. If no children match the arguments or this node
+   * does not have any children, `undefined` is returned.
+   * 
+   * Arguments
+   * - `tag`: The tag that the child must have
+   * - `attrs`: The attribute values that the child must have
+   * 
+   * @param args Object containing arguments
+   */
+  getChild({ tag, attributes }: { tag?: Tag; attributes?: TunableAttributes; } = {}): TunableNode {
+    return this.children?.find(child => {
+      if (tag && (child.tag !== tag)) return false;
+      if (!attributes) return true;
+      for (const key in attributes) 
+        if (child.attributes[key] !== attributes[key]) return false;
+      return true;
+    });
+  }
+
+  /**
+   * Returns the child at the given index.
+   * 
+   * @param index Index of child to get
+   */
+  getChildByIndex(index: number): TunableNode {
+    return this.children[index];
+  }
+
+  /**
+   * Adds a child to this node and returns its index.
+   * 
+   * @param child Child node to add
+   */
+  addChild(child: TunableNode): number {
+    this.children.push(child);
+    return this.children.length - 1;
+  }
+
+  removeChild({ tag, attributes }: { tag?: Tag; attributes?: TunableAttributes; } = {}): TunableNode {
+    // TODO:
+    return;
+  }
+
+  removeChildByIndex(index: number): TunableNode {
+    // TODO:
+    return;
+  }
+
+  updateValue(value: any): any {
+    // TODO:
+    this.value = value;
+    return;
+  }
+
+  updateComment(comment: string): string {
+    // TODO:
+    return;
+  }
+
+  removeComment(): string {
+    // TODO:
+    return;
   }
 }
 
