@@ -181,7 +181,25 @@ describe('StringTableResource', function() {
   });
 
   describe('#fromJson()', function() {
-    // TODO:
+    it('should return an empty stbl when the json is empty', function() {
+      const stbl = StringTableResource.fromJson([]);
+      expect(stbl.getEntries()).to.be.empty;
+    });
+
+    it('should return a stbl with the contents of a non-empty json', function() {
+      const stbl = StringTableResource.fromJson([
+        { key: 123, string: "First" },
+        { key: 456, string: "Second" },
+        { key: 789, string: "Third" },
+      ]);
+
+      expect(stbl.getEntryById(0).key).to.equal(123);
+      expect(stbl.getEntryById(0).string).to.equal("First");
+      expect(stbl.getEntryById(1).key).to.equal(456);
+      expect(stbl.getEntryById(1).string).to.equal("Second");
+      expect(stbl.getEntryById(2).key).to.equal(789);
+      expect(stbl.getEntryById(2).string).to.equal("Third");
+    });
   });
 
   describe('#clone()', function() {
