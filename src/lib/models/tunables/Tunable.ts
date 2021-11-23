@@ -1,6 +1,6 @@
 import { XMLParser } from "fast-xml-parser";
+import { XML_DECLARATION } from "../constants";
 
-const XML_DECLARATION = '<?xml version="1.0" encoding="utf-8"?>';
 
 const parser = new XMLParser({
   ignoreAttributes: false,

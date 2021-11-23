@@ -1,26 +1,16 @@
 import Resource from "./resource";
-import type { ResourceVariant } from "./resource";
-import type { TuningFileNode } from "../tunables/TunableNodes";
 
-const DEFAULT_CONTENT = `<?xml version="1.0" encoding="utf-8"?>\n<I c="" i="" m="" n="" s="">\n  \n</I>`;
 
 /**
  * A resource that contains plaintext XML.
  */
 export default class TuningResource extends Resource {
-  readonly variant: ResourceVariant = 'XML';
+  readonly variant = 'XML';
   private _content: string;
   private _model?: TuningFileNode;
 
   //#region Initialization
 
-  /**
-   * Constructor. This should NOT be used by external code. Please use the
-   * static `create()` and `from()` methods to create new instances.
-   * 
-   * @param content The XML content of this resource
-   * @param cachedBuffer The pre-serialized buffer for this resource
-   */
   private constructor(content: string, cachedBuffer?: Buffer) {
     super(cachedBuffer);
     this._content = content;
