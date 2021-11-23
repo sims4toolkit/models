@@ -1,3 +1,4 @@
+import type StringTable from "../resources/stringtable";
 import { XMLParser } from "fast-xml-parser";
 import { XML_DECLARATION } from "../constants";
 
@@ -367,6 +368,59 @@ export function C({ name, children, comment }: {
   const attributes: TunableAttributes = {};
   if (name) attributes.n = name;
   return new TunableClass({ attributes, children, comment });
+}
+
+/**
+ * Creates and returns a Tunable for a new string. It will put the string in the
+ * given string table, and return a node that contains its hash as a value and
+ * its string as a comment. If `textToHash` is supplied, it will be hashed. If
+ * not, then the string itself will be hashed.
+ * 
+ * Arguments
+ * - `name`: Value to appear in the name attribute
+ * - `string`: The string to add to the table
+ * - `textToHash`: Text to hash instead of hashing the string itself
+ * - `stbl`: The string table to add this string to
+ * 
+ * @param args Object containing the arguments
+ */
+export function S({ name, string, textToHash, stbl }: {
+  name?: string;
+  string: string;
+  textToHash?: string;
+  stbl: StringTable;
+}): Tunable {
+  const toHash = textToHash || string;
+  const id = stbl.addStringAndHash(toHash);
+  const { key } = stbl.getEntryById(id);
+  const formattedKey = `0x${key.toString(16).padStart(8, '0').toUpperCase()}`;
+  return T({
+    name,
+    value: formattedKey,
+    comment: string
+  });
+}
+
+/**
+ * Returns a version of `S` that already has a string table baked into it, so
+ * that you do not need to pass it every time. Example usage is:
+ * 
+ * ```ts
+ * const stbl = StringTableResource.create();
+ * const S = getStringNodeFunction(stbl);
+ * const tunable = S({ string: "This is the string!" });
+ * ```
+ *  
+ * @param stbl String table to use 
+ */
+export function getStringNodeFunction(stbl: StringTable): ({ name, textToHash, string }: {
+  name?: string;
+  textToHash?: string;
+  string: string;
+}) => Tunable {
+  return ({ name, textToHash, string }: { name?: string; textToHash?: string; string: string }) => {
+    return S({ name, string, textToHash, stbl });
+  };
 }
 
 //#endregion Functions
