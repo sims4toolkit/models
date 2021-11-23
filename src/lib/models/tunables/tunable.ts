@@ -16,7 +16,7 @@ type AttributeKey = 'n' | 'c' | 't' | 'm' | 'i' | 'ev' | 'p' | 's';
 type TunableAttributes = { [key in AttributeKey]?: any; }
 
 
-abstract class TunableNode {
+export abstract class TunableNode {
   abstract readonly tag: Tag;
   readonly attributes: TunableAttributes;
   readonly value?: any;
