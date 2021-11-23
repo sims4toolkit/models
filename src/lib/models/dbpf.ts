@@ -36,7 +36,7 @@ export default class Dbpf {
   /**
    * Creates a new DBPF from a buffer that contains binary data.
    */
-  static from(buffer: Buffer, options?: DBPFOptions): Dbpf {
+  static from(buffer: Buffer, options?: DbpfOptions): Dbpf {
     return new Dbpf(readDBPF(buffer, options), buffer);
   }
 
@@ -168,7 +168,7 @@ function isXML(buffer: Buffer): boolean {
  * @param buffer Buffer to read as a DBPF
  * @param ignoreErrors Whether or not non-fatal errors should be ignored
  */
-function readDBPF(buffer: Buffer, options?: DBPFOptions): ResourceEntry[] {
+function readDBPF(buffer: Buffer, options?: DbpfOptions): ResourceEntry[] {
   const decoder = new BinaryDecoder(buffer);
 
   const validateErrors = options === undefined ? true : !options.ignoreErrors;
@@ -177,13 +177,13 @@ function readDBPF(buffer: Buffer, options?: DBPFOptions): ResourceEntry[] {
   //#region Header
 
   if (decoder.charsUtf8(4) !== "DBPF") {
-    if (validateErrors) throw new ReadDBPFError("Not a package file");
+    if (validateErrors) throw new Error("Not a package file");
   }
 
   const versionMajor = decoder.uint32();
   const versionMinor = decoder.uint32();
   if (versionMajor !== 2 || versionMinor !== 1) {
-    if (validateErrors) throw new ReadDBPFError("File version must be 2.1");
+    if (validateErrors) throw new Error("File version must be 2.1");
   }
   
   decoder.skip(24); // mnUserVersion through unused2
@@ -193,7 +193,7 @@ function readDBPF(buffer: Buffer, options?: DBPFOptions): ResourceEntry[] {
   decoder.skip(12); // unused3 (three uint32s; 12 bytes)
   const unused4 = decoder.uint32();
   if (unused4 !== 3) {
-    if (validateErrors) throw new ReadDBPFError("Unused4 must be 3");
+    if (validateErrors) throw new Error("Unused4 must be 3");
   }
   const mnIndexRecordPosition = decoder.uint64();
   // don't need to skip unused5 because decoder is about to seek
@@ -261,7 +261,7 @@ function readDBPF(buffer: Buffer, options?: DBPFOptions): ResourceEntry[] {
  * 
  * @param dbpf DBPF model to serialize into a buffer
  */
-function writeDBPF(dbpf: DBPF): Buffer {
+function writeDBPF(dbpf: Dbpf): Buffer {
   const recordsBuffer: Buffer = (() => {
     const buffer = Buffer.alloc(0); // FIXME: find size
     const encoder = new BinaryEncoder(buffer);

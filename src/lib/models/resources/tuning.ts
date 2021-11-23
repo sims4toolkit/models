@@ -27,7 +27,7 @@ export default class TuningResource extends Resource {
    * @param blank Whether or not the tuning file should be empty
    */
   static create(blank?: boolean): TuningResource {
-    return new TuningResource(blank ? '' : DEFAULT_CONTENT);
+    return new TuningResource(blank ? '' : '');//DEFAULT_CONTENT);
   }
 
   /**
@@ -41,15 +41,15 @@ export default class TuningResource extends Resource {
     return new TuningResource(buffer.toString(encoding), buffer);
   }
 
-  /**
-   * TODO:
-   * 
-   * @param node TODO:
-   */
-  static fromNode(node: TuningFileNode): TuningResource {
-    // TODO: impl
-    return undefined;
-  }
+  // /**
+  //  * TODO:
+  //  * 
+  //  * @param node TODO:
+  //  */
+  // static fromNode(node: TuningFileNode): TuningResource {
+  //   // TODO: impl
+  //   return undefined;
+  // }
 
   //#endregion Initialization
 

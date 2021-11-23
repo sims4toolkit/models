@@ -1,7 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const expect = require('chai').expect;
-const { StringTableResource, Hashing } = require('../../../dst/api');
+const { StringTableResource, hashing } = require('../../../dst/api');
 
 //#region Helpers
 
@@ -454,7 +454,7 @@ describe('StringTableResource', function() {
       stbl.addStringAndHash(string, name);
       expect(stbl.numEntries()).to.equal(1);
       const entry = stbl.getEntryByIndex(0);
-      expect(entry.key).to.equal(Hashing.fnv32(name));
+      expect(entry.key).to.equal(hashing.fnv32(name));
       expect(entry.string).to.equal(string);
     });
 
@@ -464,7 +464,7 @@ describe('StringTableResource', function() {
       stbl.addStringAndHash(string);
       expect(stbl.numEntries()).to.equal(1);
       const entry = stbl.getEntryByIndex(0);
-      expect(entry.key).to.equal(Hashing.fnv32(string));
+      expect(entry.key).to.equal(hashing.fnv32(string));
       expect(entry.string).to.equal(string);
     });
 
@@ -1346,7 +1346,7 @@ describe('StringTableResource', function() {
         const result = stbl.searchByString('this is another string!');
         expect(result).to.be.an('Array').with.lengthOf(2);
         expect(result[0].key).to.equal(0xF098F4B5);
-        expect(result[1].key).to.equal(Hashing.fnv32('tHiS iS aNoThEr StRiNg!'));
+        expect(result[1].key).to.equal(hashing.fnv32('tHiS iS aNoThEr StRiNg!'));
       });
     });
 
