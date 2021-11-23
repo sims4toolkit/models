@@ -1,27 +1,22 @@
-import type Record from "../record";
-
-/** How a resource file is encoded. */
-export type ResourceVariant = 'RAW' | 'XML' | 'DATA' | 'STBL' | undefined;
+import type ResourceEntry from "../resourceEntry";
+import type { ResourceVariant } from "../types";
 
 /**
- * A base class for resources that contain data. Resources know nothing about
- * their metadata in a DBPF, but do containg a reference to their owning record,
- * if they have one.
+ * A base for all resources.
  */
 export default abstract class Resource {
   /** How this resource is encoded. */
-  readonly variant: ResourceVariant;
+  abstract readonly variant: ResourceVariant;
 
   private _cachedBuffer: Buffer;
-  private _owner?: Record;
+  private _owner?: ResourceEntry;
 
-  protected constructor(buffer: Buffer) {
+  constructor(buffer: Buffer) {
     this._cachedBuffer = buffer;
   }
 
   /**
-   * Returns a buffer that can be used to write this resource. The buffer is NOT
-   * compressed -- compression is the responsibility of a record.
+   * Returns an uncompressed buffer for this resource.
    */
   getBuffer(): Buffer {
     if (this.hasChanged()) this._cachedBuffer = this._serialize();
@@ -33,39 +28,30 @@ export default abstract class Resource {
    * was serialized, and `false` otherwise.
    */
   hasChanged(): boolean {
-    return this._cachedBuffer === undefined;
+    return !this._cachedBuffer;
   }
 
   /**
-   * Returns a deep copy of this resource.
-   */
-  abstract clone(): Resource;
-
-  /**
-   * Serializes this resource into a new buffer if a cached one is unavailable.
-   */
-  protected abstract _serialize(): Buffer;
-
-  /**
-   * Clears the cached buffer for this resource. This should be called every
-   * time the resource is changed in some way.
-   */
-  protected _uncache() {
-    this._cachedBuffer = undefined;
-    //@ts-ignore The _uncache method is meant to be protected so that outside
-    // code knows not to call it, but it is totally fine to be called here.
-    this._owner?._uncache();
-  }
-
-  /**
-   * Sets the given record as the owner of this resource.
+   * Sets an entry as the owner of this resource. As an owner, the entry will be
+   * notified to uncache itself whenever this resource is uncached.
    * 
-   * This is marked as private so that external code knows not to call it, but
-   * it is called by the constructor of records.
-   * 
-   * @param owner Record that contains this resource
+   * @param owner Entry for this record
    */
-  private _setOwner(owner: Record) {
+  setOwner(owner: ResourceEntry) {
     this._owner = owner;
   }
+
+  /**
+   * Clears the cache for this resource.
+   */
+  uncache() {
+    this._cachedBuffer = undefined;
+    this._owner?.uncache();
+  }
+
+  /** Returns a deep copy of this resource. */
+  abstract clone(): Resource;
+
+  /** Serializes this resource into a buffer.  */
+  protected abstract _serialize(): Buffer;
 }

@@ -7,13 +7,14 @@ import SimData from './resources/simdata';
 import StringTable from './resources/stringtable';
 import Tuning from './resources/tuning';
 import Unsupported from './resources/unsupported';
-import { buffer } from 'stream/consumers';
 import RawResource from './resources/raw';
 
 /**
- * Model for a Database Packed File (DBPF).
+ * Model for a Sims 4 package file (also called a "Database Packed File", or
+ * DBPF for short). Sims 4 Toolkit uses "DBPF" instead of "package" to avoid
+ * confusion with npm packages and the reserved `package` keyword.
  */
-export default class DBPF {
+export default class Dbpf {
   private _cachedBuffer?: Buffer;
   private _entries: ResourceEntry[];
 
@@ -25,15 +26,15 @@ export default class DBPF {
   /**
    * Creates and returns a new, empty DBPF.
    */
-  static create(): DBPF {
-    return new DBPF([]);
+  static create(): Dbpf {
+    return new Dbpf([]);
   }
 
   /**
    * Creates a new DBPF from a buffer that contains binary data.
    */
-  static from(buffer: Buffer, options?: DBPFOptions): DBPF {
-    return new DBPF(readDBPF(buffer, options), buffer);
+  static from(buffer: Buffer, options?: DBPFOptions): Dbpf {
+    return new Dbpf(readDBPF(buffer, options), buffer);
   }
 
   /**
@@ -66,10 +67,9 @@ export default class DBPF {
   }
 
   /**
-   * Clears the cached buffer for this DBPF. This should be called by any of the
-   * contained records when they are updated.
+   * Clears the cached buffer for this DBPF.
    */
-  protected _uncache() {
+  uncache() {
     // TODO: impl
   }
 }

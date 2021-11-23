@@ -468,8 +468,6 @@ interface StringTableContent {
   entries: StringEntry[];
 }
 
-class ReadStringTableError extends Error { }
-
 interface ReadStringTableOptions {
   ignoreErrors: boolean;
   dontThrow: boolean;
@@ -491,11 +489,11 @@ function readSTBL(buffer: Buffer, options?: ReadStringTableOptions): StringTable
   if (options === undefined || !options.ignoreErrors) {
     // mnFileIdentifier
     if (decoder.charsUtf8(4) !== "STBL")
-      throw new ReadStringTableError("Not a string table.");
+      throw new Error("Not a string table.");
 
     // mnVersion
     if (decoder.uint16() !== 5)
-      throw new ReadStringTableError("Version must be 5.");
+      throw new Error("Version must be 5.");
   } else {
     decoder.skip(6);
   }
