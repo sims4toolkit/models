@@ -3,7 +3,12 @@
  * takes care of cacheing, if needed.
  */
 export default abstract class WritableModel {
+  /**
+   * The model that contains this one. As an owner, it will be uncached whenever
+   * this model is uncached.
+   */
   public owner?: WritableModel;
+
   private _cachedBuffer?: Buffer;
   private _neverCache: boolean;
 
@@ -11,22 +16,17 @@ export default abstract class WritableModel {
    * Constructor for `WritableModel`.
    * 
    * Arguments
-   * - `buffer`: The initial buffer to save in the cache.
-   * - `neverCache`: If set to `true`, this model will never cache its buffer
-   * and is guaranteed to always return a freshly serialized buffer.
-   * - `owner`: The model that contains this one, and should be notified
-   * whenever this one is uncached.
+   * - `buffer`: The initial buffer to cache.
+   * - `neverCache`: Whether this model should never be cached.
    * 
    * @param args Object containing arguments
    */
-  protected constructor({ buffer, neverCache = false, owner }: {
+  protected constructor({ buffer, neverCache = false }: {
     buffer?: Buffer;
     neverCache?: boolean;
-    owner?: WritableModel;
   } = {}) {
     this._cachedBuffer = buffer;
     this._neverCache = neverCache;
-    this.owner = owner;
   }
 
   /**
