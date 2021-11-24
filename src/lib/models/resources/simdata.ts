@@ -6,8 +6,8 @@ import Resource from "./resource";
 export default class SimDataResource extends Resource {
   readonly variant = 'DATA';
 
-  private constructor(cachedBuffer?: Buffer) {
-    super(cachedBuffer);
+  private constructor(buffer?: Buffer) {
+    super({buffer});
   }
 
   clone(): SimDataResource {

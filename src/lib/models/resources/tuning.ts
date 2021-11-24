@@ -11,8 +11,8 @@ export default class TuningResource extends Resource {
 
   //#region Initialization
 
-  private constructor(content: string, cachedBuffer?: Buffer) {
-    super(cachedBuffer);
+  private constructor(content: string, buffer?: Buffer) {
+    super({buffer});
     this._content = content;
   }
 

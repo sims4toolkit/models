@@ -10,12 +10,12 @@ export default class UnsupportedResource extends Resource {
   readonly reason?: string;
 
   private constructor(buffer: Buffer, reason?: string) {
-    super(buffer);
+    super({buffer});
     this.reason = reason;
   }
 
   clone(): UnsupportedResource {
-    return UnsupportedResource.from(this.getBuffer());
+    return UnsupportedResource.from(this.buffer);
   }
 
   /**
