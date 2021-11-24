@@ -82,80 +82,6 @@ describe('StringTableResource', function() {
     });
   });
 
-  describe('#length', function() {
-    it('should return the number of entries in a non-empty STBL', function() {
-      const stbl = getSTBL('SmallSTBL');
-      expect(stbl.length).to.equal(3);
-    });
-
-    it('should return 0 for an empty STBL', function() {
-      const stbl = StringTableResource.create();
-      expect(stbl.length).to.equal(0);
-    });
-
-    it('should increase by 1 after adding', function() {
-      const stbl = StringTableResource.create();
-      expect(stbl.length).to.equal(0);
-      stbl.addStringAndHash("Hello");
-      expect(stbl.length).to.equal(1);
-    });
-
-    it('should decrease by 1 after removing', function() {
-      const stbl = getSTBL('SmallSTBL');
-      expect(stbl.length).to.equal(3);
-      stbl.removeEntryByIndex(0);
-      expect(stbl.length).to.equal(2);
-    });
-
-    it('should stay the same after updating', function() {
-      const stbl = getSTBL('SmallSTBL');
-      expect(stbl.length).to.equal(3);
-      stbl.updateEntryByIndex(0, { key: 123 });
-      expect(stbl.length).to.equal(3);
-    });
-
-    it('should not be assignable', function() {
-      expect(() => stbl.length = 1).to.throw;
-    });
-  });
-
-  describe('#entries', function() {
-    it('should return the entries of a non-empty STBL', function() {
-      const stbl = getSTBL('SmallSTBL');
-      expect(stbl.entries).to.be.an('Array').that.has.lengthOf(3);
-    });
-
-    it('should return an empty array for an empty STBL', function() {
-      const stbl = StringTableResource.create();
-      expect(stbl.entries).to.be.an('Array').that.is.empty;
-    });
-
-    it('should include new item after adding', function() {
-      const stbl = StringTableResource.create();
-      expect(stbl.entries[0]).to.be.undefined;
-      stbl.addStringAndHash("Hello");
-      expect(stbl.entries[0].string).to.equal("Hello");
-    });
-
-    it('should not include an item after it\'s removed', function() {
-      const stbl = getSTBL('SmallSTBL');
-      expect(stbl.entries.length).to.equal(3);
-      stbl.removeEntryByIndex(0);
-      expect(stbl.entries.length).to.equal(2);
-      expect(stbl.getEntryById(0)).to.be.undefined;
-    });
-
-    it('should contain an updated item after updating', function() {
-      const stbl = getSTBL('SmallSTBL');
-      stbl.updateEntryByIndex(1, { key: 123 });
-      expect(stbl.entries[1].key).to.equal(123);
-    });
-
-    it('should not be assignable', function() {
-      expect(() => stbl.entries = []).to.throw;
-    });
-  });
-
   //#endregion Properties
 
   //#region Initialization
@@ -1195,6 +1121,80 @@ describe('StringTableResource', function() {
   //#endregion Remove
 
   //#region Get
+
+  describe('#length', function() {
+    it('should return the number of entries in a non-empty STBL', function() {
+      const stbl = getSTBL('SmallSTBL');
+      expect(stbl.length).to.equal(3);
+    });
+
+    it('should return 0 for an empty STBL', function() {
+      const stbl = StringTableResource.create();
+      expect(stbl.length).to.equal(0);
+    });
+
+    it('should increase by 1 after adding', function() {
+      const stbl = StringTableResource.create();
+      expect(stbl.length).to.equal(0);
+      stbl.addStringAndHash("Hello");
+      expect(stbl.length).to.equal(1);
+    });
+
+    it('should decrease by 1 after removing', function() {
+      const stbl = getSTBL('SmallSTBL');
+      expect(stbl.length).to.equal(3);
+      stbl.removeEntryByIndex(0);
+      expect(stbl.length).to.equal(2);
+    });
+
+    it('should stay the same after updating', function() {
+      const stbl = getSTBL('SmallSTBL');
+      expect(stbl.length).to.equal(3);
+      stbl.updateEntryByIndex(0, { key: 123 });
+      expect(stbl.length).to.equal(3);
+    });
+
+    it('should not be assignable', function() {
+      expect(() => stbl.length = 1).to.throw;
+    });
+  });
+
+  describe('#entries', function() {
+    it('should return the entries of a non-empty STBL', function() {
+      const stbl = getSTBL('SmallSTBL');
+      expect(stbl.entries).to.be.an('Array').that.has.lengthOf(3);
+    });
+
+    it('should return an empty array for an empty STBL', function() {
+      const stbl = StringTableResource.create();
+      expect(stbl.entries).to.be.an('Array').that.is.empty;
+    });
+
+    it('should include new item after adding', function() {
+      const stbl = StringTableResource.create();
+      expect(stbl.entries[0]).to.be.undefined;
+      stbl.addStringAndHash("Hello");
+      expect(stbl.entries[0].string).to.equal("Hello");
+    });
+
+    it('should not include an item after it\'s removed', function() {
+      const stbl = getSTBL('SmallSTBL');
+      expect(stbl.entries.length).to.equal(3);
+      stbl.removeEntryByIndex(0);
+      expect(stbl.entries.length).to.equal(2);
+      expect(stbl.getEntryById(0)).to.be.undefined;
+    });
+
+    it('should contain an updated item after updating', function() {
+      const stbl = getSTBL('SmallSTBL');
+      stbl.updateEntryByIndex(1, { key: 123 });
+      expect(stbl.entries[1].key).to.equal(123);
+    });
+
+    it('should not be assignable', function() {
+      expect(() => stbl.entries = []).to.throw;
+    });
+  });
 
   describe('#getEntry()', function() {
     it('should return the only entry that matches the predicate', function() {
