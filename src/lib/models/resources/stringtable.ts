@@ -110,6 +110,8 @@ export default class StringTableResource extends Resource {
    * @param name Text to get the hash from
    */
   addStringAndHash(string: string, name?: string): number {
+    // FIXME: return the whole entry that was added, not just the ID
+    // FIXME: put the name argument in an object
     const key = fnv32(name === undefined ? string : name);
     return this.addEntry(key, string);
   }

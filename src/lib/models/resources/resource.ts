@@ -18,7 +18,8 @@ export default abstract class Resource {
   /**
    * Returns an uncompressed buffer for this resource.
    */
-  getBuffer(): Buffer {
+  getBuffer({ forceUncache = false } = {}): Buffer {
+    if (forceUncache) this.uncache();
     if (this.hasChanged()) this._cachedBuffer = this._serialize();
     return this._cachedBuffer;
   }
