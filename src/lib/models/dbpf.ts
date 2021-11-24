@@ -9,19 +9,19 @@ import StringTable from './resources/stringtable';
 import Tuning from './resources/tuning';
 import Unsupported from './resources/unsupported';
 import RawResource from './resources/raw';
+import WritableModel from "./writableModel";
 
 /**
  * Model for a Sims 4 package file (also called a "Database Packed File", or
  * DBPF for short). Sims 4 Toolkit uses "DBPF" instead of "package" to avoid
  * confusion with npm packages and the reserved `package` keyword.
  */
-export default class Dbpf {
-  private _cachedBuffer?: Buffer;
+export default class Dbpf extends WritableModel {
   private _nextId: number;
   private _entries: ResourceEntry[];
 
   private constructor(entries: ResourceEntry[], buffer?: Buffer) {
-    this._cachedBuffer = buffer;
+    super({ buffer });
     this._entries = entries;
     this._nextId = entries.length;
   }
@@ -37,15 +37,7 @@ export default class Dbpf {
    * Creates a new DBPF from a buffer that contains binary data.
    */
   static from(buffer: Buffer, options?: DbpfOptions): Dbpf {
-    return new Dbpf(readDBPF(buffer, options), buffer);
-  }
-
-  /**
-   * Returns a buffer that contains this DBPF in binary form.
-   */
-  getBuffer(): Buffer {
-    if (this._cachedBuffer === undefined) this._cachedBuffer = writeDBPF(this);
-    return this._cachedBuffer;
+    return new Dbpf(readDbpf(buffer, options), buffer);
   }
 
   /**
@@ -69,11 +61,8 @@ export default class Dbpf {
     return this._entries.filter(predicate);
   }
 
-  /**
-   * Clears the cached buffer for this DBPF.
-   */
-  uncache() {
-    // TODO: impl
+  protected _serialize(): Buffer {
+    return writeDbpf(this);
   }
 }
 
@@ -168,7 +157,7 @@ function isXML(buffer: Buffer): boolean {
  * @param buffer Buffer to read as a DBPF
  * @param ignoreErrors Whether or not non-fatal errors should be ignored
  */
-function readDBPF(buffer: Buffer, options?: DbpfOptions): ResourceEntry[] {
+function readDbpf(buffer: Buffer, options?: DbpfOptions): ResourceEntry[] {
   const decoder = new BinaryDecoder(buffer);
 
   const validateErrors = options === undefined ? true : !options.ignoreErrors;
@@ -261,7 +250,7 @@ function readDBPF(buffer: Buffer, options?: DbpfOptions): ResourceEntry[] {
  * 
  * @param dbpf DBPF model to serialize into a buffer
  */
-function writeDBPF(dbpf: Dbpf): Buffer {
+function writeDbpf(dbpf: Dbpf): Buffer {
   const recordsBuffer: Buffer = (() => {
     const buffer = Buffer.alloc(0); // FIXME: find size
     const encoder = new BinaryEncoder(buffer);
