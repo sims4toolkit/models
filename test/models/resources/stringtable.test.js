@@ -264,12 +264,12 @@ describe('StringTableResource', function() {
         { key: 789, string: "Third" },
       ]);
 
-      expect(stbl.getEntryById(0).key).to.equal(123);
-      expect(stbl.getEntryById(0).string).to.equal("First");
-      expect(stbl.getEntryById(1).key).to.equal(456);
-      expect(stbl.getEntryById(1).string).to.equal("Second");
-      expect(stbl.getEntryById(2).key).to.equal(789);
-      expect(stbl.getEntryById(2).string).to.equal("Third");
+      expect(stbl.getById(0).key).to.equal(123);
+      expect(stbl.getById(0).string).to.equal("First");
+      expect(stbl.getById(1).key).to.equal(456);
+      expect(stbl.getById(1).string).to.equal("Second");
+      expect(stbl.getById(2).key).to.equal(789);
+      expect(stbl.getById(2).string).to.equal("Third");
     });
   });
 
