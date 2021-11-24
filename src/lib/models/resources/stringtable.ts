@@ -1,7 +1,6 @@
 import Resource from "./resource";
 import { BinaryEncoder, BinaryDecoder } from "../../utils/encoding";
 import { fnv32 } from "../../utils/hashing";
-import { formatStringKey } from "../../utils/formatting";
 
 /**
  * Model for binary string table resources.
@@ -21,9 +20,7 @@ export default class StringTableResource extends Resource {
     this._nextId = this._entries.length;
   }
 
-  /**
-   * Returns a new, empty String Table.
-   */
+  /** Creates and returns a new, empty string table. */
   static create(): StringTableResource {
     return new StringTableResource([]);
   }
@@ -46,16 +43,14 @@ export default class StringTableResource extends Resource {
     }
   }
 
-  // /**
-  //  * Returns a new String Table resource created from a list of entries.
-  //  * 
-  //  * @param json List of entries to load into the string table
-  //  */
-  // static fromJson(json: { key: number; string: string; }[]): StringTableResource {
-  //   const stbl = StringTableResource.create();
-  //   json.forEach(({ key, string }) => stbl.addEntry(key, string));
-  //   return stbl;
-  // }
+  /**
+   * Returns a new String Table created from a list of entries.
+   * 
+   * @param json List of entries to load into the string table
+   */
+  static fromJson(json: KeyStringPair[]): StringTableResource {
+    return new StringTableResource(json);
+  }
 
   /**
    * Merges a variable number of string tables into one. Does not mutate the 
@@ -85,16 +80,18 @@ export default class StringTableResource extends Resource {
   //#region Public Methods - CREATE
 
   /**
-   * Adds an entry to this string table.
+   * Creates an entry for the given key and string, adds it to the string table,
+   * and returns the entry that was created. If the given key is not 32 bit or
+   * if it already exists in the table, an exception is thrown.
    * 
    * Options
-   * - `allowDuplicateKey`: If true, then the function will not throw when
-   * adding a key that already exists. This is `false` by default.
+   * - `allowDuplicateKey`: If `true`, then the function will not throw when
+   * adding a key that already exists. (Default = `false`)
    * 
    * @param key Key of the string to add
    * @param string String to add
    * @param options Object containing options 
-   * @returns StringEntry that was added
+   * @returns String entry that was added
    * @throws If the key is not 32-bit or if it already exists
    */
   add(key: number, string: string, { allowDuplicateKey = false } = {}): StringEntry {
@@ -115,13 +112,14 @@ export default class StringTableResource extends Resource {
    * 
    * Options
    * - `toHash`: If provided, this will be hashed to create the key. If not, 
-   * then the string itself will be hashed.
+   * then the string itself will be hashed. (Default = `undefined`)
    * - `allowDuplicateKey`: If true, then the function will not throw when
-   * adding a key that already exists. This is `false` by default.
+   * adding a key that already exists. (Default = `false`)
    * 
    * @param string String to add to the string table
    * @param options Object containing options 
    * @returns String entry that was added
+   * @throws If the key already exists
    */
   addAndHash(string: string, { toHash, allowDuplicateKey = false }: {
     toHash?: string;
@@ -146,27 +144,6 @@ export default class StringTableResource extends Resource {
 
   //#endregion Public Methods - CREATE
 
-  //#region Public Methods - DELETE
-
-  /**
-   * Removes any number of entries from this string table. If just removing one
-   * entry, consider calling its `delete()` method.
-   * 
-   * @param entries Entries to remove from this string table
-   */
-  remove(...entries: StringEntry[]) {
-    let entryRemoved = false;
-    entries.forEach(entry => {
-      const index = this.findIndex(entry);
-      if (index < 0 || index >= this.length) return;
-      this.entries.splice(index, 1);
-      entryRemoved = true;
-    });
-    if (entryRemoved) this.uncache();
-  }
-
-  //#endregion Public Methods - DELETE
-
   //#region Public Methods - READ
 
   /**
@@ -179,69 +156,6 @@ export default class StringTableResource extends Resource {
    */
   get entries(): StringEntry[] {
     return this._entries;
-  }
-
-  /**
-   * TODO:
-   * 
-   * @param entry TODO:
-   * @returns TODO:
-   */
-  findIndex(entry: StringEntry): number {
-    return this.entries.findIndex(e => e.id === entry.id);
-  }
-
-  /**
-   * TODO:
-   * 
-   * @param id TODO:
-   * @returns TODO:
-   */
-  getById(id: number): StringEntry {
-    return this.entries.find(entry => entry.id === id);
-  }
-
-  /**
-   * TODO:
-   * 
-   * @param key TODO:
-   * @returns TODO:
-   */
-  getByKey(key: number): StringEntry {
-    return this.entries.find(entry => entry.key === key);
-  }
-
-  /** The number of entries in this string table. */
-  get length(): number {
-    return this.entries.length;
-  }
-
-  /**
-  * Returns all entries that contain the given string following the given
-  * options. All options are false by default, so if no options are passed,
-  * the search will be for a case-insensitive exact match.
-  * 
-  * Do not mutate the objects that are output. Doing so will break things.
-  * 
-  * @param string String to search for
-  */
-  search(string: string, options?: StringSearchOptions): StringEntry[] {
-    const checkCase = options !== undefined && options.caseSensitive;
-    const checkSubstrings = options !== undefined && options.includeSubstrings;
-
-    return this.entries.filter(entry => {
-      if (checkSubstrings) {
-        // substring
-        return checkCase ?
-          entry.string.includes(string) :
-          entry.string.toLowerCase().includes(string.toLowerCase());
-      } else {
-        // exact match
-        return checkCase ?
-          entry.string === string :
-          entry.string.toLowerCase() === string.toLowerCase();
-      }
-    });
   }
 
   /**
@@ -273,7 +187,92 @@ export default class StringTableResource extends Resource {
     return result;
   }
 
+  /**
+   * Finds and returns the index of the given entry.
+   * 
+   * @param entry Entry to find index of
+   */
+  findIndex(entry: StringEntry): number {
+    return this.entries.findIndex(e => e.id === entry.id);
+  }
+
+  /**
+   * Finds and returns the entry with the given ID.
+   * 
+   * @param id Id of entry to find
+   */
+  getById(id: number): StringEntry {
+    return this.entries.find(entry => entry.id === id);
+  }
+
+  /**
+   * Finds and returns the entry with the given key. If there is more than one
+   * entry with the key, the first is returned.
+   * 
+   * @param key Key of entry to find
+   */
+  getByKey(key: number): StringEntry {
+    return this.entries.find(entry => entry.key === key);
+  }
+
+  /** The number of entries in this string table. */
+  get length(): number {
+    return this.entries.length;
+  }
+
+  /**
+  * Returns all entries that match the given search criteria. By default, it
+  * will search for an exact, case-sensitive match.
+  * 
+  * Options
+  * - `caseSensitive`: Whether or not to check case. (Default = `true`)
+  * - `includeSubstrings`: Whether or not to search by substring rather than an
+  * exact match. (Default = `false`)
+  * 
+  * @param string String to search for
+  * @param options Object containing options
+  */
+  search(string: string, { caseSensitive = true, includeSubstrings = false }: {
+    caseSensitive?: boolean;
+    includeSubstrings?: boolean;
+  } = {}): StringEntry[] {
+    return this.entries.filter(entry => {
+      if (includeSubstrings) {
+        // substring
+        return caseSensitive ?
+          entry.string.includes(string) :
+          entry.string.toLowerCase().includes(string.toLowerCase());
+      } else {
+        // exact match
+        return caseSensitive ?
+          entry.string === string :
+          entry.string.toLowerCase() === string.toLowerCase();
+      }
+    });
+  }
+
   //#endregion Public Methods - READ
+
+  //#region Public Methods - DELETE
+
+  /**
+   * Removes any number of entries from this string table. If just removing one
+   * entry, consider calling its `delete()` method.
+   * 
+   * @param entries Entries to remove from this string table
+   */
+  remove(...entries: StringEntry[]) {
+    let entryRemoved = false;
+    entries.forEach(entry => {
+      const index = this.findIndex(entry);
+      if (index < 0 || index >= this.length) return;
+      this.entries.splice(index, 1);
+      entryRemoved = true;
+    });
+    if (entryRemoved) this.uncache();
+  }
+
+  //#endregion Public Methods - DELETE
 
   //#region Protected Methods
 
@@ -332,11 +331,6 @@ class StringEntry {
 //#region Interfaces & Types
 
 type StringTableError = 'Duplicate Keys' | 'Duplicate Strings' | 'Empty String';
-
-interface StringSearchOptions {
-  caseSensitive?: boolean;
-  includeSubstrings?: boolean;
-}
 
 interface KeyStringPair {
   key: number;
