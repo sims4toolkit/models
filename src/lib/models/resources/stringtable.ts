@@ -253,6 +253,29 @@ export default class StringTableResource extends Resource {
 
   //#endregion Public Methods - READ
 
+  //#region Public Methods - UPDATE
+
+  /**
+   * Sorts the entries in the string table using the provided function. If no
+   * function is given, they are sorted in ascending order by their string.
+   * 
+   * @param compareFn Function used to determine the order of the elements. It
+   * is expected to return a negative value if first argument is less than
+   * second argument, zero if they're equal and a positive value otherwise. If
+   * omitted, the elements are sorted in ascending, ASCII character order.
+   * [Copied from `Array.sort()`'s documentation]
+   */
+  sort(compareFn?: (a: StringEntry, b: StringEntry) => number) {
+    this.entries.sort(compareFn || ((a, b) => {
+      if (a.string < b.string) return -1;
+      if (a.string > b.string) return 1;
+      return 0;
+    }));
+    this.uncache();
+  }
+
+  //#endregion Public Methods - UPDATE
+
   //#region Public Methods - DELETE
 
   /**
