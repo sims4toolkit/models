@@ -377,7 +377,25 @@ describe('StringTableResource', function() {
 
     it('should throw if key exceeds 32-bit', function() {
       const stbl = StringTableResource.create();
+      expect(stbl).to.have.lengthOf(0);
       expect(() => stbl.add(0x100000000, "Test")).to.throw("Key must be 32-bit.");
+      expect(stbl).to.have.lengthOf(0);
+    });
+
+    it('should throw if the given key is already in use', function() {
+      const stbl = StringTableResource.create();
+      stbl.add(123, "String");
+      expect(stbl).to.have.lengthOf(1);
+      expect(() => stbl.add(123, "Other string")).to.throw("Tried to add key that already exists: 123");
+      expect(stbl).to.have.lengthOf(1);
+    });
+
+    it('should not throw when key is in use but option ignores it', function() {
+      const stbl = StringTableResource.create();
+      stbl.add(123, "String");
+      expect(stbl).to.have.lengthOf(1);
+      expect(() => stbl.add(123, "Other string", { allowDuplicateKey = true })).to.not.throw();
+      expect(stbl).to.have.lengthOf(2);
     });
 
     it('should use the correct ID on a new STBL', function() {
