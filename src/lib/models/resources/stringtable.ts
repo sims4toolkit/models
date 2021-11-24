@@ -460,11 +460,13 @@ export default class StringTableResource extends Resource {
  * An entry in a StringTableResource.
  */
 class StringEntry {
+  readonly id: number;
   private _key: number;
   private _string: string;
   private _stbl: StringTableResource;
 
-  constructor(key: number, string: string, stbl: StringTableResource) {
+  constructor(id: number, key: number, string: string, stbl: StringTableResource) {
+    this.id = id;
     this._key = key;
     this._string = string;
     this._stbl = stbl;
@@ -508,12 +510,6 @@ type StringEntryPredicate = (entry: StringEntry) => boolean;
 interface StringSearchOptions {
   caseSensitive?: boolean;
   includeSubstrings?: boolean;
-}
-
-interface StringEntry {
-  readonly id: number;
-  key: number;
-  string: string;
 }
 
 interface KeyStringPair {
