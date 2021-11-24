@@ -30,39 +30,40 @@ function expectEntriesToBeSame(entry1, entry2) {
 }
 
 function expectSameContents(stbl1, stbl2) {
-  expect(stbl1.numEntries()).to.equal(stbl2.numEntries());
-  stbl1.getEntries((entry, i) => {
-    const other = stbl2.getEntryByIndex(i);
+  expect(stbl1).to.have.lengthOf(stbl2.length);
+  stbl1.entries.forEach((entry, i) => {
+    const other = stbl2.entries[i];
     expect(entry.key).to.equal(other.key);
     expect(entry.string).to.equal(other.string);
   });
 }
 
 function expectNoMutationOnAdd(stbl1, stbl2) {
-  const originalLength = stbl1.numEntries();
-  expect(stbl2.numEntries()).to.equal(originalLength);
-  stbl2.addEntry(1234, "Test");
-  expect(stbl1.numEntries()).to.equal(originalLength);
-  expect(stbl2.numEntries()).to.equal(originalLength + 1);
+  const originalLength = stbl1.length;
+  expect(stbl2).to.have.lengthOf(originalLength);
+  stbl2.add(1234, "Test");
+  expect(stbl1.length).to.equal(originalLength);
+  expect(stbl2.length).to.equal(originalLength + 1);
 }
 
 function expectNoMutationOnUpdate(stbl1, stbl2) {
-  const originalEntry = stbl1.getEntryByIndex(0);
+  const originalEntry = stbl1.entries[0];
   const originalKey = originalEntry.key;
   const originalString = originalEntry.string;
-  stbl2.updateEntryByIndex(0, { key: originalKey + 1, string: originalString + "." });
-  const resultEntry = stbl1.getEntryByIndex(0);
-  stbl1.getEntryByIndex(0);
+  const otherEntry = stbl2.entries[0];
+  otherEntry.key = originalKey + 1;
+  otherEntry.string = originalString + ".";
+  const resultEntry = stbl1.entries[0];
   expect(resultEntry.key).to.equal(originalKey);
   expect(resultEntry.string).to.equal(originalString);
 }
 
 function expectNoMutationOnRemove(stbl1, stbl2) {
-  const originalLength = stbl1.numEntries();
-  expect(stbl2.numEntries()).to.equal(originalLength);
-  stbl2.removeEntryByIndex(0);
-  expect(stbl1.numEntries()).to.equal(originalLength);
-  expect(stbl2.numEntries()).to.equal(originalLength - 1);
+  const originalLength = stbl1.length;
+  expect(stbl2).to.have.lengthOf(originalLength);
+  stbl2.entries[0].delete();
+  expect(stbl1).to.have.lengthOf(originalLength);
+  expect(stbl2).to.have.lengthOf(originalLength - 1);
 }
 
 //#endregion Helpers
@@ -365,7 +366,7 @@ describe('StringTableResource', function() {
       stbl.addEntry(789, "繁體中文"); // chinese
       stbl.addEntry(246, "Русский"); // russian
       stbl.addEntry(135, "한국어"); // korean
-      expect(stbl.numEntries()).to.equal(5);
+      expect(stbl).to.have.lengthOf(5);
       expect(stbl.getEntryByIndex(0).string).to.equal("Héllö wørłd!");
       expect(stbl.getEntryByIndex(1).string).to.equal("日本語");
       expect(stbl.getEntryByIndex(2).string).to.equal("繁體中文");
@@ -375,17 +376,17 @@ describe('StringTableResource', function() {
 
     it('should add the entry correctly to a new STBL', function() {
       const stbl = StringTableResource.create();
-      expect(stbl.numEntries()).to.equal(0);
+      expect(stbl).to.have.lengthOf(0);
       const id = stbl.addEntry(1234, 'New string');
-      expect(stbl.numEntries()).to.equal(1);
+      expect(stbl).to.have.lengthOf(1);
       assertEntry(stbl.getEntryById(id), id, 1234, 'New string');
     });
 
     it('should add the entry correctly to an existing STBL', function() {
       const stbl = getSTBL('SmallSTBL');
-      expect(stbl.numEntries()).to.equal(3);
+      expect(stbl).to.have.lengthOf(3);
       const id = stbl.addEntry(1234, 'New string');
-      expect(stbl.numEntries()).to.equal(4);
+      expect(stbl).to.have.lengthOf(4);
       assertEntry(stbl.getEntryById(id), id, 1234, 'New string');
     });
 
@@ -436,7 +437,7 @@ describe('StringTableResource', function() {
       stbl.addStringAndHash("繁體中文"); // chinese
       stbl.addStringAndHash("Русский"); // russian
       stbl.addStringAndHash("한국어"); // korean
-      expect(stbl.numEntries()).to.equal(5);
+      expect(stbl).to.have.lengthOf(5);
       expect(stbl.getEntryByIndex(0).string).to.equal("Héllö wørłd!");
       expect(stbl.getEntryByIndex(1).string).to.equal("日本語");
       expect(stbl.getEntryByIndex(2).string).to.equal("繁體中文");
@@ -449,7 +450,7 @@ describe('StringTableResource', function() {
       const string = "This is the string";
       const name = "frankk_TEST:string_Name";
       stbl.addStringAndHash(string, name);
-      expect(stbl.numEntries()).to.equal(1);
+      expect(stbl).to.have.lengthOf(1);
       const entry = stbl.getEntryByIndex(0);
       expect(entry.key).to.equal(hashing.fnv32(name));
       expect(entry.string).to.equal(string);
@@ -459,7 +460,7 @@ describe('StringTableResource', function() {
       const stbl = StringTableResource.create();
       const string = "This is the string";
       stbl.addStringAndHash(string);
-      expect(stbl.numEntries()).to.equal(1);
+      expect(stbl).to.have.lengthOf(1);
       const entry = stbl.getEntryByIndex(0);
       expect(entry.key).to.equal(hashing.fnv32(string));
       expect(entry.string).to.equal(string);
@@ -480,7 +481,7 @@ describe('StringTableResource', function() {
           const stbl = StringTableResource.create();
           const empty = StringTableResource.create();
           stbl.combine(empty);
-          expect(stbl.numEntries()).to.equal(0);
+          expect(stbl).to.have.lengthOf(0);
         });
       });
   
@@ -556,7 +557,7 @@ describe('StringTableResource', function() {
           other.addEntry(5678, "Test 2");
           const merged = StringTableResource.merge(smallStbl, other);
           smallStbl.combine(other);
-          expect(smallStbl.numEntries()).to.equal(originalEntries + 2);
+          expect(smallStbl).to.have.lengthOf(originalEntries + 2);
           expectSameContents(smallStbl, merged);
         });
 
@@ -916,10 +917,10 @@ describe('StringTableResource', function() {
 
     it('should remove the first entry that matches the predicate', function() {
       const stbl = getSTBL('SmallSTBL');
-      expect(stbl.numEntries()).to.equal(3);
+      expect(stbl).to.have.lengthOf(3);
       expect(stbl.getEntryById(1)).to.not.be.undefined;
       stbl.removeEntry(entry => entry.id > 0);
-      expect(stbl.numEntries()).to.equal(2);
+      expect(stbl).to.have.lengthOf(2);
       expect(stbl.getEntryById(1)).to.be.undefined;
     });
 
@@ -931,9 +932,9 @@ describe('StringTableResource', function() {
 
     it('should not remove anything if no entries were matched', function() {
       const stbl = getSTBL('SmallSTBL');
-      expect(stbl.numEntries()).to.equal(3);
+      expect(stbl).to.have.lengthOf(3);
       stbl.removeEntry(entry => entry.id === -1);
-      expect(stbl.numEntries()).to.equal(3);
+      expect(stbl).to.have.lengthOf(3);
     });
 
     it('should uncache the buffer if successful', function() {
@@ -962,9 +963,9 @@ describe('StringTableResource', function() {
 
     it('should remove the entries that match the predicate', function() {
       const stbl = getSTBL('SmallSTBL');
-      expect(stbl.numEntries()).to.equal(3);
+      expect(stbl).to.have.lengthOf(3);
       stbl.removeEntries(entry => entry.id > 0);
-      expect(stbl.numEntries()).to.equal(1);
+      expect(stbl).to.have.lengthOf(1);
       expect(stbl.getEntryById(0)).to.not.be.undefined;
     });
 
@@ -976,9 +977,9 @@ describe('StringTableResource', function() {
 
     it('should not remove anything if no entries were matched', function() {
       const stbl = getSTBL('SmallSTBL');
-      expect(stbl.numEntries()).to.equal(3);
+      expect(stbl).to.have.lengthOf(3);
       stbl.removeEntries(entry => entry.id === -1);
-      expect(stbl.numEntries()).to.equal(3);
+      expect(stbl).to.have.lengthOf(3);
     });
 
     it('should uncache the buffer if successful', function() {
@@ -999,10 +1000,10 @@ describe('StringTableResource', function() {
   describe('#removeEntryById()', function() {
     it('should remove the entry with the given ID', function() {
       const stbl = getSTBL('SmallSTBL');
-      expect(stbl.numEntries()).to.equal(3);
+      expect(stbl).to.have.lengthOf(3);
       expect(stbl.getEntryById(0)).to.not.be.undefined;
       stbl.removeEntryById(0);
-      expect(stbl.numEntries()).to.equal(2);
+      expect(stbl).to.have.lengthOf(2);
       expect(stbl.getEntryById(0)).to.be.undefined;
     });
 
@@ -1036,10 +1037,10 @@ describe('StringTableResource', function() {
   describe('#removeEntryByKey()', function() {
     it('should remove the first entry with the given key', function() {
       const stbl = getSTBL('SmallSTBL');
-      expect(stbl.numEntries()).to.equal(3);
+      expect(stbl).to.have.lengthOf(3);
       expect(stbl.getEntryByKey(0xF098F4B5)).to.not.be.undefined;
       stbl.removeEntryByKey(0xF098F4B5);
-      expect(stbl.numEntries()).to.equal(2);
+      expect(stbl).to.have.lengthOf(2);
       expect(stbl.getEntryByKey(0xF098F4B5)).to.be.undefined;
     });
 
@@ -1057,9 +1058,9 @@ describe('StringTableResource', function() {
 
     it('should not remove anything if no entry has the given key', function() {
       const stbl = getSTBL('SmallSTBL');
-      expect(stbl.numEntries()).to.equal(3);
+      expect(stbl).to.have.lengthOf(3);
       stbl.removeEntryByKey(123);
-      expect(stbl.numEntries()).to.equal(3);
+      expect(stbl).to.have.lengthOf(3);
     });
 
     it('should uncache the buffer if successful', function() {
@@ -1086,10 +1087,10 @@ describe('StringTableResource', function() {
 
     it('should remove the entry at the given index', function() {
       const stbl = getSTBL('SmallSTBL');
-      expect(stbl.numEntries()).to.equal(3);
+      expect(stbl).to.have.lengthOf(3);
       expect(stbl.getEntryById(1)).to.not.be.undefined;
       stbl.removeEntryByIndex(1);
-      expect(stbl.numEntries()).to.equal(2);
+      expect(stbl).to.have.lengthOf(2);
       expect(stbl.getEntryById(1)).to.be.undefined;
     });
 
@@ -1510,49 +1511,49 @@ describe('StringTableResource', function() {
     context('empty STBL', function() {
       it('should be 0', function() {
         const stbl = StringTableResource.create();
-        expect(stbl.numEntries()).to.equal(0);
+        expect(stbl).to.have.lengthOf(0);
       });
 
       it('should increase by 1 after adding an entry', function() {
         const stbl = StringTableResource.create();
-        expect(stbl.numEntries()).to.equal(0);
+        expect(stbl).to.have.lengthOf(0);
         stbl.addEntry(1234, 'New string');
-        expect(stbl.numEntries()).to.equal(1);
+        expect(stbl).to.have.lengthOf(1);
       });
 
       it('should stay the same after failing to remove', function() {
         const stbl = StringTableResource.create();
-        expect(stbl.numEntries()).to.equal(0);
+        expect(stbl).to.have.lengthOf(0);
         expect(stbl.removeEntryByIndex(0)).to.be.undefined;
-        expect(stbl.numEntries()).to.equal(0);
+        expect(stbl).to.have.lengthOf(0);
       });
     });
 
     context('existing STBL with 3 entries', function() {
       it('should be 3', function() {
         const stbl = getSTBL('SmallSTBL');
-        expect(stbl.numEntries()).to.equal(3);
+        expect(stbl).to.have.lengthOf(3);
       });
 
       it('should increase by 1 after adding an entry', function() {
         const stbl = getSTBL('SmallSTBL');
-        expect(stbl.numEntries()).to.equal(3);
+        expect(stbl).to.have.lengthOf(3);
         stbl.addEntry(1234, 'New string');
-        expect(stbl.numEntries()).to.equal(4);
+        expect(stbl).to.have.lengthOf(4);
       });
   
       it('should decrease by 1 after removing an entry', function() {
         const stbl = getSTBL('SmallSTBL');
-        expect(stbl.numEntries()).to.equal(3);
+        expect(stbl).to.have.lengthOf(3);
         stbl.removeEntryById(0);
-        expect(stbl.numEntries()).to.equal(2);
+        expect(stbl).to.have.lengthOf(2);
       });
 
       it('should stay the same after failing to remove', function() {
         const stbl = getSTBL('SmallSTBL');
-        expect(stbl.numEntries()).to.equal(3);
+        expect(stbl).to.have.lengthOf(3);
         expect(stbl.removeEntryByIndex(3)).to.be.undefined;
-        expect(stbl.numEntries()).to.equal(3);
+        expect(stbl).to.have.lengthOf(3);
       });
     });
   });
@@ -1808,7 +1809,7 @@ describe('StringTableResource', function() {
           const created = StringTableResource.create();
           const buffer = created.getBuffer();
           const loaded = StringTableResource.from(buffer);
-          expect(loaded.numEntries()).to.equal(0);
+          expect(loaded).to.have.lengthOf(0);
           expectSameContents(created, loaded);
         });
       });
@@ -1820,7 +1821,7 @@ describe('StringTableResource', function() {
           created.addEntry(5678, "Second");
           const buffer = created.getBuffer();
           const loaded = StringTableResource.from(buffer);
-          expect(loaded.numEntries()).to.equal(2);
+          expect(loaded).to.have.lengthOf(2);
           expectSameContents(created, loaded);
         });
 
@@ -1830,7 +1831,7 @@ describe('StringTableResource', function() {
           created.addEntry(5678, "Wørłd");
           const buffer = created.getBuffer();
           const loaded = StringTableResource.from(buffer);
-          expect(loaded.numEntries()).to.equal(2);
+          expect(loaded).to.have.lengthOf(2);
           expectSameContents(created, loaded);
         });
 
@@ -1874,7 +1875,7 @@ describe('StringTableResource', function() {
           stbl.addEntry(1234, "Test");
           const buffer = stbl.getBuffer();
           const loaded = StringTableResource.from(buffer);
-          expect(loaded.numEntries()).to.equal(originalLength + 1);
+          expect(loaded).to.have.lengthOf(originalLength + 1);
         });
 
         it('should serialize a stbl with special characters correctly', function() {
@@ -1883,7 +1884,7 @@ describe('StringTableResource', function() {
           stbl.addEntry(1234, "Tést");
           const buffer = stbl.getBuffer();
           const loaded = StringTableResource.from(buffer);
-          expect(loaded.numEntries()).to.equal(originalLength + 1);
+          expect(loaded).to.have.lengthOf(originalLength + 1);
           expect(loaded.getEntryByKey(1234).string).to.equal("Tést");
         });
       });
@@ -1906,7 +1907,7 @@ describe('StringTableResource', function() {
           stbl.removeEntryByIndex(0);
           const buffer = stbl.getBuffer();
           const loaded = StringTableResource.from(buffer);
-          expect(loaded.numEntries()).to.equal(originalLength - 1);
+          expect(loaded).to.have.lengthOf(originalLength - 1);
         });
       });
     });
