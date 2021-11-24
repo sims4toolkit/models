@@ -8,12 +8,6 @@ export default abstract class Resource extends WritableModel {
   /** How this resource is encoded. */
   abstract readonly variant: ResourceVariant;
 
-  constructor(buffer: Buffer) {
-    super({ buffer });
-  }
-
   /** Returns a deep copy of this resource. */
   abstract clone(): Resource;
-
-  protected abstract _serialize(): Buffer;
 }

@@ -11,8 +11,8 @@ export default class StringTableResource extends Resource {
 
   //#region Initialization
 
-  private constructor(content: StringTableContent, cachedBuffer?: Buffer) {
-    super(cachedBuffer);
+  private constructor(content: StringTableContent, buffer?: Buffer) {
+    super({ buffer });
     this._stblContent = content;
   }
 
@@ -454,6 +454,49 @@ export default class StringTableResource extends Resource {
   }
 
   //#endregion Private Methods
+}
+
+/**
+ * An entry in a StringTableResource.
+ */
+class StringEntry {
+  private _key: number;
+  private _string: string;
+  private _stbl: StringTableResource;
+
+  constructor(key: number, string: string, stbl: StringTableResource) {
+    this._key = key;
+    this._string = string;
+    this._stbl = stbl;
+    stbl.uncache();
+  }
+
+  /** Removes this entry from the STBL that owns it. */
+  delete() {
+    this._stbl.remove(this);
+  }
+
+  /** Gets the key of this entry. */
+  get key(): number {
+    return this._key;
+  }
+
+  /** Sets the key of this entry and uncaches the STBL that owns it. */
+  set key(key: number) {
+    this._key = key;
+    this._stbl.uncache();
+  }
+
+  /** Gets the string of this entry. */
+  get string(): string {
+    return this._string;
+  }
+
+  /** Sets the string of this entry and uncaches the STBL that owns it. */
+  set string(string: string) {
+    this._string = string;
+    this._stbl.uncache();
+  }
 }
 
 //#region Interfaces & Types

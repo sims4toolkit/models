@@ -8,7 +8,7 @@ export default class RawResource extends Resource {
   private _content?: string;
 
   private constructor(buffer: Buffer) {
-    super(buffer);
+    super({ buffer });
   }
 
   clone(): RawResource {
