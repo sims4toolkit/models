@@ -1,37 +1,42 @@
 import Resource from "./resource";
 import { BinaryEncoder, BinaryDecoder } from "../../utils/encoding";
 import { fnv32 } from "../../utils/hashing";
+import { formatStringKey } from "../../utils/formatting";
 
 /**
  * Model for binary string table resources.
  */
 export default class StringTableResource extends Resource {
   readonly variant = 'STBL';
-  private _stblContent: StringTableContent;
+  private _nextId: number;
+  private _entries: StringEntry[];
 
   //#region Initialization
 
-  private constructor(content: StringTableContent, buffer?: Buffer) {
+  private constructor(entries: KeyStringPair[], buffer?: Buffer) {
     super({ buffer });
-    this._stblContent = content;
+    this._entries = entries.map((entry, id) => {
+      return new StringEntry(id, entry.key, entry.string, this);
+    });
+    this._nextId = this._entries.length;
   }
 
   /**
-   * Returns a new, empty String Table resource.
+   * Returns a new, empty String Table.
    */
   static create(): StringTableResource {
-    return new StringTableResource({ nextID: 0, entries: [] });
+    return new StringTableResource([]);
   }
 
   /**
-   * Returns a new String Table resource read from the given buffer.
+   * Returns a new String Table that was read from the given buffer.
    * 
    * @param buffer Buffer to read as a string table
    * @param options Options to configure for reading a STBL resource
    */
   static from(buffer: Buffer, options?: ReadStringTableOptions): StringTableResource {
     try {
-      return new StringTableResource(readSTBL(buffer, options), buffer);
+      return new StringTableResource(readStbl(buffer, options), buffer);
     } catch (e) {
       if (options !== undefined && options.dontThrow) {
         return undefined;
@@ -41,16 +46,16 @@ export default class StringTableResource extends Resource {
     }
   }
 
-  /**
-   * Returns a new String Table resource created from a list of entries.
-   * 
-   * @param json List of entries to load into the string table
-   */
-  static fromJson(json: { key: number; string: string; }[]): StringTableResource {
-    const stbl = StringTableResource.create();
-    json.forEach(({ key, string }) => stbl.addEntry(key, string));
-    return stbl;
-  }
+  // /**
+  //  * Returns a new String Table resource created from a list of entries.
+  //  * 
+  //  * @param json List of entries to load into the string table
+  //  */
+  // static fromJson(json: { key: number; string: string; }[]): StringTableResource {
+  //   const stbl = StringTableResource.create();
+  //   json.forEach(({ key, string }) => stbl.addEntry(key, string));
+  //   return stbl;
+  // }
 
   /**
    * Merges a variable number of string tables into one. Does not mutate the 
@@ -61,62 +66,69 @@ export default class StringTableResource extends Resource {
   static merge(...stbls: StringTableResource[]): StringTableResource {
     const mergedStbl = StringTableResource.create();
     stbls.forEach(stbl => {
-      stbl.getEntries().forEach(entry => {
-        mergedStbl.addEntry(entry.key, entry.string);
+      stbl.entries.forEach(entry => {
+        mergedStbl.add(entry.key, entry.string);
       });
     });
     return mergedStbl;
   }
 
   clone(): StringTableResource {
-    const content: StringTableContent = {
-      nextID: 0,
-      entries: this._stblContent.entries.map((entry, id) => ({
-        id,
-        key: entry.key,
-        string: entry.string
-      }))
-    };
-
-    return new StringTableResource(content);
+    return new StringTableResource(this.entries.map(entry => ({
+      key: entry.key,
+      string: entry.string
+    })), this.buffer);
   }
 
   //#endregion Initialization
 
-  //#region Public Methods - Add
+  //#region Public Methods - CREATE
 
   /**
-   * Adds an entry to this string table and returns its generated ID. Will throw
-   * if the given key is larger than 32-bit.
+   * Adds an entry to this string table.
    * 
-   * @param key The string's key
-   * @param string The string
+   * Options
+   * - `allowDuplicateKey`: If true, then the function will not throw when
+   * adding a key that already exists. This is `false` by default.
+   * 
+   * @param key Key of the string to add
+   * @param string String to add
+   * @param options Object containing options 
+   * @returns StringEntry that was added
+   * @throws If the key is not 32-bit or if it already exists
    */
-  addEntry(key: number, string: string): number {
-    if (key > 0xFFFFFFFF) throw new Error("Key must be 32-bit.");
-    const id = this._stblContent.nextID++;
-    const entry = { id, key, string };
-    this._stblContent.entries.push(entry);
+  add(key: number, string: string, { allowDuplicateKey = false } = {}): StringEntry {
+    if (key > 0xFFFFFFFF)
+      throw new Error(`Tried to add key that is > 32-bit: ${key}`);
+    if (!allowDuplicateKey && this.getByKey(key))
+      throw new Error(`Tried to add key that already exists: ${key}`);
+    const entry = new StringEntry(this._nextId++, key, string, this);
+    this.entries.push(entry);
     this.uncache();
-    return id;
+    return entry;
   }
 
   /**
-   * Adds the given `string` to this table, using the FNV-32 hash generated from
-   * the given `name`. If no name is given, the string itself is hashed. The
-   * ID of the entry that is created is returned.
+   * Creates the key for the given string and adds it to the string table. If
+   * the key already exists, an exception will be thrown. The entry object that
+   * is created will be returned.
    * 
-   * @param string String to add to this table
-   * @param name Text to get the hash from
+   * Options
+   * - `toHash`: If provided, this will be hashed to create the key. If not, 
+   * then the string itself will be hashed.
+   * - `allowDuplicateKey`: If true, then the function will not throw when
+   * adding a key that already exists. This is `false` by default.
+   * 
+   * @param string String to add to the string table
+   * @param options Object containing options 
+   * @returns String entry that was added
    */
-  addStringAndHash(string: string, name?: string): number {
-    // FIXME: return the whole entry that was added, not just the ID
-    // FIXME: put the name argument in an object
-    const key = fnv32(name === undefined ? string : name);
-    return this.addEntry(key, string);
+  addAndHash(string: string, { toHash, allowDuplicateKey = false }: {
+    toHash?: string;
+    allowDuplicateKey?: boolean;
+  } = {}): StringEntry {
+    return this.add(fnv32(toHash || string), string, { allowDuplicateKey });
   }
-
-  // TODO: method for only adding a string if it doesn't already exist
 
   /**
    * Adds all entries from all given string tables into this one. Entries are
@@ -126,214 +138,82 @@ export default class StringTableResource extends Resource {
    */
   combine(...stbls: StringTableResource[]) {
     stbls.forEach(stbl => {
-      stbl.getEntries().forEach(entry => {
-        this.addEntry(entry.key, entry.string);
+      stbl.entries.forEach(entry => {
+        this.add(entry.key, entry.string);
       });
     });
   }
 
-  //#endregion Public Methods - Add
+  //#endregion Public Methods - CREATE
 
-  //#region Public Methods - Update
-
-  /**
-   * Updates the first entry that matches the given predicate with the given
-   * data in `value`. If either `key` or `string` is left out, it will not be
-   * modified (for example, if you just want to change the string, simply leave
-   * out the `key` argument). The previous key and string of the entry will be
-   * returned; if none matched the predicate, undefined is returned.
-   * 
-   * @param predicate Predicate to determine which entry to update
-   * @param value New key and/or string for the entry
-   */
-  updateEntry(predicate: StringEntryPredicate, value: { key?: number; string?: string; }): KeyStringPair {
-    return this._updateEntry(this.getEntry(predicate), value);
-  }
+  //#region Public Methods - DELETE
 
   /**
-   * Updates the entry that has the given ID with the data in `value`. If either
-   * `key` or `string` is left out, it will not be modified (for example, if you
-   * just want to change the string, simply leave out the `key` argument). The
-   * previous key and string of the entry will be returned; if none have the 
-   * given ID, then undefined is returned.
+   * Removes any number of entries from this string table. If just removing one
+   * entry, consider calling its `delete()` method.
    * 
-   * @param id ID of the entry to update
-   * @param value New key and/or string for the entry
+   * @param entries Entries to remove from this string table
    */
-  updateEntryById(id: number, value: { key?: number; string?: string; }): KeyStringPair {
-    return this._updateEntry(this.getEntryById(id), value);
-  }
-
-  /**
-   * Updates the first entry that has the given key with the data in `value`. If
-   * either `key` or `string` is left out, it will not be modified (for example,
-   * if you just want to change the string, simply leave out the `key`
-   * argument). The previous key and string of the entry will be returned; if
-   * none have the given key, then undefined is returned.
-   * 
-   * @param key Key of the entry to update
-   * @param value New key and/or string for the entry
-   */
-  updateEntryByKey(key: number, value: { key?: number; string?: string; }): KeyStringPair {
-    return this._updateEntry(this.getEntryByKey(key), value);
-  }
-
-  /**
-   * Updates the entry at the given index with the data in `value`. If either 
-   * `key` or `string` is left out, it will not be modified (for example, if you
-   * just want to change the string, simply leave out the `key` argument). The
-   * previous key and string of the entry will be returned; the given index is
-   * out of bounds, then undefined is returned.
-   * 
-   * @param index Index of the entry to update
-   * @param value New key and/or string for the entry
-   */
-  updateEntryByIndex(index: number, value: { key?: number; string?: string; }): KeyStringPair {
-    return this._updateEntry(this.getEntryByIndex(index), value);
-  }
-
-  //#endregion Public Methods - Update
-
-  //#region Public Methods - Remove
-
-  /**
-   * Removes and returns the entry that matches the given predicate. If no
-   * entries match, then nothing will change and `undefined` will be returned.
-   * 
-   * @param predicate Predicate to determine which string to remove
-   */
-  removeEntry(predicate: StringEntryPredicate): StringEntry {
-    const index = this._stblContent.entries.findIndex(predicate);
-    return this.removeEntryByIndex(index);
-  }
-
-  /**
-   * Removes and returns all entries that match the given predicate. If no
-   * entries match the predicate, nothing will change and an empty array will
-   * be returned.
-   * 
-   * @param predicate Predicate to determine which strings to remove
-   */
-  removeEntries(predicate: StringEntryPredicate): StringEntry[] {
-    const indices: number[] = [];
-    this._stblContent.entries.forEach((entry, i) => {
-      if (predicate(entry)) indices.push(i);
+  remove(...entries: StringEntry[]) {
+    let entryRemoved = false;
+    entries.forEach(entry => {
+      const index = this.findIndex(entry);
+      if (index < 0 || index >= this.length) return;
+      this.entries.splice(index, 1);
+      entryRemoved = true;
     });
-
-    const deletedEntries: StringEntry[] = [];
-    indices.forEach(index => {
-      const entry = this.removeEntryByIndex(index - deletedEntries.length);
-      deletedEntries.push(entry);
-    });
-
-    return deletedEntries;
+    if (entryRemoved) this.uncache();
   }
 
+  //#endregion Public Methods - DELETE
+
+  //#region Public Methods - READ
+
   /**
-   * Removes and returns the entry with the given ID. If no entries have this
-   * ID, then nothing will change and `undefined` will be returned.
-   * 
-   * @param id The ID of the entry to remove
+   * All of the entries in this string table. You can mutate individual entries
+   * and cacheing will be handled for you, but if you mutate the list itself
+   * (e.g. by calling `push()` or `splice()`), the cache will fall out of sync
+   * and you will need to call `uncache()` to reset it. To prevent cacheing
+   * issues, use the built-in methods on the string table and entry objects to
+   * add or remove entries.
    */
-  removeEntryById(id: number): StringEntry {
-    return this.removeEntry(entry => entry.id === id);
+  get entries(): StringEntry[] {
+    return this._entries;
   }
 
   /**
-   * Removes and returns the entry with the given key. If no entries have this
-   * key, then nothing will change and `undefined` will be returned.
+   * TODO:
    * 
-   * @param key The key of the entry to remove
+   * @param entry TODO:
+   * @returns TODO:
    */
-  removeEntryByKey(key: number): StringEntry {
-    return this.removeEntry(entry => entry.key === key);
+  findIndex(entry: StringEntry): number {
+    return this.entries.findIndex(e => e.id === entry.id);
   }
 
   /**
-   * Removes and returns the entry at the given index. If this index is out of
-   * bounds, nothing changes and `undefined` is returned.
+   * TODO:
    * 
-   * @param index Index of the entry to remove
+   * @param id TODO:
+   * @returns TODO:
    */
-  removeEntryByIndex(index: number): StringEntry {
-    const entry = this.getEntryByIndex(index);
-    if (entry === undefined) return undefined;
-    this._stblContent.entries.splice(index, 1);
-    this.uncache();
-    return entry;
-  }
-
-  //#endregion Public Methods - Remove
-
-  //#region Public Methods - Get
-
-  /**
-  * Returns the first entry that matches the given predicate, or undefined if
-  * none match.
-  * 
-  * Do not mutate the object that is output. Doing so will break things.
-  * 
-  * @param predicate Predicate to filter strings by
-  */
-  getEntry(predicate: StringEntryPredicate): StringEntry {
-    return this._stblContent.entries.find(predicate);
+  getById(id: number): StringEntry {
+    return this.entries.find(entry => entry.id === id);
   }
 
   /**
-  * Returns all entries that match the given predicate if there if one. If
-  * there is no predicate, all strings are returned. If no strings match the
-  * predicate, an empty array is returned.
-  * 
-  * Do not mutate the objects that are output. Doing so will break things.
-  * 
-  * @param predicate Optional predicate to filter strings by
-  */
-  getEntries(predicate?: StringEntryPredicate): StringEntry[] {
-    if (predicate === undefined) {
-      return this._stblContent.entries;
-    } else {
-      return this._stblContent.entries.filter(predicate);
-    }
+   * TODO:
+   * 
+   * @param key TODO:
+   * @returns TODO:
+   */
+  getByKey(key: number): StringEntry {
+    return this.entries.find(entry => entry.key === key);
   }
 
-  /** Shortcut for calling `getEntries()`. */
-  get entries() {
-    return this.getEntries();
-  }
-
-  /**
-  * Returns the entry that has the given ID, or undefined if there isn't one.
-  * 
-  * Do not mutate the object that is output. Doing so will break things.
-  * 
-  * @param id The unique identifier for a string entry
-  */
-  getEntryById(id: number): StringEntry {
-    // this can be optimized with binary search, but is it worth it?
-    return this.getEntry(entry => entry.id === id);
-  }
-
-  /**
-  * Returns the first entry that has the given key, or undefined if none do.
-  * 
-  * Do not mutate the object that is output. Doing so will break things.
-  * 
-  * @param key The key for a string entry
-  */
-  getEntryByKey(key: number): StringEntry {
-    return this.getEntry(entry => entry.key === key);
-  }
-
-  /**
-  * Returns all entries that have the given key, or an empty list if there are
-  * none that do.
-  * 
-  * Do not mutate the objects that are output. Doing so will break things.
-  * 
-  * @param key The key for a string entry
-  */
-  getEntriesByKey(key: number): StringEntry[] {
-    return this.getEntries(entry => entry.key === key);
+  /** The number of entries in this string table. */
+  get length(): number {
+    return this.entries.length;
   }
 
   /**
@@ -345,11 +225,11 @@ export default class StringTableResource extends Resource {
   * 
   * @param string String to search for
   */
-  searchByString(string: string, options?: StringSearchOptions): StringEntry[] {
+  search(string: string, options?: StringSearchOptions): StringEntry[] {
     const checkCase = options !== undefined && options.caseSensitive;
     const checkSubstrings = options !== undefined && options.includeSubstrings;
 
-    return this._stblContent.entries.filter(entry => {
+    return this.entries.filter(entry => {
       if (checkSubstrings) {
         // substring
         return checkCase ?
@@ -365,36 +245,6 @@ export default class StringTableResource extends Resource {
   }
 
   /**
-   * Returns the entry at the given index. If the index is out of bounds, then
-   * `undefined` is returned.
-   * 
-   * @param index Index of entry to get
-   */
-  getEntryByIndex(index: number): StringEntry {
-    if (index < 0 || index >= this.numEntries()) return undefined;
-    return this._stblContent.entries[index];
-  }
-
-  //#endregion Public Methods - Get
-
-  //#region Public Methods - Utility
-
-  /**
-  * Returns the number of entries that match the given predicate, or the total
-  * number of entries if none is given.
-  * 
-  * @param predicate Optional predicate to filter strings by
-  */
-  numEntries(predicate?: StringEntryPredicate): number {
-    return this.getEntries(predicate).length;
-  }
-
-  /** Shortcut for calling `numEntries()`. */
-  get length() {
-    return this.numEntries();
-  }
-
-  /**
    * Finds and returns any errors that are in this string table. Returns an
    * empty array if there are no errors.
    */
@@ -402,7 +252,7 @@ export default class StringTableResource extends Resource {
     const keyMap: { [key: number]: StringEntry[] } = {};
     const stringMap: { [key: string]: StringEntry[] } = {};
 
-    this.getEntries().forEach(entry => {
+    this.entries.forEach(entry => {
       if (keyMap[entry.key] === undefined) keyMap[entry.key] = [];
       keyMap[entry.key].push(entry);
       if (stringMap[entry.string] === undefined) stringMap[entry.string] = [];
@@ -423,37 +273,15 @@ export default class StringTableResource extends Resource {
     return result;
   }
 
-  //#endregion Public Methods - Utility
+  //#endregion Public Methods - READ
 
   //#region Protected Methods
 
   protected _serialize(): Buffer {
-    return writeSTBL(this._stblContent);
+    return writeStbl(this._entries);
   }
 
   //#endregion Protected Methods
-
-  //#region Private Methods
-
-  /**
-   * Updates the entry with the given values, and returns the previous value.
-   * 
-   * @param entry Entry to update
-   * @param value New value of entry
-   */
-  private _updateEntry(entry: StringEntry, value: { key?: number; string?: string }): KeyStringPair {
-    if (entry === undefined) return undefined;
-    const prev = { key: entry.key, string: entry.string };
-    if (value.key !== undefined) {
-      if (value.key > 0xFFFFFFFF) throw new Error("Key must be 32-bit.");
-      entry.key = value.key;
-    }
-    if (value.string !== undefined) entry.string = value.string;
-    this.uncache();
-    return prev;
-  }
-
-  //#endregion Private Methods
 }
 
 /**
@@ -505,8 +333,6 @@ class StringEntry {
 
 type StringTableError = 'Duplicate Keys' | 'Duplicate Strings' | 'Empty String';
 
-type StringEntryPredicate = (entry: StringEntry) => boolean;
-
 interface StringSearchOptions {
   caseSensitive?: boolean;
   includeSubstrings?: boolean;
@@ -515,14 +341,6 @@ interface StringSearchOptions {
 interface KeyStringPair {
   key: number;
   string: string;
-}
-
-interface StringTableContent {
-  /** The ID to use for the next entry that is added. */
-  nextID: number;
-
-  /** An array of entries sorted by ID. */
-  entries: StringEntry[];
 }
 
 interface ReadStringTableOptions {
@@ -540,7 +358,7 @@ interface ReadStringTableOptions {
  * @param buffer Buffer to read as a STBL
  * @param options Options to configure
  */
-function readSTBL(buffer: Buffer, options?: ReadStringTableOptions): StringTableContent {
+function readStbl(buffer: Buffer, options?: ReadStringTableOptions): KeyStringPair[] {
   const decoder = new BinaryDecoder(buffer);
 
   if (options === undefined || !options.ignoreErrors) {
@@ -559,28 +377,28 @@ function readSTBL(buffer: Buffer, options?: ReadStringTableOptions): StringTable
   const mnNumEntries = decoder.uint64();
   decoder.skip(6); // mReserved (2 bytes) + mnStringLength (uint32; 4 bytes)
 
-  const entries: StringEntry[] = [];
+  const entries: KeyStringPair[] = [];
   for (let id = 0; id < mnNumEntries; id++) {
     const key = decoder.uint32();
     decoder.skip(1); // mnFlags (uint8; has no use, will never be set)
     const stringLength = decoder.uint16();
     const string = stringLength > 0 ? decoder.charsUtf8(stringLength) : '';
-    entries.push({ id, key, string });
+    entries.push({ key, string });
   }
 
-  return { nextID: entries.length, entries };
+  return entries;
 }
 
 /**
  * Writes STBL content to a buffer.
  * 
- * @param stbl STBL content to serialize
+ * @param entries STBL entries to serialize
  */
-function writeSTBL(stbl: StringTableContent): Buffer {
+function writeStbl(entries: KeyStringPair[]): Buffer {
   let totalBytes = 21; // num bytes in header
   let totalStringLength = 0;
   const stringLengths: number[] = [];
-  stbl.entries.forEach(entry => {
+  entries.forEach(entry => {
     const stringLength = Buffer.byteLength(entry.string);
     stringLengths.push(stringLength);
     totalStringLength += stringLength + 1;
@@ -593,10 +411,10 @@ function writeSTBL(stbl: StringTableContent): Buffer {
   encoder.charsUtf8('STBL'); // mnFileIdentifier
   encoder.uint16(5); // mnVersion
   encoder.skip(1); // mnCompressed (should be null)
-  encoder.uint64(stbl.entries.length); // mnNumEntries
+  encoder.uint64(entries.length); // mnNumEntries
   encoder.skip(2); // mReserved (should be null)
   encoder.uint32(totalStringLength); // mnStringLength
-  stbl.entries.forEach((entry, index) => {
+  entries.forEach((entry, index) => {
     encoder.uint32(entry.key);
     encoder.skip(1); // mnFlags (should be null)
     encoder.uint16(stringLengths[index]);

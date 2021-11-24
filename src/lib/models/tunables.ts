@@ -432,28 +432,27 @@ export function C({ name, children, comment }: {
 /**
  * Creates and returns a Tunable for a new string. It will put the string in the
  * given string table, and return a node that contains its hash as a value and
- * its string as a comment. If `textToHash` is supplied, it will be hashed. If
+ * its string as a comment. If `toHash` is supplied, it will be hashed. If
  * not, then the string itself will be hashed.
  * 
  * Arguments
  * - `name`: Value to appear in the name attribute
  * - `string`: The string to add to the table
- * - `textToHash`: Text to hash instead of hashing the string itself
+ * - `toHash`: Text to hash instead of hashing the string itself
  * - `stbl`: The string table to add this string to
  * 
  * @param args Object containing the arguments
  */
-export function S({ name, string, textToHash, stbl }: {
+export function S({ name, string, toHash, stbl }: {
   name?: string;
   string: string;
-  textToHash?: string;
+  toHash?: string;
   stbl: StringTable;
 }): Tunable {
-  const toHash = textToHash || string;
-  const id = stbl.addStringAndHash(toHash);
+  const entry = stbl.addAndHash(string, { toHash });
   return T({
     name,
-    value: formatStringKey(stbl.getEntryById(id).key),
+    value: formatStringKey(entry.key),
     comment: string
   });
 }
@@ -470,13 +469,13 @@ export function S({ name, string, textToHash, stbl }: {
  *  
  * @param stbl String table to use 
  */
-export function getStringNodeFunction(stbl: StringTable): ({ name, textToHash, string }: {
+export function getStringNodeFunction(stbl: StringTable): ({ name, toHash, string }: {
   name?: string;
-  textToHash?: string;
+  toHash?: string;
   string: string;
 }) => Tunable {
-  return ({ name, textToHash, string }: { name?: string; textToHash?: string; string: string }) => {
-    return S({ name, string, textToHash, stbl });
+  return ({ name, toHash, string }: { name?: string; toHash?: string; string: string }) => {
+    return S({ name, string, toHash, stbl });
   };
 }
 
