@@ -358,78 +358,87 @@ describe('StringTableResource', function() {
 
   //#region Add
 
-  describe('#addEntry()', function() {
-    it("should add the entry correctly when it has non-latin text", function() {
-      const stbl = StringTableResource.create();
-      stbl.addEntry(123, "Héllö wørłd!");
-      stbl.addEntry(456, "日本語"); // japanese
-      stbl.addEntry(789, "繁體中文"); // chinese
-      stbl.addEntry(246, "Русский"); // russian
-      stbl.addEntry(135, "한국어"); // korean
-      expect(stbl).to.have.lengthOf(5);
-      expect(stbl.getEntryByIndex(0).string).to.equal("Héllö wørłd!");
-      expect(stbl.getEntryByIndex(1).string).to.equal("日本語");
-      expect(stbl.getEntryByIndex(2).string).to.equal("繁體中文");
-      expect(stbl.getEntryByIndex(3).string).to.equal("Русский");
-      expect(stbl.getEntryByIndex(4).string).to.equal("한국어");
-    });
-
+  describe('#add()', function() {
     it('should add the entry correctly to a new STBL', function() {
       const stbl = StringTableResource.create();
       expect(stbl).to.have.lengthOf(0);
-      const id = stbl.addEntry(1234, 'New string');
+      const entry = stbl.add(1234, 'New string');
       expect(stbl).to.have.lengthOf(1);
-      assertEntry(stbl.getEntryById(id), id, 1234, 'New string');
+      assertEntry(entry, 0, 1234, 'New string');
     });
 
     it('should add the entry correctly to an existing STBL', function() {
       const stbl = getSTBL('SmallSTBL');
       expect(stbl).to.have.lengthOf(3);
-      const id = stbl.addEntry(1234, 'New string');
+      const entry = stbl.add(1234, 'New string');
       expect(stbl).to.have.lengthOf(4);
-      assertEntry(stbl.getEntryById(id), id, 1234, 'New string');
+      assertEntry(entry, 3, 1234, 'New string');
     });
 
     it('should throw if key exceeds 32-bit', function() {
       const stbl = StringTableResource.create();
-      expect(() => stbl.addEntry(0x100000000, "Test")).to.throw("Key must be 32-bit.");
+      expect(() => stbl.add(0x100000000, "Test")).to.throw("Key must be 32-bit.");
     });
 
-    it('should return the correct ID on a new STBL', function() {
+    it('should use the correct ID on a new STBL', function() {
       const stbl = StringTableResource.create();
-      expect(stbl.addEntry(1234, "First")).to.equal(0);
-      expect(stbl.addEntry(5678, "Second")).to.equal(1);
-      expect(stbl.addEntry(2468, "Third")).to.equal(2);
+      expect(stbl.add(1234, "First").id).to.equal(0);
+      expect(stbl.add(5678, "Second").id).to.equal(1);
+      expect(stbl.add(2468, "Third").id).to.equal(2);
     });
 
-    it('should return the correct ID on an existing STBL', function() {
+    it('should use the correct ID on an existing STBL', function() {
       const stbl = getSTBL('SmallSTBL');
-      expect(stbl.addEntry(1234, "New string")).to.equal(3);
+      expect(stbl.add(1234, "New string").id).to.equal(3);
+      expect(stbl.add(5678, "Newer string").id).to.equal(4);
+    });
+
+    it('should return the entry that was added', function() {
+      const stbl = getSTBL('SmallSTBL');
+      const entry = stbl.add(1234, "New string");
+      expect(entry).to.not.be.undefined;
+      assertEntry(entry, 3, 1234, "New string.");
     });
 
     it('should not recycle IDs after removing an entry', function() {
       const stbl = getSTBL('SmallSTBL');
-      expect(stbl.addEntry(1234, "New string")).to.equal(3);
-      stbl.removeEntryByIndex(3);
-      expect(stbl.addEntry(5678, "Another string")).to.equal(4);
+      const entry = stbl.entries[2];
+      expect(entry.id).to.equal(3);
+      entry.delete();
+      expect(stbl.add(5678, "Another string").id).to.equal(4);
     });
 
     it('should uncache the buffer if successful', function() {
       const stbl = getSTBL('SmallSTBL');
-      expect(stbl.hasChanged()).to.be.false;
-      stbl.addEntry(123, "Test");
-      expect(stbl.hasChanged()).to.be.true;
+      expect(stbl.hasChanged).to.be.false;
+      stbl.add(123, "Test");
+      expect(stbl.hasChanged).to.be.true;
     });
 
     it('should not uncache the buffer if failed', function() {
       const stbl = getSTBL('SmallSTBL');
-      expect(stbl.hasChanged()).to.be.false;
-      expect(() => stbl.addEntry(0x100000000, "Test")).to.throw();
-      expect(stbl.hasChanged()).to.be.false;
+      expect(stbl.hasChanged).to.be.false;
+      expect(() => stbl.add(0x100000000, "Test")).to.throw();
+      expect(stbl.hasChanged).to.be.false;
+    });
+
+    it("should add the entry correctly when it has non-latin text", function() {
+      const stbl = StringTableResource.create();
+      stbl.add(123, "Héllö wørłd!");
+      stbl.add(456, "日本語"); // japanese
+      stbl.add(789, "繁體中文"); // chinese
+      stbl.add(246, "Русский"); // russian
+      stbl.add(135, "한국어"); // korean
+      expect(stbl).to.have.lengthOf(5);
+      expect(stbl.entries[0].string).to.equal("Héllö wørłd!");
+      expect(stbl.entries[1].string).to.equal("日本語");
+      expect(stbl.entries[2].string).to.equal("繁體中文");
+      expect(stbl.entries[3].string).to.equal("Русский");
+      expect(stbl.entries[4].string).to.equal("한국어");
     });
   });
 
-  describe('#addStringAndHash()', function() {
+  describe('#addAndHash()', function() {
     it("should add the entry correctly when it has non-latin text", function() {
       const stbl = StringTableResource.create();
       stbl.addStringAndHash("Héllö wørłd!");
@@ -468,9 +477,9 @@ describe('StringTableResource', function() {
 
     it('should uncache the buffer', function() {
       const stbl = getSTBL('SmallSTBL');
-      expect(stbl.hasChanged()).to.be.false;
+      expect(stbl.hasChanged).to.be.false;
       stbl.addStringAndHash("Hello");
-      expect(stbl.hasChanged()).to.be.true;
+      expect(stbl.hasChanged).to.be.true;
     });
   });
 
@@ -521,7 +530,7 @@ describe('StringTableResource', function() {
           const empty = StringTableResource.create();
           const stbl1 = getSTBL('SmallSTBL');
           const stbl2 = StringTableResource.create();
-          stbl2.addEntry(1234, "Test");
+          stbl2.add(1234, "Test");
           empty.combine(stbl1, stbl2);
           const merged = StringTableResource.merge(stbl1, stbl2);
           expectSameContents(empty, merged);
@@ -542,9 +551,9 @@ describe('StringTableResource', function() {
         it('should not uncache the buffer', function() {
           const smallStbl = getSTBL('SmallSTBL');
           const empty = StringTableResource.create();
-          expect(smallStbl.hasChanged()).to.be.false;
+          expect(smallStbl.hasChanged).to.be.false;
           smallStbl.combine(empty);
-          expect(smallStbl.hasChanged()).to.be.false;
+          expect(smallStbl.hasChanged).to.be.false;
         });
       });
   
@@ -553,8 +562,8 @@ describe('StringTableResource', function() {
           const smallStbl = getSTBL('SmallSTBL');
           const originalEntries = smallStbl.numEntries();
           const other = StringTableResource.create();
-          other.addEntry(1234, "Test");
-          other.addEntry(5678, "Test 2");
+          other.add(1234, "Test");
+          other.add(5678, "Test 2");
           const merged = StringTableResource.merge(smallStbl, other);
           smallStbl.combine(other);
           expect(smallStbl).to.have.lengthOf(originalEntries + 2);
@@ -563,12 +572,12 @@ describe('StringTableResource', function() {
 
         it('should uncache the buffer', function() {
           const smallStbl = getSTBL('SmallSTBL');
-          expect(smallStbl.hasChanged()).to.be.false;
+          expect(smallStbl.hasChanged).to.be.false;
           const other = StringTableResource.create();
-          other.addEntry(1234, "Test");
-          other.addEntry(5678, "Test 2");
+          other.add(1234, "Test");
+          other.add(5678, "Test 2");
           smallStbl.combine(other);
-          expect(smallStbl.hasChanged()).to.be.true;
+          expect(smallStbl.hasChanged).to.be.true;
         });
       });
 
@@ -577,12 +586,12 @@ describe('StringTableResource', function() {
           const smallStbl = getSTBL('SmallSTBL');
 
           const other1 = StringTableResource.create();
-          other1.addEntry(1234, "Test 1");
-          other1.addEntry(5678, "Test 2");
+          other1.add(1234, "Test 1");
+          other1.add(5678, "Test 2");
 
           const other2 = StringTableResource.create();
-          other2.addEntry(2468, "Test 3");
-          other2.addEntry(1357, "Test 4");
+          other2.add(2468, "Test 3");
+          other2.add(1357, "Test 4");
 
           const merged = StringTableResource.merge(smallStbl, other1, other2);
           smallStbl.combine(other1, other2);
@@ -592,19 +601,19 @@ describe('StringTableResource', function() {
 
         it('should uncache the buffer', function() {
           const smallStbl = getSTBL('SmallSTBL');
-          expect(smallStbl.hasChanged()).to.be.false;
+          expect(smallStbl.hasChanged).to.be.false;
 
           const other1 = StringTableResource.create();
-          other1.addEntry(1234, "Test 1");
-          other1.addEntry(5678, "Test 2");
+          other1.add(1234, "Test 1");
+          other1.add(5678, "Test 2");
 
           const other2 = StringTableResource.create();
-          other2.addEntry(2468, "Test 3");
-          other2.addEntry(1357, "Test 4");
+          other2.add(2468, "Test 3");
+          other2.add(1357, "Test 4");
 
           smallStbl.combine(other1, other2);
 
-          expect(smallStbl.hasChanged()).to.be.true;
+          expect(smallStbl.hasChanged).to.be.true;
         });
       });
     });
@@ -665,22 +674,22 @@ describe('StringTableResource', function() {
 
     it('should uncache the buffer if successful', function() {
       const stbl = getSTBL('SmallSTBL');
-      expect(stbl.hasChanged()).to.be.false;
+      expect(stbl.hasChanged).to.be.false;
       stbl.updateEntry(entry => entry.id === 0, {
         key: 123,
         string: "new text"
       });
-      expect(stbl.hasChanged()).to.be.true;
+      expect(stbl.hasChanged).to.be.true;
     });
 
     it('should not uncache the buffer if failed', function() {
       const stbl = getSTBL('SmallSTBL');
-      expect(stbl.hasChanged()).to.be.false;
+      expect(stbl.hasChanged).to.be.false;
       stbl.updateEntry(entry => entry.id === 10, {
         key: 123,
         string: "new text"
       });
-      expect(stbl.hasChanged()).to.be.false;
+      expect(stbl.hasChanged).to.be.false;
     });
   });
 
@@ -735,22 +744,22 @@ describe('StringTableResource', function() {
 
     it('should uncache the buffer if successful', function() {
       const stbl = getSTBL('SmallSTBL');
-      expect(stbl.hasChanged()).to.be.false;
+      expect(stbl.hasChanged).to.be.false;
       stbl.updateEntryById(0, {
         key: 123,
         string: "new text"
       });
-      expect(stbl.hasChanged()).to.be.true;
+      expect(stbl.hasChanged).to.be.true;
     });
 
     it('should not uncache the buffer if failed', function() {
       const stbl = getSTBL('SmallSTBL');
-      expect(stbl.hasChanged()).to.be.false;
+      expect(stbl.hasChanged).to.be.false;
       stbl.updateEntryById(10, {
         key: 123,
         string: "new text"
       });
-      expect(stbl.hasChanged()).to.be.false;
+      expect(stbl.hasChanged).to.be.false;
     });
   });
 
@@ -806,22 +815,22 @@ describe('StringTableResource', function() {
 
     it('should uncache the buffer if successful', function() {
       const stbl = getSTBL('SmallSTBL');
-      expect(stbl.hasChanged()).to.be.false;
+      expect(stbl.hasChanged).to.be.false;
       stbl.updateEntryByKey(0xF098F4B5, {
         key: 123,
         string: "new text"
       });
-      expect(stbl.hasChanged()).to.be.true;
+      expect(stbl.hasChanged).to.be.true;
     });
 
     it('should not uncache the buffer if failed', function() {
       const stbl = getSTBL('SmallSTBL');
-      expect(stbl.hasChanged()).to.be.false;
+      expect(stbl.hasChanged).to.be.false;
       stbl.updateEntryByKey(0x12345678, {
         key: 123,
         string: "new text"
       });
-      expect(stbl.hasChanged()).to.be.false;
+      expect(stbl.hasChanged).to.be.false;
     });
   });
 
@@ -885,22 +894,22 @@ describe('StringTableResource', function() {
 
     it('should uncache the buffer if successful', function() {
       const stbl = getSTBL('SmallSTBL');
-      expect(stbl.hasChanged()).to.be.false;
+      expect(stbl.hasChanged).to.be.false;
       stbl.updateEntryByIndex(0, {
         key: 123,
         string: "new text"
       });
-      expect(stbl.hasChanged()).to.be.true;
+      expect(stbl.hasChanged).to.be.true;
     });
 
     it('should not uncache the buffer if failed', function() {
       const stbl = getSTBL('SmallSTBL');
-      expect(stbl.hasChanged()).to.be.false;
+      expect(stbl.hasChanged).to.be.false;
       stbl.updateEntryByIndex(-1, {
         key: 123,
         string: "new text"
       });
-      expect(stbl.hasChanged()).to.be.false;
+      expect(stbl.hasChanged).to.be.false;
     });
   });
 
@@ -939,16 +948,16 @@ describe('StringTableResource', function() {
 
     it('should uncache the buffer if successful', function() {
       const stbl = getSTBL('SmallSTBL');
-      expect(stbl.hasChanged()).to.be.false;
+      expect(stbl.hasChanged).to.be.false;
       stbl.removeEntry(entry => entry.id === 1);
-      expect(stbl.hasChanged()).to.be.true;
+      expect(stbl.hasChanged).to.be.true;
     });
 
     it('should not uncache the buffer if failed', function() {
       const stbl = getSTBL('SmallSTBL');
-      expect(stbl.hasChanged()).to.be.false;
+      expect(stbl.hasChanged).to.be.false;
       stbl.removeEntry(entry => entry.id > 3);
-      expect(stbl.hasChanged()).to.be.false;
+      expect(stbl.hasChanged).to.be.false;
     });
   });
 
@@ -984,16 +993,16 @@ describe('StringTableResource', function() {
 
     it('should uncache the buffer if successful', function() {
       const stbl = getSTBL('SmallSTBL');
-      expect(stbl.hasChanged()).to.be.false;
+      expect(stbl.hasChanged).to.be.false;
       stbl.removeEntries(entry => entry.id === 0);
-      expect(stbl.hasChanged()).to.be.true;
+      expect(stbl.hasChanged).to.be.true;
     });
 
     it('should not uncache the buffer if failed', function() {
       const stbl = getSTBL('SmallSTBL');
-      expect(stbl.hasChanged()).to.be.false;
+      expect(stbl.hasChanged).to.be.false;
       stbl.removeEntries(entry => entry.id === -1);
-      expect(stbl.hasChanged()).to.be.false;
+      expect(stbl.hasChanged).to.be.false;
     });
   });
 
@@ -1021,16 +1030,16 @@ describe('StringTableResource', function() {
 
     it('should uncache the buffer if successful', function() {
       const stbl = getSTBL('SmallSTBL');
-      expect(stbl.hasChanged()).to.be.false;
+      expect(stbl.hasChanged).to.be.false;
       stbl.removeEntryById(0);
-      expect(stbl.hasChanged()).to.be.true;
+      expect(stbl.hasChanged).to.be.true;
     });
 
     it('should not uncache the buffer if failed', function() {
       const stbl = getSTBL('SmallSTBL');
-      expect(stbl.hasChanged()).to.be.false;
+      expect(stbl.hasChanged).to.be.false;
       stbl.removeEntryById(-1);
-      expect(stbl.hasChanged()).to.be.false;
+      expect(stbl.hasChanged).to.be.false;
     });
   });
 
@@ -1065,16 +1074,16 @@ describe('StringTableResource', function() {
 
     it('should uncache the buffer if successful', function() {
       const stbl = getSTBL('SmallSTBL');
-      expect(stbl.hasChanged()).to.be.false;
+      expect(stbl.hasChanged).to.be.false;
       stbl.removeEntryByKey(0xF098F4B5);
-      expect(stbl.hasChanged()).to.be.true;
+      expect(stbl.hasChanged).to.be.true;
     });
 
     it('should not uncache the buffer if failed', function() {
       const stbl = getSTBL('SmallSTBL');
-      expect(stbl.hasChanged()).to.be.false;
+      expect(stbl.hasChanged).to.be.false;
       stbl.removeEntryByKey(123);
-      expect(stbl.hasChanged()).to.be.false;
+      expect(stbl.hasChanged).to.be.false;
     });
   });
 
@@ -1106,16 +1115,16 @@ describe('StringTableResource', function() {
 
     it('should uncache the buffer if successful', function() {
       const stbl = getSTBL('SmallSTBL');
-      expect(stbl.hasChanged()).to.be.false;
+      expect(stbl.hasChanged).to.be.false;
       stbl.removeEntryByIndex(1);
-      expect(stbl.hasChanged()).to.be.true;
+      expect(stbl.hasChanged).to.be.true;
     });
 
     it('should not uncache the buffer if failed', function() {
       const stbl = getSTBL('SmallSTBL');
-      expect(stbl.hasChanged()).to.be.false;
+      expect(stbl.hasChanged).to.be.false;
       stbl.removeEntryByIndex(-1);
-      expect(stbl.hasChanged()).to.be.false;
+      expect(stbl.hasChanged).to.be.false;
     });
   });
 
@@ -1200,24 +1209,24 @@ describe('StringTableResource', function() {
   describe('#getEntry()', function() {
     it('should return the only entry that matches the predicate', function() {
       const stbl = StringTableResource.create();
-      stbl.addEntry(123, "First");
-      const secondId = stbl.addEntry(456, "Second");
+      stbl.add(123, "First");
+      const secondId = stbl.add(456, "Second");
       const entry = stbl.getEntry(entry => entry.string === "Second");
       expectEntriesToBeSame(entry, stbl.getEntryById(secondId));
     });
 
     it('should return the first entry that matches the predicate', function() {
       const stbl = StringTableResource.create();
-      const firstId = stbl.addEntry(123, "First");
-      stbl.addEntry(456, "Second");
+      const firstId = stbl.add(123, "First");
+      stbl.add(456, "Second");
       const entry = stbl.getEntry(entry => entry.key > 1);
       expectEntriesToBeSame(entry, stbl.getEntryById(firstId));
     });
 
     it('should return undefined if none match the predicate', function() {
       const stbl = StringTableResource.create();
-      stbl.addEntry(123, "First");
-      stbl.addEntry(456, "Second");
+      stbl.add(123, "First");
+      stbl.add(456, "Second");
       const entry = stbl.getEntry(entry => entry.key === 789);
       expect(entry).to.be.undefined;
     });
@@ -1226,17 +1235,17 @@ describe('StringTableResource', function() {
   describe('#entries', function() {
     it('should return all entries when there is no predicate', function() {
       const stbl = StringTableResource.create();
-      stbl.addEntry(123, "First");
-      stbl.addEntry(456, "Second");
-      stbl.addEntry(789, "Third");
+      stbl.add(123, "First");
+      stbl.add(456, "Second");
+      stbl.add(789, "Third");
       expect(stbl.entries).to.be.an('Array').and.to.have.lengthOf(3);
     });
 
     it('should return all entries that match the predicate', function() {
       const stbl = StringTableResource.create();
-      stbl.addEntry(123, "First");
-      stbl.addEntry(456, "Second");
-      stbl.addEntry(789, "Third");
+      stbl.add(123, "First");
+      stbl.add(456, "Second");
+      stbl.add(789, "Third");
       const entries = stbl.getEntries(entry => entry.key >= 456);
       expect(entries).to.be.an('Array').and.to.have.lengthOf(2);
       expect(entries[0].string).to.equal("Second");
@@ -1258,8 +1267,8 @@ describe('StringTableResource', function() {
   describe('#getEntryById()', function() {
     it('should return the correct entry', function() {
       const stbl = StringTableResource.create();
-      const firstId = stbl.addEntry(123, "First");
-      const secondId = stbl.addEntry(456, "Second");
+      const firstId = stbl.add(123, "First");
+      const secondId = stbl.add(456, "Second");
       const first = stbl.getEntryById(firstId);
       const second = stbl.getEntryById(secondId);
       expect(first.key).to.equal(123);
@@ -1283,8 +1292,8 @@ describe('StringTableResource', function() {
   describe('#getEntryByKey()', function() {
     it('should return the correct entry', function() {
       const stbl = StringTableResource.create();
-      stbl.addEntry(123, "First");
-      stbl.addEntry(456, "Second");
+      stbl.add(123, "First");
+      stbl.add(456, "Second");
       const first = stbl.getEntryByKey(123);
       const second = stbl.getEntryByKey(456);
       expect(first.string).to.equal("First");
@@ -1293,24 +1302,24 @@ describe('StringTableResource', function() {
 
     it('should return the first entry if there is more than one with this key', function() {
       const stbl = StringTableResource.create();
-      stbl.addEntry(123, "First");
-      stbl.addEntry(123, "Second");
+      stbl.add(123, "First");
+      stbl.add(123, "Second");
       const entry = stbl.getEntryByKey(123);
       expect(entry.string).to.equal("First");
     });
 
     it('should return undefined when the key doesn\'t exist', function() {
       const stbl = StringTableResource.create();
-      stbl.addEntry(123, "First");
-      stbl.addEntry(456, "Second");
+      stbl.add(123, "First");
+      stbl.add(456, "Second");
       const entry = stbl.getEntryByKey(789);
       expect(entry).to.be.undefined;
     });
 
     it('should return undefined when there was an entry with this key, but it was removed', function() {
       const stbl = StringTableResource.create();
-      stbl.addEntry(123, "First");
-      stbl.addEntry(456, "Second");
+      stbl.add(123, "First");
+      stbl.add(456, "Second");
       expect(stbl.getEntryByKey(123)).to.not.be.undefined;
       stbl.removeEntryByKey(123);
       expect(stbl.getEntryByKey(123)).to.be.undefined;
@@ -1320,8 +1329,8 @@ describe('StringTableResource', function() {
   describe('#getEntriesByKey()', function() {
     it('should return an empty array if there are none with this key', function() {
       const stbl = StringTableResource.create();
-      stbl.addEntry(123, "First");
-      stbl.addEntry(456, "Second");
+      stbl.add(123, "First");
+      stbl.add(456, "Second");
       const entries = stbl.getEntriesByKey(789);
       expect(entries).to.be.an('Array');
       expect(entries).to.be.empty;
@@ -1329,8 +1338,8 @@ describe('StringTableResource', function() {
 
     it('should return an array with one entry if there is one with this key', function() {
       const stbl = StringTableResource.create();
-      stbl.addEntry(123, "First");
-      stbl.addEntry(456, "Second");
+      stbl.add(123, "First");
+      stbl.add(456, "Second");
       const entries = stbl.getEntriesByKey(123);
       expect(entries).to.be.an('Array');
       expect(entries).to.have.lengthOf(1);
@@ -1339,8 +1348,8 @@ describe('StringTableResource', function() {
 
     it('should return an array of all entries with this key', function() {
       const stbl = StringTableResource.create();
-      stbl.addEntry(123, "First");
-      stbl.addEntry(123, "Second");
+      stbl.add(123, "First");
+      stbl.add(123, "Second");
       const entries = stbl.getEntriesByKey(123);
       expect(entries).to.be.an('Array');
       expect(entries).to.have.lengthOf(2);
@@ -1352,8 +1361,8 @@ describe('StringTableResource', function() {
   describe('#getEntryByIndex()', function() {
     it('should return the correct entry', function() {
       const stbl = StringTableResource.create();
-      stbl.addEntry(123, "First");
-      stbl.addEntry(456, "Second");
+      stbl.add(123, "First");
+      stbl.add(456, "Second");
       const first = stbl.getEntryByIndex(0);
       const second = stbl.getEntryByIndex(1);
       expect(first.key).to.equal(123);
@@ -1371,7 +1380,7 @@ describe('StringTableResource', function() {
     it('should return the same entry after one is added', function() {
       const stbl = getSTBL('SmallSTBL');
       const entry1 = stbl.getEntryByIndex(2);
-      stbl.addEntry(123, "Test");
+      stbl.add(123, "Test");
       const entry2 = stbl.getEntryByIndex(2);
       expectEntriesToBeSame(entry1, entry2);
     });
@@ -1425,10 +1434,10 @@ describe('StringTableResource', function() {
     context('case sensitive set to true', function() {
       it('should return all exact matches in same case', function() {
         const stbl = StringTableResource.create();
-        stbl.addEntry(12, 'String');
-        stbl.addEntry(34, 'string');
-        stbl.addEntry(56, 'String');
-        stbl.addEntry(78, 'sTRING');
+        stbl.add(12, 'String');
+        stbl.add(34, 'string');
+        stbl.add(56, 'String');
+        stbl.add(78, 'sTRING');
         const result1 = stbl.searchByString('String', { caseSensitive: true });
         expect(result1).to.be.an('Array').with.lengthOf(2);
         expect(result1[0].key).to.equal(12);
@@ -1440,8 +1449,8 @@ describe('StringTableResource', function() {
 
       it('should return empty array when there are exact matches in different case', function() {
         const stbl = StringTableResource.create();
-        stbl.addEntry(34, 'string');
-        stbl.addEntry(78, 'sTRING');
+        stbl.add(34, 'string');
+        stbl.add(78, 'sTRING');
         const result = stbl.searchByString('String', { caseSensitive: true });
         expect(result).to.be.an('Array').and.to.be.empty;
       });
@@ -1450,24 +1459,24 @@ describe('StringTableResource', function() {
     context('search for substrings', function() {
       it('should return empty array when none contain the substring', function() {
         const stbl = StringTableResource.create();
-        stbl.addEntry(12, 'Hello');
-        stbl.addEntry(34, 'Hello world');
+        stbl.add(12, 'Hello');
+        stbl.add(34, 'Hello world');
         const result = stbl.searchByString('foo', { includeSubstrings: true });
         expect(result).to.be.an('Array').that.is.empty;
       });
 
       it('should return all entries that contain the substring in same case', function() {
         const stbl = StringTableResource.create();
-        stbl.addEntry(12, 'Hello');
-        stbl.addEntry(34, 'Hello world');
+        stbl.add(12, 'Hello');
+        stbl.add(34, 'Hello world');
         const result = stbl.searchByString('Hello', { includeSubstrings: true });
         expect(result).to.be.an('Array').that.has.lengthOf(2);
       });
 
       it('should return all entries that contain the substring in different case', function() {
         const stbl = StringTableResource.create();
-        stbl.addEntry(12, 'Hello');
-        stbl.addEntry(34, 'Hello world');
+        stbl.add(12, 'Hello');
+        stbl.add(34, 'Hello world');
         const result = stbl.searchByString('hello', { includeSubstrings: true });
         expect(result).to.be.an('Array').that.has.lengthOf(2);
       });
@@ -1476,8 +1485,8 @@ describe('StringTableResource', function() {
     context('case sensitive set to true & search for substrings', function() {
       it('should return empty array when contains substring, but not in right case', function() {
         const stbl = StringTableResource.create();
-        stbl.addEntry(12, 'Hello');
-        stbl.addEntry(34, 'Hello world');
+        stbl.add(12, 'Hello');
+        stbl.add(34, 'Hello world');
 
         const result = stbl.searchByString('hello', {
           includeSubstrings: true,
@@ -1489,9 +1498,9 @@ describe('StringTableResource', function() {
 
       it('should return all entries that contain substring in right case', function() {
         const stbl = StringTableResource.create();
-        stbl.addEntry(12, 'Hello');
-        stbl.addEntry(34, 'Hello world');
-        stbl.addEntry(56, 'hello world');
+        stbl.add(12, 'Hello');
+        stbl.add(34, 'Hello world');
+        stbl.add(56, 'hello world');
 
         const result = stbl.searchByString('Hello', {
           includeSubstrings: true,
@@ -1517,7 +1526,7 @@ describe('StringTableResource', function() {
       it('should increase by 1 after adding an entry', function() {
         const stbl = StringTableResource.create();
         expect(stbl).to.have.lengthOf(0);
-        stbl.addEntry(1234, 'New string');
+        stbl.add(1234, 'New string');
         expect(stbl).to.have.lengthOf(1);
       });
 
@@ -1538,7 +1547,7 @@ describe('StringTableResource', function() {
       it('should increase by 1 after adding an entry', function() {
         const stbl = getSTBL('SmallSTBL');
         expect(stbl).to.have.lengthOf(3);
-        stbl.addEntry(1234, 'New string');
+        stbl.add(1234, 'New string');
         expect(stbl).to.have.lengthOf(4);
       });
   
@@ -1571,8 +1580,8 @@ describe('StringTableResource', function() {
     context('stbl has one error', function() {
       it('should return "Duplicate Keys" error', function() {
         const stbl = StringTableResource.create();
-        stbl.addEntry(1234, "String 1");
-        stbl.addEntry(1234, "String 2");
+        stbl.add(1234, "String 1");
+        stbl.add(1234, "String 2");
         const errors = stbl.findErrors();
         expect(errors).to.be.an('Array');
         expect(errors).to.have.lengthOf(1);
@@ -1585,8 +1594,8 @@ describe('StringTableResource', function() {
 
       it('should return "Duplicate Strings" error', function() {
         const stbl = StringTableResource.create();
-        stbl.addEntry(1234, "String 1");
-        stbl.addEntry(5678, "String 1");
+        stbl.add(1234, "String 1");
+        stbl.add(5678, "String 1");
         const errors = stbl.findErrors();
         expect(errors).to.be.an('Array');
         expect(errors).to.have.lengthOf(1);
@@ -1599,8 +1608,8 @@ describe('StringTableResource', function() {
 
       it('should return "Empty String" error', function() {
         const stbl = StringTableResource.create();
-        stbl.addEntry(1234, "String");
-        stbl.addEntry(5678, "");
+        stbl.add(1234, "String");
+        stbl.add(5678, "");
         const errors = stbl.findErrors();
         expect(errors).to.be.an('Array');
         expect(errors).to.have.lengthOf(1);
@@ -1614,10 +1623,10 @@ describe('StringTableResource', function() {
     context('stbl has multiple errors', function() {
       it('should return all errors', function() {
         const stbl = StringTableResource.create();
-        stbl.addEntry(123, "String 1");
-        stbl.addEntry(123, "String 2");
-        stbl.addEntry(456, "String 2");
-        stbl.addEntry(789, "");
+        stbl.add(123, "String 1");
+        stbl.add(123, "String 2");
+        stbl.add(456, "String 2");
+        stbl.add(789, "");
         const errors = stbl.findErrors();
         expect(errors).to.be.an('Array');
         expect(errors).to.have.lengthOf(3);
@@ -1637,167 +1646,167 @@ describe('StringTableResource', function() {
 
   //#region Serializing
 
-  describe('#hasChanged()', function() {
+  describe('#hasChanged', function() {
     context('return value when unedited', function() {
       it('should return true for a fresh stbl', function() {
         const stbl = StringTableResource.create();
-        expect(stbl.hasChanged()).to.be.true;
+        expect(stbl.hasChanged).to.be.true;
       });
   
       it('should return false for a loaded stbl', function() {
         const stbl = getSTBL('SmallSTBL');
-        expect(stbl.hasChanged()).to.be.false;
+        expect(stbl.hasChanged).to.be.false;
       });
 
       it('should return true for a merged stbl', function() {
         const stbl1 = StringTableResource.create();
         const stbl2 = StringTableResource.create();
         const merged = StringTableResource.merge(stbl1, stbl2);
-        expect(merged.hasChanged()).to.be.true;
+        expect(merged.hasChanged).to.be.true;
       });
     });
     
     context('return value after adding', function() {
       it('should return true after addEntry()', function() {
         const stbl = getSTBL('SmallSTBL');
-        expect(stbl.hasChanged()).to.be.false;
-        stbl.addEntry(1234, "Test");
-        expect(stbl.hasChanged()).to.be.true;
+        expect(stbl.hasChanged).to.be.false;
+        stbl.add(1234, "Test");
+        expect(stbl.hasChanged).to.be.true;
       });
   
       it('should return true after addStringAndHash()', function() {
         const stbl = getSTBL('SmallSTBL');
-        expect(stbl.hasChanged()).to.be.false;
+        expect(stbl.hasChanged).to.be.false;
         stbl.addStringAndHash("Test");
-        expect(stbl.hasChanged()).to.be.true;
+        expect(stbl.hasChanged).to.be.true;
       });
   
       it('should return false after combine() an empty stbl', function() {
         const stbl = getSTBL('SmallSTBL');
-        expect(stbl.hasChanged()).to.be.false;
+        expect(stbl.hasChanged).to.be.false;
         const newStbl = StringTableResource.create();
         stbl.combine(newStbl);
-        expect(stbl.hasChanged()).to.be.false;
+        expect(stbl.hasChanged).to.be.false;
       });
 
       it('should return true after combine() a non-empty stbl', function() {
         const stbl = getSTBL('SmallSTBL');
-        expect(stbl.hasChanged()).to.be.false;
+        expect(stbl.hasChanged).to.be.false;
         const newStbl = StringTableResource.create();
-        newStbl.addEntry(123, "Test");
+        newStbl.add(123, "Test");
         stbl.combine(newStbl);
-        expect(stbl.hasChanged()).to.be.true;
+        expect(stbl.hasChanged).to.be.true;
       });
     });
 
     context('return value after updating', function() {
       it('should return true after updateEntry()', function() {
         const stbl = getSTBL('SmallSTBL');
-        expect(stbl.hasChanged()).to.be.false;
+        expect(stbl.hasChanged).to.be.false;
         stbl.updateEntry(entry => entry.id === 0, { string: "Test" });
-        expect(stbl.hasChanged()).to.be.true;
+        expect(stbl.hasChanged).to.be.true;
       });
   
       it('should return true after updateEntryByKey()', function() {
         const stbl = getSTBL('SmallSTBL');
-        expect(stbl.hasChanged()).to.be.false;
+        expect(stbl.hasChanged).to.be.false;
         stbl.updateEntryByKey(0x7E08629A, { string: "Test" });
-        expect(stbl.hasChanged()).to.be.true;
+        expect(stbl.hasChanged).to.be.true;
       });
   
       it('should return true after updateEntryById()', function() {
         const stbl = getSTBL('SmallSTBL');
-        expect(stbl.hasChanged()).to.be.false;
+        expect(stbl.hasChanged).to.be.false;
         stbl.updateEntryById(0, { string: "Test" });
-        expect(stbl.hasChanged()).to.be.true;
+        expect(stbl.hasChanged).to.be.true;
       });
 
       it('should return true after updateEntryByIndex()', function() {
         const stbl = getSTBL('SmallSTBL');
-        expect(stbl.hasChanged()).to.be.false;
+        expect(stbl.hasChanged).to.be.false;
         stbl.updateEntryByIndex(0, { string: "Test" });
-        expect(stbl.hasChanged()).to.be.true;
+        expect(stbl.hasChanged).to.be.true;
       });
 
       it('should return false after failing to update', function() {
         const stbl = getSTBL('SmallSTBL');
-        expect(stbl.hasChanged()).to.be.false;
+        expect(stbl.hasChanged).to.be.false;
         const result = stbl.updateEntryByIndex(10, { string: "Test" });
         expect(result).to.be.undefined;
-        expect(stbl.hasChanged()).to.be.false;
+        expect(stbl.hasChanged).to.be.false;
       });
     });
 
     context('return value after removing', function() {
       it('should return true after removeEntry()', function() {
         const stbl = getSTBL('SmallSTBL');
-        expect(stbl.hasChanged()).to.be.false;
+        expect(stbl.hasChanged).to.be.false;
         stbl.removeEntry(entry => entry.id === 0);
-        expect(stbl.hasChanged()).to.be.true;
+        expect(stbl.hasChanged).to.be.true;
       });
   
       it('should return true after removeEntries()', function() {
         const stbl = getSTBL('SmallSTBL');
-        expect(stbl.hasChanged()).to.be.false;
+        expect(stbl.hasChanged).to.be.false;
         stbl.removeEntries(entry => entry.id > 1);
-        expect(stbl.hasChanged()).to.be.true;
+        expect(stbl.hasChanged).to.be.true;
       });
   
       it('should return true after removeEntryById()', function() {
         const stbl = getSTBL('SmallSTBL');
-        expect(stbl.hasChanged()).to.be.false;
+        expect(stbl.hasChanged).to.be.false;
         stbl.removeEntryById(0);
-        expect(stbl.hasChanged()).to.be.true;
+        expect(stbl.hasChanged).to.be.true;
       });
 
       it('should return true after removeEntryByKey()', function() {
         const stbl = getSTBL('SmallSTBL');
-        expect(stbl.hasChanged()).to.be.false;
+        expect(stbl.hasChanged).to.be.false;
         stbl.removeEntryByKey(0x7E08629A);
-        expect(stbl.hasChanged()).to.be.true;
+        expect(stbl.hasChanged).to.be.true;
       });
 
       it('should return true after removeEntryByIndex()', function() {
         const stbl = getSTBL('SmallSTBL');
-        expect(stbl.hasChanged()).to.be.false;
+        expect(stbl.hasChanged).to.be.false;
         stbl.removeEntryByIndex(0);
-        expect(stbl.hasChanged()).to.be.true;
+        expect(stbl.hasChanged).to.be.true;
       });
 
       it('should return false after failing to remove', function() {
         const stbl = getSTBL('SmallSTBL');
-        expect(stbl.hasChanged()).to.be.false;
+        expect(stbl.hasChanged).to.be.false;
         stbl.removeEntryByIndex(10);
-        expect(stbl.hasChanged()).to.be.false;
+        expect(stbl.hasChanged).to.be.false;
       });
     });
 
     context('return value after editing and getting buffer', function() {
       it('should return false after adding an entry and getting the buffer', function() {
         const stbl = getSTBL('SmallSTBL');
-        expect(stbl.hasChanged()).to.be.false;
-        stbl.addEntry(123, "Test");
-        expect(stbl.hasChanged()).to.be.true;
+        expect(stbl.hasChanged).to.be.false;
+        stbl.add(123, "Test");
+        expect(stbl.hasChanged).to.be.true;
         stbl.getBuffer();
-        expect(stbl.hasChanged()).to.be.false;
+        expect(stbl.hasChanged).to.be.false;
       });
   
       it('should return false after updating an entry and getting the buffer', function() {
         const stbl = getSTBL('SmallSTBL');
-        expect(stbl.hasChanged()).to.be.false;
+        expect(stbl.hasChanged).to.be.false;
         stbl.updateEntryByIndex(0, { string: "Test" });
-        expect(stbl.hasChanged()).to.be.true;
+        expect(stbl.hasChanged).to.be.true;
         stbl.getBuffer();
-        expect(stbl.hasChanged()).to.be.false;
+        expect(stbl.hasChanged).to.be.false;
       });
   
       it('should return false after removing an entry and getting the buffer', function() {
         const stbl = getSTBL('SmallSTBL');
-        expect(stbl.hasChanged()).to.be.false;
+        expect(stbl.hasChanged).to.be.false;
         stbl.removeEntryByIndex(0);
-        expect(stbl.hasChanged()).to.be.true;
+        expect(stbl.hasChanged).to.be.true;
         stbl.getBuffer();
-        expect(stbl.hasChanged()).to.be.false;
+        expect(stbl.hasChanged).to.be.false;
       });
     });
   });
@@ -1817,8 +1826,8 @@ describe('StringTableResource', function() {
       context('stbl had entries added', function() {
         it('should return a binary that can be re-read as a STBL', function() {
           const created = StringTableResource.create();
-          created.addEntry(1234, "First");
-          created.addEntry(5678, "Second");
+          created.add(1234, "First");
+          created.add(5678, "Second");
           const buffer = created.getBuffer();
           const loaded = StringTableResource.from(buffer);
           expect(loaded).to.have.lengthOf(2);
@@ -1827,8 +1836,8 @@ describe('StringTableResource', function() {
 
         it('should serialize a stbl with special characters correctly', function() {
           const created = StringTableResource.create();
-          created.addEntry(1234, "Héllö");
-          created.addEntry(5678, "Wørłd");
+          created.add(1234, "Héllö");
+          created.add(5678, "Wørłd");
           const buffer = created.getBuffer();
           const loaded = StringTableResource.from(buffer);
           expect(loaded).to.have.lengthOf(2);
@@ -1837,10 +1846,10 @@ describe('StringTableResource', function() {
 
         it('should serialize a stbl with non-latin writing correctly', function() {
           const stbl = StringTableResource.create();
-          stbl.addEntry(123, "日本語"); // japanese
-          stbl.addEntry(456, "繁體中文"); // chinese
-          stbl.addEntry(789, "Русский"); // russian
-          stbl.addEntry(246, "한국어"); // korean
+          stbl.add(123, "日本語"); // japanese
+          stbl.add(456, "繁體中文"); // chinese
+          stbl.add(789, "Русский"); // russian
+          stbl.add(246, "한국어"); // korean
           const buffer = stbl.getBuffer();
           const loaded = StringTableResource.from(buffer);
           expect(loaded.getEntryByKey(123).string).to.equal("日本語");
@@ -1872,7 +1881,7 @@ describe('StringTableResource', function() {
         it('should return a binary that can be re-read as a STBL', function() {
           const stbl = getSTBL('SmallSTBL');
           const originalLength = stbl.numEntries();
-          stbl.addEntry(1234, "Test");
+          stbl.add(1234, "Test");
           const buffer = stbl.getBuffer();
           const loaded = StringTableResource.from(buffer);
           expect(loaded).to.have.lengthOf(originalLength + 1);
@@ -1881,7 +1890,7 @@ describe('StringTableResource', function() {
         it('should serialize a stbl with special characters correctly', function() {
           const stbl = getSTBL('SpecialChars');
           const originalLength = stbl.numEntries();
-          stbl.addEntry(1234, "Tést");
+          stbl.add(1234, "Tést");
           const buffer = stbl.getBuffer();
           const loaded = StringTableResource.from(buffer);
           expect(loaded).to.have.lengthOf(originalLength + 1);
