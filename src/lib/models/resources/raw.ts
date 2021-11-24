@@ -12,7 +12,7 @@ export default class RawResource extends Resource {
   }
 
   clone(): RawResource {
-    return RawResource.from(this.getBuffer());
+    return RawResource.from(this.buffer);
   }
 
   /**
@@ -34,9 +34,9 @@ export default class RawResource extends Resource {
    * Returns this resource as plain text. This is a lazy function, in that the
    * content will not be decoded until this function is called.
    */
-  getPlainText(): string {
+  get plainText(): string {
     if (this._content === undefined)
-      this._content = this.getBuffer().toString('utf-8');
+      this._content = this.buffer.toString('utf-8');
     return this._content;
   }
 }
