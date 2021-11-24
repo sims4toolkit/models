@@ -164,7 +164,7 @@ describe('StringTableResource', function() {
     it('should create a valid, empty string table', function() {
       const stbl = StringTableResource.create();
       expect(stbl).to.not.be.undefined;
-      expect(stbl.getEntries()).to.have.lengthOf(0);
+      expect(stbl.length).to.equal(0);
     });
   });
 
@@ -172,19 +172,16 @@ describe('StringTableResource', function() {
     context('file is valid', function() {
       it('should load the contents correctly', function() {
         const stbl = getSTBL('SmallSTBL');
-        const entries = stbl.getEntries();
-        expect(entries).to.be.an('Array');
-        expect(entries).to.have.length(3);
-        assertEntry(entries[0], 0, 0x7E08629A, 'This is a string.');
-        assertEntry(entries[1], 1, 0xF098F4B5, 'This is another string!');
-        assertEntry(entries[2], 2, 0x8D6D117D, 'And this, this is a third.');
+        expect(stbl.entries).to.be.an('Array').with.lengthOf(3);
+        assertEntry(stbl.entries[0], 0, 0x7E08629A, 'This is a string.');
+        assertEntry(stbl.entries[1], 1, 0xF098F4B5, 'This is another string!');
+        assertEntry(stbl.entries[2], 2, 0x8D6D117D, 'And this, this is a third.');
       });
   
       it('should load repeated entries uniquely', function() {
         const stbl = getSTBL('RepeatedStrings');
-        const entries = stbl.getEntries();
-        expect(entries).to.be.an('Array');
-        expect(entries).to.have.length(6);
+        const entries = stbl.entries;
+        expect(entries).to.be.an('Array').with.lengthOf(6);
   
         // 0 & 1 have same key and string
         expect(entries[0].key).to.equal(entries[1].key);
@@ -204,7 +201,7 @@ describe('StringTableResource', function() {
 
       it('should load stbls with special characters correctly', function() {
         const stbl = getSTBL('SpecialChars');
-        const entries = stbl.getEntries();
+        const entries = stbl.entries;
         expect(entries).to.be.an('Array').with.lengthOf(4);
         assertEntry(entries[0], 0, 0x7E08629A, 'This is a string.');
         assertEntry(entries[1], 1, 0xF098F4B5, 'This is another string!');
@@ -257,7 +254,7 @@ describe('StringTableResource', function() {
   describe('#fromJson()', function() {
     it('should return an empty stbl when the json is empty', function() {
       const stbl = StringTableResource.fromJson([]);
-      expect(stbl.getEntries()).to.be.empty;
+      expect(stbl.entries).to.be.empty;
     });
 
     it('should return a stbl with the contents of a non-empty json', function() {
@@ -1225,13 +1222,13 @@ describe('StringTableResource', function() {
     });
   });
 
-  describe('#getEntries()', function() {
+  describe('#entries', function() {
     it('should return all entries when there is no predicate', function() {
       const stbl = StringTableResource.create();
       stbl.addEntry(123, "First");
       stbl.addEntry(456, "Second");
       stbl.addEntry(789, "Third");
-      expect(stbl.getEntries()).to.be.an('Array').and.to.have.lengthOf(3);
+      expect(stbl.entries).to.be.an('Array').and.to.have.lengthOf(3);
     });
 
     it('should return all entries that match the predicate', function() {
@@ -1253,7 +1250,7 @@ describe('StringTableResource', function() {
 
     it('should return an empty array if the stbl is empty', function() {
       const stbl = StringTableResource.create();
-      expect(stbl.getEntries()).to.be.an('Array').and.to.be.empty;
+      expect(stbl.entries).to.be.an('Array').and.to.be.empty;
     });
   });
 
