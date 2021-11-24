@@ -277,7 +277,7 @@ describe('StringTableResource', function() {
     context('stbl is empty', function() {
       it('should return an empty stbl', function() {
         const stbl = StringTableResource.create();
-        expect(stbl.clone().numEntries()).to.equal(0);
+        expect(stbl.clone()).to.have.lengthOf(0);
       });
 
       it('should not mutate the original stbl when adding', function() {
@@ -318,7 +318,7 @@ describe('StringTableResource', function() {
     context('merging nothing', function() {
       it('should return an empty stbl', function() {
         const stbl = StringTableResource.merge();
-        expect(stbl.numEntries()).to.equal(0);
+        expect(stbl).to.have.lengthOf(0);
       });
     });
 
@@ -354,7 +354,7 @@ describe('StringTableResource', function() {
           const empty1 = StringTableResource.create();
           const empty2 = StringTableResource.create();
           const merged = StringTableResource.merge(empty1, empty2);
-          expect(merged.numEntries()).to.equal(0);
+          expect(merged).to.be.empty;
         });
 
         it('should not mutate original on add', function() {
@@ -399,12 +399,12 @@ describe('StringTableResource', function() {
         it('should return a new stbl with entries from both', function() {
           const smallSTBL = getSTBL('SmallSTBL');
           const freshSTBL = StringTableResource.create();
-          freshSTBL.addEntry(1234, "First");
-          freshSTBL.addEntry(5678, "Second");
+          freshSTBL.add(1234, "First");
+          freshSTBL.add(5678, "Second");
           const merged = StringTableResource.merge(smallSTBL, freshSTBL);
-          expect(merged.numEntries()).to.equal(smallSTBL.numEntries() + 2);
-          smallSTBL.addEntry(1234, "First");
-          smallSTBL.addEntry(5678, "Second");
+          expect(merged).to.have.lengthOf(smallSTBL.length + 2);
+          smallSTBL.add(1234, "First");
+          smallSTBL.add(5678, "Second");
           expectSameContents(smallSTBL, merged);
         });
       });
@@ -413,16 +413,16 @@ describe('StringTableResource', function() {
     context('merging three', function() {
       it('should return new stbl with entries from all three', function() {
         const stbl1 = StringTableResource.create();
-        stbl1.addEntry(123, "First");
+        stbl1.add(123, "First");
         const stbl2 = StringTableResource.create();
-        stbl2.addEntry(456, "Second");
+        stbl2.add(456, "Second");
         const stbl3 = StringTableResource.create();
-        stbl3.addEntry(789, "Third");
+        stbl3.add(789, "Third");
         const merged = StringTableResource.merge(stbl1, stbl2, stbl3);
-        expect(merged.numEntries()).to.equal(3);
-        expect(merged.getEntryByIndex(0).string).to.equal("First");
-        expect(merged.getEntryByIndex(1).string).to.equal("Second");
-        expect(merged.getEntryByIndex(2).string).to.equal("Third");
+        expect(merged).to.have.lengthOf(3);
+        expect(merged.entries[0].string).to.equal("First");
+        expect(merged.entries[1].string).to.equal("Second");
+        expect(merged.entries[2].string).to.equal("Third");
       });
     });
   });
