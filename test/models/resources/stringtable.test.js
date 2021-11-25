@@ -866,51 +866,17 @@ describe('StringTableResource', function() {
 
   describe('#search()', function() {
     context('no options are passed', function() {
-      it('should return empty array on empty stbl', function() {
-        const stbl = StringTableResource.create();
-        const result = stbl.searchByString("test");
-        expect(result).to.be.an('Array').and.to.be.empty;
-      });
-
-      it('should return empty array when there are no case-insentive exact matches', function() {
-        const stbl = getSTBL('SmallSTBL');
-        const result = stbl.searchByString('this is another string');
-        expect(result).to.be.an('Array').and.to.be.empty;
-      });
-
-      it('should return array with one case-insentive exact match when there is one', function() {
-        const stbl = getSTBL('SmallSTBL');
-        const result1 = stbl.searchByString('This is another string!');
-        expect(result1).to.be.an('Array').with.lengthOf(1);
-        expect(result1[0].key).to.equal(0xF098F4B5);
-        const result2 = stbl.searchByString('this is Another string!');
-        expect(result2).to.be.an('Array').with.lengthOf(1);
-        expect(result2[0].key).to.equal(0xF098F4B5);
-        expect(result2[0].string).to.equal('This is another string!');
-      });
-
-      it('should return array of all case-insentive exact matches when there is more than one', function() {
-        const stbl = getSTBL('SmallSTBL');
-        stbl.addAndHash('tHiS iS aNoThEr StRiNg!')
-        const result = stbl.searchByString('this is another string!');
-        expect(result).to.be.an('Array').with.lengthOf(2);
-        expect(result[0].key).to.equal(0xF098F4B5);
-        expect(result[1].key).to.equal(hashing.fnv32('tHiS iS aNoThEr StRiNg!'));
-      });
-    });
-
-    context('case sensitive set to true', function() {
       it('should return all exact matches in same case', function() {
         const stbl = StringTableResource.create();
         stbl.add(12, 'String');
         stbl.add(34, 'string');
         stbl.add(56, 'String');
         stbl.add(78, 'sTRING');
-        const result1 = stbl.searchByString('String', { caseSensitive: true });
+        const result1 = stbl.search('String');
         expect(result1).to.be.an('Array').with.lengthOf(2);
         expect(result1[0].key).to.equal(12);
         expect(result1[1].key).to.equal(56);
-        const result2 = stbl.searchByString('sTRING', { caseSensitive: true });
+        const result2 = stbl.search('sTRING');
         expect(result2).to.be.an('Array').with.lengthOf(1);
         expect(result2[0].key).to.equal(78);
       });
@@ -919,8 +885,42 @@ describe('StringTableResource', function() {
         const stbl = StringTableResource.create();
         stbl.add(34, 'string');
         stbl.add(78, 'sTRING');
-        const result = stbl.searchByString('String', { caseSensitive: true });
+        const result = stbl.search('String');
         expect(result).to.be.an('Array').and.to.be.empty;
+      });
+
+      it('should return empty array on empty stbl', function() {
+        const stbl = StringTableResource.create();
+        const result = stbl.search("test");
+        expect(result).to.be.an('Array').and.to.be.empty;
+      });
+    });
+
+    context('case sensitive set to false', function() {
+      it('should return empty array when there are no case-insentive exact matches', function() {
+        const stbl = getSTBL('SmallSTBL');
+        const result = stbl.search('this is another string', { caseSensitive: false });
+        expect(result).to.be.an('Array').and.to.be.empty;
+      });
+
+      it('should return array with one case-insentive exact match when there is one', function() {
+        const stbl = getSTBL('SmallSTBL');
+        const result1 = stbl.search('This is another string!', { caseSensitive: false });
+        expect(result1).to.be.an('Array').with.lengthOf(1);
+        expect(result1[0].key).to.equal(0xF098F4B5);
+        const result2 = stbl.search('this is Another string!', { caseSensitive: false });
+        expect(result2).to.be.an('Array').with.lengthOf(1);
+        expect(result2[0].key).to.equal(0xF098F4B5);
+        expect(result2[0].string).to.equal('This is another string!');
+      });
+
+      it('should return array of all case-insentive exact matches when there is more than one', function() {
+        const stbl = getSTBL('SmallSTBL');
+        stbl.addAndHash('tHiS iS aNoThEr StRiNg!')
+        const result = stbl.search('this is another string!');
+        expect(result).to.be.an('Array').with.lengthOf(2);
+        expect(result[0].key).to.equal(0xF098F4B5);
+        expect(result[1].key).to.equal(hashing.fnv32('tHiS iS aNoThEr StRiNg!'));
       });
     });
 
@@ -929,7 +929,7 @@ describe('StringTableResource', function() {
         const stbl = StringTableResource.create();
         stbl.add(12, 'Hello');
         stbl.add(34, 'Hello world');
-        const result = stbl.searchByString('foo', { includeSubstrings: true });
+        const result = stbl.search('foo', { includeSubstrings: true });
         expect(result).to.be.an('Array').that.is.empty;
       });
 
@@ -937,30 +937,15 @@ describe('StringTableResource', function() {
         const stbl = StringTableResource.create();
         stbl.add(12, 'Hello');
         stbl.add(34, 'Hello world');
-        const result = stbl.searchByString('Hello', { includeSubstrings: true });
+        const result = stbl.search('Hello', { includeSubstrings: true });
         expect(result).to.be.an('Array').that.has.lengthOf(2);
       });
 
-      it('should return all entries that contain the substring in different case', function() {
-        const stbl = StringTableResource.create();
-        stbl.add(12, 'Hello');
-        stbl.add(34, 'Hello world');
-        const result = stbl.searchByString('hello', { includeSubstrings: true });
-        expect(result).to.be.an('Array').that.has.lengthOf(2);
-      });
-    });
-
-    context('case sensitive set to true & search for substrings', function() {
       it('should return empty array when contains substring, but not in right case', function() {
         const stbl = StringTableResource.create();
         stbl.add(12, 'Hello');
         stbl.add(34, 'Hello world');
-
-        const result = stbl.searchByString('hello', {
-          includeSubstrings: true,
-          caseSensitive: true
-        });
-
+        const result = stbl.search('hello', { includeSubstrings: true });
         expect(result).to.be.an('Array').that.is.empty;
       });
 
@@ -969,12 +954,17 @@ describe('StringTableResource', function() {
         stbl.add(12, 'Hello');
         stbl.add(34, 'Hello world');
         stbl.add(56, 'hello world');
+        const result = stbl.search('Hello', { includeSubstrings: true });
+        expect(result).to.be.an('Array').that.has.lengthOf(2);
+      });
+    });
 
-        const result = stbl.searchByString('Hello', {
-          includeSubstrings: true,
-          caseSensitive: true
-        });
-
+    context('case sensitive set to false & search for substrings', function() {
+      it('should return all entries that contain the substring in different case', function() {
+        const stbl = StringTableResource.create();
+        stbl.add(12, 'Hello');
+        stbl.add(34, 'Hello world');
+        const result = stbl.search('hello', { includeSubstrings: true, caseSensitive: false });
         expect(result).to.be.an('Array').that.has.lengthOf(2);
       });
     });
