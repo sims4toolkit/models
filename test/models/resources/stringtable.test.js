@@ -459,26 +459,25 @@ describe('StringTableResource', function() {
   describe('#addAndHash()', function() {
     it("should add the entry correctly when it has non-latin text", function() {
       const stbl = StringTableResource.create();
-      stbl.addStringAndHash("Héllö wørłd!");
-      stbl.addStringAndHash("日本語"); // japanese
-      stbl.addStringAndHash("繁體中文"); // chinese
-      stbl.addStringAndHash("Русский"); // russian
-      stbl.addStringAndHash("한국어"); // korean
+      stbl.addAndHash("Héllö wørłd!");
+      stbl.addAndHash("日本語"); // japanese
+      stbl.addAndHash("繁體中文"); // chinese
+      stbl.addAndHash("Русский"); // russian
+      stbl.addAndHash("한국어"); // korean
       expect(stbl).to.have.lengthOf(5);
-      expect(stbl.getEntryByIndex(0).string).to.equal("Héllö wørłd!");
-      expect(stbl.getEntryByIndex(1).string).to.equal("日本語");
-      expect(stbl.getEntryByIndex(2).string).to.equal("繁體中文");
-      expect(stbl.getEntryByIndex(3).string).to.equal("Русский");
-      expect(stbl.getEntryByIndex(4).string).to.equal("한국어");
+      expect(stbl.entries[0].string).to.equal("Héllö wørłd!");
+      expect(stbl.entries[1].string).to.equal("日本語");
+      expect(stbl.entries[2].string).to.equal("繁體中文");
+      expect(stbl.entries[3].string).to.equal("Русский");
+      expect(stbl.entries[4].string).to.equal("한국어");
     });
 
     it("should add one entry with the name's 32-bit hash if name given", function() {
       const stbl = StringTableResource.create();
       const string = "This is the string";
       const name = "frankk_TEST:string_Name";
-      stbl.addStringAndHash(string, name);
+      const entry = stbl.addAndHash(string, name);
       expect(stbl).to.have.lengthOf(1);
-      const entry = stbl.getEntryByIndex(0);
       expect(entry.key).to.equal(hashing.fnv32(name));
       expect(entry.string).to.equal(string);
     });
@@ -486,9 +485,9 @@ describe('StringTableResource', function() {
     it("should add the entry with the string's hash if no name given", function() {
       const stbl = StringTableResource.create();
       const string = "This is the string";
-      stbl.addStringAndHash(string);
+      stbl.addAndHash(string);
       expect(stbl).to.have.lengthOf(1);
-      const entry = stbl.getEntryByIndex(0);
+      const entry = stbl.entries[0];
       expect(entry.key).to.equal(hashing.fnv32(string));
       expect(entry.string).to.equal(string);
     });
@@ -496,7 +495,7 @@ describe('StringTableResource', function() {
     it('should uncache the buffer', function() {
       const stbl = getSTBL('SmallSTBL');
       expect(stbl.hasChanged).to.be.false;
-      stbl.addStringAndHash("Hello");
+      stbl.addAndHash("Hello");
       expect(stbl.hasChanged).to.be.true;
     });
   });
@@ -855,35 +854,35 @@ describe('StringTableResource', function() {
   describe('#updateEntryByIndex()', function() {
     it('should update the key', function() {
       const stbl = getSTBL('SmallSTBL');
-      expect(stbl.getEntryByIndex(0).key).to.not.equal(123);
+      expect(stbl.entries[0].key).to.not.equal(123);
       stbl.updateEntryByIndex(0, { key: 123 });
-      expect(stbl.getEntryByIndex(0).key).to.equal(123);
+      expect(stbl.entries[0].key).to.equal(123);
     });
 
     it('should update the string', function() {
       const stbl = getSTBL('SmallSTBL');
-      expect(stbl.getEntryByIndex(0).string).to.not.equal("new text");
+      expect(stbl.entries[0].string).to.not.equal("new text");
       stbl.updateEntryByIndex(0, { string: "new text" });
-      expect(stbl.getEntryByIndex(0).string).to.equal("new text");
+      expect(stbl.entries[0].string).to.equal("new text");
     });
 
     it('should update the key and string', function() {
       const stbl = getSTBL('SmallSTBL');
-      expect(stbl.getEntryByIndex(0).key).to.not.equal(123);
-      expect(stbl.getEntryByIndex(0).string).to.not.equal("new text");
+      expect(stbl.entries[0].key).to.not.equal(123);
+      expect(stbl.entries[0].string).to.not.equal("new text");
 
       stbl.updateEntryByIndex(0, {
         key: 123,
         string: "new text"
       });
 
-      expect(stbl.getEntryByIndex(0).key).to.equal(123);
-      expect(stbl.getEntryByIndex(0).string).to.equal("new text");
+      expect(stbl.entries[0].key).to.equal(123);
+      expect(stbl.entries[0].string).to.equal("new text");
     });
 
     it('should return the original entry', function() {
       const stbl = getSTBL('SmallSTBL');
-      const { key, string } = stbl.getEntryByIndex(0);
+      const { key, string } = stbl.entries[0];
       const previous = stbl.updateEntryByIndex(0, {
         key: 123,
         string: "new text"
@@ -1164,7 +1163,7 @@ describe('StringTableResource', function() {
     it('should increase by 1 after adding', function() {
       const stbl = StringTableResource.create();
       expect(stbl.length).to.equal(0);
-      stbl.addStringAndHash("Hello");
+      stbl.addAndHash("Hello");
       expect(stbl.length).to.equal(1);
     });
 
@@ -1201,7 +1200,7 @@ describe('StringTableResource', function() {
     it('should include new item after adding', function() {
       const stbl = StringTableResource.create();
       expect(stbl.entries[0]).to.be.undefined;
-      stbl.addStringAndHash("Hello");
+      stbl.addAndHash("Hello");
       expect(stbl.entries[0].string).to.equal("Hello");
     });
 
@@ -1381,36 +1380,36 @@ describe('StringTableResource', function() {
       const stbl = StringTableResource.create();
       stbl.add(123, "First");
       stbl.add(456, "Second");
-      const first = stbl.getEntryByIndex(0);
-      const second = stbl.getEntryByIndex(1);
+      const first = stbl.entries[0];
+      const second = stbl.entries[1];
       expect(first.key).to.equal(123);
       expect(second.key).to.equal(456);
     });
 
     it('should return the correct entry after one before it is deleted', function() {
       const stbl = getSTBL('SmallSTBL');
-      const entry1 = stbl.getEntryByIndex(1);
+      const entry1 = stbl.entries[1];
       stbl.removeEntryByIndex(0);
-      const entry2 = stbl.getEntryByIndex(0);
+      const entry2 = stbl.entries[0];
       expectEntriesToBeSame(entry1, entry2);
     });
 
     it('should return the same entry after one is added', function() {
       const stbl = getSTBL('SmallSTBL');
-      const entry1 = stbl.getEntryByIndex(2);
+      const entry1 = stbl.entries[2];
       stbl.add(123, "Test");
-      const entry2 = stbl.getEntryByIndex(2);
+      const entry2 = stbl.entries[2];
       expectEntriesToBeSame(entry1, entry2);
     });
 
     it('should return undefined when index is negative', function() {
       const stbl = getSTBL('SmallSTBL');
-      expect(stbl.getEntryByIndex(-1)).to.be.undefined;
+      expect(stbl.entries[-1]).to.be.undefined;
     });
 
     it('should return undefined when index is out of bounds', function() {
       const stbl = getSTBL('SmallSTBL');
-      expect(stbl.getEntryByIndex(10)).to.be.undefined;
+      expect(stbl.entries[10]).to.be.undefined;
     });
   });
 
@@ -1441,7 +1440,7 @@ describe('StringTableResource', function() {
 
       it('should return array of all case-insentive exact matches when there is more than one', function() {
         const stbl = getSTBL('SmallSTBL');
-        stbl.addStringAndHash('tHiS iS aNoThEr StRiNg!')
+        stbl.addAndHash('tHiS iS aNoThEr StRiNg!')
         const result = stbl.searchByString('this is another string!');
         expect(result).to.be.an('Array').with.lengthOf(2);
         expect(result[0].key).to.equal(0xF098F4B5);
@@ -1692,10 +1691,10 @@ describe('StringTableResource', function() {
         expect(stbl.hasChanged).to.be.true;
       });
   
-      it('should return true after addStringAndHash()', function() {
+      it('should return true after addAndHash()', function() {
         const stbl = getSTBL('SmallSTBL');
         expect(stbl.hasChanged).to.be.false;
-        stbl.addStringAndHash("Test");
+        stbl.addAndHash("Test");
         expect(stbl.hasChanged).to.be.true;
       });
   
@@ -1919,11 +1918,11 @@ describe('StringTableResource', function() {
       context('stbl had entries updated', function() {
         it('should return a binary that can be re-read as a STBL', function() {
           const stbl = getSTBL('SmallSTBL');
-          const originalFirstString = stbl.getEntryByIndex(0).string;
+          const originalFirstString = stbl.entries[0].string;
           stbl.updateEntryByIndex(0, originalFirstString + ".");
           const buffer = stbl.getBuffer();
           const loaded = StringTableResource.from(buffer);
-          expect(loaded.getEntryByIndex(0)).to.not.equal(originalFirstString);
+          expect(loaded.entries[0]).to.not.equal(originalFirstString);
         });
       });
 
