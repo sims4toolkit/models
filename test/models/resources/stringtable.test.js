@@ -1027,7 +1027,38 @@ describe('StringTableResource', function() {
   //#region UPDATE
 
   describe('#sort()', function() {
-    // TODO:
+    it('should sort the stbl in alphabetical order when no function given', function() {
+      const stbl = StringTableResource.create();
+      stbl.addAndHash("b");
+      stbl.addAndHash("c");
+      stbl.addAndHash("a");
+      stbl.addAndHash("d");
+      stbl.sort();
+      expect(stbl.entries[0].string).to.equal("a");
+      expect(stbl.entries[1].string).to.equal("b");
+      expect(stbl.entries[2].string).to.equal("c");
+      expect(stbl.entries[3].string).to.equal("d");
+    });
+
+    it('should sort according to the given function', function() {
+      const stbl = StringTableResource.create();
+      stbl.add(3, "b");
+      stbl.add(1, "c");
+      stbl.add(2, "a");
+      stbl.add(0, "d");
+      stbl.sort((a, b) => a.key - b.key);
+      expect(stbl.entries[0].string).to.equal("d");
+      expect(stbl.entries[1].string).to.equal("c");
+      expect(stbl.entries[2].string).to.equal("a");
+      expect(stbl.entries[3].string).to.equal("b");
+    });
+
+    it('should uncache the buffer', function() {
+      const stbl = getSTBL('SmallSTBL');
+      expect(stbl.hasChanged).to.be.false;
+      stbl.sort();
+      expect(stbl.hasChanged).to.be.true;
+    });
   });
 
   describe('#StringEntry.key', function() {
@@ -1037,6 +1068,13 @@ describe('StringTableResource', function() {
       entry.key = 321;
       expect(entry.key).to.equal(321);
     });
+
+    it('should uncache the buffer', function() {
+      const stbl = getSTBL('SmallSTBL');
+      expect(stbl.hasChanged).to.be.false;
+      stbl.entries[0].key = 123;
+      expect(stbl.hasChanged).to.be.true;
+    });
   });
 
   describe('#StringEntry.string', function() {
@@ -1045,6 +1083,13 @@ describe('StringTableResource', function() {
       const entry = stbl.add(123, "Hi");
       entry.string = "Bye";
       expect(entry.string).to.equal("Bye");
+    });
+
+    it('should uncache the buffer', function() {
+      const stbl = getSTBL('SmallSTBL');
+      expect(stbl.hasChanged).to.be.false;
+      stbl.entries[0].string = "Hello";
+      expect(stbl.hasChanged).to.be.true;
     });
   });
 
