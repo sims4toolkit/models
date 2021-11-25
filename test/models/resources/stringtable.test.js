@@ -768,25 +768,25 @@ describe('StringTableResource', function() {
   describe('#getById()', function() {
     it('should return the correct entry', function() {
       const stbl = StringTableResource.create();
-      const firstId = stbl.add(123, "First");
-      const secondId = stbl.add(456, "Second");
-      const first = stbl.getEntryById(firstId);
-      const second = stbl.getEntryById(secondId);
+      stbl.add(123, "First");
+      stbl.add(456, "Second");
+      const first = stbl.getById(0);
+      const second = stbl.getById(1);
       expect(first.key).to.equal(123);
       expect(second.key).to.equal(456);
     });
 
-    it('should return undefined when the id doesn\'t exist', function() {
+    it("should return undefined when the id doesn't exist", function() {
       const stbl = getSTBL('SmallSTBL');
-      const entry = stbl.getEntryById(3);
+      const entry = stbl.getById(3);
       expect(entry).to.be.undefined;
     });
 
     it('should return undefined when there was an entry with this id, but it was removed', function() {
       const stbl = getSTBL('SmallSTBL');
-      expect(stbl.getEntryById(0)).to.not.be.undefined;
-      stbl.removeEntryById(0);
-      expect(stbl.getEntryById(0)).to.be.undefined;
+      expect(stbl.getById(0)).to.not.be.undefined;
+      stbl.getById(0).delete();
+      expect(stbl.getById(0)).to.be.undefined;
     });
   });
 
@@ -795,8 +795,8 @@ describe('StringTableResource', function() {
       const stbl = StringTableResource.create();
       stbl.add(123, "First");
       stbl.add(456, "Second");
-      const first = stbl.getEntryByKey(123);
-      const second = stbl.getEntryByKey(456);
+      const first = stbl.getByKey(123);
+      const second = stbl.getByKey(456);
       expect(first.string).to.equal("First");
       expect(second.string).to.equal("Second");
     });
@@ -805,15 +805,15 @@ describe('StringTableResource', function() {
       const stbl = StringTableResource.create();
       stbl.add(123, "First");
       stbl.add(123, "Second");
-      const entry = stbl.getEntryByKey(123);
+      const entry = stbl.getByKey(123);
       expect(entry.string).to.equal("First");
     });
 
-    it('should return undefined when the key doesn\'t exist', function() {
+    it("should return undefined when the key doesn't exist", function() {
       const stbl = StringTableResource.create();
       stbl.add(123, "First");
       stbl.add(456, "Second");
-      const entry = stbl.getEntryByKey(789);
+      const entry = stbl.getByKey(789);
       expect(entry).to.be.undefined;
     });
 
@@ -821,9 +821,9 @@ describe('StringTableResource', function() {
       const stbl = StringTableResource.create();
       stbl.add(123, "First");
       stbl.add(456, "Second");
-      expect(stbl.getEntryByKey(123)).to.not.be.undefined;
-      stbl.removeEntryByKey(123);
-      expect(stbl.getEntryByKey(123)).to.be.undefined;
+      expect(stbl.getByKey(123)).to.not.be.undefined;
+      stbl.getByKey(123).delete();
+      expect(stbl.getByKey(123)).to.be.undefined;
     });
   });
 
@@ -839,13 +839,6 @@ describe('StringTableResource', function() {
         expect(stbl).to.have.lengthOf(0);
         stbl.add(1234, 'New string');
         expect(stbl).to.have.lengthOf(1);
-      });
-
-      it('should stay the same after failing to remove', function() {
-        const stbl = StringTableResource.create();
-        expect(stbl).to.have.lengthOf(0);
-        expect(stbl.removeEntryByIndex(0)).to.be.undefined;
-        expect(stbl).to.have.lengthOf(0);
       });
     });
 
@@ -865,15 +858,8 @@ describe('StringTableResource', function() {
       it('should decrease by 1 after removing an entry', function() {
         const stbl = getSTBL('SmallSTBL');
         expect(stbl).to.have.lengthOf(3);
-        stbl.removeEntryById(0);
+        stbl.entries[0].delete();
         expect(stbl).to.have.lengthOf(2);
-      });
-
-      it('should stay the same after failing to remove', function() {
-        const stbl = getSTBL('SmallSTBL');
-        expect(stbl).to.have.lengthOf(3);
-        expect(stbl.removeEntryByIndex(3)).to.be.undefined;
-        expect(stbl).to.have.lengthOf(3);
       });
     });
   });
