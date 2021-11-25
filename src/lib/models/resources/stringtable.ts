@@ -320,7 +320,6 @@ class StringEntry {
     this._key = key;
     this._string = string;
     this._stbl = stbl;
-    stbl.uncache();
   }
 
   /** Removes this entry from the STBL that owns it. */

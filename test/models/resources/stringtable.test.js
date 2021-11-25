@@ -93,6 +93,11 @@ describe('StringTableResource', function() {
       expect(stbl).to.not.be.undefined;
       expect(stbl.length).to.equal(0);
     });
+
+    it('should have hasChanged === true', function() {
+      const stbl = StringTableResource.create();
+      expect(stbl.hasChanged).to.be.true;
+    });
   });
 
   describe('#from()', function() {
@@ -134,6 +139,11 @@ describe('StringTableResource', function() {
         assertEntry(entries[1], 1, 0xF098F4B5, 'This is another string!');
         assertEntry(entries[2], 2, 0x8D6D117D, 'And this, this is a third.');
         assertEntry(entries[3], 3, 0x753A781E, 'Thís iš å strįñg w/ spêçiāl chars.');
+      });
+
+      it('should have hasChanged === false', function() {
+        const stbl = getSTBL('SmallSTBL');
+        expect(stbl.hasChanged).to.be.false;
       });
     });
 
@@ -281,7 +291,7 @@ describe('StringTableResource', function() {
           const empty1 = StringTableResource.create();
           const empty2 = StringTableResource.create();
           const merged = StringTableResource.merge(empty1, empty2);
-          expect(merged).to.be.empty;
+          expect(merged.length).to.equal(0);
         });
 
         it('should not mutate original on add', function() {
@@ -378,7 +388,7 @@ describe('StringTableResource', function() {
     it('should throw if key exceeds 32-bit', function() {
       const stbl = StringTableResource.create();
       expect(stbl).to.have.lengthOf(0);
-      expect(() => stbl.add(0x100000000, "Test")).to.throw("Key must be 32-bit.");
+      expect(() => stbl.add(0x100000000, "Test")).to.throw("Tried to add key that is > 32-bit: 4294967296");
       expect(stbl).to.have.lengthOf(0);
     });
 
@@ -415,15 +425,15 @@ describe('StringTableResource', function() {
       const stbl = getSTBL('SmallSTBL');
       const entry = stbl.add(1234, "New string");
       expect(entry).to.not.be.undefined;
-      assertEntry(entry, 3, 1234, "New string.");
+      assertEntry(entry, 3, 1234, "New string");
     });
 
     it('should not recycle IDs after removing an entry', function() {
       const stbl = getSTBL('SmallSTBL');
       const entry = stbl.entries[2];
-      expect(entry.id).to.equal(3);
+      expect(entry.id).to.equal(2);
       entry.delete();
-      expect(stbl.add(5678, "Another string").id).to.equal(4);
+      expect(stbl.add(5678, "Another string").id).to.equal(3);
     });
 
     it('should uncache the buffer if successful', function() {
@@ -459,7 +469,7 @@ describe('StringTableResource', function() {
   describe('#addAndHash()', function() {
     it("should add the entry correctly when it has non-latin text", function() {
       const stbl = StringTableResource.create();
-      expect(stbl).to.be.empty;
+      expect(stbl).to.have.lengthOf(0);
       expect(stbl.addAndHash("Héllö wørłd!").string).to.equal("Héllö wørłd!");
       expect(stbl.addAndHash("日本語").string).to.equal("日本語");
       expect(stbl.addAndHash("繁體中文").string).to.equal("繁體中文");
@@ -700,7 +710,7 @@ describe('StringTableResource', function() {
       it('should return "Duplicate Keys" error', function() {
         const stbl = StringTableResource.create();
         stbl.add(1234, "String 1");
-        stbl.add(1234, "String 2");
+        stbl.add(1234, "String 2", { allowDuplicateKey: true });
         const errors = stbl.findErrors();
         expect(errors).to.be.an('Array');
         expect(errors).to.have.lengthOf(1);
@@ -743,7 +753,7 @@ describe('StringTableResource', function() {
       it('should return all errors', function() {
         const stbl = StringTableResource.create();
         stbl.add(123, "String 1");
-        stbl.add(123, "String 2");
+        stbl.add(123, "String 2", { allowDuplicateKey: true });
         stbl.add(456, "String 2");
         stbl.add(789, "");
         const errors = stbl.findErrors();
@@ -804,7 +814,7 @@ describe('StringTableResource', function() {
     it('should return the first entry if there is more than one with this key', function() {
       const stbl = StringTableResource.create();
       stbl.add(123, "First");
-      stbl.add(123, "Second");
+      stbl.add(123, "Second", { allowDuplicateKey: true });
       const entry = stbl.getByKey(123);
       expect(entry.string).to.equal("First");
     });
@@ -917,7 +927,7 @@ describe('StringTableResource', function() {
       it('should return array of all case-insentive exact matches when there is more than one', function() {
         const stbl = getSTBL('SmallSTBL');
         stbl.addAndHash('tHiS iS aNoThEr StRiNg!')
-        const result = stbl.search('this is another string!');
+        const result = stbl.search('this is another string!', { caseSensitive: false });
         expect(result).to.be.an('Array').with.lengthOf(2);
         expect(result[0].key).to.equal(0xF098F4B5);
         expect(result[1].key).to.equal(hashing.fnv32('tHiS iS aNoThEr StRiNg!'));
@@ -1030,7 +1040,7 @@ describe('StringTableResource', function() {
       const stbl = getSTBL('SmallSTBL');
       expect(stbl).to.not.be.empty;
       stbl.remove(...stbl.entries);
-      expect(stbl).to.be.empty;
+      expect(stbl).to.have.lengthOf(0);
     });
 
     it('should not remove anything if given an entry with an unknown ID', function() {
@@ -1079,11 +1089,11 @@ describe('StringTableResource', function() {
     it('should have no effect on a cloned table', function() {
       const stbl = getSTBL('SmallSTBL');
       const clone = stbl.clone();
-      expect(stbl.entries[0]).to.not.be.undefined;
-      expect(clone.entries[0]).to.not.be.undefined;
-      stbl.entries[0].delete();
-      expect(stbl.entries[0]).to.be.undefined;
-      expect(clone.entries[0]).to.not.be.undefined;
+      expect(stbl.getById(0)).to.not.be.undefined;
+      expect(clone.getById(0)).to.not.be.undefined;
+      stbl.getById(0).delete();
+      expect(stbl.getById(0)).to.be.undefined;
+      expect(clone.getById(0)).to.not.be.undefined;
     });
   });
 
@@ -1216,6 +1226,11 @@ describe('StringTableResource', function() {
   });
 
   describe('#buffer', function() {
+    it('should not be assignable', function() {
+      const stbl = StringTableResource.create();
+      expect(() => stbl.buffer = undefined).to.throw;
+    })
+
     context('fresh string table', function() {
       context('stbl is empty', function() {
         it('should return a binary that can be re-read as a STBL', function() {
@@ -1254,12 +1269,11 @@ describe('StringTableResource', function() {
           stbl.add(456, "繁體中文"); // chinese
           stbl.add(789, "Русский"); // russian
           stbl.add(246, "한국어"); // korean
-          const buffer = stbl.buffer;
-          const loaded = StringTableResource.from(buffer);
-          expect(loaded.getEntryByKey(123).string).to.equal("日本語");
-          expect(loaded.getEntryByKey(456).string).to.equal("繁體中文");
-          expect(loaded.getEntryByKey(789).string).to.equal("Русский");
-          expect(loaded.getEntryByKey(246).string).to.equal("한국어");
+          const loaded = StringTableResource.from(stbl.buffer);
+          expect(loaded.getByKey(123).string).to.equal("日本語");
+          expect(loaded.getByKey(456).string).to.equal("繁體中文");
+          expect(loaded.getByKey(789).string).to.equal("Русский");
+          expect(loaded.getByKey(246).string).to.equal("한국어");
         });
       });
     });
@@ -1268,15 +1282,13 @@ describe('StringTableResource', function() {
       context('stbl was untouched', function() {
         it('should return a binary that can be re-read as a STBL', function() {
           const stbl = getSTBL('SmallSTBL');
-          const buffer = stbl.buffer;
-          const loaded = StringTableResource.from(buffer);
+          const loaded = StringTableResource.from(stbl.buffer);
           expectSameContents(stbl, loaded);
         });
 
         it('should serialize a stbl with special characters correctly', function() {
           const stbl = getSTBL('SpecialChars');
-          const buffer = stbl.buffer;
-          const loaded = StringTableResource.from(buffer);
+          const loaded = StringTableResource.from(stbl.buffer);
           expectSameContents(stbl, loaded);
         });
       });
@@ -1286,8 +1298,7 @@ describe('StringTableResource', function() {
           const stbl = getSTBL('SmallSTBL');
           const originalLength = stbl.length;
           stbl.add(1234, "Test");
-          const buffer = stbl.buffer;
-          const loaded = StringTableResource.from(buffer);
+          const loaded = StringTableResource.from(stbl.buffer);
           expect(loaded).to.have.lengthOf(originalLength + 1);
         });
 
@@ -1295,10 +1306,9 @@ describe('StringTableResource', function() {
           const stbl = getSTBL('SpecialChars');
           const originalLength = stbl.length;
           stbl.add(1234, "Tést");
-          const buffer = stbl.buffer;
-          const loaded = StringTableResource.from(buffer);
+          const loaded = StringTableResource.from(stbl.buffer);
           expect(loaded).to.have.lengthOf(originalLength + 1);
-          expect(loaded.getEntryByKey(1234).string).to.equal("Tést");
+          expect(loaded.getByKey(1234).string).to.equal("Tést");
         });
       });
 
@@ -1306,9 +1316,8 @@ describe('StringTableResource', function() {
         it('should return a binary that can be re-read as a STBL', function() {
           const stbl = getSTBL('SmallSTBL');
           const originalFirstString = stbl.entries[0].string;
-          stbl.updateEntryByIndex(0, originalFirstString + ".");
-          const buffer = stbl.buffer;
-          const loaded = StringTableResource.from(buffer);
+          stbl.entries[0].string = originalFirstString + ".";
+          const loaded = StringTableResource.from(stbl.buffer);
           expect(loaded.entries[0]).to.not.equal(originalFirstString);
         });
       });
@@ -1317,9 +1326,8 @@ describe('StringTableResource', function() {
         it('should return a binary that can be re-read as a STBL', function() {
           const stbl = getSTBL('SmallSTBL');
           const originalLength = stbl.length;
-          stbl.removeEntryByIndex(0);
-          const buffer = stbl.buffer;
-          const loaded = StringTableResource.from(buffer);
+          stbl.entries[0].delete();
+          const loaded = StringTableResource.from(stbl.buffer);
           expect(loaded).to.have.lengthOf(originalLength - 1);
         });
       });

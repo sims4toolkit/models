@@ -46,7 +46,7 @@ const inst = I({
   ]
 });
 
-console.log(stbl.getEntries());
+// console.log(stbl.entries);
 
 const xml = inst.toXml({ includeDeclaration: true, alphabetize: true });
 
