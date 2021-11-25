@@ -772,7 +772,19 @@ describe('StringTableResource', function() {
   });
 
   describe('#findIndex()', function() {
-    // TODO:
+    it('should return the correct index of an entry that exists', function() {
+      const stbl = getSTBL('SmallSTBL');
+      expect(stbl.findIndex(stbl.entries[0])).to.equal(0);
+      expect(stbl.findIndex(stbl.entries[1])).to.equal(1);
+      expect(stbl.findIndex(stbl.entries[2])).to.equal(2);
+    });
+
+    it('should return -1 if an entry doesn\'t exist', function() {
+      const stbl = getSTBL('SmallSTBL');
+      const clone = stbl.clone();
+      const entry = clone.addAndHash("Hi");
+      expect(stbl.findIndex(entry)).to.equal(-1);
+    });
   });
 
   describe('#getById()', function() {
@@ -981,11 +993,33 @@ describe('StringTableResource', function() {
   });
 
   describe('#StringEntry.key', function() {
-    // TODO:
+    it('should return the correct key for an entry', function() {
+      const stbl = StringTableResource.create();
+      const entry = stbl.add(123, "Hi");
+      expect(entry.key).to.equal(123);
+    });
+
+    it('should return the new string for an entry after being updated', function() {
+      const stbl = StringTableResource.create();
+      const entry = stbl.add(123, "Hi");
+      entry.key = 321;
+      expect(entry.key).to.equal(321);
+    });
   });
 
   describe('#StringEntry.string', function() {
-    // TODO:
+    it('should return the correct string for an entry', function() {
+      const stbl = StringTableResource.create();
+      const entry = stbl.add(123, "Hi");
+      expect(entry.string).to.equal("Hi");
+    });
+
+    it('should return the new string for an entry after being updated', function() {
+      const stbl = StringTableResource.create();
+      const entry = stbl.add(123, "Hi");
+      entry.string = "Bye";
+      expect(entry.string).to.equal("Bye");
+    });
   });
 
   //#endregion READ
@@ -997,11 +1031,21 @@ describe('StringTableResource', function() {
   });
 
   describe('#StringEntry.key', function() {
-    // TODO:
+    it('should change the key value', function() {
+      const stbl = StringTableResource.create();
+      const entry = stbl.add(123, "Hi");
+      entry.key = 321;
+      expect(entry.key).to.equal(321);
+    });
   });
 
   describe('#StringEntry.string', function() {
-    // TODO:
+    it('should change the string value', function() {
+      const stbl = StringTableResource.create();
+      const entry = stbl.add(123, "Hi");
+      entry.string = "Bye";
+      expect(entry.string).to.equal("Bye");
+    });
   });
 
   //#endregion UPDATE
