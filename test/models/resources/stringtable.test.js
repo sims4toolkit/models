@@ -394,7 +394,7 @@ describe('StringTableResource', function() {
       const stbl = StringTableResource.create();
       stbl.add(123, "String");
       expect(stbl).to.have.lengthOf(1);
-      expect(() => stbl.add(123, "Other string", { allowDuplicateKey = true })).to.not.throw();
+      expect(() => stbl.add(123, "Other string", { allowDuplicateKey: true })).to.not.throw();
       expect(stbl).to.have.lengthOf(2);
     });
 
@@ -472,7 +472,7 @@ describe('StringTableResource', function() {
       const stbl = StringTableResource.create();
       const string = "This is the string";
       const name = "frankk_TEST:string_Name";
-      const entry = stbl.addAndHash(string, { toHash = name });
+      const entry = stbl.addAndHash(string, { toHash: name });
       expect(stbl).to.have.lengthOf(1);
       expect(entry.key).to.equal(hashing.fnv32(name));
       expect(entry.string).to.equal(string);
@@ -504,7 +504,7 @@ describe('StringTableResource', function() {
     it('should not throw for a duplicate hash if told to ignore it', function() {
       const stbl = StringTableResource.create();
       stbl.addAndHash("Hi");
-      expect(() => stbl.addAndHash("Hi", { allowDuplicateKey = true })).to.not.throw;
+      expect(() => stbl.addAndHash("Hi", { allowDuplicateKey: true })).to.not.throw;
     }); 
   });
 
@@ -524,7 +524,7 @@ describe('StringTableResource', function() {
           const empty = StringTableResource.create();
           const withEntries = getSTBL('SmallSTBL');
           empty.combine(withEntries);
-          expect(empty.numEntries()).to.not.equal(0);
+          expect(empty.length).to.not.equal(0);
           expectSameContents(empty, withEntries);
         });
 
@@ -585,7 +585,7 @@ describe('StringTableResource', function() {
       context('adding stbl with entries', function() {
         it('should add the entries from the given one', function() {
           const smallStbl = getSTBL('SmallSTBL');
-          const originalEntries = smallStbl.numEntries();
+          const originalEntries = smallStbl.length;
           const other = StringTableResource.create();
           other.add(1234, "Test");
           other.add(5678, "Test 2");
@@ -1541,7 +1541,7 @@ describe('StringTableResource', function() {
 
   //#region Utility
 
-  describe('#numEntries()', function() {
+  describe('#length', function() {
     context('empty STBL', function() {
       it('should be 0', function() {
         const stbl = StringTableResource.create();
@@ -1905,7 +1905,7 @@ describe('StringTableResource', function() {
       context('stbl had entries added', function() {
         it('should return a binary that can be re-read as a STBL', function() {
           const stbl = getSTBL('SmallSTBL');
-          const originalLength = stbl.numEntries();
+          const originalLength = stbl.length;
           stbl.add(1234, "Test");
           const buffer = stbl.getBuffer();
           const loaded = StringTableResource.from(buffer);
@@ -1914,7 +1914,7 @@ describe('StringTableResource', function() {
 
         it('should serialize a stbl with special characters correctly', function() {
           const stbl = getSTBL('SpecialChars');
-          const originalLength = stbl.numEntries();
+          const originalLength = stbl.length;
           stbl.add(1234, "Tést");
           const buffer = stbl.getBuffer();
           const loaded = StringTableResource.from(buffer);
@@ -1937,7 +1937,7 @@ describe('StringTableResource', function() {
       context('stbl had entries removed', function() {
         it('should return a binary that can be re-read as a STBL', function() {
           const stbl = getSTBL('SmallSTBL');
-          const originalLength = stbl.numEntries();
+          const originalLength = stbl.length;
           stbl.removeEntryByIndex(0);
           const buffer = stbl.getBuffer();
           const loaded = StringTableResource.from(buffer);
