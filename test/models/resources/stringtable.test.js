@@ -999,45 +999,62 @@ describe('StringTableResource', function() {
   //#region DELETE
 
   describe('#remove()', function() {
-    it('should return the first entry that matches the predicate', function() {
-      const stbl = getSTBL('SmallSTBL');
-      const entry = stbl.removeEntry(entry => entry.id > 0);
-      assertEntry(entry, 1, 0xF098F4B5, "This is another string!");
-    });
-
-    it('should remove the first entry that matches the predicate', function() {
+    it('should not remove anything when nothing is given', function() {
       const stbl = getSTBL('SmallSTBL');
       expect(stbl).to.have.lengthOf(3);
-      expect(stbl.getEntryById(1)).to.not.be.undefined;
-      stbl.removeEntry(entry => entry.id > 0);
+      stbl.remove();
+      expect(stbl).to.have.lengthOf(3);
+    });
+
+    it('should remove the one entry that is given', function() {
+      const stbl = getSTBL('SmallSTBL');
+      expect(stbl.getById(0)).to.not.be.undefined;
+      expect(stbl).to.have.lengthOf(3);
+      stbl.remove(stbl.getById(1));
+      expect(stbl.getById(1)).to.be.undefined;
       expect(stbl).to.have.lengthOf(2);
-      expect(stbl.getEntryById(1)).to.be.undefined;
     });
 
-    it('should return undefined if no entries were matched', function() {
+    it('should remove all entries that are given', function() {
       const stbl = getSTBL('SmallSTBL');
-      const entry = stbl.removeEntry(entry => entry.id === -1);
-      expect(entry).to.be.undefined;
-    });
-
-    it('should not remove anything if no entries were matched', function() {
-      const stbl = getSTBL('SmallSTBL');
+      expect(stbl.getById(0)).to.not.be.undefined;
+      expect(stbl.getById(1)).to.not.be.undefined;
       expect(stbl).to.have.lengthOf(3);
-      stbl.removeEntry(entry => entry.id === -1);
+      stbl.remove(stbl.getById(0), stbl.getById(1));
+      expect(stbl.getById(0)).to.be.undefined;
+      expect(stbl.getById(1)).to.be.undefined;
+      expect(stbl).to.have.lengthOf(1);
+    });
+
+    it('should remove everything if all entries are passed', function() {
+      const stbl = getSTBL('SmallSTBL');
+      expect(stbl).to.not.be.empty;
+      stbl.remove(...stbl.entries);
+      expect(stbl).to.be.empty;
+    });
+
+    it('should not remove anything if given an entry with an unknown ID', function() {
+      const stbl = getSTBL('SmallSTBL');
+      const clone = stbl.clone();
+      const entry = clone.addAndHash("Hi");
+      expect(stbl).to.have.lengthOf(3);
+      stbl.remove(entry);
       expect(stbl).to.have.lengthOf(3);
     });
 
     it('should uncache the buffer if successful', function() {
       const stbl = getSTBL('SmallSTBL');
       expect(stbl.hasChanged).to.be.false;
-      stbl.removeEntry(entry => entry.id === 1);
+      stbl.remove(stbl.entries[0]);
       expect(stbl.hasChanged).to.be.true;
     });
 
     it('should not uncache the buffer if failed', function() {
       const stbl = getSTBL('SmallSTBL');
+      const clone = stbl.clone();
+      const entry = clone.addAndHash("Hi");
       expect(stbl.hasChanged).to.be.false;
-      stbl.removeEntry(entry => entry.id > 3);
+      stbl.remove(entry);
       expect(stbl.hasChanged).to.be.false;
     });
   });
