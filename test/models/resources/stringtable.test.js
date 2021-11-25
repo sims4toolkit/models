@@ -666,17 +666,18 @@ describe('StringTableResource', function() {
       expect(stbl.entries[0].string).to.equal("Hello");
     });
 
-    it('should not include an item after it\'s removed', function() {
+    it("should not include an item after it's removed", function() {
       const stbl = getSTBL('SmallSTBL');
-      expect(stbl.entries.length).to.equal(3);
-      stbl.removeEntryByIndex(0);
-      expect(stbl.entries.length).to.equal(2);
-      expect(stbl.getEntryById(0)).to.be.undefined;
+      const entry = stbl.getById(0);
+      expect(entry).to.not.be.undefined;
+      entry.delete();
+      expect(stbl.getById(0)).to.be.undefined;
     });
 
     it('should contain an updated item after updating', function() {
       const stbl = getSTBL('SmallSTBL');
-      stbl.updateEntryByIndex(1, { key: 123 });
+      expect(stbl.entries[1].key).to.not.equal(123);
+      stbl.entries[1].key = 123;
       expect(stbl.entries[1].key).to.equal(123);
     });
 
