@@ -1008,7 +1008,7 @@ describe('StringTableResource', function() {
 
     it('should remove the one entry that is given', function() {
       const stbl = getSTBL('SmallSTBL');
-      expect(stbl.getById(0)).to.not.be.undefined;
+      expect(stbl.getById(1)).to.not.be.undefined;
       expect(stbl).to.have.lengthOf(3);
       stbl.remove(stbl.getById(1));
       expect(stbl.getById(1)).to.be.undefined;
@@ -1060,7 +1060,31 @@ describe('StringTableResource', function() {
   });
 
   describe('#StringEntry.delete()', function() {
-    // TODO:
+    it('should remove the entry from the stbl', function() {
+      const stbl = getSTBL('SmallSTBL');
+      expect(stbl.getById(1)).to.not.be.undefined;
+      expect(stbl).to.have.lengthOf(3);
+      stbl.getById(1).delete();
+      expect(stbl.getById(1)).to.be.undefined;
+      expect(stbl).to.have.lengthOf(2);
+    });
+
+    it('should uncache the buffer', function() {
+      const stbl = getSTBL('SmallSTBL');
+      expect(stbl.hasChanged).to.be.false;
+      stbl.entries[0].delete();
+      expect(stbl.hasChanged).to.be.true;
+    });
+
+    it('should have no effect on a cloned table', function() {
+      const stbl = getSTBL('SmallSTBL');
+      const clone = stbl.clone();
+      expect(stbl.entries[0]).to.not.be.undefined;
+      expect(clone.entries[0]).to.not.be.undefined;
+      stbl.entries[0].delete();
+      expect(stbl.entries[0]).to.be.undefined;
+      expect(clone.entries[0]).to.not.be.undefined;
+    });
   });
 
   //#endregion DELETE
