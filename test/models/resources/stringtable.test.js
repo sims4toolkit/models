@@ -646,515 +646,6 @@ describe('StringTableResource', function() {
 
   //#endregion CREATE
 
-  //#region Update
-
-  describe('#updateEntry()', function() {
-    it('should update the key', function() {
-      const stbl = getSTBL('SmallSTBL');
-      expect(stbl.getEntryById(0).key).to.not.equal(123);
-      stbl.updateEntry(entry => entry.id === 0, { key: 123 });
-      expect(stbl.getEntryById(0).key).to.equal(123);
-    });
-
-    it('should update the string', function() {
-      const stbl = getSTBL('SmallSTBL');
-      expect(stbl.getEntryById(0).string).to.not.equal("new text");
-      stbl.updateEntry(entry => entry.id === 0, { string: "new text" });
-      expect(stbl.getEntryById(0).string).to.equal("new text");
-    });
-
-    it('should update the key and string', function() {
-      const stbl = getSTBL('SmallSTBL');
-      expect(stbl.getEntryById(0).key).to.not.equal(123);
-      expect(stbl.getEntryById(0).string).to.not.equal("new text");
-
-      stbl.updateEntry(entry => entry.id === 0, {
-        key: 123,
-        string: "new text"
-      });
-
-      expect(stbl.getEntryById(0).key).to.equal(123);
-      expect(stbl.getEntryById(0).string).to.equal("new text");
-    });
-
-    it('should return the original entry', function() {
-      const stbl = getSTBL('SmallSTBL');
-      const { key, string } = stbl.getEntryById(0);
-      const previous = stbl.updateEntry(entry => entry.id === 0, {
-        key: 123,
-        string: "new text"
-      });
-      expect(previous.key).to.equal(key);
-      expect(previous.string).to.equal(string);
-    });
-
-    it('should return undefined if no entries match the predicate', function() {
-      const stbl = getSTBL('SmallSTBL');
-      const previous = stbl.updateEntry(entry => entry.id === 10, {
-        key: 123,
-        string: "new text"
-      });
-      expect(previous).to.be.undefined;
-    });
-
-    it('should uncache the buffer if successful', function() {
-      const stbl = getSTBL('SmallSTBL');
-      expect(stbl.hasChanged).to.be.false;
-      stbl.updateEntry(entry => entry.id === 0, {
-        key: 123,
-        string: "new text"
-      });
-      expect(stbl.hasChanged).to.be.true;
-    });
-
-    it('should not uncache the buffer if failed', function() {
-      const stbl = getSTBL('SmallSTBL');
-      expect(stbl.hasChanged).to.be.false;
-      stbl.updateEntry(entry => entry.id === 10, {
-        key: 123,
-        string: "new text"
-      });
-      expect(stbl.hasChanged).to.be.false;
-    });
-  });
-
-  describe('#updateEntryById()', function() {
-    it('should update the key', function() {
-      const stbl = getSTBL('SmallSTBL');
-      expect(stbl.getEntryById(0).key).to.not.equal(123);
-      stbl.updateEntryById(0, { key: 123 });
-      expect(stbl.getEntryById(0).key).to.equal(123);
-    });
-
-    it('should update the string', function() {
-      const stbl = getSTBL('SmallSTBL');
-      expect(stbl.getEntryById(0).string).to.not.equal("new text");
-      stbl.updateEntryById(0, { string: "new text" });
-      expect(stbl.getEntryById(0).string).to.equal("new text");
-    });
-
-    it('should update the key and string', function() {
-      const stbl = getSTBL('SmallSTBL');
-      expect(stbl.getEntryById(0).key).to.not.equal(123);
-      expect(stbl.getEntryById(0).string).to.not.equal("new text");
-
-      stbl.updateEntryById(0, {
-        key: 123,
-        string: "new text"
-      });
-
-      expect(stbl.getEntryById(0).key).to.equal(123);
-      expect(stbl.getEntryById(0).string).to.equal("new text");
-    });
-
-    it('should return the original entry', function() {
-      const stbl = getSTBL('SmallSTBL');
-      const { key, string } = stbl.getEntryById(0);
-      const previous = stbl.updateEntryById(0, {
-        key: 123,
-        string: "new text"
-      });
-      expect(previous.key).to.equal(key);
-      expect(previous.string).to.equal(string);
-    });
-
-    it('should return undefined if no entries have the ID', function() {
-      const stbl = getSTBL('SmallSTBL');
-      const previous = stbl.updateEntryById(10, {
-        key: 123,
-        string: "new text"
-      });
-      expect(previous).to.be.undefined;
-    });
-
-    it('should uncache the buffer if successful', function() {
-      const stbl = getSTBL('SmallSTBL');
-      expect(stbl.hasChanged).to.be.false;
-      stbl.updateEntryById(0, {
-        key: 123,
-        string: "new text"
-      });
-      expect(stbl.hasChanged).to.be.true;
-    });
-
-    it('should not uncache the buffer if failed', function() {
-      const stbl = getSTBL('SmallSTBL');
-      expect(stbl.hasChanged).to.be.false;
-      stbl.updateEntryById(10, {
-        key: 123,
-        string: "new text"
-      });
-      expect(stbl.hasChanged).to.be.false;
-    });
-  });
-
-  describe('#updateEntryByKey()', function() {
-    it('should update the key', function() {
-      const stbl = getSTBL('SmallSTBL');
-      expect(stbl.getEntryById(1).key).to.equal(0xF098F4B5);
-      stbl.updateEntryByKey(0xF098F4B5, { key: 123 });
-      expect(stbl.getEntryById(1).key).to.equal(123);
-      expect(stbl.getEntryByKey(0xF098F4B5)).to.be.undefined;
-    });
-
-    it('should update the string', function() {
-      const stbl = getSTBL('SmallSTBL');
-      expect(stbl.getEntryByKey(0xF098F4B5).string).to.not.equal("new text");
-      stbl.updateEntryByKey(0xF098F4B5, { string: "new text" });
-      expect(stbl.getEntryByKey(0xF098F4B5).string).to.equal("new text");
-    });
-
-    it('should update the key and string', function() {
-      const stbl = getSTBL('SmallSTBL');
-      expect(stbl.getEntryById(1).key).to.equal(0xF098F4B5);
-      expect(stbl.getEntryById(1).string).to.not.equal("new text");
-
-      stbl.updateEntryByKey(0xF098F4B5, {
-        key: 123,
-        string: "new text"
-      });
-
-      expect(stbl.getEntryById(1).key).to.equal(123);
-      expect(stbl.getEntryById(1).string).to.equal("new text");
-    });
-
-    it('should return the original entry', function() {
-      const stbl = getSTBL('SmallSTBL');
-      const { key, string } = stbl.getEntryByKey(0xF098F4B5);
-      const previous = stbl.updateEntryByKey(0xF098F4B5, {
-        key: 123,
-        string: "new text"
-      });
-      expect(previous.key).to.equal(key);
-      expect(previous.string).to.equal(string);
-    });
-
-    it('should return undefined if no entries have the key', function() {
-      const stbl = getSTBL('SmallSTBL');
-      const previous = stbl.updateEntryByKey(0x12345678, {
-        key: 123,
-        string: "new text"
-      });
-      expect(previous).to.be.undefined;
-    });
-
-    it('should uncache the buffer if successful', function() {
-      const stbl = getSTBL('SmallSTBL');
-      expect(stbl.hasChanged).to.be.false;
-      stbl.updateEntryByKey(0xF098F4B5, {
-        key: 123,
-        string: "new text"
-      });
-      expect(stbl.hasChanged).to.be.true;
-    });
-
-    it('should not uncache the buffer if failed', function() {
-      const stbl = getSTBL('SmallSTBL');
-      expect(stbl.hasChanged).to.be.false;
-      stbl.updateEntryByKey(0x12345678, {
-        key: 123,
-        string: "new text"
-      });
-      expect(stbl.hasChanged).to.be.false;
-    });
-  });
-
-  describe('#updateEntryByIndex()', function() {
-    it('should update the key', function() {
-      const stbl = getSTBL('SmallSTBL');
-      expect(stbl.entries[0].key).to.not.equal(123);
-      stbl.updateEntryByIndex(0, { key: 123 });
-      expect(stbl.entries[0].key).to.equal(123);
-    });
-
-    it('should update the string', function() {
-      const stbl = getSTBL('SmallSTBL');
-      expect(stbl.entries[0].string).to.not.equal("new text");
-      stbl.updateEntryByIndex(0, { string: "new text" });
-      expect(stbl.entries[0].string).to.equal("new text");
-    });
-
-    it('should update the key and string', function() {
-      const stbl = getSTBL('SmallSTBL');
-      expect(stbl.entries[0].key).to.not.equal(123);
-      expect(stbl.entries[0].string).to.not.equal("new text");
-
-      stbl.updateEntryByIndex(0, {
-        key: 123,
-        string: "new text"
-      });
-
-      expect(stbl.entries[0].key).to.equal(123);
-      expect(stbl.entries[0].string).to.equal("new text");
-    });
-
-    it('should return the original entry', function() {
-      const stbl = getSTBL('SmallSTBL');
-      const { key, string } = stbl.entries[0];
-      const previous = stbl.updateEntryByIndex(0, {
-        key: 123,
-        string: "new text"
-      });
-      expect(previous.key).to.equal(key);
-      expect(previous.string).to.equal(string);
-    });
-
-    it('should return undefined if index is negative', function() {
-      const stbl = getSTBL('SmallSTBL');
-      const previous = stbl.updateEntryByIndex(-1, {
-        key: 123,
-        string: "new text"
-      });
-      expect(previous).to.be.undefined;
-    });
-
-    it('should return undefined if index is out of bounds', function() {
-      const stbl = getSTBL('SmallSTBL');
-      const previous = stbl.updateEntryByIndex(10, {
-        key: 123,
-        string: "new text"
-      });
-      expect(previous).to.be.undefined;
-    });
-
-    it('should uncache the buffer if successful', function() {
-      const stbl = getSTBL('SmallSTBL');
-      expect(stbl.hasChanged).to.be.false;
-      stbl.updateEntryByIndex(0, {
-        key: 123,
-        string: "new text"
-      });
-      expect(stbl.hasChanged).to.be.true;
-    });
-
-    it('should not uncache the buffer if failed', function() {
-      const stbl = getSTBL('SmallSTBL');
-      expect(stbl.hasChanged).to.be.false;
-      stbl.updateEntryByIndex(-1, {
-        key: 123,
-        string: "new text"
-      });
-      expect(stbl.hasChanged).to.be.false;
-    });
-  });
-
-  //#endregion Update
-
-  //#region Remove
-
-  describe('#removeEntry()', function() {
-    it('should return the first entry that matches the predicate', function() {
-      const stbl = getSTBL('SmallSTBL');
-      const entry = stbl.removeEntry(entry => entry.id > 0);
-      assertEntry(entry, 1, 0xF098F4B5, "This is another string!");
-    });
-
-    it('should remove the first entry that matches the predicate', function() {
-      const stbl = getSTBL('SmallSTBL');
-      expect(stbl).to.have.lengthOf(3);
-      expect(stbl.getEntryById(1)).to.not.be.undefined;
-      stbl.removeEntry(entry => entry.id > 0);
-      expect(stbl).to.have.lengthOf(2);
-      expect(stbl.getEntryById(1)).to.be.undefined;
-    });
-
-    it('should return undefined if no entries were matched', function() {
-      const stbl = getSTBL('SmallSTBL');
-      const entry = stbl.removeEntry(entry => entry.id === -1);
-      expect(entry).to.be.undefined;
-    });
-
-    it('should not remove anything if no entries were matched', function() {
-      const stbl = getSTBL('SmallSTBL');
-      expect(stbl).to.have.lengthOf(3);
-      stbl.removeEntry(entry => entry.id === -1);
-      expect(stbl).to.have.lengthOf(3);
-    });
-
-    it('should uncache the buffer if successful', function() {
-      const stbl = getSTBL('SmallSTBL');
-      expect(stbl.hasChanged).to.be.false;
-      stbl.removeEntry(entry => entry.id === 1);
-      expect(stbl.hasChanged).to.be.true;
-    });
-
-    it('should not uncache the buffer if failed', function() {
-      const stbl = getSTBL('SmallSTBL');
-      expect(stbl.hasChanged).to.be.false;
-      stbl.removeEntry(entry => entry.id > 3);
-      expect(stbl.hasChanged).to.be.false;
-    });
-  });
-
-  describe('#removeEntries()', function() {
-    it('should return the entries that match the predicate', function() {
-      const stbl = getSTBL('SmallSTBL');
-      const entries = stbl.removeEntries(entry => entry.id > 0);
-      expect(entries).to.be.an('Array').and.to.have.lengthOf(2);
-      assertEntry(entries[0], 1, 0xF098F4B5, "This is another string!");
-      assertEntry(entries[1], 2, 0x8D6D117D, "And this, this is a third.");
-    });
-
-    it('should remove the entries that match the predicate', function() {
-      const stbl = getSTBL('SmallSTBL');
-      expect(stbl).to.have.lengthOf(3);
-      stbl.removeEntries(entry => entry.id > 0);
-      expect(stbl).to.have.lengthOf(1);
-      expect(stbl.getEntryById(0)).to.not.be.undefined;
-    });
-
-    it('should return an empty array if no entries were matched', function() {
-      const stbl = getSTBL('SmallSTBL');
-      const entries = stbl.removeEntries(entry => entry.id === -1);
-      expect(entries).to.be.an('Array').and.to.be.empty;
-    });
-
-    it('should not remove anything if no entries were matched', function() {
-      const stbl = getSTBL('SmallSTBL');
-      expect(stbl).to.have.lengthOf(3);
-      stbl.removeEntries(entry => entry.id === -1);
-      expect(stbl).to.have.lengthOf(3);
-    });
-
-    it('should uncache the buffer if successful', function() {
-      const stbl = getSTBL('SmallSTBL');
-      expect(stbl.hasChanged).to.be.false;
-      stbl.removeEntries(entry => entry.id === 0);
-      expect(stbl.hasChanged).to.be.true;
-    });
-
-    it('should not uncache the buffer if failed', function() {
-      const stbl = getSTBL('SmallSTBL');
-      expect(stbl.hasChanged).to.be.false;
-      stbl.removeEntries(entry => entry.id === -1);
-      expect(stbl.hasChanged).to.be.false;
-    });
-  });
-
-  describe('#removeEntryById()', function() {
-    it('should remove the entry with the given ID', function() {
-      const stbl = getSTBL('SmallSTBL');
-      expect(stbl).to.have.lengthOf(3);
-      expect(stbl.getEntryById(0)).to.not.be.undefined;
-      stbl.removeEntryById(0);
-      expect(stbl).to.have.lengthOf(2);
-      expect(stbl.getEntryById(0)).to.be.undefined;
-    });
-
-    it('should return the entry with the given ID', function() {
-      const stbl = getSTBL('SmallSTBL');
-      const entry = stbl.removeEntryById(0);
-      assertEntry(entry, 0, 0x7E08629A, "This is a string.");
-    });
-
-    it('should return undefined if no entry has the given ID', function() {
-      const stbl = getSTBL('SmallSTBL');
-      const entry = stbl.removeEntryById(-1);
-      expect(entry).to.be.undefined;
-    });
-
-    it('should uncache the buffer if successful', function() {
-      const stbl = getSTBL('SmallSTBL');
-      expect(stbl.hasChanged).to.be.false;
-      stbl.removeEntryById(0);
-      expect(stbl.hasChanged).to.be.true;
-    });
-
-    it('should not uncache the buffer if failed', function() {
-      const stbl = getSTBL('SmallSTBL');
-      expect(stbl.hasChanged).to.be.false;
-      stbl.removeEntryById(-1);
-      expect(stbl.hasChanged).to.be.false;
-    });
-  });
-
-  describe('#removeEntryByKey()', function() {
-    it('should remove the first entry with the given key', function() {
-      const stbl = getSTBL('SmallSTBL');
-      expect(stbl).to.have.lengthOf(3);
-      expect(stbl.getEntryByKey(0xF098F4B5)).to.not.be.undefined;
-      stbl.removeEntryByKey(0xF098F4B5);
-      expect(stbl).to.have.lengthOf(2);
-      expect(stbl.getEntryByKey(0xF098F4B5)).to.be.undefined;
-    });
-
-    it('should return the first entry with the given key', function() {
-      const stbl = getSTBL('SmallSTBL');
-      const entry = stbl.removeEntryByKey(0xF098F4B5);
-      assertEntry(entry, 1, 0xF098F4B5, "This is another string!");
-    });
-
-    it('should return undefined if no entry has the given key', function() {
-      const stbl = getSTBL('SmallSTBL');
-      const entry = stbl.removeEntryByKey(123);
-      expect(entry).to.be.undefined;
-    });
-
-    it('should not remove anything if no entry has the given key', function() {
-      const stbl = getSTBL('SmallSTBL');
-      expect(stbl).to.have.lengthOf(3);
-      stbl.removeEntryByKey(123);
-      expect(stbl).to.have.lengthOf(3);
-    });
-
-    it('should uncache the buffer if successful', function() {
-      const stbl = getSTBL('SmallSTBL');
-      expect(stbl.hasChanged).to.be.false;
-      stbl.removeEntryByKey(0xF098F4B5);
-      expect(stbl.hasChanged).to.be.true;
-    });
-
-    it('should not uncache the buffer if failed', function() {
-      const stbl = getSTBL('SmallSTBL');
-      expect(stbl.hasChanged).to.be.false;
-      stbl.removeEntryByKey(123);
-      expect(stbl.hasChanged).to.be.false;
-    });
-  });
-
-  describe('#removeEntryByIndex()', function() {
-    it('should return the entry at the given index', function() {
-      const stbl = getSTBL('SmallSTBL');
-      const entry = stbl.removeEntryByIndex(1);
-      assertEntry(entry, 1, 0xF098F4B5, "This is another string!");
-    });
-
-    it('should remove the entry at the given index', function() {
-      const stbl = getSTBL('SmallSTBL');
-      expect(stbl).to.have.lengthOf(3);
-      expect(stbl.getEntryById(1)).to.not.be.undefined;
-      stbl.removeEntryByIndex(1);
-      expect(stbl).to.have.lengthOf(2);
-      expect(stbl.getEntryById(1)).to.be.undefined;
-    });
-
-    it('should return undefined if index is negative', function() {
-      const stbl = getSTBL('SmallSTBL');
-      expect(stbl.removeEntryByIndex(-1)).to.be.undefined;
-    });
-
-    it('should return undefined if index is out of bounds', function() {
-      const stbl = getSTBL('SmallSTBL');
-      expect(stbl.removeEntryByIndex(3)).to.be.undefined;
-    });
-
-    it('should uncache the buffer if successful', function() {
-      const stbl = getSTBL('SmallSTBL');
-      expect(stbl.hasChanged).to.be.false;
-      stbl.removeEntryByIndex(1);
-      expect(stbl.hasChanged).to.be.true;
-    });
-
-    it('should not uncache the buffer if failed', function() {
-      const stbl = getSTBL('SmallSTBL');
-      expect(stbl.hasChanged).to.be.false;
-      stbl.removeEntryByIndex(-1);
-      expect(stbl.hasChanged).to.be.false;
-    });
-  });
-
-  //#endregion Remove
-
   //#region READ
 
   describe('#entries', function() {
@@ -1502,7 +993,83 @@ describe('StringTableResource', function() {
     });
   });
 
+  describe('#StringEntry.key', function() {
+    // TODO:
+  });
+
+  describe('#StringEntry.string', function() {
+    // TODO:
+  });
+
   //#endregion READ
+
+  //#region UPDATE
+
+  describe('#sort()', function() {
+    // TODO:
+  });
+
+  describe('#StringEntry.key', function() {
+    // TODO:
+  });
+
+  describe('#StringEntry.string', function() {
+    // TODO:
+  });
+
+  //#endregion UPDATE
+
+  //#region DELETE
+
+  describe('#remove()', function() {
+    it('should return the first entry that matches the predicate', function() {
+      const stbl = getSTBL('SmallSTBL');
+      const entry = stbl.removeEntry(entry => entry.id > 0);
+      assertEntry(entry, 1, 0xF098F4B5, "This is another string!");
+    });
+
+    it('should remove the first entry that matches the predicate', function() {
+      const stbl = getSTBL('SmallSTBL');
+      expect(stbl).to.have.lengthOf(3);
+      expect(stbl.getEntryById(1)).to.not.be.undefined;
+      stbl.removeEntry(entry => entry.id > 0);
+      expect(stbl).to.have.lengthOf(2);
+      expect(stbl.getEntryById(1)).to.be.undefined;
+    });
+
+    it('should return undefined if no entries were matched', function() {
+      const stbl = getSTBL('SmallSTBL');
+      const entry = stbl.removeEntry(entry => entry.id === -1);
+      expect(entry).to.be.undefined;
+    });
+
+    it('should not remove anything if no entries were matched', function() {
+      const stbl = getSTBL('SmallSTBL');
+      expect(stbl).to.have.lengthOf(3);
+      stbl.removeEntry(entry => entry.id === -1);
+      expect(stbl).to.have.lengthOf(3);
+    });
+
+    it('should uncache the buffer if successful', function() {
+      const stbl = getSTBL('SmallSTBL');
+      expect(stbl.hasChanged).to.be.false;
+      stbl.removeEntry(entry => entry.id === 1);
+      expect(stbl.hasChanged).to.be.true;
+    });
+
+    it('should not uncache the buffer if failed', function() {
+      const stbl = getSTBL('SmallSTBL');
+      expect(stbl.hasChanged).to.be.false;
+      stbl.removeEntry(entry => entry.id > 3);
+      expect(stbl.hasChanged).to.be.false;
+    });
+  });
+
+  describe('#StringEntry.delete()', function() {
+    // TODO:
+  });
+
+  //#endregion DELETE
 
   //#region Serializing
 
