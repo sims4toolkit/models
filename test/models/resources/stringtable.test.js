@@ -356,7 +356,7 @@ describe('StringTableResource', function() {
 
   //#endregion Initialization
 
-  //#region Add
+  //#region CREATE
 
   describe('#add()', function() {
     it('should add the entry correctly to a new STBL', function() {
@@ -644,7 +644,7 @@ describe('StringTableResource', function() {
     });
   });
 
-  //#endregion Add
+  //#endregion CREATE
 
   //#region Update
 
@@ -1155,44 +1155,7 @@ describe('StringTableResource', function() {
 
   //#endregion Remove
 
-  //#region Get
-
-  describe('#length', function() {
-    it('should return the number of entries in a non-empty STBL', function() {
-      const stbl = getSTBL('SmallSTBL');
-      expect(stbl.length).to.equal(3);
-    });
-
-    it('should return 0 for an empty STBL', function() {
-      const stbl = StringTableResource.create();
-      expect(stbl.length).to.equal(0);
-    });
-
-    it('should increase by 1 after adding', function() {
-      const stbl = StringTableResource.create();
-      expect(stbl.length).to.equal(0);
-      stbl.addAndHash("Hello");
-      expect(stbl.length).to.equal(1);
-    });
-
-    it('should decrease by 1 after removing', function() {
-      const stbl = getSTBL('SmallSTBL');
-      expect(stbl.length).to.equal(3);
-      stbl.removeEntryByIndex(0);
-      expect(stbl.length).to.equal(2);
-    });
-
-    it('should stay the same after updating', function() {
-      const stbl = getSTBL('SmallSTBL');
-      expect(stbl.length).to.equal(3);
-      stbl.updateEntryByIndex(0, { key: 123 });
-      expect(stbl.length).to.equal(3);
-    });
-
-    it('should not be assignable', function() {
-      expect(() => stbl.length = 1).to.throw;
-    });
-  });
+  //#region READ
 
   describe('#entries', function() {
     it('should return the entries of a non-empty STBL', function() {
@@ -1231,65 +1194,86 @@ describe('StringTableResource', function() {
     });
   });
 
-  describe('#getEntry()', function() {
-    it('should return the only entry that matches the predicate', function() {
-      const stbl = StringTableResource.create();
-      stbl.add(123, "First");
-      const secondId = stbl.add(456, "Second");
-      const entry = stbl.getEntry(entry => entry.string === "Second");
-      expectEntriesToBeSame(entry, stbl.getEntryById(secondId));
+  describe('#findErrors()', function() {
+    context('stbl has no errors', function() {
+      it('should return an empty array', function() {
+        const stbl = getSTBL('SmallSTBL');
+        const errors = stbl.findErrors();
+        expect(errors).to.be.an('Array');
+        expect(errors).to.be.empty;
+      });
     });
 
-    it('should return the first entry that matches the predicate', function() {
-      const stbl = StringTableResource.create();
-      const firstId = stbl.add(123, "First");
-      stbl.add(456, "Second");
-      const entry = stbl.getEntry(entry => entry.key > 1);
-      expectEntriesToBeSame(entry, stbl.getEntryById(firstId));
+    context('stbl has one error', function() {
+      it('should return "Duplicate Keys" error', function() {
+        const stbl = StringTableResource.create();
+        stbl.add(1234, "String 1");
+        stbl.add(1234, "String 2");
+        const errors = stbl.findErrors();
+        expect(errors).to.be.an('Array');
+        expect(errors).to.have.lengthOf(1);
+        const errorObj = errors[0];
+        expect(errorObj.error).to.equal('Duplicate Keys');
+        expect(errorObj.entries).to.have.lengthOf(2);
+        expect(errorObj.entries[0].string).to.equal("String 1");
+        expect(errorObj.entries[1].string).to.equal("String 2");
+      });
+
+      it('should return "Duplicate Strings" error', function() {
+        const stbl = StringTableResource.create();
+        stbl.add(1234, "String 1");
+        stbl.add(5678, "String 1");
+        const errors = stbl.findErrors();
+        expect(errors).to.be.an('Array');
+        expect(errors).to.have.lengthOf(1);
+        const errorObj = errors[0];
+        expect(errorObj.error).to.equal('Duplicate Strings');
+        expect(errorObj.entries).to.have.lengthOf(2);
+        expect(errorObj.entries[0].key).to.equal(1234);
+        expect(errorObj.entries[1].key).to.equal(5678);
+      });
+
+      it('should return "Empty String" error', function() {
+        const stbl = StringTableResource.create();
+        stbl.add(1234, "String");
+        stbl.add(5678, "");
+        const errors = stbl.findErrors();
+        expect(errors).to.be.an('Array');
+        expect(errors).to.have.lengthOf(1);
+        const errorObj = errors[0];
+        expect(errorObj.error).to.equal('Empty String');
+        expect(errorObj.entries).to.have.lengthOf(1);
+        expect(errorObj.entries[0].key).to.equal(5678);
+      });
     });
 
-    it('should return undefined if none match the predicate', function() {
-      const stbl = StringTableResource.create();
-      stbl.add(123, "First");
-      stbl.add(456, "Second");
-      const entry = stbl.getEntry(entry => entry.key === 789);
-      expect(entry).to.be.undefined;
+    context('stbl has multiple errors', function() {
+      it('should return all errors', function() {
+        const stbl = StringTableResource.create();
+        stbl.add(123, "String 1");
+        stbl.add(123, "String 2");
+        stbl.add(456, "String 2");
+        stbl.add(789, "");
+        const errors = stbl.findErrors();
+        expect(errors).to.be.an('Array');
+        expect(errors).to.have.lengthOf(3);
+        const dupKeyErr = errors.find(e => e.error === 'Duplicate Keys');
+        expect(dupKeyErr.entries[0].string).to.equal("String 1");
+        expect(dupKeyErr.entries[1].string).to.equal("String 2");
+        const dupStrErr = errors.find(e => e.error === 'Duplicate Strings');
+        expect(dupStrErr.entries[0].key).to.equal(123);
+        expect(dupStrErr.entries[1].key).to.equal(456);
+        const empStrErr = errors.find(e => e.error === 'Empty String');
+        expect(empStrErr.entries[0].key).to.equal(789);
+      });
     });
   });
 
-  describe('#entries', function() {
-    it('should return all entries when there is no predicate', function() {
-      const stbl = StringTableResource.create();
-      stbl.add(123, "First");
-      stbl.add(456, "Second");
-      stbl.add(789, "Third");
-      expect(stbl.entries).to.be.an('Array').and.to.have.lengthOf(3);
-    });
-
-    it('should return all entries that match the predicate', function() {
-      const stbl = StringTableResource.create();
-      stbl.add(123, "First");
-      stbl.add(456, "Second");
-      stbl.add(789, "Third");
-      const entries = stbl.getEntries(entry => entry.key >= 456);
-      expect(entries).to.be.an('Array').and.to.have.lengthOf(2);
-      expect(entries[0].string).to.equal("Second");
-      expect(entries[1].string).to.equal("Third");
-    });
-
-    it('should return an empty array if none match the predicate', function() {
-      const stbl = getSTBL('SmallSTBL');
-      const entries = stbl.getEntries(entry => entry.id === 500);
-      expect(entries).to.be.an('Array').and.to.be.empty;
-    });
-
-    it('should return an empty array if the stbl is empty', function() {
-      const stbl = StringTableResource.create();
-      expect(stbl.entries).to.be.an('Array').and.to.be.empty;
-    });
+  describe('#findIndex()', function() {
+    // TODO:
   });
 
-  describe('#getEntryById()', function() {
+  describe('#getById()', function() {
     it('should return the correct entry', function() {
       const stbl = StringTableResource.create();
       const firstId = stbl.add(123, "First");
@@ -1314,7 +1298,7 @@ describe('StringTableResource', function() {
     });
   });
 
-  describe('#getEntryByKey()', function() {
+  describe('#getByKey()', function() {
     it('should return the correct entry', function() {
       const stbl = StringTableResource.create();
       stbl.add(123, "First");
@@ -1351,77 +1335,58 @@ describe('StringTableResource', function() {
     });
   });
 
-  describe('#getEntriesByKey()', function() {
-    it('should return an empty array if there are none with this key', function() {
-      const stbl = StringTableResource.create();
-      stbl.add(123, "First");
-      stbl.add(456, "Second");
-      const entries = stbl.getEntriesByKey(789);
-      expect(entries).to.be.an('Array');
-      expect(entries).to.be.empty;
+  describe('#length', function() {
+    context('empty STBL', function() {
+      it('should be 0', function() {
+        const stbl = StringTableResource.create();
+        expect(stbl).to.have.lengthOf(0);
+      });
+
+      it('should increase by 1 after adding an entry', function() {
+        const stbl = StringTableResource.create();
+        expect(stbl).to.have.lengthOf(0);
+        stbl.add(1234, 'New string');
+        expect(stbl).to.have.lengthOf(1);
+      });
+
+      it('should stay the same after failing to remove', function() {
+        const stbl = StringTableResource.create();
+        expect(stbl).to.have.lengthOf(0);
+        expect(stbl.removeEntryByIndex(0)).to.be.undefined;
+        expect(stbl).to.have.lengthOf(0);
+      });
     });
 
-    it('should return an array with one entry if there is one with this key', function() {
-      const stbl = StringTableResource.create();
-      stbl.add(123, "First");
-      stbl.add(456, "Second");
-      const entries = stbl.getEntriesByKey(123);
-      expect(entries).to.be.an('Array');
-      expect(entries).to.have.lengthOf(1);
-      expect(entries[0].string).to.equal("First");
-    });
+    context('existing STBL with 3 entries', function() {
+      it('should be 3', function() {
+        const stbl = getSTBL('SmallSTBL');
+        expect(stbl).to.have.lengthOf(3);
+      });
 
-    it('should return an array of all entries with this key', function() {
-      const stbl = StringTableResource.create();
-      stbl.add(123, "First");
-      stbl.add(123, "Second");
-      const entries = stbl.getEntriesByKey(123);
-      expect(entries).to.be.an('Array');
-      expect(entries).to.have.lengthOf(2);
-      expect(entries[0].string).to.equal("First");
-      expect(entries[1].string).to.equal("Second");
-    });
-  });
+      it('should increase by 1 after adding an entry', function() {
+        const stbl = getSTBL('SmallSTBL');
+        expect(stbl).to.have.lengthOf(3);
+        stbl.add(1234, 'New string');
+        expect(stbl).to.have.lengthOf(4);
+      });
+  
+      it('should decrease by 1 after removing an entry', function() {
+        const stbl = getSTBL('SmallSTBL');
+        expect(stbl).to.have.lengthOf(3);
+        stbl.removeEntryById(0);
+        expect(stbl).to.have.lengthOf(2);
+      });
 
-  describe('#getEntryByIndex()', function() {
-    it('should return the correct entry', function() {
-      const stbl = StringTableResource.create();
-      stbl.add(123, "First");
-      stbl.add(456, "Second");
-      const first = stbl.entries[0];
-      const second = stbl.entries[1];
-      expect(first.key).to.equal(123);
-      expect(second.key).to.equal(456);
-    });
-
-    it('should return the correct entry after one before it is deleted', function() {
-      const stbl = getSTBL('SmallSTBL');
-      const entry1 = stbl.entries[1];
-      stbl.removeEntryByIndex(0);
-      const entry2 = stbl.entries[0];
-      expectEntriesToBeSame(entry1, entry2);
-    });
-
-    it('should return the same entry after one is added', function() {
-      const stbl = getSTBL('SmallSTBL');
-      const entry1 = stbl.entries[2];
-      stbl.add(123, "Test");
-      const entry2 = stbl.entries[2];
-      expectEntriesToBeSame(entry1, entry2);
-    });
-
-    it('should return undefined when index is negative', function() {
-      const stbl = getSTBL('SmallSTBL');
-      expect(stbl.entries[-1]).to.be.undefined;
-    });
-
-    it('should return undefined when index is out of bounds', function() {
-      const stbl = getSTBL('SmallSTBL');
-      expect(stbl.entries[10]).to.be.undefined;
+      it('should stay the same after failing to remove', function() {
+        const stbl = getSTBL('SmallSTBL');
+        expect(stbl).to.have.lengthOf(3);
+        expect(stbl.removeEntryByIndex(3)).to.be.undefined;
+        expect(stbl).to.have.lengthOf(3);
+      });
     });
   });
 
-  describe('#searchByString()', function() {
+  describe('#search()', function() {
     context('no options are passed', function() {
       it('should return empty array on empty stbl', function() {
         const stbl = StringTableResource.create();
@@ -1537,137 +1502,7 @@ describe('StringTableResource', function() {
     });
   });
 
-  //#endregion Get
-
-  //#region Utility
-
-  describe('#length', function() {
-    context('empty STBL', function() {
-      it('should be 0', function() {
-        const stbl = StringTableResource.create();
-        expect(stbl).to.have.lengthOf(0);
-      });
-
-      it('should increase by 1 after adding an entry', function() {
-        const stbl = StringTableResource.create();
-        expect(stbl).to.have.lengthOf(0);
-        stbl.add(1234, 'New string');
-        expect(stbl).to.have.lengthOf(1);
-      });
-
-      it('should stay the same after failing to remove', function() {
-        const stbl = StringTableResource.create();
-        expect(stbl).to.have.lengthOf(0);
-        expect(stbl.removeEntryByIndex(0)).to.be.undefined;
-        expect(stbl).to.have.lengthOf(0);
-      });
-    });
-
-    context('existing STBL with 3 entries', function() {
-      it('should be 3', function() {
-        const stbl = getSTBL('SmallSTBL');
-        expect(stbl).to.have.lengthOf(3);
-      });
-
-      it('should increase by 1 after adding an entry', function() {
-        const stbl = getSTBL('SmallSTBL');
-        expect(stbl).to.have.lengthOf(3);
-        stbl.add(1234, 'New string');
-        expect(stbl).to.have.lengthOf(4);
-      });
-  
-      it('should decrease by 1 after removing an entry', function() {
-        const stbl = getSTBL('SmallSTBL');
-        expect(stbl).to.have.lengthOf(3);
-        stbl.removeEntryById(0);
-        expect(stbl).to.have.lengthOf(2);
-      });
-
-      it('should stay the same after failing to remove', function() {
-        const stbl = getSTBL('SmallSTBL');
-        expect(stbl).to.have.lengthOf(3);
-        expect(stbl.removeEntryByIndex(3)).to.be.undefined;
-        expect(stbl).to.have.lengthOf(3);
-      });
-    });
-  });
-
-  describe('#findErrors()', function() {
-    context('stbl has no errors', function() {
-      it('should return an empty array', function() {
-        const stbl = getSTBL('SmallSTBL');
-        const errors = stbl.findErrors();
-        expect(errors).to.be.an('Array');
-        expect(errors).to.be.empty;
-      });
-    });
-
-    context('stbl has one error', function() {
-      it('should return "Duplicate Keys" error', function() {
-        const stbl = StringTableResource.create();
-        stbl.add(1234, "String 1");
-        stbl.add(1234, "String 2");
-        const errors = stbl.findErrors();
-        expect(errors).to.be.an('Array');
-        expect(errors).to.have.lengthOf(1);
-        const errorObj = errors[0];
-        expect(errorObj.error).to.equal('Duplicate Keys');
-        expect(errorObj.entries).to.have.lengthOf(2);
-        expect(errorObj.entries[0].string).to.equal("String 1");
-        expect(errorObj.entries[1].string).to.equal("String 2");
-      });
-
-      it('should return "Duplicate Strings" error', function() {
-        const stbl = StringTableResource.create();
-        stbl.add(1234, "String 1");
-        stbl.add(5678, "String 1");
-        const errors = stbl.findErrors();
-        expect(errors).to.be.an('Array');
-        expect(errors).to.have.lengthOf(1);
-        const errorObj = errors[0];
-        expect(errorObj.error).to.equal('Duplicate Strings');
-        expect(errorObj.entries).to.have.lengthOf(2);
-        expect(errorObj.entries[0].key).to.equal(1234);
-        expect(errorObj.entries[1].key).to.equal(5678);
-      });
-
-      it('should return "Empty String" error', function() {
-        const stbl = StringTableResource.create();
-        stbl.add(1234, "String");
-        stbl.add(5678, "");
-        const errors = stbl.findErrors();
-        expect(errors).to.be.an('Array');
-        expect(errors).to.have.lengthOf(1);
-        const errorObj = errors[0];
-        expect(errorObj.error).to.equal('Empty String');
-        expect(errorObj.entries).to.have.lengthOf(1);
-        expect(errorObj.entries[0].key).to.equal(5678);
-      });
-    });
-
-    context('stbl has multiple errors', function() {
-      it('should return all errors', function() {
-        const stbl = StringTableResource.create();
-        stbl.add(123, "String 1");
-        stbl.add(123, "String 2");
-        stbl.add(456, "String 2");
-        stbl.add(789, "");
-        const errors = stbl.findErrors();
-        expect(errors).to.be.an('Array');
-        expect(errors).to.have.lengthOf(3);
-        const dupKeyErr = errors.find(e => e.error === 'Duplicate Keys');
-        expect(dupKeyErr.entries[0].string).to.equal("String 1");
-        expect(dupKeyErr.entries[1].string).to.equal("String 2");
-        const dupStrErr = errors.find(e => e.error === 'Duplicate Strings');
-        expect(dupStrErr.entries[0].key).to.equal(123);
-        expect(dupStrErr.entries[1].key).to.equal(456);
-        const empStrErr = errors.find(e => e.error === 'Empty String');
-        expect(empStrErr.entries[0].key).to.equal(789);
-      });
-    });
-  });
-
-  //#endregion Utility
+  //#endregion READ
 
   //#region Serializing
 
