@@ -459,24 +459,20 @@ describe('StringTableResource', function() {
   describe('#addAndHash()', function() {
     it("should add the entry correctly when it has non-latin text", function() {
       const stbl = StringTableResource.create();
-      stbl.addAndHash("Héllö wørłd!");
-      stbl.addAndHash("日本語"); // japanese
-      stbl.addAndHash("繁體中文"); // chinese
-      stbl.addAndHash("Русский"); // russian
-      stbl.addAndHash("한국어"); // korean
+      expect(stbl).to.be.empty;
+      expect(stbl.addAndHash("Héllö wørłd!").string).to.equal("Héllö wørłd!");
+      expect(stbl.addAndHash("日本語").string).to.equal("日本語");
+      expect(stbl.addAndHash("繁體中文").string).to.equal("繁體中文");
+      expect(stbl.addAndHash("Русский").string).to.equal("Русский");
+      expect(stbl.addAndHash("한국어").string).to.equal("한국어");
       expect(stbl).to.have.lengthOf(5);
-      expect(stbl.entries[0].string).to.equal("Héllö wørłd!");
-      expect(stbl.entries[1].string).to.equal("日本語");
-      expect(stbl.entries[2].string).to.equal("繁體中文");
-      expect(stbl.entries[3].string).to.equal("Русский");
-      expect(stbl.entries[4].string).to.equal("한국어");
     });
 
     it("should add one entry with the name's 32-bit hash if name given", function() {
       const stbl = StringTableResource.create();
       const string = "This is the string";
       const name = "frankk_TEST:string_Name";
-      const entry = stbl.addAndHash(string, name);
+      const entry = stbl.addAndHash(string, { toHash = name });
       expect(stbl).to.have.lengthOf(1);
       expect(entry.key).to.equal(hashing.fnv32(name));
       expect(entry.string).to.equal(string);
@@ -498,6 +494,18 @@ describe('StringTableResource', function() {
       stbl.addAndHash("Hello");
       expect(stbl.hasChanged).to.be.true;
     });
+
+    it('should throw after adding a string with a duplicate hash', function() {
+      const stbl = StringTableResource.create();
+      stbl.addAndHash("Hi");
+      expect(() => stbl.addAndHash("Hi")).to.throw;
+    }); 
+
+    it('should not throw for a duplicate hash if told to ignore it', function() {
+      const stbl = StringTableResource.create();
+      stbl.addAndHash("Hi");
+      expect(() => stbl.addAndHash("Hi", { allowDuplicateKey = true })).to.not.throw;
+    }); 
   });
 
   describe('#combine()', function() {
