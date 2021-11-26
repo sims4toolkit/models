@@ -1,58 +1,127 @@
 const { expect } = require('chai');
 const { inspect } = require('util');
 const { tunables, StringTableResource } = require('../../dst/api');
-const { I, M, T, E, V, U, L, C, getStringNodeFunction } = tunables;
+const { I, M, T, E, V, U, L, C, S, getStringNodeFunction } = tunables;
 
-const stbl = StringTableResource.create();
-const S = getStringNodeFunction(stbl);
+// const stbl = StringTableResource.create();
+// const S = getStringNodeFunction(stbl);
 
-const inst = I({
-  c: "Trait",
-  i: "trait",
-  m: "traits.trait",
-  n: "trait_Example",
-  s: 1234567890,
-  children: [
-    T({
-      name: "first_item",
-      value: true
-    }),
-    T({
-      name: "a",
-      value: 32n
-    }),
-    S({
-      name: "string",
-      string: "Hello world"
-    }),
-    L({
-      name: "some_list",
-      children: [
-        V({ type: "disabled" }),
-        V({ type: "disabled", comment: "This is a disabled variant." }),
-        V({
-          type: "enabled",
-          child: U({
-            name: "enabled",
-            comment: "This is a tuple",
-            children: [
-              E({ name: "species", value: "HUMAN" }),
-              E({ name: "age", value: "ADULT" }),
-            ]
-          })
-        })
-      ]
-    })
-  ]
+
+describe('tunables', function() {
+  describe('#getStringNodeFunction()', function() {
+    it('should add the strings to the string table', function() {
+      const stbl = StringTableResource.create();
+      const S = getStringNodeFunction(stbl);
+
+      L({
+        children: [
+          S({ string: 'First' }),
+          S({ string: 'Second' }),
+          S({ string: 'Third' }),
+        ]
+      });
+
+      expect(stbl).to.have.lengthOf(3);
+      expect(stbl.entries[0].string).to.equal('First');
+      expect(stbl.entries[0].string).to.equal('Second');
+      expect(stbl.entries[0].string).to.equal('Third');
+    });
+
+    it('should hash the string if no alternative is given', function() {
+      // TODO:
+    });
+
+    it('should hash the toHash argument if given', function() {
+      // TODO:
+    });
+
+    it('should return a tunable with a name, value, and comment', function() {
+      // TODO:
+    });
+  });
+
+  describe('#S()', function() {
+    it('should add the strings to the string table', function() {
+      const stbl = StringTableResource.create();
+
+      L({
+        children: [
+          S({ string: 'First', stbl }),
+          S({ string: 'Second', stbl }),
+          S({ string: 'Third', stbl }),
+        ]
+      });
+
+      expect(stbl).to.have.lengthOf(3);
+      expect(stbl.entries[0].string).to.equal('First');
+      expect(stbl.entries[0].string).to.equal('Second');
+      expect(stbl.entries[0].string).to.equal('Third');
+    });
+
+    it('should hash the string if no alternative is given', function() {
+      // TODO:
+    });
+
+    it('should hash the toHash argument if given', function() {
+      // TODO:
+    });
+
+    it('should return a tunable with a name, value, and comment', function() {
+      // TODO:
+    });
+  });
 });
 
-// console.log(stbl.entries);
 
-const xml = inst.toXml({ includeDeclaration: true, alphabetize: true });
 
-it('test', function() {
-  console.log(xml);
-})
+
+// const inst = I({
+//   c: "Trait",
+//   i: "trait",
+//   m: "traits.trait",
+//   n: "trait_Example",
+//   s: 1234567890,
+//   children: [
+//     T({
+//       name: "first_item",
+//       value: true
+//     }),
+//     T({
+//       name: "a",
+//       value: 32n
+//     }),
+//     S({
+//       name: "string",
+//       string: "Hello world"
+//     }),
+//     L({
+//       name: "some_list",
+//       children: [
+//         V({ type: "disabled" }),
+//         V({ type: "disabled", comment: "This is a disabled variant." }),
+//         V({
+//           type: "enabled",
+//           child: U({
+//             name: "enabled",
+//             comment: "This is a tuple",
+//             children: [
+//               E({ name: "species", value: "HUMAN" }),
+//               E({ name: "age", value: "ADULT" }),
+//             ]
+//           })
+//         })
+//       ]
+//     })
+//   ]
+// });
+
+// // console.log(stbl.entries);
+
+// const xml = inst.toXml({ includeDeclaration: true, alphabetize: true });
+
+// it('test', function() {
+//   console.log(xml);
+// })
 
 
 // const { TunableNodes, Hashing, StringTableResource } = require('../../../dst/api');

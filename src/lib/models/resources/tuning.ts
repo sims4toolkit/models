@@ -85,7 +85,7 @@ export default class TuningResource extends Resource {
     return this._dom; // FIXME: parse dom if it doesn't exist
   }
   
-  reloadOnDomUpdate(fn: (dom: TunableNode) => void) {
+  updateDom(fn: (dom: TunableNode) => void) {
     fn(this.getDom());
     this._content = this._dom.toXml();
   }

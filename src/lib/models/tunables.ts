@@ -45,8 +45,9 @@ export abstract class TunableNode {
    * @param xml TODO:
    */
   static fromXml(xml: string): TunableNode {
-    // TODO:
-    return undefined;
+    const dom = parser.parse(xml);
+    console.log(dom);
+    return;
   }
 
   /**
