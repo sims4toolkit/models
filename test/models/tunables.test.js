@@ -10,6 +10,38 @@ const { I, M, T, E, V, U, L, C, S, getStringNodeFunction } = tunables;
 
 
 describe('tunables', function() {
+  describe('#I()', function() {
+    // TODO:
+  });
+
+  describe('#M()', function() {
+    // TODO:
+  });
+
+  describe('#T()', function() {
+    // TODO:
+  });
+
+  describe('#E()', function() {
+    // TODO:
+  });
+
+  describe('#V()', function() {
+    // TODO:
+  });
+
+  describe('#U()', function() {
+    // TODO:
+  });
+
+  describe('#L()', function() {
+    // TODO:
+  });
+
+  describe('#C()', function() {
+    // TODO:
+  });
+
   describe('#S()', function() {
     it('should add the strings to the string table', function() {
       const stbl = StringTableResource.create();
@@ -54,7 +86,7 @@ describe('tunables', function() {
       expect(node.comment).to.equal(string);
     });
   });
-  
+
   describe('#getStringNodeFunction()', function() {
     it('should add the strings to the string table', function() {
       const stbl = StringTableResource.create();
