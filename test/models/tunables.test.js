@@ -1,13 +1,12 @@
 const { expect } = require('chai');
-const { inspect } = require('util');
-const { tunables, hashing, StringTableResource } = require('../../dst/api');
-const { formatStringKey } = require('../../dst/lib/utils/formatting');
+const { tunables, hashing, formatting, StringTableResource } = require('../../dst/api');
+const { formatStringKey } = formatting;
 const { fnv32 } = hashing;
 const { I, M, T, E, V, U, L, C, S, getStringNodeFunction } = tunables;
 
-// const stbl = StringTableResource.create();
-// const S = getStringNodeFunction(stbl);
-
+// TunableNode is just meant to be used as a type, it is not part of the API,
+// so it does not need to be tested. It is an abstract class that is a base for
+// the objects that result from the tunable node functions
 
 describe('tunables', function() {
   describe('#I()', function() {
