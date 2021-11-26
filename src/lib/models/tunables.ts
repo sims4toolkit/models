@@ -223,28 +223,28 @@ abstract class ParentTunable extends TunableNode {
 }
 
 /** Root node for instance tuning (I tag). */
-export class InstanceTuning extends ParentTunable { readonly tag = 'I'; }
+class InstanceTuning extends ParentTunable { readonly tag = 'I'; }
 
 /** Root node for module tuning (M tag). */
-export class ModuleTuning   extends ParentTunable { readonly tag = 'M'; }
+class ModuleTuning   extends ParentTunable { readonly tag = 'M'; }
 
 /** Node for primitive values (T tag). */
-export class Tunable        extends ValueTunable  { readonly tag = 'T'; }
+class Tunable        extends ValueTunable  { readonly tag = 'T'; }
 
 /** Node for enum values (E tag). */
-export class TunableEnum    extends ValueTunable  { readonly tag = 'E'; }
+class TunableEnum    extends ValueTunable  { readonly tag = 'E'; }
 
 /** Node for variants (V tag). */
-export class TunableVariant extends ParentTunable { readonly tag = 'V'; }
+class TunableVariant extends ParentTunable { readonly tag = 'V'; }
 
 /** Node for tuples (U tag). */
-export class TunableTuple   extends ParentTunable { readonly tag = 'U'; }
+class TunableTuple   extends ParentTunable { readonly tag = 'U'; }
 
 /** Node for lists (L tag). */
-export class TunableList    extends ParentTunable { readonly tag = 'L'; }
+class TunableList    extends ParentTunable { readonly tag = 'L'; }
 
 /** Node for classes (C tag). */
-export class TunableClass   extends ParentTunable { readonly tag = 'C'; }
+class TunableClass   extends ParentTunable { readonly tag = 'C'; }
 
 //#endregion Types & Classes
 
