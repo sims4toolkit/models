@@ -10,6 +10,51 @@ const { I, M, T, E, V, U, L, C, S, getStringNodeFunction } = tunables;
 
 
 describe('tunables', function() {
+  describe('#S()', function() {
+    it('should add the strings to the string table', function() {
+      const stbl = StringTableResource.create();
+
+      L({
+        children: [
+          S({ string: 'First', stbl }),
+          S({ string: 'Second', stbl }),
+          S({ string: 'Third', stbl }),
+        ]
+      });
+
+      expect(stbl).to.have.lengthOf(3);
+      expect(stbl.entries[0].string).to.equal('First');
+      expect(stbl.entries[1].string).to.equal('Second');
+      expect(stbl.entries[2].string).to.equal('Third');
+    });
+
+    it('should hash the string if no alternative is given', function() {
+      const stbl = StringTableResource.create();
+      const string = "Some String";
+      S({ string, stbl });
+      expect(stbl.entries[0].key).to.equal(fnv32(string));
+    });
+
+    it('should hash the toHash argument if given', function() {
+      const stbl = StringTableResource.create();
+      const string = "Some String";
+      const toHash = "Something else to hash";
+      S({ string, toHash, stbl });
+      expect(stbl.entries[0].key).to.equal(fnv32(toHash));
+    });
+
+    it('should return a tunable with a name, value, and comment', function() {
+      const stbl = StringTableResource.create();
+      const name = "tunable_name";
+      const string = "Something";
+      const node = S({ name, string, stbl });
+      expect(node.attributes.n).to.equal(name);
+      const expectedValue = formatStringKey(fnv32(string));
+      expect(node.value).to.equal(expectedValue);
+      expect(node.comment).to.equal(string);
+    });
+  });
+  
   describe('#getStringNodeFunction()', function() {
     it('should add the strings to the string table', function() {
       const stbl = StringTableResource.create();
@@ -52,51 +97,6 @@ describe('tunables', function() {
       const name = "tunable_name";
       const string = "Something";
       const node = S({ name, string });
-      expect(node.attributes.n).to.equal(name);
-      const expectedValue = formatStringKey(fnv32(string));
-      expect(node.value).to.equal(expectedValue);
-      expect(node.comment).to.equal(string);
-    });
-  });
-
-  describe('#S()', function() {
-    it('should add the strings to the string table', function() {
-      const stbl = StringTableResource.create();
-
-      L({
-        children: [
-          S({ string: 'First', stbl }),
-          S({ string: 'Second', stbl }),
-          S({ string: 'Third', stbl }),
-        ]
-      });
-
-      expect(stbl).to.have.lengthOf(3);
-      expect(stbl.entries[0].string).to.equal('First');
-      expect(stbl.entries[1].string).to.equal('Second');
-      expect(stbl.entries[2].string).to.equal('Third');
-    });
-
-    it('should hash the string if no alternative is given', function() {
-      const stbl = StringTableResource.create();
-      const string = "Some String";
-      S({ string, stbl });
-      expect(stbl.entries[0].key).to.equal(fnv32(string));
-    });
-
-    it('should hash the toHash argument if given', function() {
-      const stbl = StringTableResource.create();
-      const string = "Some String";
-      const toHash = "Something else to hash";
-      S({ string, toHash, stbl });
-      expect(stbl.entries[0].key).to.equal(fnv32(toHash));
-    });
-
-    it('should return a tunable with a name, value, and comment', function() {
-      const stbl = StringTableResource.create();
-      const name = "tunable_name";
-      const string = "Something";
-      const node = S({ name, string, stbl });
       expect(node.attributes.n).to.equal(name);
       const expectedValue = formatStringKey(fnv32(string));
       expect(node.value).to.equal(expectedValue);
