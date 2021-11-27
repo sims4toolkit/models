@@ -220,10 +220,48 @@ export abstract class TunableNode {
   //#region Update
 
   /**
-   * TODO:
+   * Calls the `sort()` method on this node and all of its descendants.
+   * 
+   * @param compareFn Function used to determine the order of the elements. It
+   * is expected to return a negative value if first argument is less than
+   * second argument, zero if they're equal and a positive value otherwise. If
+   * omitted, the elements are sorted in ascending, ASCII character order.
+   * [Copied from `Array.sort()`'s documentation]
    */
-  sort(compareFn: (a: TunableNode, b: TunableNode) => number) {
-    // TODO:
+  deepSort(compareFn?: (a: TunableNode, b: TunableNode) => number) {
+    this.sort(compareFn);
+    this.children.forEach(child => child.deepSort());
+  }
+
+  /**
+   * Sorts the children of this node using the provided function. If no function
+   * is given, they are sorted in ascending order by their name. Children
+   * without names will retain their order relative to one another and will
+   * appear at the end.
+   * 
+   * Note that this method does NOT recursively sort the inner contents of
+   * children - to do so, use the `deepSort()` method.
+   * 
+   * @param compareFn Function used to determine the order of the elements. It
+   * is expected to return a negative value if first argument is less than
+   * second argument, zero if they're equal and a positive value otherwise. If
+   * omitted, the elements are sorted in ascending, ASCII character order.
+   * [Copied from `Array.sort()`'s documentation]
+   */
+  sort(compareFn?: (a: TunableNode, b: TunableNode) => number) {
+    this.children.sort(compareFn || ((a, b) => {
+      const aName = a.attributes.n;
+      const bName = b.attributes.n;
+      if (aName) {
+        if (bName) {
+          if (aName < bName) return -1;
+          if (aName > bName) return 1;
+          return 0;
+        }
+        return -1;
+      }
+      return bName ? 1 : 0;
+    }));
   }
 
   //#endregion Update
