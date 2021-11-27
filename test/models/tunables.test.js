@@ -360,7 +360,7 @@ describe('tunables', function() {
     });
   });
 
-  describe('#fromXml()', function() {
+  describe('#parseNode()', function() {
     // TODO:
   });
 });
