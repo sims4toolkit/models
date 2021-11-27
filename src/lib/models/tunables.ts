@@ -27,6 +27,8 @@ export abstract class TunableNode {
   value?: any;
   comment?: string;
 
+  //#region Initialization
+
   constructor({ attributes = {}, value, children = [], comment }: {
     attributes?: TunableAttributes;
     children?: TunableNode[];
@@ -47,7 +49,39 @@ export abstract class TunableNode {
   static fromXml(xml: string): TunableNode {
     const dom = parser.parse(xml);
     console.log(dom);
-    return;
+  }
+
+  /**
+   * Returns a deep copy of this node.
+   */
+  clone(): TunableNode {
+    // TODO:
+  }
+
+  //#endregion Initialization
+
+  //#region Create
+
+  /**
+   * TODO:
+   * 
+   * @param child TODO:
+   */
+  add(child: TunableNode) {
+    // TODO:
+  }
+
+  //#endregion Create
+
+  //#region Read
+
+  /**
+   * TODO:
+   * 
+   * @param child TODO:
+   */
+  findIndex(child: TunableNode): number {
+    // TODO:
   }
 
   /**
@@ -134,6 +168,52 @@ export abstract class TunableNode {
   }
 
   /**
+   * TODO:
+   * 
+   * Arguments
+   * - `attributes`: TODO:
+   * - `comment`: TODO:
+   * - `recursive`: TODO:
+   * - `tag`: TODO:
+   * - `value`: TODO:
+   * 
+   * @param param0 TODO:
+   */
+  search({ attributes, comment, recursive = false, tag, value }: {
+    attributes?: TunableAttributes;
+    comment?: string;
+    recursive?: boolean;
+    tag?: Tag;
+    value?: string;
+  } = {}): TunableNode[] {
+    // TODO:
+  }
+
+  //#endregion Read
+
+  //#region Delete
+
+  /**
+   * TODO:
+   * 
+   * @param child TODO:
+   */
+  remove(child: TunableNode) {
+    // TODO:
+  }
+
+  /**
+   * TODO:
+   * 
+   * @param index TODO:
+   */
+  removeByIndex(index: number): TunableNode {
+    // TODO:
+  }
+
+  //#endregion Delete
+
+  /**
    * Finds the first child of this node that has the given tag and attributes.
    * Neither argument is required - if one is left out, the first child matching
    * the other will be returned. If neither argument is supplied, the first 
@@ -157,15 +237,6 @@ export abstract class TunableNode {
   }
 
   /**
-   * Returns the child at the given index.
-   * 
-   * @param index Index of child to get
-   */
-  getChildByIndex(index: number): TunableNode {
-    return this.children[index];
-  }
-
-  /**
    * Adds a child to this node and returns its index.
    * 
    * @param child Child node to add
@@ -173,21 +244,6 @@ export abstract class TunableNode {
   addChild(child: TunableNode): number {
     this.children.push(child);
     return this.children.length - 1;
-  }
-
-  removeChild({ tag, attributes }: { tag?: Tag; attributes?: TunableAttributes; } = {}): TunableNode {
-    // TODO:
-    return;
-  }
-
-  removeChildByIndex(index: number): TunableNode {
-    // TODO:
-    return;
-  }
-
-  removeComment(): string {
-    // TODO:
-    return;
   }
 }
 

@@ -9,6 +9,25 @@ export default class TuningResource extends Resource {
   private _content?: string;
   private _dom?: TunableNode;
 
+  /** Returns the XML content of this tuning resource. */
+  get content(): string {
+    if (this._content === undefined) this._content = this._dom.toXml();
+    return this._content;
+  }
+
+  /** Sets the content of this resource, resets the DOM, and uncaches it. */
+  set content(content: string) {
+    this._content = content;
+    this._dom = undefined;
+    this.uncache();
+  }
+
+  /** Returns the DOM of this tuning resource. */
+  get dom(): TunableNode {
+    if (this._dom === undefined) this._dom = TunableNode.fromXml(this._content);
+    return this._dom;
+  }
+
   //#region Initialization
 
   private constructor(content: string, buffer?: Buffer) {
