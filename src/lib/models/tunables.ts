@@ -185,37 +185,34 @@ export abstract class TunableNode {
   }
 
   /**
-   * TODO:
+   * Finds all children of this node that satisfy all of the search criteria.
+   * This is meant to be a convenient way to find a specific child - if you need
+   * a more refined / specific search, use `this.children.filter()`.
    * 
    * Arguments
-   * - `attributes`: TODO:
-   * - `comment`: TODO:
-   * - `recursive`: TODO:
-   * - `tag`: TODO:
-   * - `value`: TODO:
+   * - `tag`: Tag that child must have.
+   * - `attributes`: Attribute(s) that child must have.
+   * - `value`: Value that child must have.
+   * - `comment`: Comment that child must have (exact match).
    * 
-   * @param param0 TODO:
+   * @param criteria TODO:
    */
-  search({ attributes, comment, recursive = false, tag, value }: {
+  search({ tag, attributes, value, comment }: {
+    tag?: Tag;
     attributes?: TunableAttributes;
+    value?: string;
     comment?: string;
     recursive?: boolean;
-    tag?: Tag;
-    value?: string;
-  } = {}): { node: TunableNode; index: number; }[] {
-    const result: { node: TunableNode; index: number; }[] = [];
-
-    this.children.forEach(child => {
-      if (attributes) {
-        // TODO:
-      }
-
-      if ((comment != undefined) && child.comment !== comment) return;
-      if ((value != undefined) && child.value !== value) return;
-      if ((tag != undefined) && child.tag !== tag) return;
+  } = {}): TunableNode[] {
+    return this.children.filter(child => {
+      if (tag && child.tag !== tag) return false;
+      if (value && child.value !== value) return false;
+      if (comment && child.comment !== comment) return false;
+      if (attributes)
+        for (const key in attributes)
+          if (this.attributes[key] !== attributes[key]) return false;
+      return true;
     });
-
-    return result;
   }
 
   //#endregion Read
@@ -234,40 +231,32 @@ export abstract class TunableNode {
   //#region Delete
 
   /**
+   * Removes the given children from this node. Reference equality is used to
+   * determine which children should be removed, so ensure you are passing in
+   * objects that actually appear in this node.
+   * 
+   * @param children Children to remove
+   */
+  remove(...children: TunableNode[]) {
+    children.forEach(child => {
+      const index = this.children.findIndex(c => c === child);
+      if (index !== -1) this.removeAt(index);
+    });
+  }
+
+  /**
    * Removes children from this node using their index. If the count is left
    * out, only one child is removed. Shortcut for `this.children.splice()`.
    * 
    * @param index Index of child(ren) to remove
    * @param count Number of children to remove
+   * @returns The children that were removed
    */
   removeAt(index: number, count: number = 1): TunableNode[] {
     return this.children?.splice(index, count);
   }
 
   //#endregion Delete
-
-  /**
-   * Finds the first child of this node that has the given tag and attributes.
-   * Neither argument is required - if one is left out, the first child matching
-   * the other will be returned. If neither argument is supplied, the first 
-   * child will be returned. If no children match the arguments or this node
-   * does not have any children, `undefined` is returned.
-   * 
-   * Arguments
-   * - `tag`: The tag that the child must have
-   * - `attrs`: The attribute values that the child must have
-   * 
-   * @param args Object containing arguments
-   */
-  getChild({ tag, attributes }: { tag?: Tag; attributes?: TunableAttributes; } = {}): TunableNode {
-    return this.children?.find(child => {
-      if (tag && (child.tag !== tag)) return false;
-      if (!attributes) return true;
-      for (const key in attributes) 
-        if (child.attributes[key] !== attributes[key]) return false;
-      return true;
-    });
-  }
 }
 
 abstract class ValueTunable extends TunableNode {
