@@ -60,7 +60,7 @@ export default class TuningResource extends Resource {
     return new TuningResource(buffer.toString(encoding), buffer);
   }
 
-  static fromString(content: string): TuningResource {
+  static fromXml(content: string): TuningResource {
     return new TuningResource(content);
   }
 

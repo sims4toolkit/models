@@ -51,11 +51,24 @@ export abstract class TunableNode {
     console.log(dom);
   }
 
-  /**
-   * Returns a deep copy of this node.
-   */
-  clone(): TunableNode {
-    // TODO:
+  /** Returns a deep copy of this node. */
+  abstract clone(): TunableNode;
+
+  /** Provides arguments needed for cloning. */
+  protected _internalClone(): ({
+    tag: Tag;
+    attributes: TunableAttributes;
+    children: TunableNode[];
+    value: any;
+    comment: string;
+  }) {
+    return {
+      tag: this.tag,
+      attributes: Object.assign({}, this.attributes),
+      children: this.children.map(child => child.clone()),
+      value: this.value,
+      comment: this.comment
+    };
   }
 
   //#endregion Initialization
@@ -63,26 +76,30 @@ export abstract class TunableNode {
   //#region Create
 
   /**
-   * TODO:
+   * Adds the given nodes as children of this one. Beware that the children that
+   * are added will be the same references that are provided, so mutating any
+   * of them will result in mutating the children of this node.
    * 
-   * @param child TODO:
+   * @param children List of children to add
    */
-  add(child: TunableNode) {
-    // TODO:
+  add(...children: TunableNode[]) {
+    this.children.push(...children);
+  }
+
+  /**
+   * Clones the given nodes before adding them as children to this one. This
+   * makes it easy to share children between nodes without worrying about what
+   * happens when you mutate them, since the references will not be the same.
+   * 
+   * @param children List of children to clone and add
+   */
+  addClones(...children: TunableNode[]) {
+    return this.add(...children.map(child => child.clone()));
   }
 
   //#endregion Create
 
   //#region Read
-
-  /**
-   * TODO:
-   * 
-   * @param child TODO:
-   */
-  findIndex(child: TunableNode): number {
-    // TODO:
-  }
 
   /**
    * Returns an XML string representation of this node and all of its children
@@ -185,30 +202,46 @@ export abstract class TunableNode {
     recursive?: boolean;
     tag?: Tag;
     value?: string;
-  } = {}): TunableNode[] {
-    // TODO:
+  } = {}): { node: TunableNode; index: number; }[] {
+    const result: { node: TunableNode; index: number; }[] = [];
+
+    this.children.forEach(child => {
+      if (attributes) {
+        // TODO:
+      }
+
+      if ((comment != undefined) && child.comment !== comment) return;
+      if ((value != undefined) && child.value !== value) return;
+      if ((tag != undefined) && child.tag !== tag) return;
+    });
+
+    return result;
   }
 
   //#endregion Read
 
-  //#region Delete
+  //#region Update
 
   /**
    * TODO:
-   * 
-   * @param child TODO:
    */
-  remove(child: TunableNode) {
+  sort(compareFn: (a: TunableNode, b: TunableNode) => number) {
     // TODO:
   }
 
+  //#endregion Update
+
+  //#region Delete
+
   /**
-   * TODO:
+   * Removes children from this node using their index. If the count is left
+   * out, only one child is removed. Shortcut for `this.children.splice()`.
    * 
-   * @param index TODO:
+   * @param index Index of child(ren) to remove
+   * @param count Number of children to remove
    */
-  removeByIndex(index: number): TunableNode {
-    // TODO:
+  removeAt(index: number, count: number = 1): TunableNode[] {
+    return this.children?.splice(index, count);
   }
 
   //#endregion Delete
@@ -235,16 +268,6 @@ export abstract class TunableNode {
       return true;
     });
   }
-
-  /**
-   * Adds a child to this node and returns its index.
-   * 
-   * @param child Child node to add
-   */
-  addChild(child: TunableNode): number {
-    this.children.push(child);
-    return this.children.length - 1;
-  }
 }
 
 abstract class ValueTunable extends TunableNode {
@@ -268,28 +291,76 @@ abstract class ParentTunable extends TunableNode {
 }
 
 /** Root node for instance tuning (I tag). */
-class InstanceTuning extends ParentTunable { readonly tag = 'I'; }
+class InstanceTuning extends ParentTunable {
+  readonly tag = 'I';
+
+  clone(): InstanceTuning {
+    return new InstanceTuning(this._internalClone());
+  }
+}
 
 /** Root node for module tuning (M tag). */
-class ModuleTuning   extends ParentTunable { readonly tag = 'M'; }
+class ModuleTuning extends ParentTunable {
+  readonly tag = 'M';
+
+  clone(): ModuleTuning {
+    return new ModuleTuning(this._internalClone());
+  }
+}
 
 /** Node for primitive values (T tag). */
-class Tunable        extends ValueTunable  { readonly tag = 'T'; }
+class Tunable extends ValueTunable {
+  readonly tag = 'T';
+
+  clone(): Tunable {
+    return new Tunable(this._internalClone());
+  }
+}
 
 /** Node for enum values (E tag). */
-class TunableEnum    extends ValueTunable  { readonly tag = 'E'; }
+class TunableEnum extends ValueTunable {
+  readonly tag = 'E';
+
+  clone(): TunableEnum {
+    return new TunableEnum(this._internalClone());
+  }
+}
 
 /** Node for variants (V tag). */
-class TunableVariant extends ParentTunable { readonly tag = 'V'; }
+class TunableVariant extends ParentTunable {
+  readonly tag = 'V';
+
+  clone(): TunableVariant {
+    return new TunableVariant(this._internalClone());
+  }
+}
 
 /** Node for tuples (U tag). */
-class TunableTuple   extends ParentTunable { readonly tag = 'U'; }
+class TunableTuple extends ParentTunable {
+  readonly tag = 'U';
+
+  clone(): TunableTuple {
+    return new TunableTuple(this._internalClone());
+  }
+}
 
 /** Node for lists (L tag). */
-class TunableList    extends ParentTunable { readonly tag = 'L'; }
+class TunableList extends ParentTunable {
+  readonly tag = 'L';
+
+  clone(): TunableList {
+    return new TunableList(this._internalClone());
+  }
+}
 
 /** Node for classes (C tag). */
-class TunableClass   extends ParentTunable { readonly tag = 'C'; }
+class TunableClass extends ParentTunable {
+  readonly tag = 'C';
+
+  clone(): TunableClass {
+    return new TunableClass(this._internalClone());
+  }
+}
 
 //#endregion Types & Classes
 
