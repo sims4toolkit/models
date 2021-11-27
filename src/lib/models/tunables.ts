@@ -185,17 +185,6 @@ export abstract class TunableNode {
     return;
   }
 
-  updateValue(value: any): any {
-    // TODO:
-    this.value = value;
-    return;
-  }
-
-  updateComment(comment: string): string {
-    // TODO:
-    return;
-  }
-
   removeComment(): string {
     // TODO:
     return;
@@ -319,7 +308,7 @@ export function T({ name, ev, value, comment }: {
   ev?: string | number | bigint;
   value?: any;
   comment?: string;
-}): Tunable {
+} = {}): Tunable {
   const attributes: TunableAttributes = {};
   if (name !== undefined) attributes.n = name;
   if (ev !== undefined) attributes.ev = formatValue(ev);
@@ -340,7 +329,7 @@ export function E({ name, value, comment }: {
   name?: string;
   value?: string;
   comment?: string;
-}): TunableEnum {
+} = {}): TunableEnum {
   const attributes: TunableAttributes = {};
   if (name !== undefined) attributes.n = name;
   return new TunableEnum({ attributes, value, comment });
@@ -360,7 +349,7 @@ export function L({ name, children, comment }: {
   name?: string;
   children?: TunableNode[];
   comment?: string;
-}): TunableList {
+} = {}): TunableList {
   const attributes: TunableAttributes = {};
   if (name !== undefined) attributes.n = name;
   return new TunableList({ attributes, children, comment });
@@ -380,7 +369,7 @@ export function U({ name, children, comment }: {
   name?: string;
   children?: TunableNode[];
   comment?: string;
-}): TunableTuple {
+} = {}): TunableTuple {
   const attributes: TunableAttributes = {};
   if (name !== undefined) attributes.n = name;
   return new TunableTuple({ attributes, children, comment });
@@ -399,10 +388,10 @@ export function U({ name, children, comment }: {
  */
 export function V({ name, type, child, comment }: {
   name?: string;
-  type: string;
+  type?: string;
   child?: TunableNode;
   comment?: string;
-}): TunableVariant {
+} = {}): TunableVariant {
   const children: TunableNode[] = child ? [child] : undefined;
   const attributes: TunableAttributes = {};
   if (name !== undefined) attributes.n = name;

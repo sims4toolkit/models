@@ -10,6 +10,11 @@ const { I, M, T, E, V, U, L, C, S, getStringNodeFunction } = tunables;
 
 describe('tunables', function() {
   describe('#I()', function() {
+    it('should create a node with the "I" tag', function() {
+      const node = I({ n: "name", c: "class", i: "type", m: "path", s: 12345 });
+      expect(node.tag).to.equal('I');
+    });
+
     it('should create a node with the same attributes', function() {
       // TODO:
     });
@@ -38,6 +43,11 @@ describe('tunables', function() {
   });
 
   describe('#M()', function() {
+    it('should create a node with the "M" tag', function() {
+      const node = M({ n: "name", s: 12345 });
+      expect(node.tag).to.equal('M');
+    });
+
     it('should create a node with the same attributes', function() {
       // TODO:
     });
@@ -66,6 +76,11 @@ describe('tunables', function() {
   });
 
   describe('#T()', function() {
+    it('should create a node with the "T" tag', function() {
+      const node = T();
+      expect(node.tag).to.equal('T');
+    });
+
     it('should create a node with the given name', function() {
       // TODO:
     });
@@ -94,6 +109,11 @@ describe('tunables', function() {
   });
 
   describe('#E()', function() {
+    it('should create a node with the "E" tag', function() {
+      const node = E();
+      expect(node.tag).to.equal('E');
+    });
+
     it('should create a node with the given name', function() {
       // TODO:
     });
@@ -118,6 +138,11 @@ describe('tunables', function() {
   });
 
   describe('#V()', function() {
+    it('should create a node with the "V" tag', function() {
+      const node = V();
+      expect(node.tag).to.equal('V');
+    });
+
     it('should create a node with the given name', function() {
       // TODO:
     });
@@ -150,6 +175,11 @@ describe('tunables', function() {
   });
 
   describe('#U()', function() {
+    it('should create a node with the "U" tag', function() {
+      const node = U();
+      expect(node.tag).to.equal('U');
+    });
+
     it('should create a node with the given name', function() {
       // TODO:
     });
@@ -178,6 +208,11 @@ describe('tunables', function() {
   });
 
   describe('#L()', function() {
+    it('should create a node with the "L" tag', function() {
+      const node = L();
+      expect(node.tag).to.equal('L');
+    });
+
     it('should create a node with the given name', function() {
       // TODO:
     });
@@ -206,6 +241,11 @@ describe('tunables', function() {
   });
 
   describe('#C()', function() {
+    it('should create a node with the "C" tag', function() {
+      const node = C({ name: "name_of_node" });
+      expect(node.tag).to.equal('C');
+    });
+
     it('should create a node with the given name', function() {
       // TODO:
     });
@@ -234,6 +274,12 @@ describe('tunables', function() {
   });
 
   describe('#S()', function() {
+    it('should create a node with the "T" tag', function() {
+      const stbl = StringTableResource.create();
+      const node = S({ string: 'Test', stbl });
+      expect(node.tag).to.equal('T');
+    });
+
     it('should add the strings to the string table', function() {
       const stbl = StringTableResource.create();
 
@@ -279,6 +325,13 @@ describe('tunables', function() {
   });
 
   describe('#getStringNodeFunction()', function() {
+    it('should create a node with the "T" tag', function() {
+      const stbl = StringTableResource.create();
+      const S = getStringNodeFunction(stbl);
+      const node = S({ string: 'Test' });
+      expect(node.tag).to.equal('T');
+    });
+
     it('should add the strings to the string table', function() {
       const stbl = StringTableResource.create();
       const S = getStringNodeFunction(stbl);
