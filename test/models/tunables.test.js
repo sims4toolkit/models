@@ -19,7 +19,7 @@ describe('tunables', function() {
       expect(() => I()).to.throw;
     });
 
-    it('should create a node with the same attributes', function() {
+    it('should create a node with the given attributes', function() {
       // TODO:
     });
 
@@ -32,10 +32,6 @@ describe('tunables', function() {
     });
 
     it('should create a node with the given comment', function() {
-      // TODO:
-    });
-
-    describe('#fromXml()', function() {
       // TODO:
     });
 
@@ -56,7 +52,7 @@ describe('tunables', function() {
       expect(() => M()).to.throw;
     });
 
-    it('should create a node with the same attributes', function() {
+    it('should create a node with the given attributes', function() {
       // TODO:
     });
 
@@ -69,10 +65,6 @@ describe('tunables', function() {
     });
 
     it('should create a node with the given comment', function() {
-      // TODO:
-    });
-
-    describe('#fromXml()', function() {
       // TODO:
     });
 
@@ -105,10 +97,6 @@ describe('tunables', function() {
       // TODO:
     });
 
-    describe('#fromXml()', function() {
-      // TODO:
-    });
-
     describe('#toXml()', function() {
       // TODO:
     });
@@ -131,10 +119,6 @@ describe('tunables', function() {
     });
 
     it('should create a node with the given comment', function() {
-      // TODO:
-    });
-
-    describe('#fromXml()', function() {
       // TODO:
     });
 
@@ -171,10 +155,6 @@ describe('tunables', function() {
       // TODO:
     });
 
-    describe('#fromXml()', function() {
-      // TODO:
-    });
-
     describe('#toXml()', function() {
       // TODO:
     });
@@ -204,10 +184,6 @@ describe('tunables', function() {
       // TODO:
     });
 
-    describe('#fromXml()', function() {
-      // TODO:
-    });
-
     describe('#toXml()', function() {
       // TODO:
     });
@@ -234,10 +210,6 @@ describe('tunables', function() {
     });
 
     it('should create a node with the given comment', function() {
-      // TODO:
-    });
-
-    describe('#fromXml()', function() {
       // TODO:
     });
 
@@ -271,10 +243,6 @@ describe('tunables', function() {
     });
 
     it('should create a node with the given comment', function() {
-      // TODO:
-    });
-
-    describe('#fromXml()', function() {
       // TODO:
     });
 
@@ -390,5 +358,9 @@ describe('tunables', function() {
       expect(node.value).to.equal(expectedValue);
       expect(node.comment).to.equal(string);
     });
+  });
+
+  describe('#fromXml()', function() {
+    // TODO:
   });
 });

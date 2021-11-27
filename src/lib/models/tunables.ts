@@ -41,16 +41,6 @@ export abstract class TunableNode {
     this.comment = comment;
   }
 
-  /**
-   * TODO:
-   * 
-   * @param xml TODO:
-   */
-  static fromXml(xml: string): TunableNode {
-    const dom = parser.parse(xml);
-    console.log(dom);
-  }
-
   /** Returns a deep copy of this node. */
   abstract clone(): TunableNode;
 
@@ -195,7 +185,7 @@ export abstract class TunableNode {
    * - `value`: Value that child must have.
    * - `comment`: Comment that child must have (exact match).
    * 
-   * @param criteria TODO:
+   * @param criteria Object containing the search criteria
    */
   search({ tag, attributes, value, comment }: {
     tag?: Tag;
@@ -621,6 +611,16 @@ export function getStringNodeFunction(stbl: StringTable): ({ name, toHash, strin
   return ({ name, toHash, string }: { name?: string; toHash?: string; string: string }) => {
     return S({ name, string, toHash, stbl });
   };
+}
+
+/**
+ * Parse an XML string as a TunableNode.
+ * 
+ * @param xml String containing the XML code to parse as a node
+ */
+export function parseNode(xml: string): TunableNode {
+  const dom = parser.parse(xml);
+  // TODO: impl
 }
 
 //#endregion Functions
