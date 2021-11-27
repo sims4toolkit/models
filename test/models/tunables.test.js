@@ -20,19 +20,61 @@ describe('tunables', function() {
     });
 
     it('should create a node with the given attributes', function() {
-      // TODO:
+      const node = I({ n: "name", c: "class", i: "type", m: "path", s: 12345 });
+      expect(node.attributes.n).to.equal('name');
+      expect(node.attributes.c).to.equal('class');
+      expect(node.attributes.i).to.equal('type');
+      expect(node.attributes.m).to.equal('path');
+      expect(node.attributes.s).to.equal(12345);
     });
 
     it('should create a node with no children if none are given', function() {
-      // TODO:
+      const node = I({ n: "name", c: "class", i: "type", m: "path", s: 12345 });
+      expect(node.children).to.be.an('Array').that.is.empty;
     });
 
     it('should create a node with the given children', function() {
-      // TODO:
+      const node = I({ 
+        n: "name",
+        c: "class",
+        i: "type",
+        m: "path",
+        s: 12345,
+        children: [
+          T({ name: "first_child", value: 1 }),
+          T({ name: "second_child", value: 2 }),
+          T({ name: "third_child", value: 3 }),
+        ]
+      });
+
+      expect(node.children).to.be.an('Array').with.lengthOf(3);
+      const firstChild = node.children[0];
+      expect(firstChild.attributes.n).to.equal('first_child');
+      expect(firstChild.value).to.equal(1);
+      const secondChild = node.children[1];
+      expect(secondChild.attributes.n).to.equal('second_child');
+      expect(secondChild.value).to.equal(2);
+      const thirdChild = node.children[2];
+      expect(thirdChild.attributes.n).to.equal('third_child');
+      expect(thirdChild.value).to.equal(3);
     });
 
     it('should create a node with the given comment', function() {
-      // TODO:
+      const node = I({ 
+        n: "name",
+        c: "class",
+        i: "type",
+        m: "path",
+        s: 12345,
+        comment: "This is the comment"
+      });
+
+      expect(node.comment).to.equal("This is the comment");
+    });
+
+    it('should not have a comment if none is given', function() {
+      const node = I({ n: "name", c: "class", i: "type", m: "path", s: 12345 });
+      expect(node.comment).to.be.undefined;
     });
 
     describe('#toXml()', function() {
@@ -68,6 +110,11 @@ describe('tunables', function() {
       // TODO:
     });
 
+    it('should not have a comment if none is given', function() {
+      const node = M({ n: "name", s: 12345 });
+      expect(node.comment).to.be.undefined;
+    });
+
     describe('#toXml()', function() {
       // TODO:
     });
@@ -97,6 +144,11 @@ describe('tunables', function() {
       // TODO:
     });
 
+    it('should not have a comment if none is given', function() {
+      const node = T();
+      expect(node.comment).to.be.undefined;
+    });
+
     describe('#toXml()', function() {
       // TODO:
     });
@@ -120,6 +172,11 @@ describe('tunables', function() {
 
     it('should create a node with the given comment', function() {
       // TODO:
+    });
+
+    it('should not have a comment if none is given', function() {
+      const node = E();
+      expect(node.comment).to.be.undefined;
     });
 
     describe('#toXml()', function() {
@@ -155,6 +212,11 @@ describe('tunables', function() {
       // TODO:
     });
 
+    it('should not have a comment if none is given', function() {
+      const node = V();
+      expect(node.comment).to.be.undefined;
+    });
+
     describe('#toXml()', function() {
       // TODO:
     });
@@ -184,6 +246,11 @@ describe('tunables', function() {
       // TODO:
     });
 
+    it('should not have a comment if none is given', function() {
+      const node = U();
+      expect(node.comment).to.be.undefined;
+    });
+
     describe('#toXml()', function() {
       // TODO:
     });
@@ -211,6 +278,11 @@ describe('tunables', function() {
 
     it('should create a node with the given comment', function() {
       // TODO:
+    });
+
+    it('should not have a comment if none is given', function() {
+      const node = L();
+      expect(node.comment).to.be.undefined;
     });
 
     describe('#toXml()', function() {
@@ -244,6 +316,11 @@ describe('tunables', function() {
 
     it('should create a node with the given comment', function() {
       // TODO:
+    });
+
+    it('should not have a comment if none is given', function() {
+      const node = C({ name: "SomeClass" });
+      expect(node.comment).to.be.undefined;
     });
 
     describe('#toXml()', function() {
