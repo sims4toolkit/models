@@ -15,6 +15,10 @@ describe('tunables', function() {
       expect(node.tag).to.equal('I');
     });
 
+    it('should throw when missing its header values', function() {
+      expect(() => I()).to.throw;
+    });
+
     it('should create a node with the same attributes', function() {
       // TODO:
     });
@@ -46,6 +50,10 @@ describe('tunables', function() {
     it('should create a node with the "M" tag', function() {
       const node = M({ n: "name", s: 12345 });
       expect(node.tag).to.equal('M');
+    });
+
+    it('should throw when missing its header values', function() {
+      expect(() => M()).to.throw;
     });
 
     it('should create a node with the same attributes', function() {
@@ -244,6 +252,10 @@ describe('tunables', function() {
     it('should create a node with the "C" tag', function() {
       const node = C({ name: "name_of_node" });
       expect(node.tag).to.equal('C');
+    });
+
+    it('should throw when missing its name value', function() {
+      expect(() => C()).to.throw;
     });
 
     it('should create a node with the given name', function() {
