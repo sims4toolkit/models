@@ -211,6 +211,10 @@ describe('tunables', function() {
         expect(clone.children[2].value).to.equal(3);
       });
 
+      it('should copy deeply nested nodes (children of children)', function() {
+        // TODO:
+      });
+
       it('should not mutate the value of the original', function() {
         // TODO:
       });
@@ -276,8 +280,7 @@ describe('tunables', function() {
           comment: "This is a comment",
           children: [
             C({ name: "FirstClass" }),
-            C({ name: "SecondClass" }),
-            C({ name: "ThirdClass" }),
+            C({ name: "SecondClass" })
           ]
         });
   
@@ -285,10 +288,13 @@ describe('tunables', function() {
         expect(clone.attributes.n).to.equal("module.name");
         expect(clone.attributes.s).to.equal(12345);
         expect(clone.comment).to.equal('This is a comment');
-        expect(clone.children).to.be.an('Array').with.lengthOf(3);
+        expect(clone.children).to.be.an('Array').with.lengthOf(2);
         expect(clone.children[0].attributes.n).to.equal("FirstClass");
         expect(clone.children[1].attributes.n).to.equal("SecondClass");
-        expect(clone.children[2].attributes.n).to.equal("ThirdClass");
+      });
+
+      it('should copy deeply nested nodes (children of children)', function() {
+        // TODO:
       });
 
       it('should not mutate the value of the original', function() {
