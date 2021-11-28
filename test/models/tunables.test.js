@@ -110,17 +110,48 @@ describe('tunables', function() {
     });
 
     describe('#add()', function() {
+      it('should do nothing when no children are given', function() {
+        // TODO:
+      });
+
       it('should add a child to the node it is called on', function() {
+        const node = U();
+        expect(node.children).to.be.empty;
+        node.add(T({ name: "tunable", value: "Something" }));
+        expect(node.children).to.have.lengthOf(1);
+        expect(node.children[0].attributes.n).to.equal("tunable");
+        expect(node.children[0].value).to.equal("Something");
+      });
+
+      it('should add all children that are given', function() {
         // TODO:
       });
 
       it('should add the child by reference, allowing mutation', function() {
-        // TODO:
+        const child = T();
+        const node = L();
+        node.add(child);
+        expect(node.child.value).to.be.undefined;
+        child.value = 25;
+        expect(node.child.value).to.equal(25);
       });
     });
 
     describe('#addClones()', function() {
+      it('should do nothing when no children are given', function() {
+        // TODO:
+      });
+
       it('should add a child to the node it is called on', function() {
+        const node = U();
+        expect(node.children).to.be.empty;
+        node.addClones(T({ name: "tunable", value: "Something" }));
+        expect(node.children).to.have.lengthOf(1);
+        expect(node.children[0].attributes.n).to.equal("tunable");
+        expect(node.children[0].value).to.equal("Something");
+      });
+
+      it('should add all children that are given', function() {
         // TODO:
       });
 
