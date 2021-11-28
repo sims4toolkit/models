@@ -248,19 +248,36 @@ describe('tunables', function() {
     });
 
     it('should create a node with the given attributes', function() {
-      // TODO:
+      const node = M({ n: "module.name", s: 12345 });
+      expect(node.attributes.n).to.equal('module.name');
+      expect(node.attributes.s).to.equal(12345);
     });
 
     it('should create a node with no children if none are given', function() {
-      // TODO:
+      const node = M({ n: "name", s: 12345 });
+      expect(node.children).to.be.an('Array').that.is.empty;
     });
 
     it('should create a node with the given children', function() {
-      // TODO:
+      const node = M({ 
+        n: "module.name",
+        s: 12345,
+        children: [
+          C({ name: "FirstClass" }),
+          C({ name: "SecondClass" })
+        ]
+      });
+
+      expect(node.children).to.be.an('Array').with.lengthOf(2);
+      const firstChild = node.children[0];
+      expect(firstChild.attributes.n).to.equal('FirstClass');
+      const secondChild = node.children[1];
+      expect(secondChild.attributes.n).to.equal('SecondClass');
     });
 
     it('should create a node with the given comment', function() {
-      // TODO:
+      const node = M({ n: "name", s: 12345, comment: "This is the comment" });
+      expect(node.comment).to.equal("This is the comment");
     });
 
     it('should not have a comment if none is given', function() {
