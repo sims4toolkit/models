@@ -440,46 +440,40 @@ describe('tunables', function() {
 
     describe('#clone()', function() {
       it('should copy all contents of the node', function() {
-        // const node = I({ 
-        //   n: "name",
-        //   c: "class",
-        //   i: "type",
-        //   m: "path",
-        //   s: 12345,
-        //   comment: "This is a comment",
-        //   children: [
-        //     T({ name: "first_child", value: 1 }),
-        //     T({ name: "second_child", value: 2 }),
-        //     T({ name: "third_child", value: 3 }),
-        //   ]
-        // });
+        const node = E({ 
+          name: "enum_name",
+          comment: "This is a comment",
+          value: "Value"
+        });
   
-        // const clone = node.clone();
-        // expect(clone.attributes.n).to.equal("name");
-        // expect(clone.attributes.c).to.equal("class");
-        // expect(clone.attributes.i).to.equal("type");
-        // expect(clone.attributes.m).to.equal("path");
-        // expect(clone.attributes.s).to.equal(12345);
-        // expect(clone.comment).to.equal('This is a comment');
-        // expect(clone.children).to.be.an('Array').with.lengthOf(3);
-        // expect(clone.children[0].attributes.n).to.equal("first_child");
-        // expect(clone.children[0].value).to.equal(1);
-        // expect(clone.children[1].attributes.n).to.equal("second_child");
-        // expect(clone.children[1].value).to.equal(2);
-        // expect(clone.children[2].attributes.n).to.equal("third_child");
-        // expect(clone.children[2].value).to.equal(3);
+        const clone = node.clone();
+        expect(clone.attributes.n).to.equal("enum_name");
+        expect(clone.comment).to.equal('This is a comment');
+        expect(clone.value).to.equal("Value");
       });
 
       it('should not mutate the value of the original', function() {
-        // TODO:
+        const node = E({ value: "Value" });
+        const clone = node.clone();
+        clone.value = "New_Value";
+        expect(node.value).to.equal("Value");
+        expect(clone.value).to.equal("New_Value");
       });
 
       it('should not mutate the comment of the original', function() {
-        // TODO:
+        const node = E({ comment: "Some comment" });
+        const clone = node.clone();
+        clone.comment = "Some other comment";
+        expect(node.comment).to.equal("Some comment");
+        expect(clone.comment).to.equal("Some other comment");
       });
 
       it('should not mutate the attributes of the original', function() {
-        // TODO:
+        const node = E({ name: "enum_name" });
+        const clone = node.clone();
+        clone.attributes.n = "new_name";
+        expect(node.attributes.n).to.equal("enum_name");
+        expect(clone.attributes.n).to.equal("new_name");
       });
     });
 
