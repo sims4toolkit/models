@@ -201,7 +201,6 @@ abstract class _TunableNode {
     attributes?: TunableAttributes;
     value?: string;
     comment?: string;
-    recursive?: boolean;
   } = {}): TunableNode[] {
     return this.children.filter(child => {
       if (tag && child.tag !== tag) return false;

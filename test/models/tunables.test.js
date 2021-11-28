@@ -116,15 +116,49 @@ describe('tunables', function() {
     });
 
     describe('#search()', function() {
-      // TODO:
+      it('should return all children if no criteria were given', function() {
+        // TODO:
+      });
+
+      it('should filter by tag', function() {
+        // TODO:
+      });
+
+      it('should filter by attributes', function() {
+        // TODO:
+      });
+
+      it('should filter by value', function() {
+        // TODO:
+      });
+
+      it('should filter by comment', function() {
+        // TODO:
+      });
     });
 
     describe('#sort()', function() {
-      // TODO:
+      it('should do nothing when the node is empty', function() {
+        // TODO:
+      });
+
+      it('should sort in alphabetical order by name if no fn passed in', function() {
+        // TODO:
+      });
+
+      it('should sort children according to the given function', function() {
+        // TODO:
+      });
+
+      it("should not change the order of childrens' children", function() {
+        // TODO:
+      });
     });
 
     describe('#deepSort()', function() {
-      // TODO:
+      it("should recursively sort children", function() {
+        // TODO:
+      });
     });
 
     describe('#remove()', function() {
