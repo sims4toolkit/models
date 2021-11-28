@@ -15,12 +15,16 @@ const parser = new XMLParser({
 
 type Tag = 'I' | 'M' | 'T' | 'E' | 'V' | 'U' | 'L' | 'C';
 type AttributeKey = 'n' | 'c' | 't' | 'm' | 'i' | 'ev' | 'p' | 's';
-type TunableAttributes = { [key in AttributeKey]?: any; }
+type TunableAttributes = { [key in AttributeKey]?: any; };
+
+// this is to export the base class as a type only, so that it can be used for
+// TS typing but cannot actually be used in JS
+export type TunableNode = InstanceType<typeof _TunableNode>;
 
 /**
  * Base class for all tunable nodes.
  */
-export abstract class TunableNode {
+abstract class _TunableNode {
   abstract readonly tag: Tag;
   readonly attributes: TunableAttributes;
   readonly children?: TunableNode[];
@@ -287,7 +291,7 @@ export abstract class TunableNode {
   //#endregion Delete
 }
 
-abstract class ValueTunable extends TunableNode {
+abstract class ValueTunable extends _TunableNode {
   constructor({ attributes, value, comment }: {
     attributes?: TunableAttributes;
     value?: any;
@@ -297,7 +301,7 @@ abstract class ValueTunable extends TunableNode {
   }
 }
 
-abstract class ParentTunable extends TunableNode {
+abstract class ParentTunable extends _TunableNode {
   constructor({ attributes, children, comment }: {
     attributes?: TunableAttributes;
     children?: TunableNode[];

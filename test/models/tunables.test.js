@@ -1,14 +1,116 @@
 const { expect } = require('chai');
 const { tunables, hashing, formatting, StringTableResource } = require('../../dst/api');
+
 const { formatStringKey } = formatting;
 const { fnv32 } = hashing;
 const { I, M, T, E, V, U, L, C, S, getStringNodeFunction } = tunables;
 
-// TunableNode is just meant to be used as a type, it is not part of the API,
-// so it does not need to be tested. It is an abstract class that is a base for
-// the objects that result from the tunable node functions
-
 describe('tunables', function() {
+  describe('#TunableNode', function() {
+    // TunableNode is an abstract class and the only export for it is as a type.
+    // This section is just for testing the methods that are implemented in the
+    // base class and do not depend on any child values/implementations. For
+    // this reason, clone() and toXml() are both tested with the functions.
+
+    describe('#tag', function() {
+      it('should return the tag', function() {
+        // TODO:
+      });
+
+      it('should throw when being set', function() {
+        // TODO:
+      });
+    });
+
+    describe('#children', function() {
+      it('should return the children', function() {
+        // TODO:
+      });
+
+      it('should include a new child after add() is called', function() {
+        // TODO:
+      });
+
+      it('should not include children after they\'re remove()\'d', function() {
+        // TODO:
+      });
+
+      it('should throw when being set', function() {
+        // TODO:
+      });
+    });
+
+    describe('#attributes', function() {
+      it('should return the attributes', function() {
+        // TODO:
+      });
+
+      it('should allow contents to be updated', function() {
+        // TODO:
+      });
+
+      it('should throw when being set', function() {
+        // TODO:
+      });
+    });
+
+    describe('#value', function() {
+      it('should return the value when there is one', function() {
+        // TODO:
+      });
+
+      it('should return undefined when there is no value', function() {
+        // TODO:
+      });
+
+      it('should update after being set', function() {
+        // TODO:
+      });
+    });
+
+    describe('#comment', function() {
+      it('should return the comment when there is one', function() {
+        // TODO:
+      });
+
+      it('should return undefined when there is no comment', function() {
+        // TODO:
+      });
+
+      it('should update after being set', function() {
+        // TODO:
+      });
+    });
+
+    describe('#add()', function() {
+      // TODO:
+    });
+
+    describe('#addClones()', function() {
+      // TODO:
+    });
+
+    describe('#search()', function() {
+      // TODO:
+    });
+
+    describe('#sort()', function() {
+      // TODO:
+    });
+
+    describe('#deepSort()', function() {
+      // TODO:
+    });
+
+    describe('#remove()', function() {
+      // TODO:
+    });
+
+    describe('#removeAt()', function() {
+      // TODO:
+    });
+  });
+
   describe('#I()', function() {
     it('should create a node with the "I" tag', function() {
       const node = I({ n: "name", c: "class", i: "type", m: "path", s: 12345 });
@@ -77,11 +179,13 @@ describe('tunables', function() {
       expect(node.comment).to.be.undefined;
     });
 
-    describe('#toXml()', function() {
+    describe('#clone()', function() {
       // TODO:
     });
 
-    // TODO: remainder of functions for dom manipulation
+    describe('#toXml()', function() {
+      // TODO:
+    });
   });
 
   describe('#M()', function() {
@@ -115,11 +219,13 @@ describe('tunables', function() {
       expect(node.comment).to.be.undefined;
     });
 
-    describe('#toXml()', function() {
+    describe('#clone()', function() {
       // TODO:
     });
 
-    // TODO: remainder of functions for dom manipulation
+    describe('#toXml()', function() {
+      // TODO:
+    });
   });
 
   describe('#T()', function() {
@@ -149,11 +255,13 @@ describe('tunables', function() {
       expect(node.comment).to.be.undefined;
     });
 
-    describe('#toXml()', function() {
+    describe('#clone()', function() {
       // TODO:
     });
 
-    // TODO: remainder of functions for dom manipulation
+    describe('#toXml()', function() {
+      // TODO:
+    });
   });
 
   describe('#E()', function() {
@@ -179,11 +287,13 @@ describe('tunables', function() {
       expect(node.comment).to.be.undefined;
     });
 
-    describe('#toXml()', function() {
+    describe('#clone()', function() {
       // TODO:
     });
 
-    // TODO: remainder of functions for dom manipulation
+    describe('#toXml()', function() {
+      // TODO:
+    });
   });
 
   describe('#V()', function() {
@@ -217,11 +327,13 @@ describe('tunables', function() {
       expect(node.comment).to.be.undefined;
     });
 
-    describe('#toXml()', function() {
+    describe('#clone()', function() {
       // TODO:
     });
 
-    // TODO: remainder of functions for dom manipulation
+    describe('#toXml()', function() {
+      // TODO:
+    });
   });
 
   describe('#U()', function() {
@@ -251,11 +363,13 @@ describe('tunables', function() {
       expect(node.comment).to.be.undefined;
     });
 
-    describe('#toXml()', function() {
+    describe('#clone()', function() {
       // TODO:
     });
 
-    // TODO: remainder of functions for dom manipulation
+    describe('#toXml()', function() {
+      // TODO:
+    });
   });
 
   describe('#L()', function() {
@@ -285,11 +399,13 @@ describe('tunables', function() {
       expect(node.comment).to.be.undefined;
     });
 
-    describe('#toXml()', function() {
+    describe('#clone()', function() {
       // TODO:
     });
 
-    // TODO: remainder of functions for dom manipulation
+    describe('#toXml()', function() {
+      // TODO:
+    });
   });
 
   describe('#C()', function() {
@@ -323,11 +439,13 @@ describe('tunables', function() {
       expect(node.comment).to.be.undefined;
     });
 
-    describe('#toXml()', function() {
+    describe('#clone()', function() {
       // TODO:
     });
 
-    // TODO: remainder of functions for dom manipulation
+    describe('#toXml()', function() {
+      // TODO:
+    });
   });
 
   describe('#S()', function() {
