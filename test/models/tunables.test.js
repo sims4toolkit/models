@@ -111,7 +111,10 @@ describe('tunables', function() {
 
     describe('#add()', function() {
       it('should do nothing when no children are given', function() {
-        // TODO:
+        const node = U();
+        expect(node.children).to.be.empty;
+        node.add();
+        expect(node.children).to.be.empty;
       });
 
       it('should add a child to the node it is called on', function() {
@@ -124,7 +127,13 @@ describe('tunables', function() {
       });
 
       it('should add all children that are given', function() {
-        // TODO:
+        const node = L();
+        expect(node.children).to.be.empty;
+        node.add(T({ value: "first" }), T({ value: "second" }));
+        expect(node.children).to.have.lengthOf(2);
+        const [ first, second ] = node.children;
+        expect(first.value).to.equal("first");
+        expect(second.value).to.equal("second");
       });
 
       it('should add the child by reference, allowing mutation', function() {
@@ -139,7 +148,10 @@ describe('tunables', function() {
 
     describe('#addClones()', function() {
       it('should do nothing when no children are given', function() {
-        // TODO:
+        const node = U();
+        expect(node.children).to.be.empty;
+        node.addClones();
+        expect(node.children).to.be.empty;
       });
 
       it('should add a child to the node it is called on', function() {
@@ -152,11 +164,21 @@ describe('tunables', function() {
       });
 
       it('should add all children that are given', function() {
-        // TODO:
+        const node = L();
+        expect(node.children).to.be.empty;
+        node.addClones(T({ value: "first" }), T({ value: "second" }));
+        const [ first, second ] = node.children;
+        expect(first.value).to.equal("first");
+        expect(second.value).to.equal("second");
       });
 
       it('should add the child by value, disallowing mutation', function() {
-        // TODO:
+        const child = T({ value: 25 });
+        const node = L();
+        node.addClones(child);
+        expect(node.child.value).to.equal(25);
+        child.value = 50;
+        expect(node.child.value).to.equal(25);
       });
     });
 
