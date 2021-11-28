@@ -489,23 +489,35 @@ describe('tunables', function() {
     });
 
     it('should create a node with the given name', function() {
-      // TODO:
+      const node = V({ name: "variant_name" });
+      expect(node.attributes.n).to.equal("variant_name");
     });
 
     it('should create a node with the given type', function() {
-      // TODO:
+      const node = V({ type: "enabled" });
+      expect(node.attributes.t).to.equal("enabled");
     });
 
     it('should create a node with no children if none are given', function() {
-      // TODO:
+      const node = V();
+      expect(node.children).to.be.an('Array').that.is.empty;
     });
 
     it('should create a node with one child if a child is given', function() {
-      // TODO:
+      const node = V({
+        type: "enabled",
+        child: T({ name: "enabled", value: true })
+      });
+
+      expect(node.children).to.be.an('Array').with.lengthOf(1);
+      const child = node.children[0];
+      expect(child.attributes.n).to.equal('enabled');
+      expect(child.value).to.be.true;
     });
 
     it('should create a node with the given comment', function() {
-      // TODO:
+      const node = V({ comment: "Some comment" });
+      expect(node.comment).to.equal("Some comment");
     });
 
     it('should not have a comment if none is given', function() {
