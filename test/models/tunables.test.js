@@ -212,7 +212,48 @@ describe('tunables', function() {
       });
 
       it('should copy deeply nested nodes (children of children)', function() {
-        // TODO:
+        const node = I({ 
+          n: "name",
+          c: "class",
+          i: "type",
+          m: "path",
+          s: 12345,
+          comment: "This is a comment",
+          children: [
+            L({
+              name: "first_child",
+              children: [
+                U({
+                  children: [
+                    T({ name: "tunable_1", value: 6789n }),
+                    E({ name: "enum_1", value: "SomeValue" })
+                  ]
+                }),
+                U({
+                  children: [
+                    T({ name: "tunable_2", value: 2468n }),
+                    E({ name: "enum_2", value: "SomeOtherValue" })
+                  ]
+                })
+              ]
+            })
+          ]
+        });
+  
+        const clone = node.clone();
+        expect(clone.children).to.have.lengthOf(1);
+        const list = clone.children[0];
+        expect(list.children).to.have.lengthOf(2);
+        const [firstT, firstE] = list.children[0].children;
+        expect(firstT.attributes.n).to.equal("tunable_1");
+        expect(firstT.value).to.equal(6789n);
+        expect(firstE.attributes.n).to.equal("enum_1");
+        expect(firstE.value).to.equal("SomeValue");
+        const [secondT, secondE] = list.children[1].children;
+        expect(secondT.attributes.n).to.equal("tunable_2");
+        expect(secondT.value).to.equal(2468n);
+        expect(secondE.attributes.n).to.equal("enum_2");
+        expect(secondE.value).to.equal("SomeOtherValue");
       });
 
       it('should not mutate the comment of the original', function() {
