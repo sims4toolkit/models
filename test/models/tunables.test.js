@@ -96,11 +96,23 @@ describe('tunables', function() {
     });
 
     describe('#add()', function() {
-      // TODO:
+      it('should add a child to the node it is called on', function() {
+        // TODO:
+      });
+
+      it('should add the child by reference, allowing mutation', function() {
+        // TODO:
+      });
     });
 
     describe('#addClones()', function() {
-      // TODO:
+      it('should add a child to the node it is called on', function() {
+        // TODO:
+      });
+
+      it('should add the child by value, disallowing mutation', function() {
+        // TODO:
+      });
     });
 
     describe('#search()', function() {
@@ -116,11 +128,43 @@ describe('tunables', function() {
     });
 
     describe('#remove()', function() {
-      // TODO:
+      it('should do nothing if no child is passed in', function() {
+        // TODO:
+      });
+
+      it('should remove the one child that is passed in', function() {
+        // TODO:
+      });
+
+      it('should remove all children that are passed in', function() {
+        // TODO:
+      });
+
+      it('should ignore children that are not in this node', function() {
+        // TODO:
+      });
+
+      it('should remove children by reference, not value', function() {
+        // TODO:
+      });
     });
 
     describe('#removeAt()', function() {
-      // TODO:
+      it('should do nothing if index is negative', function() {
+        // TODO:
+      });
+
+      it('should do nothing if the index is out of bounds', function() {
+        // TODO:
+      });
+
+      it('should remove the one child at the given index if count is 1', function() {
+        // TODO:
+      });
+
+      it('should remove multiple children at the given index if count > 1', function() {
+        // TODO:
+      });
     });
   });
 
