@@ -339,19 +339,23 @@ describe('tunables', function() {
     });
 
     it('should create a node with the given name', function() {
-      // TODO:
+      const node = T({ name: "tunable_name" });
+      expect(node.attributes.n).to.equal("tunable_name");
     });
 
     it('should create a node with the given ev', function() {
-      // TODO:
+      const node = T({ ev: 15 });
+      expect(node.attributes.ev).to.equal(15);
     });
 
     it('should create a node with the given value', function() {
-      // TODO:
+      const node = T({ value: 12345 });
+      expect(node.value).to.equal(12345);
     });
 
     it('should create a node with the given comment', function() {
-      // TODO:
+      const node = T({ comment: "This is a comment" });
+      expect(node.comment).to.equal("This is a comment");
     });
 
     it('should not have a comment if none is given', function() {
@@ -416,15 +420,18 @@ describe('tunables', function() {
     });
 
     it('should create a node with the given name', function() {
-      // TODO:
+      const node = E({ name: "tunable_name" });
+      expect(node.attributes.n).to.equal("tunable_name");
     });
 
     it('should create a node with the given value', function() {
-      // TODO:
+      const node = E({ value: "ADULT" });
+      expect(node.value).to.equal("ADULT");
     });
 
     it('should create a node with the given comment', function() {
-      // TODO:
+      const node = E({ comment: "This is a comment" });
+      expect(node.comment).to.equal("This is a comment");
     });
 
     it('should not have a comment if none is given', function() {
