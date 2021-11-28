@@ -212,12 +212,7 @@ describe('tunables', function() {
       });
 
       it('should copy deeply nested nodes (children of children)', function() {
-        const node = I({ 
-          n: "name",
-          c: "class",
-          i: "type",
-          m: "path",
-          s: 12345,
+        const node = I({ n: "name", c: "class", i: "type", m: "path", s: 12345,
           comment: "This is a comment",
           children: [
             L({
@@ -257,19 +252,43 @@ describe('tunables', function() {
       });
 
       it('should not mutate the comment of the original', function() {
-        // TODO:
+        const node = I({ n: "name", c: "class", i: "type", m: "path", s: 123,
+          comment: "This is a comment"
+        });
+
+        const clone = node.clone();
+        clone.comment = "New comment";
+        expect(node.comment).to.equal("This is a comment");
+        expect(clone.comment).to.equal("New comment");
       });
 
       it('should not mutate the attributes of the original', function() {
-        // TODO:
+        const node = I({ n: "name", c: "class", i: "type", m: "path", s: 123 });
+        const clone = node.clone();
+        clone.attributes.n = "new_name";
+        expect(node.attributes.n).to.equal("name");
+        expect(clone.attributes.n).to.equal("new_name");
       });
 
       it('should not mutate the children array of the original', function() {
-        // TODO:
+        const node = I({ n: "name", c: "class", i: "type", m: "path", s: 123 });
+        expect(node.children).to.be.an('Array').that.is.empty;
+        const clone = node.clone();
+        expect(clone.children).to.be.an('Array').that.is.empty;
+        clone.add(T({ name: "new_child" }));
+        expect(node.children).to.be.an('Array').that.is.empty;
+        expect(clone.children).to.be.an('Array').with.lengthOf(1);
       });
 
       it('should not mutate the child nodes of the original', function() {
-        // TODO:
+        const node = I({ n: "name", c: "class", i: "type", m: "path", s: 123,
+          children: [ T({ name: "child", value: 10 }) ]
+        });
+
+        const clone = node.clone();
+        clone.children[0].value = 20;
+        expect(node.children[0].value).to.equal(10);
+        expect(clone.children[0].value).to.equal(20);
       });
     });
 
