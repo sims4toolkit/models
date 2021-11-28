@@ -127,7 +127,7 @@ describe('tunables', function() {
       expect(node.attributes.c).to.equal('class');
       expect(node.attributes.i).to.equal('type');
       expect(node.attributes.m).to.equal('path');
-      expect(node.attributes.s).to.equal(12345);
+      expect(node.attributes.s).to.equal('12345');
     });
 
     it('should create a node with no children if none are given', function() {
@@ -200,7 +200,7 @@ describe('tunables', function() {
         expect(clone.attributes.c).to.equal("class");
         expect(clone.attributes.i).to.equal("type");
         expect(clone.attributes.m).to.equal("path");
-        expect(clone.attributes.s).to.equal(12345);
+        expect(clone.attributes.s).to.equal('12345');
         expect(clone.comment).to.equal('This is a comment');
         expect(clone.children).to.be.an('Array').with.lengthOf(3);
         expect(clone.children[0].attributes.n).to.equal("first_child");
@@ -248,9 +248,9 @@ describe('tunables', function() {
     });
 
     it('should create a node with the given attributes', function() {
-      const node = M({ n: "module.name", s: 12345 });
+      const node = M({ n: "module.name", s: 12345n });
       expect(node.attributes.n).to.equal('module.name');
-      expect(node.attributes.s).to.equal(12345);
+      expect(node.attributes.s).to.equal('12345');
     });
 
     it('should create a node with no children if none are given', function() {
@@ -299,7 +299,7 @@ describe('tunables', function() {
   
         const clone = node.clone();
         expect(clone.attributes.n).to.equal("module.name");
-        expect(clone.attributes.s).to.equal(12345);
+        expect(clone.attributes.s).to.equal('12345');
         expect(clone.comment).to.equal('This is a comment');
         expect(clone.children).to.be.an('Array').with.lengthOf(2);
         expect(clone.children[0].attributes.n).to.equal("FirstClass");
@@ -345,7 +345,7 @@ describe('tunables', function() {
 
     it('should create a node with the given ev', function() {
       const node = T({ ev: 15 });
-      expect(node.attributes.ev).to.equal(15);
+      expect(node.attributes.ev).to.equal('15');
     });
 
     it('should create a node with the given value', function() {
