@@ -65,11 +65,15 @@ describe('tunables', function() {
       // getter is tested in initializer functions
 
       it('should allow contents to be updated', function() {
-        // TODO:
+        const node = T({ name: "tunable" });
+        expect(node.attributes.n).to.equal("tunable");
+        node.attributes.n = "new_name";
+        expect(node.attributes.n).to.equal("new_name");
       });
 
       it('should throw when being set', function() {
-        // TODO:
+        const node = T();
+        expect(() => node.attributes = {}).to.throw;
       });
     });
 
@@ -77,11 +81,15 @@ describe('tunables', function() {
       // getter is tested in initializer functions
 
       it('should return undefined when there is no value', function() {
-        // TODO:
+        const node = T();
+        expect(node.value).to.be.undefined;
       });
 
       it('should update after being set', function() {
-        // TODO:
+        const node = T({ value: 2 });
+        expect(node.value).to.equal(2);
+        node.value = 4;
+        expect(node.value).to.equal(4);
       });
     });
 
@@ -89,11 +97,15 @@ describe('tunables', function() {
       // getter is tested in initializer functions
 
       it('should return undefined when there is no comment', function() {
-        // TODO:
+        const node = T();
+        expect(node.comment).to.be.undefined;
       });
 
       it('should update after being set', function() {
-        // TODO:
+        const node = T({ comment: "Comment" });
+        expect(node.comment).to.equal("Comment");
+        node.comment = "New comment";
+        expect(node.comment).to.equal("New comment");
       });
     });
 
