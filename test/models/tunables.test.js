@@ -12,51 +12,57 @@ describe('tunables', function() {
     // this reason, clone() and toXml() are both tested with the functions.
 
     describe('#tag', function() {
-      it('should return the tag', function() {
-        // TODO:
-      });
+      // getter is tested in initializer functions
 
       it('should throw when being set', function() {
-        // TODO:
+        const node = T();
+        expect(() => node.tag = 'I').to.throw;
       });
     });
 
     describe('#children', function() {
-      it('should return the children', function() {
-        // TODO:
-      });
+      // getter is tested in initializer functions
 
       it('should include a new child after add() is called', function() {
-        // TODO:
+        const node = L();
+        expect(node.children).to.be.empty;
+        node.add(T());
+        expect(node.children).to.have.lengthOf(1);
       });
 
       it('should not include children after they\'re remove()\'d', function() {
-        // TODO:
+        const child = T();
+        const node = L({ children: [ child ] });
+        expect(node.children).to.have.lengthOf(1);
+        node.remove(child);
+        expect(node.children).to.be.empty;
       });
 
       it('should throw when being set', function() {
-        // TODO:
+        const node = T();
+        expect(() => node.children = []).to.throw;
       });
     });
 
     describe('#child', function() {
       it('should return undefined if there are no children', function() {
-        // TODO:
+        const node = L();
+        expect(node.child).to.be.undefined;
       });
 
       it('should return the first child if there is at least one', function() {
-        // TODO:
+        const node = L({ children: [ T() ] });
+        expect(node.child).to.not.be.undefined;
       });
 
       it('should throw when being set', function() {
-        // TODO:
+        const node = L();
+        expect(() => node.child = T()).to.throw;
       });
     });
 
     describe('#attributes', function() {
-      it('should return the attributes', function() {
-        // TODO:
-      });
+      // getter is tested in initializer functions
 
       it('should allow contents to be updated', function() {
         // TODO:
@@ -68,9 +74,7 @@ describe('tunables', function() {
     });
 
     describe('#value', function() {
-      it('should return the value when there is one', function() {
-        // TODO:
-      });
+      // getter is tested in initializer functions
 
       it('should return undefined when there is no value', function() {
         // TODO:
@@ -82,9 +86,7 @@ describe('tunables', function() {
     });
 
     describe('#comment', function() {
-      it('should return the comment when there is one', function() {
-        // TODO:
-      });
+      // getter is tested in initializer functions
 
       it('should return undefined when there is no comment', function() {
         // TODO:
