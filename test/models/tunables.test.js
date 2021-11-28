@@ -1,6 +1,5 @@
 const { expect } = require('chai');
 const { tunables, hashing, formatting, StringTableResource } = require('../../dst/api');
-
 const { formatStringKey } = formatting;
 const { fnv32 } = hashing;
 const { I, M, T, E, V, U, L, C, S, getStringNodeFunction } = tunables;
@@ -715,20 +714,35 @@ describe('tunables', function() {
       expect(node.tag).to.equal('U');
     });
 
-    it('should create a node with the given name', function() {
-      // TODO:
+    it('should create a node with the given attributes', function() {
+      const node = U({ name: "tuple" });
+      expect(node.attributes.n).to.equal('tuple');
     });
 
     it('should create a node with no children if none are given', function() {
-      // TODO:
+      const node = U();
+      expect(node.children).to.be.empty;
     });
 
     it('should create a node with the given children', function() {
-      // TODO:
+      const node = U({ 
+        children: [
+          T({ name: "first", value: 2 }),
+          T({ name: "second", value: 4 })
+        ]
+      });
+
+      expect(node.children).to.be.an('Array').with.lengthOf(2);
+      const [ first, second ] = node.children;
+      expect(first.attributes.n).to.equal('first');
+      expect(first.value).to.equal(2);
+      expect(second.attributes.n).to.equal('second');
+      expect(second.value).to.equal(4);
     });
 
     it('should create a node with the given comment', function() {
-      // TODO:
+      const node = U({ comment: "This is the comment" });
+      expect(node.comment).to.equal("This is the comment");
     });
 
     it('should not have a comment if none is given', function() {
@@ -800,20 +814,35 @@ describe('tunables', function() {
       expect(node.tag).to.equal('L');
     });
 
-    it('should create a node with the given name', function() {
-      // TODO:
+    it('should create a node with the given attributes', function() {
+      const node = L({ name: "list" });
+      expect(node.attributes.n).to.equal('list');
     });
 
     it('should create a node with no children if none are given', function() {
-      // TODO:
+      const node = L();
+      expect(node.children).to.be.empty;
     });
 
     it('should create a node with the given children', function() {
-      // TODO:
+      const node = L({ 
+        children: [
+          T({ name: "first", value: 2 }),
+          T({ name: "second", value: 4 })
+        ]
+      });
+
+      expect(node.children).to.be.an('Array').with.lengthOf(2);
+      const [ first, second ] = node.children;
+      expect(first.attributes.n).to.equal('first');
+      expect(first.value).to.equal(2);
+      expect(second.attributes.n).to.equal('second');
+      expect(second.value).to.equal(4);
     });
 
     it('should create a node with the given comment', function() {
-      // TODO:
+      const node = L({ comment: "This is the comment" });
+      expect(node.comment).to.equal("This is the comment");
     });
 
     it('should not have a comment if none is given', function() {
@@ -881,7 +910,7 @@ describe('tunables', function() {
 
   describe('#C()', function() {
     it('should create a node with the "C" tag', function() {
-      const node = C({ name: "name_of_node" });
+      const node = C({ name: "Cls" });
       expect(node.tag).to.equal('C');
     });
 
@@ -889,20 +918,36 @@ describe('tunables', function() {
       expect(() => C()).to.throw;
     });
 
-    it('should create a node with the given name', function() {
-      // TODO:
+    it('should create a node with the given attributes', function() {
+      const node = C({ name: "Cls" });
+      expect(node.attributes.n).to.equal('Cls');
     });
 
     it('should create a node with no children if none are given', function() {
-      // TODO:
+      const node = C({ name: "Cls" });
+      expect(node.children).to.be.empty;
     });
 
     it('should create a node with the given children', function() {
-      // TODO:
+      const node = C({
+        name: "Cls",
+        children: [
+          T({ name: "FIRST", value: 2 }),
+          T({ name: "SECOND", value: 4 })
+        ]
+      });
+
+      expect(node.children).to.be.an('Array').with.lengthOf(2);
+      const [ first, second ] = node.children;
+      expect(first.attributes.n).to.equal('FIRST');
+      expect(first.value).to.equal(2);
+      expect(second.attributes.n).to.equal('SECOND');
+      expect(second.value).to.equal(4);
     });
 
     it('should create a node with the given comment', function() {
-      // TODO:
+      const node = C({ name: "Cls", comment: "This is the comment" });
+      expect(node.comment).to.equal("This is the comment");
     });
 
     it('should not have a comment if none is given', function() {
