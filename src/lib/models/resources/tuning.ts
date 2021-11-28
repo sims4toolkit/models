@@ -1,5 +1,6 @@
 import Resource from "./resource";
-import { TunableNode } from "../tunables";
+import type { TunableNode } from "../tunables";
+import { parseNode } from "../tunables";
 
 /**
  * Model for a plaintext, XML tuning resource.
@@ -24,7 +25,7 @@ export default class TuningResource extends Resource {
 
   /** Returns the DOM of this tuning resource. */
   get dom(): TunableNode {
-    if (this._dom === undefined) this._dom = TunableNode.fromXml(this._content);
+    if (this._dom === undefined) this._dom = parseNode(this._content);
     return this._dom;
   }
 
