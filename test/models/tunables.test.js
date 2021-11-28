@@ -269,7 +269,47 @@ describe('tunables', function() {
     });
 
     describe('#clone()', function() {
-      // TODO:
+      it('should copy all contents of the node', function() {
+        const node = M({ 
+          n: "module.name",
+          s: 12345,
+          comment: "This is a comment",
+          children: [
+            C({ name: "FirstClass" }),
+            C({ name: "SecondClass" }),
+            C({ name: "ThirdClass" }),
+          ]
+        });
+  
+        const clone = node.clone();
+        expect(clone.attributes.n).to.equal("module.name");
+        expect(clone.attributes.s).to.equal(12345);
+        expect(clone.comment).to.equal('This is a comment');
+        expect(clone.children).to.be.an('Array').with.lengthOf(3);
+        expect(clone.children[0].attributes.n).to.equal("FirstClass");
+        expect(clone.children[1].attributes.n).to.equal("SecondClass");
+        expect(clone.children[2].attributes.n).to.equal("ThirdClass");
+      });
+
+      it('should not mutate the value of the original', function() {
+        // TODO:
+      });
+
+      it('should not mutate the comment of the original', function() {
+        // TODO:
+      });
+
+      it('should not mutate the attributes of the original', function() {
+        // TODO:
+      });
+
+      it('should not mutate the children array of the original', function() {
+        // TODO:
+      });
+
+      it('should not mutate the child nodes of the original', function() {
+        // TODO:
+      });
     });
 
     describe('#toXml()', function() {
