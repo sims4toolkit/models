@@ -647,37 +647,60 @@ describe('tunables', function() {
         const clone = node.clone();
         expect(clone.attributes.n).to.equal("variant");
         expect(clone.attributes.t).to.equal("enabled");
-        const [ child ] = clone.children;
-        expect(child.attributes.n).to.equal("enabled");
-        expect(child.value).to.equal(50);
+        expect(clone.child.attributes.n).to.equal("enabled");
+        expect(clone.child.value).to.equal(50);
       });
 
       it('should copy deeply nested nodes (children of child)', function() {
         const node = V({ name: "variant", type: "enabled",
           child: L({
             name: "enabled",
-            chlidren: [ T({ value: 1 }), T({ value: 2 }) ]
+            children: [ T({ value: 1 }), T({ value: 2 }) ]
           })
         });
 
         const clone = node.clone();
-        expect(clone.child)
+        expect(clone.child.children).to.be.an('Array').with.lengthOf(2);
+        expect(clone.child.children[0].value).to.equal(1);
+        expect(clone.child.children[1].value).to.equal(2);
       });
 
       it('should not mutate the comment of the original', function() {
-        // TODO:
+        const node = V({ type: "disabled", comment: "Comment"});
+        const clone = node.clone();
+        expect(node.comment).to.equal("Comment");
+        expect(clone.comment).to.equal("Comment");
+        clone.comment = "New comment";
+        expect(node.comment).to.equal("Comment");
+        expect(clone.comment).to.equal("New comment");
       });
 
       it('should not mutate the attributes of the original', function() {
-        // TODO:
+        const node = V({ type: "disabled" });
+        const clone = node.clone();
+        expect(node.attributes.t).to.equal("disabled");
+        expect(clone.attributes.t).to.equal("disabled");
+        clone.attributes.t = "enabled";
+        expect(node.attributes.t).to.equal("disabled");
+        expect(clone.attributes.t).to.equal("enabled");
       });
 
       it('should not mutate the children array of the original', function() {
-        // TODO:
+        const node = V({ type: "enabled" });
+        expect(node.children).to.be.empty;
+        const clone = node.clone();
+        expect(clone.children).to.be.empty;
+        clone.add(T({ name: "enabled", value: 5 }));
+        expect(node.children).to.be.empty;
+        expect(clone.children).to.have.lengthOf(1);
       });
 
       it('should not mutate the child node of the original', function() {
-        // TODO:
+        const node = V({ child: T({ value: 10 }) });
+        const clone = node.clone();
+        clone.child.value = 15;
+        expect(node.child.value).to.equal(10);
+        expect(clone.child.value).to.equal(15);
       });
     });
 
