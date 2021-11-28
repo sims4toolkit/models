@@ -40,6 +40,20 @@ describe('tunables', function() {
       });
     });
 
+    describe('#child', function() {
+      it('should return undefined if there are no children', function() {
+        // TODO:
+      });
+
+      it('should return the first child if there is at least one', function() {
+        // TODO:
+      });
+
+      it('should throw when being set', function() {
+        // TODO:
+      });
+    });
+
     describe('#attributes', function() {
       it('should return the attributes', function() {
         // TODO:
@@ -626,38 +640,28 @@ describe('tunables', function() {
 
     describe('#clone()', function() {
       it('should copy all contents of the node', function() {
-        // const node = I({ 
-        //   n: "name",
-        //   c: "class",
-        //   i: "type",
-        //   m: "path",
-        //   s: 12345,
-        //   comment: "This is a comment",
-        //   children: [
-        //     T({ name: "first_child", value: 1 }),
-        //     T({ name: "second_child", value: 2 }),
-        //     T({ name: "third_child", value: 3 }),
-        //   ]
-        // });
-  
-        // const clone = node.clone();
-        // expect(clone.attributes.n).to.equal("name");
-        // expect(clone.attributes.c).to.equal("class");
-        // expect(clone.attributes.i).to.equal("type");
-        // expect(clone.attributes.m).to.equal("path");
-        // expect(clone.attributes.s).to.equal(12345);
-        // expect(clone.comment).to.equal('This is a comment');
-        // expect(clone.children).to.be.an('Array').with.lengthOf(3);
-        // expect(clone.children[0].attributes.n).to.equal("first_child");
-        // expect(clone.children[0].value).to.equal(1);
-        // expect(clone.children[1].attributes.n).to.equal("second_child");
-        // expect(clone.children[1].value).to.equal(2);
-        // expect(clone.children[2].attributes.n).to.equal("third_child");
-        // expect(clone.children[2].value).to.equal(3);
+        const node = V({ name: "variant", type: "enabled",
+          child: T({ name: "enabled", value: 50 })
+        });
+
+        const clone = node.clone();
+        expect(clone.attributes.n).to.equal("variant");
+        expect(clone.attributes.t).to.equal("enabled");
+        const [ child ] = clone.children;
+        expect(child.attributes.n).to.equal("enabled");
+        expect(child.value).to.equal(50);
       });
 
       it('should copy deeply nested nodes (children of child)', function() {
-        // TODO:
+        const node = V({ name: "variant", type: "enabled",
+          child: L({
+            name: "enabled",
+            chlidren: [ T({ value: 1 }), T({ value: 2 }) ]
+          })
+        });
+
+        const clone = node.clone();
+        expect(clone.child)
       });
 
       it('should not mutate the comment of the original', function() {

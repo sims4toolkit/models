@@ -31,6 +31,11 @@ abstract class _TunableNode {
   value?: any;
   comment?: string;
 
+  /** Shortcut to get the first child. Mainly for use with variants. */
+  get child(): TunableNode {
+    return this.children[0];
+  }
+
   //#region Initialization
 
   constructor({ attributes = {}, value, children = [], comment }: {
