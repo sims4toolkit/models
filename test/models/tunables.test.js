@@ -347,9 +347,7 @@ describe('tunables', function() {
 
     describe('#clone()', function() {
       it('should copy all contents of the node', function() {
-        const node = M({ 
-          n: "module.name",
-          s: 12345,
+        const node = M({ n: "module.name", s: 12345,
           comment: "This is a comment",
           children: [
             C({ name: "FirstClass" }),
@@ -367,23 +365,64 @@ describe('tunables', function() {
       });
 
       it('should copy deeply nested nodes (children of children)', function() {
-        // TODO:
+        const node = M({ n: "module.name", s: 12345,
+          comment: "This is a comment",
+          children: [
+            C({
+              name: "FirstClass",
+              children: [
+                T({ name: "SOME_CONSTANT", value: 50 }),
+                E({ name: "SOME_ENUM", value: "Value" })
+              ]
+            })
+          ]
+        });
+  
+        const clone = node.clone();
+        expect(clone.children).to.have.lengthOf(1);
+        const cls = clone.children[0];
+        expect(cls.children).to.have.lengthOf(2);
+        const [t, e] = cls.children;
+        expect(t.attributes.n).to.equal("SOME_CONSTANT");
+        expect(t.value).to.equal(50);
+        expect(e.attributes.n).to.equal("SOME_ENUM");
+        expect(e.value).to.equal("Value");
       });
 
       it('should not mutate the comment of the original', function() {
-        // TODO:
+        const node = M({ n: "name", s: 123, comment: "Comment" });
+        const clone = node.clone();
+        clone.comment = "New comment";
+        expect(node.comment).to.equal("Comment");
+        expect(clone.comment).to.equal("New comment");
       });
 
       it('should not mutate the attributes of the original', function() {
-        // TODO:
+        const node = M({ n: "name", s: 123, comment: "Comment" });
+        const clone = node.clone();
+        clone.comment = "New comment";
+        expect(node.comment).to.equal("Comment");
+        expect(clone.comment).to.equal("New comment");
       });
 
       it('should not mutate the children array of the original', function() {
-        // TODO:
+        const node = M({ n: "name", s: 123 });
+        expect(node.children).to.be.empty;
+        const clone = node.clone();
+        expect(clone.children).to.be.empty;
+        clone.add(C({ name: "Some class" }));
+        expect(node.children).to.be.empty;
+        expect(clone.children).to.have.lengthOf(1);
       });
 
       it('should not mutate the child nodes of the original', function() {
-        // TODO:
+        const node = M({ n: "name", s: 123, children: [ C({ name: "Cls" }) ] });
+        expect(node.children[0].children).to.be.empty;
+        const clone = node.clone();
+        expect(clone.children[0].children).to.be.empty;
+        clone.children[0].add(T({ name: "CONSTANT", value: 50 }));
+        expect(node.children[0].children).to.be.empty;
+        expect(clone.children[0].children).to.have.lengthOf(1);
       });
     });
 
