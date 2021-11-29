@@ -492,24 +492,6 @@ describe('tunables', function() {
         expect(node.children[1].name).to.equal("third");
       });
     });
-
-    describe('#removeAt()', function() {
-      it('should do nothing if index is negative', function() {
-        // TODO:
-      });
-
-      it('should do nothing if the index is out of bounds', function() {
-        // TODO:
-      });
-
-      it('should remove the one child at the given index if count is 1', function() {
-        // TODO:
-      });
-
-      it('should remove multiple children at the given index if count > 1', function() {
-        // TODO:
-      });
-    });
   });
 
   describe('#I()', function() {

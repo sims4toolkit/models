@@ -289,7 +289,7 @@ abstract class _TunableNode {
   remove(...children: TunableNode[]) {
     children.forEach(child => {
       const index = this.children.findIndex(c => c === child);
-      if (index !== -1) this.removeAt(index);
+      if (index !== -1) this._removeAt(index);
     });
   }
 
@@ -301,7 +301,7 @@ abstract class _TunableNode {
    * @param count Number of children to remove
    * @returns The children that were removed
    */
-  removeAt(index: number, count: number = 1): TunableNode[] {
+  private _removeAt(index: number, count: number = 1): TunableNode[] {
     return this.children?.splice(index, count);
   }
 
