@@ -408,23 +408,88 @@ describe('tunables', function() {
 
     describe('#remove()', function() {
       it('should do nothing if no child is passed in', function() {
-        // TODO:
+        const node = L({
+          children: [
+            T({ name: "first" }),
+            T({ name: "second" }),
+            T({ name: "third" })
+          ]
+        });
+
+        expect(node.children).to.have.lengthOf(3);
+        node.remove();
+        expect(node.children).to.have.lengthOf(3);
       });
 
       it('should remove the one child that is passed in', function() {
-        // TODO:
+        const first = T({ name: "first" });
+
+        const node = L({
+          children: [
+            first,
+            T({ name: "second" }),
+            T({ name: "third" })
+          ]
+        });
+
+        expect(node.children).to.have.lengthOf(3);
+        node.remove(first);
+        expect(node.children).to.have.lengthOf(2);
+        expect(node.children[0].name).to.equal("second");
+        expect(node.children[1].name).to.equal("third");
       });
 
       it('should remove all children that are passed in', function() {
-        // TODO:
+        const first = T({ name: "first" });
+        const second = T({ name: "second" });
+
+        const node = L({
+          children: [
+            first,
+            second,
+            T({ name: "third" })
+          ]
+        });
+
+        expect(node.children).to.have.lengthOf(3);
+        node.remove(first, second);
+        expect(node.children).to.have.lengthOf(1);
+        expect(node.children[0].name).to.equal("third");
       });
 
       it('should ignore children that are not in this node', function() {
-        // TODO:
+        const other = T({ name: "other" });
+
+        const node = L({
+          children: [
+            T({ name: "first" }),
+            T({ name: "second" }),
+            T({ name: "third" })
+          ]
+        });
+
+        expect(node.children).to.have.lengthOf(3);
+        node.remove(other);
+        expect(node.children).to.have.lengthOf(3);
       });
 
       it('should remove children by reference, not value', function() {
-        // TODO:
+        const first = T({ name: "first" });
+        const second = T({ name: "second" });
+
+        const node = L({
+          children: [
+            first,
+            T({ name: "second" }),
+            T({ name: "third" })
+          ]
+        });
+
+        expect(node.children).to.have.lengthOf(3);
+        node.remove(first, second);
+        expect(node.children).to.have.lengthOf(2);
+        expect(node.children[0].name).to.equal("second");
+        expect(node.children[1].name).to.equal("third");
       });
     });
 
