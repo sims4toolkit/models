@@ -61,6 +61,21 @@ describe('tunables', function() {
       });
     });
 
+    describe('#name', function() {
+      it('should get the n attribute', function() {
+        const node = T({ name: "some_name" });
+        expect(node.attributes.n).to.equal("some_name");
+        expect(node.name).to.equal("some_name");
+      });
+
+      it('should set the n attribute', function() {
+        const node = T({ name: "some_name" });
+        expect(node.attributes.n).to.equal("some_name");
+        node.name = "new_name";
+        expect(node.attributes.n).to.equal("new_name");
+      });
+    });
+
     describe('#attributes', function() {
       // getter is tested in initializer functions
 
@@ -184,11 +199,34 @@ describe('tunables', function() {
 
     describe('#search()', function() {
       it('should return all children if no criteria were given', function() {
-        // TODO:
+        const node = I({ c: "Class", i: "type", m: "path", n: "name", s: 12345,
+          children: [
+            T({ name: "tunable", value: 25 }),
+            E({ name: "enum", value: "Value" }),
+            L({ name: "list", comment: "Intentionally empty" }),
+            V({ name: "variant", type: "enabled" })
+          ]
+        });
+
+        const result = node.search();
+        expect(result).to.be.an('Array').with.lengthOf(4);
       });
 
       it('should filter by tag', function() {
-        // TODO:
+        const node = I({ c: "Class", i: "type", m: "path", n: "name", s: 12345,
+          children: [
+            T({ name: "tunable_1", value: 25 }),
+            E({ name: "enum", value: "Value" }),
+            L({ name: "list", comment: "Intentionally empty" }),
+            T({ name: "tunable_2", value: 50 }),
+            V({ name: "variant", type: "enabled" })
+          ]
+        });
+
+        const result = node.search({ tag: 'T' });
+        expect(result).to.have.lengthOf(2);
+        expect(result[0].name).to.equal("tunable_1");
+        expect(result[1].name).to.equal("tunable_2");
       });
 
       it('should filter by attributes', function() {
@@ -200,6 +238,10 @@ describe('tunables', function() {
       });
 
       it('should filter by comment', function() {
+        // TODO:
+      });
+
+      it('should filter by multiple criteria', function() {
         // TODO:
       });
     });

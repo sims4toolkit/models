@@ -36,6 +36,16 @@ abstract class _TunableNode {
     return this.children[0];
   }
 
+  /** Shortcut to get the 'n' attribute. */
+  get name(): string {
+    return this.attributes.n;
+  }
+
+  /** Shortcut to set the 'n' attribute. */
+  set name(name: string) {
+    this.attributes.n = name;
+  }
+
   //#region Initialization
 
   constructor({ attributes = {}, value, children = [], comment }: {
