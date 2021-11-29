@@ -200,14 +200,16 @@ abstract class _TunableNode {
    * 
    * Arguments
    * - `tag`: Tag that child must have.
+   * - `name`: Shortcut for checking the `n` attribute.
    * - `attributes`: Attribute(s) that child must have.
    * - `value`: Value that child must have.
    * - `comment`: Comment that child must have (exact match).
    * 
    * @param criteria Object containing the search criteria
    */
-  search({ tag, attributes, value, comment }: {
+  search({ tag, name, attributes, value, comment }: {
     tag?: Tag;
+    name?: string;
     attributes?: TunableAttributes;
     value?: string;
     comment?: string;
@@ -216,6 +218,7 @@ abstract class _TunableNode {
       if (tag && child.tag !== tag) return false;
       if (value && child.value !== value) return false;
       if (comment && child.comment !== comment) return false;
+      if (name && child.name !== name) return false;
       if (attributes)
         for (const key in attributes)
           if (child.attributes[key] !== attributes[key]) return false;
