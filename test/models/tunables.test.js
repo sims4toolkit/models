@@ -331,26 +331,78 @@ describe('tunables', function() {
     });
 
     describe('#sort()', function() {
-      it('should do nothing when the node is empty', function() {
-        // TODO:
-      });
-
       it('should sort in alphabetical order by name if no fn passed in', function() {
-        // TODO:
+        const node = L({
+          children: [
+            T({ name: "b" }),
+            T({ name: "d" }),
+            T({ name: "a" }),
+            T({ name: "c" })
+          ]
+        });
+
+        node.sort();
+        expect(node.children[0].name).to.equal('a');
+        expect(node.children[1].name).to.equal('b');
+        expect(node.children[2].name).to.equal('c');
+        expect(node.children[3].name).to.equal('d');
       });
 
       it('should sort children according to the given function', function() {
-        // TODO:
+        const node = L({
+          children: [
+            T({ name: "b", value: 1 }),
+            T({ name: "d", value: 4 }),
+            T({ name: "a", value: 3 }),
+            T({ name: "c", value: 2 })
+          ]
+        });
+
+        node.sort((a, b) => a.value - b.value);
+        expect(node.children[0].name).to.equal('b');
+        expect(node.children[1].name).to.equal('c');
+        expect(node.children[2].name).to.equal('a');
+        expect(node.children[3].name).to.equal('d');
       });
 
       it("should not change the order of childrens' children", function() {
-        // TODO:
+        const node = L({
+          children: [
+            U({
+              children: [
+                T({ name: "b" }),
+                T({ name: "a" }),
+                T({ name: "c" })
+              ]
+            })
+          ]
+        });
+
+        node.sort();
+        expect(node.child.children[0].name).to.equal("b");
+        expect(node.child.children[1].name).to.equal("a");
+        expect(node.child.children[2].name).to.equal("c");
       });
     });
 
     describe('#deepSort()', function() {
       it("should recursively sort children", function() {
-        // TODO:
+        const node = L({
+          children: [
+            U({
+              children: [
+                T({ name: "b" }),
+                T({ name: "a" }),
+                T({ name: "c" })
+              ]
+            })
+          ]
+        });
+
+        node.deepSort();
+        expect(node.child.children[0].name).to.equal("a");
+        expect(node.child.children[1].name).to.equal("b");
+        expect(node.child.children[2].name).to.equal("c");
       });
     });
 
