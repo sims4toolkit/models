@@ -218,7 +218,7 @@ abstract class _TunableNode {
       if (comment && child.comment !== comment) return false;
       if (attributes)
         for (const key in attributes)
-          if (this.attributes[key] !== attributes[key]) return false;
+          if (child.attributes[key] !== attributes[key]) return false;
       return true;
     });
   }

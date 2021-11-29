@@ -230,15 +230,56 @@ describe('tunables', function() {
       });
 
       it('should filter by attributes', function() {
-        // TODO:
+        const node = I({ c: "Class", i: "type", m: "path", n: "name", s: 12345,
+          children: [
+            T({ name: "tunable_1", value: 25 }),
+            E({ name: "enum", value: "Value" }),
+            V({ name: "variant_1", type: "enabled" }),
+            V({ name: "variant_2", type: "disabled" }),
+            L({ name: "list", comment: "Intentionally empty" }),
+            T({ name: "tunable_2", value: "Value" }),
+            V({ name: "variant_3", type: "enabled" })
+          ]
+        });
+
+        const result = node.search({ attributes: { t: "enabled" } });
+        expect(result).to.have.lengthOf(2);
+        expect(result[0].name).to.equal("variant_1");
+        expect(result[1].name).to.equal("variant_3");
       });
 
       it('should filter by value', function() {
-        // TODO:
+        const node = I({ c: "Class", i: "type", m: "path", n: "name", s: 12345,
+          children: [
+            T({ name: "tunable_1", value: 25 }),
+            E({ name: "enum", value: "Value" }),
+            L({ name: "list", comment: "Intentionally empty" }),
+            T({ name: "tunable_2", value: "Value" }),
+            V({ name: "variant", type: "enabled" })
+          ]
+        });
+
+        const result = node.search({ value: 'Value' });
+        expect(result).to.have.lengthOf(2);
+        expect(result[0].name).to.equal("enum");
+        expect(result[1].name).to.equal("tunable_2");
       });
 
       it('should filter by comment', function() {
-        // TODO:
+        const node = I({ c: "Class", i: "type", m: "path", n: "name", s: 12345,
+          children: [
+            T({ name: "tunable_1", value: 25 }),
+            E({ name: "enum", value: "Value" }),
+            L({ name: "list", comment: "Intentionally empty" }),
+            T({ name: "tunable_2", value: "Value" }),
+            V({ name: "variant", type: "enabled", comment: "Intentionally empty" })
+          ]
+        });
+
+        const result = node.search({ comment: 'Intentionally empty' });
+        expect(result).to.have.lengthOf(2);
+        expect(result[0].name).to.equal("list");
+        expect(result[1].name).to.equal("variant");
       });
 
       it('should filter by multiple criteria', function() {
