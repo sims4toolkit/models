@@ -748,7 +748,9 @@ describe('tunables', function() {
 
     describe('#toXml()', function() {
       it("should write 'I' and all attributes", function() {
-        // TODO:
+        const node = I({ c: "Class", i: "type", m: "path", n: "name", s: 123 });
+        const xml = node.toXml();
+        expect(xml).to.equal(`<I c="Class" i="type" m="path" n="name" s="123"/>`);
       });
     });
   });
@@ -884,7 +886,9 @@ describe('tunables', function() {
 
     describe('#toXml()', function() {
       it("should write 'M' and all attributes", function() {
-        // TODO:
+        const node = M({ n: "module.name", s: 1234567890n });
+        const xml = node.toXml();
+        expect(xml).to.equal(`<M n="module.name" s="1234567890"/>`);
       });
     });
   });
@@ -965,8 +969,40 @@ describe('tunables', function() {
     });
 
     describe('#toXml()', function() {
-      it("should write 'T' and all attributes", function() {
-        // TODO:
+      it("should write 'T' and the name attribute", function() {
+        const node = T({ name: "tunable" });
+        const xml = node.toXml();
+        expect(xml).to.equal(`<T n="tunable"/>`);
+      });
+
+      it("should write 'T' and the ev attribute", function() {
+        const node = T({ ev: 25 });
+        const xml = node.toXml();
+        expect(xml).to.equal(`<T ev="25"/>`);
+      });
+
+      it("should write value of 'true' as 'True'", function() {
+        const node = T({ value: true });
+        const xml = node.toXml();
+        expect(xml).to.equal(`<T>True</T>`);
+      });
+
+      it("should write value of 'false' as 'False'", function() {
+        const node = T({ value: false });
+        const xml = node.toXml();
+        expect(xml).to.equal(`<T>False</T>`);
+      });
+
+      it("should write numbers as strings", function() {
+        const node = T({ value: 12345 });
+        const xml = node.toXml();
+        expect(xml).to.equal(`<T>12345</T>`);
+      });
+
+      it("should write bigints as strings", function() {
+        const node = T({ value: 12345n });
+        const xml = node.toXml();
+        expect(xml).to.equal(`<T>12345</T>`);
       });
     });
   });
@@ -1615,6 +1651,10 @@ describe('tunables', function() {
   });
 
   describe('#parseNode()', function() {
+    it('should fail -- needs to be implemented', function() {
+      expect(true).to.be.false;
+    });
+
     // TODO:
   });
 });
