@@ -7,7 +7,6 @@ import Resource from './resources/resource';
 import SimData from './resources/simdata';
 import StringTable from './resources/stringtable';
 import Tuning from './resources/tuning';
-import Unsupported from './resources/unsupported';
 import RawResource from './resources/raw';
 import WritableModel from "./writableModel";
 
@@ -120,7 +119,7 @@ function getResourceModel(entry: IndexEntry, rawBuffer: Buffer): Resource {
     if (entry.compressionType === 23106) {
       buffer = zlib.unzipSync(rawBuffer);
     } else {
-      return Unsupported.from(rawBuffer, `Compression: ${entry.compressionType}`);
+      return RawResource.from(rawBuffer, `Compression: ${entry.compressionType}`);
     }
   } else {
     buffer = rawBuffer;
@@ -133,7 +132,7 @@ function getResourceModel(entry: IndexEntry, rawBuffer: Buffer): Resource {
   } else if (entry.type in TuningResourceType || isXML(buffer)) {
     return Tuning.from(buffer);
   } else {
-    return Unsupported.from(buffer, `Unrecognized non-XML type: ${entry.type}`);
+    return RawResource.from(buffer, `Unrecognized non-XML type: ${entry.type}`);
   }
 }
 

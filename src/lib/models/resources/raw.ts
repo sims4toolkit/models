@@ -5,10 +5,16 @@ import Resource from './resource';
  */
 export default class RawResource extends Resource {
   readonly variant = 'RAW';
+  private _reason?: string;
   private _content?: string;
 
-  private constructor(buffer: Buffer) {
+  get reason(): string {
+    return this._reason;
+  }
+
+  private constructor(buffer: Buffer, reason: string) {
     super({ buffer });
+    this._reason = reason;
   }
 
   clone(): RawResource {
@@ -22,8 +28,8 @@ export default class RawResource extends Resource {
    * 
    * @param buffer Buffer to create a raw resource from
    */
-  static from(buffer: Buffer): RawResource {
-    return new RawResource(buffer);
+  static from(buffer: Buffer, reason?: string): RawResource {
+    return new RawResource(buffer, reason);
   }
 
   protected _serialize(): Buffer {

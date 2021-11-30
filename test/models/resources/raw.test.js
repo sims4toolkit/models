@@ -13,6 +13,23 @@ describe('RawResource', function() {
     });
   });
 
+  describe('#reason', function() {
+    it('should be undefined if no reason is given', function() {
+      const raw = getRAW();
+      expect(raw.reason).to.be.undefined;
+    });
+
+    it('should return the reason why this resource is raw', function() {
+      const raw = RawResource.from(Buffer.from("hello"), "Just because!");
+      expect(raw.reason).to.equal("Just because!");
+    });
+
+    it('should throw when trying to set it', function() {
+      const raw = RawResource.from(Buffer.from("hello"), "Just because!");
+      expect(() => raw.reason = "Nothing").to.throw;
+    });
+  });
+
   describe('#hasChanged', function() {
     it('should throw when trying to assign a value', function() {
       const raw = getRAW();
