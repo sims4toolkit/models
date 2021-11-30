@@ -1,7 +1,7 @@
 const expect = require('chai').expect;
-const { RawResource } = require('../../../dst/api');
+const { RawResource, StringTableResource } = require('../../../dst/api');
 
-function getRAW(content) {
+function getRAW(content = "default content") {
   return RawResource.from(Buffer.from(content));
 }
 
@@ -15,35 +15,44 @@ describe('RawResource', function() {
 
   describe('#hasChanged', function() {
     it('should throw when trying to assign a value', function() {
-      // TODO:
+      const raw = getRAW();
+      expect(() => raw.hasChanged = true).to.throw;
     });
 
     it('should return false', function() {
-      // TODO:
+      const raw = getRAW();
+      expect(raw.hasChanged).to.be.false;
     });
   });
 
   describe('#buffer', function() {
     it('should throw when trying to assign a value', function() {
-      // TODO:
+      const raw = getRAW();
+      expect(() => raw.buffer = Buffer.from("hi")).to.throw;
     });
 
     it('should return the original buffer', function() {
-      // TODO:
+      const raw = getRAW("hello");
+      expect(raw.buffer.toString()).to.equal("hello");
     });
   });
 
   describe('#plainText', function() {
     it('should throw when trying to assign a value', function() {
-      // TODO:
+      const raw = getRAW();
+      expect(() => raw.plainText = "hello").to.throw;
     });
 
     it('should return the plain text for a text resource', function() {
-      // TODO:
+      const raw = getRAW("hello");
+      expect(raw.plainText).to.equal("hello");
     });
 
     it('should return the plain text for a binary resource', function() {
-      // TODO:
+      const stbl = StringTableResource.create();
+      stbl.addAndHash("test");
+      const raw = RawResource.from(stbl.buffer);
+      expect(raw.plainText.startsWith("STBL")).to.be.true;
     });
   });
 
