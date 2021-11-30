@@ -496,39 +496,51 @@ describe('tunables', function() {
       // testing each node type is done with functions
 
       it('should use 0 indents by default', function() {
-        // TODO:
+        const node = T();
+        const xml = node.toXml();
+        expect(xml).to.equal(`<T/>`);
       });
 
       it('should use the given number of indents', function() {
-        // TODO:
+        const node = T();
+        const xml = node.toXml({ indents: 1 });
+        expect(xml).to.equal(`  <T/>`);
       });
 
       it('should increase indent by 1 after each recursive call', function() {
-        // TODO:
+        const node = L({ children: [ T() ] });
+        const xml = node.toXml();
+        expect(xml).to.equal(`<L>\n  <T/>\n</L>`);
       });
 
       it('should use 2 spaces per indent by default', function() {
-        // TODO:
+        const node = T();
+        const xml = node.toXml({ indents: 1 });
+        expect(xml).to.equal(`  <T/>`);
       });
 
       it('should use the given number of spaces per indent', function() {
-        // TODO:
-      });
-
-      it('should not include the declaration by default', function() {
-        // TODO:
+        const node = T();
+        const xml = node.toXml({ indents: 1, spacesPerIndent: 4 });
+        expect(xml).to.equal(`    <T/>`);
       });
 
       it('should include the declaration when told to', function() {
-        // TODO:
+        const node = T();
+        const xml = node.toXml({ includeDeclaration: true });
+        expect(xml).to.equal(`<?xml version="1.0" encoding="utf-8"?>\n<T/>`);
       });
       
       it('should not alphabetize the children by default', function() {
-        // TODO:
+        const node = L({ children: [ T({ name: "b" }), T({ name: "a" }) ] });
+        const xml = node.toXml();
+        expect(xml).to.equal(`<L>\n  <T n="b"/>\n  <T n="a"/>\n</L>`);
       });
 
       it('should alphabetize the children when told to', function() {
-        // TODO:
+        const node = L({ children: [ T({ name: "b" }), T({ name: "a" }) ] });
+        const xml = node.toXml({ alphabetize: true });
+        expect(xml).to.equal(`<L>\n  <T n="a"/>\n  <T n="b"/>\n</L>`);
       });
 
       it('should also alphabetize nested children when told to', function() {
