@@ -57,7 +57,11 @@ describe('RawResource', function() {
   });
 
   describe('#clone()', function() {
-    // TODO:
+    it('should create another raw resource with the same content', function () {
+      const raw = getRAW("hello");
+      const clone = raw.clone();
+      expect(clone.plainText).to.equal(raw.plainText);
+    });
   });
 
   describe('#from()', function() {
