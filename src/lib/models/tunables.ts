@@ -181,13 +181,16 @@ abstract class _TunableNode {
       });
 
       lines.push(`${spaces}</${this.tag}>`);
-    } else if (this.value !== undefined) {
+    } else if (this.value != undefined) { // intentionally != for null
       // node has value
       const value = `${formatValue(this.value)}${comment}`;
       lines.push(`${spaces}<${this.tag}${attrString}>${value}</${this.tag}>`);
+    } else if (this.comment) {
+      // node has comment
+      lines.push(`${spaces}<${this.tag}${attrString}>${comment}</${this.tag}>`)
     } else {
-      // node is empty
-      lines.push(`${spaces}<${this.tag}${attrString}/>${comment}`);
+      // node is empty and does not have a comment
+      lines.push(`${spaces}<${this.tag}${attrString}/>`);
     }
 
     return lines.join('\n');
@@ -642,6 +645,7 @@ export function getStringNodeFunction(stbl: StringTable): ({ name, toHash, strin
 export function parseNode(xml: string): TunableNode {
   const dom = parser.parse(xml);
   // TODO: impl
+  return undefined;
 }
 
 //#endregion Functions

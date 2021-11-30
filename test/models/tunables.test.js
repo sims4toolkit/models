@@ -8,8 +8,7 @@ describe('tunables', function() {
   describe('#TunableNode', function() {
     // TunableNode is an abstract class and the only export for it is as a type.
     // This section is just for testing the methods that are implemented in the
-    // base class and do not depend on any child values/implementations. For
-    // this reason, clone() and toXml() are both tested with the functions.
+    // base class and do not depend on any child values/implementations.
 
     describe('#tag', function() {
       // getter is tested in initializer functions
@@ -492,6 +491,78 @@ describe('tunables', function() {
         expect(node.children[1].name).to.equal("third");
       });
     });
+
+    describe('#toXml()', function() {
+      // testing each node type is done with functions
+
+      it('should use 0 indents by default', function() {
+        // TODO:
+      });
+
+      it('should use the given number of indents', function() {
+        // TODO:
+      });
+
+      it('should increase indent by 1 after each recursive call', function() {
+        // TODO:
+      });
+
+      it('should use 2 spaces per indent by default', function() {
+        // TODO:
+      });
+
+      it('should use the given number of spaces per indent', function() {
+        // TODO:
+      });
+
+      it('should not include the declaration by default', function() {
+        // TODO:
+      });
+
+      it('should include the declaration when told to', function() {
+        // TODO:
+      });
+      
+      it('should not alphabetize the children by default', function() {
+        // TODO:
+      });
+
+      it('should alphabetize the children when told to', function() {
+        // TODO:
+      });
+
+      it('should also alphabetize nested children when told to', function() {
+        // TODO:
+      });
+
+      it('should not alphabetize the attributes by default', function() {
+        // TODO:
+      });
+
+      it('should alphabetize the attributes when told to', function() {
+        // TODO:
+      });
+
+      it('should write comment between open and close tags when empty', function() {
+        // TODO:
+      });
+
+      it('should write comment indented and before first child if there are any', function() {
+        // TODO:
+      });
+
+      it('should write comment after value if there is one', function() {
+        // TODO:
+      });
+
+      it('should only use one tag when there are is value, children, or comment', function() {
+        // TODO:
+      });
+
+      it('should write all atrributes with spaces before them', function() {
+        // TODO:
+      });
+    });
   });
 
   describe('#I()', function() {
@@ -676,7 +747,9 @@ describe('tunables', function() {
     });
 
     describe('#toXml()', function() {
-      // TODO:
+      it("should write 'I' and all attributes", function() {
+        // TODO:
+      });
     });
   });
 
@@ -810,7 +883,9 @@ describe('tunables', function() {
     });
 
     describe('#toXml()', function() {
-      // TODO:
+      it("should write 'M' and all attributes", function() {
+        // TODO:
+      });
     });
   });
 
@@ -890,7 +965,9 @@ describe('tunables', function() {
     });
 
     describe('#toXml()', function() {
-      // TODO:
+      it("should write 'T' and all attributes", function() {
+        // TODO:
+      });
     });
   });
 
@@ -960,7 +1037,9 @@ describe('tunables', function() {
     });
 
     describe('#toXml()', function() {
-      // TODO:
+      it("should write 'E' and all attributes", function() {
+        // TODO:
+      });
     });
   });
 
@@ -1074,7 +1153,9 @@ describe('tunables', function() {
     });
 
     describe('#toXml()', function() {
-      // TODO:
+      it("should write 'V' and all attributes", function() {
+        // TODO:
+      });
     });
   });
 
@@ -1190,7 +1271,9 @@ describe('tunables', function() {
     });
 
     describe('#toXml()', function() {
-      // TODO:
+      it("should write 'U' and all attributes", function() {
+        // TODO:
+      });
     });
   });
 
@@ -1300,7 +1383,9 @@ describe('tunables', function() {
     });
 
     describe('#toXml()', function() {
-      // TODO:
+      it("should write 'L' and all attributes", function() {
+        // TODO:
+      });
     });
   });
 
@@ -1416,7 +1501,9 @@ describe('tunables', function() {
     });
 
     describe('#toXml()', function() {
-      // TODO:
+      it("should write 'C' and all attributes", function() {
+        // TODO:
+      });
     });
   });
 
