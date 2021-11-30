@@ -1073,8 +1073,10 @@ describe('tunables', function() {
     });
 
     describe('#toXml()', function() {
-      it("should write 'E' and all attributes", function() {
-        // TODO:
+      it("should write 'E' and its name and value", function() {
+        const node = E({ name: "enum", value: "SOMETHING" });
+        const xml = node.toXml();
+        expect(xml).to.equal(`<E n="enum">SOMETHING</E>`);
       });
     });
   });
@@ -1189,8 +1191,16 @@ describe('tunables', function() {
     });
 
     describe('#toXml()', function() {
-      it("should write 'V' and all attributes", function() {
-        // TODO:
+      it("should write 'V' and all attributes when there is no child", function() {
+        const node = V({ name: "variant", type: "disabled" });
+        const xml = node.toXml();
+        expect(xml).to.equal(`<V n="variant" t="disabled"/>`);
+      });
+
+      it("should write 'V' and its child", function() {
+        const node = V({ name: "variant", type: "enabled", child: T({ name: "enabled" }) });
+        const xml = node.toXml();
+        expect(xml).to.equal(`<V n="variant" t="enabled">\n  <T n="enabled"/>\n</V>`);
       });
     });
   });
