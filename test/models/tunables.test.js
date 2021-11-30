@@ -544,35 +544,39 @@ describe('tunables', function() {
       });
 
       it('should also alphabetize nested children when told to', function() {
-        // TODO:
-      });
-
-      it('should not alphabetize the attributes by default', function() {
-        // TODO:
+        const node = L({ children: [ L({ children: [ T({ name: "b" }), T({ name: "a" }) ] }) ] });
+        const xml = node.toXml({ alphabetize: true });
+        expect(xml).to.equal(`<L>\n  <L>\n    <T n="a"/>\n    <T n="b"/>\n  </L>\n</L>`);
       });
 
       it('should alphabetize the attributes when told to', function() {
-        // TODO:
+        const node = I({ n: "name", s: 123, i: "type", c: "Class", m: "path" });
+        const xml = node.toXml();
+        expect(xml).to.equal(`<I c="Class" i="type" m="path" n="name" s="123"/>`);
       });
 
       it('should write comment between open and close tags when empty', function() {
-        // TODO:
+        const node = T({ comment: "Comment" });
+        const xml = node.toXml();
+        expect(xml).to.equal(`<T><!--Comment--></T>`);
       });
 
       it('should write comment indented and before first child if there are any', function() {
-        // TODO:
+        const node = L({ comment: "Comment", children: [ T() ] });
+        const xml = node.toXml();
+        expect(xml).to.equal(`<L>\n  <!--Comment-->\n  <T/>\n</L>`);
       });
 
       it('should write comment after value if there is one', function() {
-        // TODO:
+        const node = T({ value: 50, comment: "Comment" });
+        const xml = node.toXml();
+        expect(xml).to.equal(`<T>50<!--Comment--></T>`);
       });
 
-      it('should only use one tag when there are is value, children, or comment', function() {
-        // TODO:
-      });
-
-      it('should write all atrributes with spaces before them', function() {
-        // TODO:
+      it('should only use one tag when there is no value, children, or comment', function() {
+        const node = T();
+        const xml = node.toXml();
+        expect(xml).to.equal(`<T/>`);
       });
     });
   });
