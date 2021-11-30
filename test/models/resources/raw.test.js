@@ -13,6 +13,40 @@ describe('RawResource', function() {
     });
   });
 
+  describe('#hasChanged', function() {
+    it('should throw when trying to assign a value', function() {
+      // TODO:
+    });
+
+    it('should return false', function() {
+      // TODO:
+    });
+  });
+
+  describe('#buffer', function() {
+    it('should throw when trying to assign a value', function() {
+      // TODO:
+    });
+
+    it('should return the original buffer', function() {
+      // TODO:
+    });
+  });
+
+  describe('#plainText', function() {
+    it('should throw when trying to assign a value', function() {
+      // TODO:
+    });
+
+    it('should return the plain text for a text resource', function() {
+      // TODO:
+    });
+
+    it('should return the plain text for a binary resource', function() {
+      // TODO:
+    });
+  });
+
   describe('#clone()', function() {
     // TODO:
   });
@@ -21,15 +55,9 @@ describe('RawResource', function() {
     // TODO:
   });
 
-  describe('#getPlainText()', function() {
-    // TODO:
-  });
-
-  describe('#hasChanged()', function() {
-    // TODO:
-  });
-
-  describe('#getBuffer()', function() {
-    // TODO:
+  describe('#uncache()', function() {
+    it('should do nothing', function() {
+      // TODO:
+    });
   });
 });

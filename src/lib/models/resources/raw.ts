@@ -30,6 +30,10 @@ export default class RawResource extends Resource {
     throw new Error("Cannot serialize a raw resource.");
   }
 
+  uncache() {
+    // intentionally blank because this resource cannot be uncached
+  }
+
   /**
    * Returns this resource as plain text. This is a lazy function, in that the
    * content will not be decoded until this function is called.

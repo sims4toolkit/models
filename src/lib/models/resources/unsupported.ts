@@ -20,14 +20,6 @@ export default class UnsupportedResource extends Resource {
   }
 
   /**
-   * Converts this unsupported resource into a raw resource so that it can be
-   * read as plain text.
-   */
-  toRaw(): RawResource {
-    return RawResource.from(this.buffer);
-  }
-
-  /**
    * Creates a new unsupported resource from the given buffer. This is
    * functionally the same as the constructor, but is provided for parity with
    * the other resource types.
@@ -39,7 +31,19 @@ export default class UnsupportedResource extends Resource {
     return new UnsupportedResource(buffer, reason);
   }
 
+  /**
+   * Converts this unsupported resource into a raw resource so that it can be
+   * read as plain text.
+   */
+  toRaw(): RawResource {
+    return RawResource.from(this.buffer);
+  }
+
   protected _serialize(): Buffer {
     throw new Error("Cannot serialize an unsupported resource.");
+  }
+
+  uncache() {
+    // intentionally blank because this resource cannot be uncached
   }
 }

@@ -10,33 +10,26 @@ export default abstract class WritableModel {
   public owner?: WritableModel;
 
   private _cachedBuffer?: Buffer;
-  private _neverCache: boolean;
 
   /**
    * Constructor for `WritableModel`.
    * 
    * Arguments
    * - `buffer`: The initial buffer to cache.
-   * - `neverCache`: Whether this model should never be cached.
    * 
    * @param args Object containing arguments
    */
-  protected constructor({ buffer, neverCache = false }: {
+  protected constructor({ buffer }: {
     buffer?: Buffer;
-    neverCache?: boolean;
   } = {}) {
     this._cachedBuffer = buffer;
-    this._neverCache = neverCache;
   }
 
   /**
-   * Returns the buffer for this model. If it was created with `neverCache` set
-   * to `true`, then a freshly serialized buffer is guaranteed to be returned.
-   * If a fresh buffer is needed without `neverCache`, just call `uncache()`
-   * before getting the buffer.
+   * Returns the buffer for this model. If you want to ensure that the cache is
+   * cleared before the buffer is returned, call `uncache()` first.
    */
   get buffer(): Buffer {
-    if (this._neverCache) return this._serialize();
     if (this.hasChanged) this._cachedBuffer = this._serialize();
     return this._cachedBuffer;
   }
