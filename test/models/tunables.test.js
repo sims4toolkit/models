@@ -2,10 +2,10 @@ const { expect } = require('chai');
 const { tunables, hashing, formatting, StringTableResource } = require('../../dst/api');
 const { formatStringKey } = formatting;
 const { fnv32 } = hashing;
-const { I, M, T, E, V, U, L, C, S, getStringNodeFunction } = tunables;
+const { I, M, T, E, V, U, L, C, S, getStringNodeFunction, parseNode } = tunables;
 
 describe('tunables', function() {
-  describe('#TunableNode', function() {
+  describe('TunableNode', function() {
     // TunableNode is an abstract class and the only export for it is as a type.
     // This section is just for testing the methods that are implemented in the
     // base class and do not depend on any child values/implementations.
@@ -577,6 +577,56 @@ describe('tunables', function() {
         const node = T();
         const xml = node.toXml();
         expect(xml).to.equal(`<T/>`);
+      });
+    });
+  });
+
+  describe('NoTagNode', function() {
+    describe('#children', function() {
+      it('should be empty', function() {
+        const node = parseNode('');
+        expect(node.children).to.be.an('Array').that.is.empty;
+      });
+    });
+
+    describe('#value', function() {
+      it('should be undefined when none is set', function() {
+        const node = parseNode('');
+        expect(node.value).to.be.undefined;
+      });
+
+      it('should return the value when there is one', function() {
+        const node = parseNode('test');
+        expect(node.value).to.equal('test');
+      });
+    });
+
+    describe('#value', function() {
+      it('should be undefined when none is set', function() {
+        const node = parseNode('');
+        expect(node.comment).to.be.undefined;
+      });
+
+      it('should return the value when there is one', function() {
+        const node = parseNode('<!--Comment-->');
+        expect(node.comment).to.equal('Comment');
+      });
+    });
+
+    describe('#toXml()', function() {
+      it('should return an empty string when no value or comment', function() {
+        const empty = parseNode('');
+        expect(empty.toXml()).to.equal('');
+      });
+
+      it('should return the value when there is one', function() {
+        const empty = parseNode('test');
+        expect(empty.toXml()).to.equal('test');
+      });
+
+      it('should return the comment when there is one', function() {
+        const empty = parseNode('<!--Comment-->');
+        expect(empty.toXml()).to.equal('<!--Comment-->');
       });
     });
   });

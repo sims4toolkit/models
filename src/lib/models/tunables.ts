@@ -25,7 +25,7 @@ export type TunableNode = InstanceType<typeof _TunableNode>;
  * Base class for all tunable nodes.
  */
 abstract class _TunableNode {
-  abstract readonly tag: Tag;
+  abstract readonly tag?: Tag;
   readonly attributes: TunableAttributes;
   readonly children?: TunableNode[];
   value?: any;
@@ -133,6 +133,9 @@ abstract class _TunableNode {
     includeDeclaration?: boolean;
     alphabetize?: boolean;
   } = {}): string {
+    // just to ignore empty nodes without causing issues
+    if (this.tag === undefined) return '';
+
     const spaces = " ".repeat(indents * spacesPerIndent);
     const lines: string[] = [];
 
@@ -328,6 +331,22 @@ abstract class ParentTunable extends _TunableNode {
     comment?: string;
   }) {
     super({ attributes, children, comment });
+  }
+}
+
+/** Node to use when tuning file is empty or cannot be parsed. */
+class NoTagNode extends _TunableNode {
+  readonly tag = undefined;
+
+  constructor({ value, comment }: {
+    value?: any;
+    comment?: string;
+  } = {}) {
+    super({ value, comment });
+  }
+
+  clone(): NoTagNode {
+    return new NoTagNode();
   }
 }
 
@@ -645,7 +664,7 @@ export function getStringNodeFunction(stbl: StringTable): ({ name, toHash, strin
 export function parseNode(xml: string): TunableNode {
   const dom = parser.parse(xml);
   // TODO: impl
-  return undefined;
+  return new NoTagNode();
 }
 
 //#endregion Functions

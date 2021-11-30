@@ -12,7 +12,7 @@ export default class TuningResource extends Resource {
 
   /** Returns the XML content of this tuning resource. */
   get content(): string {
-    if (this._content === undefined) this._content = this._dom.toXml();
+    if (this._content === undefined) this._content = this._dom?.toXml();
     return this._content;
   }
 
@@ -68,16 +68,6 @@ export default class TuningResource extends Resource {
   static fromNode(node: TunableNode): TuningResource {
     return undefined;
   }
-
-  // /**
-  //  * TODO:
-  //  * 
-  //  * @param node TODO:
-  //  */
-  // static fromNode(node: TuningFileNode): TuningResource {
-  //   // TODO: impl
-  //   return undefined;
-  // }
 
   //#endregion Initialization
 
