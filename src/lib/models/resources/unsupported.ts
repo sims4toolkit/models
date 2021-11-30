@@ -1,3 +1,4 @@
+import RawResource from './raw';
 import Resource from './resource';
 
 /**
@@ -16,6 +17,14 @@ export default class UnsupportedResource extends Resource {
 
   clone(): UnsupportedResource {
     return UnsupportedResource.from(this.buffer);
+  }
+
+  /**
+   * Converts this unsupported resource into a raw resource so that it can be
+   * read as plain text.
+   */
+  toRaw(): RawResource {
+    return RawResource.from(this.buffer);
   }
 
   /**
