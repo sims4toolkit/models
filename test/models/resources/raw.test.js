@@ -61,12 +61,21 @@ describe('RawResource', function() {
   });
 
   describe('#from()', function() {
-    // TODO:
+    it('should create a new raw resource from the given buffer', function() {
+      const buffer = Buffer.from("hello world");
+      const raw = RawResource.from(buffer);
+      expect(raw.buffer.toString()).to.equal("hello world");
+    });
   });
 
   describe('#uncache()', function() {
     it('should do nothing', function() {
-      // TODO:
+      const raw = getRAW("hello");
+      expect(raw.plainText).to.equal("hello");
+      expect(raw.buffer.toString()).to.equal("hello");
+      expect(() => raw.uncache()).to.not.throw;
+      expect(raw.plainText).to.equal("hello");
+      expect(raw.buffer.toString()).to.equal("hello");
     });
   });
 });
