@@ -1317,8 +1317,16 @@ describe('tunables', function() {
     });
 
     describe('#toXml()', function() {
-      it("should write 'U' and all attributes", function() {
-        // TODO:
+      it("should write 'U' and all attributes when there are no children", function() {
+        const node = U({ name: "tuple" });
+        const xml = node.toXml();
+        expect(xml).to.equal(`<U n="tuple"/>`);
+      });
+
+      it("should write 'U' and its children", function() {
+        const node = U({ name: "tuple", children: [ T({ name: "a" }), T({ name: "b" }) ] });
+        const xml = node.toXml();
+        expect(xml).to.equal(`<U n="tuple">\n  <T n="a"/>\n  <T n="b"/>\n</U>`);
       });
     });
   });
@@ -1429,8 +1437,16 @@ describe('tunables', function() {
     });
 
     describe('#toXml()', function() {
-      it("should write 'L' and all attributes", function() {
-        // TODO:
+      it("should write 'L' and all attributes when there are no children", function() {
+        const node = L({ name: "list" });
+        const xml = node.toXml();
+        expect(xml).to.equal(`<L n="list"/>`);
+      });
+
+      it("should write 'L' and its children", function() {
+        const node = L({ name: "list", children: [ T(), T() ] });
+        const xml = node.toXml();
+        expect(xml).to.equal(`<L n="list">\n  <T/>\n  <T/>\n</L>`);
       });
     });
   });
@@ -1547,8 +1563,16 @@ describe('tunables', function() {
     });
 
     describe('#toXml()', function() {
-      it("should write 'C' and all attributes", function() {
-        // TODO:
+      it("should write 'C' and all attributes when there are no children", function() {
+        const node = C({ name: "Class" });
+        const xml = node.toXml();
+        expect(xml).to.equal(`<C n="Class"/>`);
+      });
+
+      it("should write 'C' and its children", function() {
+        const node = C({ name: "Class", children: [ T({ name: "A" }), T({ name: "B" }) ] });
+        const xml = node.toXml();
+        expect(xml).to.equal(`<C n="Class">\n  <T n="A"/>\n  <T n="B"/>\n</C>`);
       });
     });
   });
