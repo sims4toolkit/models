@@ -1737,18 +1737,29 @@ describe('tunables', function() {
   });
 
   describe('#makeDom()', function() {
-    it('should fail -- needs to be implemented', function() {
-      expect(true).to.be.false;
+    it('should create an empty TuningDom when no children are given', function() {
+      const dom = makeDom();
+      expect(dom.children).to.be.an('Array').that.is.empty;
     });
 
-    // TODO:
+    it('should create a TuningDom with the given child', function() {
+      const dom = makeDom(T({ name: "tunable" }));
+      expect(dom.children).to.be.an('Array').with.lengthOf(1);
+      expect(dom.child.name).to.equal("tunable");
+    });
+
+    it('should create a TuningDom with the given children', function() {
+      const dom = makeDom(T({ name: "first" }), T({ name: "second" }), T({ name: "third" }));
+      expect(dom.children).to.be.an('Array').with.lengthOf(3);
+      expect(dom.children[0].name).to.equal("first");
+      expect(dom.children[1].name).to.equal("second");
+      expect(dom.children[2].name).to.equal("third");
+    });
   });
 
   describe('#parseDom()', function() {
     it('should fail -- needs to be implemented', function() {
-      expect(true).to.be.false;
+      expect(true).to.be.false; // TODO:
     });
-
-    // TODO:
   });
 });
