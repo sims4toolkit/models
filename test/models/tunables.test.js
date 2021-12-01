@@ -581,54 +581,8 @@ describe('tunables', function() {
     });
   });
 
-  describe('NoTagNode', function() {
-    describe('#children', function() {
-      it('should be empty', function() {
-        const node = parseNode('');
-        expect(node.children).to.be.an('Array').that.is.empty;
-      });
-    });
-
-    describe('#value', function() {
-      it('should be undefined when none is set', function() {
-        const node = parseNode('');
-        expect(node.value).to.be.undefined;
-      });
-
-      it('should return the value when there is one', function() {
-        const node = parseNode('test');
-        expect(node.value).to.equal('test');
-      });
-    });
-
-    describe('#value', function() {
-      it('should be undefined when none is set', function() {
-        const node = parseNode('');
-        expect(node.comment).to.be.undefined;
-      });
-
-      it('should return the value when there is one', function() {
-        const node = parseNode('<!--Comment-->');
-        expect(node.comment).to.equal('Comment');
-      });
-    });
-
-    describe('#toXml()', function() {
-      it('should return an empty string when no value or comment', function() {
-        const empty = parseNode('');
-        expect(empty.toXml()).to.equal('');
-      });
-
-      it('should return the value when there is one', function() {
-        const empty = parseNode('test');
-        expect(empty.toXml()).to.equal('test');
-      });
-
-      it('should return the comment when there is one', function() {
-        const empty = parseNode('<!--Comment-->');
-        expect(empty.toXml()).to.equal('<!--Comment-->');
-      });
-    });
+  describe('TuningDom', function() {
+    // TODO:
   });
 
   describe('#I()', function() {

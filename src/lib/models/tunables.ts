@@ -20,6 +20,7 @@ type TunableAttributes = { [key in AttributeKey]?: any; };
 // this is to export the base class as a type only, so that it can be used for
 // TS typing but cannot actually be used in JS
 export type TunableNode = InstanceType<typeof _TunableNode>;
+export type TuningDom = InstanceType<typeof _TuningDom>;
 
 /**
  * Base class for all tunable nodes.
@@ -124,18 +125,18 @@ abstract class _TunableNode {
    * - `alphabetize`: Whether the nodes and their attributes should be written
    * in alphanumeric order. If set to true, nodes will be organized according to
    * the value of their name attribute. (Default = false)
+   * - `includeTag`: Whether or not the tag(s) should be written for this node.
+   * This is for internal use, you shouldn't change it. (Default = true)
    * 
    * @param options Object containing options
    */
-  toXml({ indents = 0, spacesPerIndent = 2, includeDeclaration = false, alphabetize = false }: {
+  toXml({ indents = 0, spacesPerIndent = 2, includeDeclaration = false, alphabetize = false, includeTag = true }: {
     indents?: number;
     spacesPerIndent?: number;
     includeDeclaration?: boolean;
     alphabetize?: boolean;
+    includeTag?: boolean;
   } = {}): string {
-    // just to ignore empty nodes without causing issues
-    if (this.tag === undefined) return '';
-
     const spaces = " ".repeat(indents * spacesPerIndent);
     const lines: string[] = [];
 
@@ -168,32 +169,42 @@ abstract class _TunableNode {
         return 0;
       }) : this.children;
 
-      lines.push(`${spaces}<${this.tag}${attrString}>`);
+      if (includeTag) lines.push(`${spaces}<${this.tag}${attrString}>`);
 
       if (comment) {
         const extraSpaces = " ".repeat(spacesPerIndent);
         lines.push(`${spaces}${extraSpaces}${comment}`);
       }
 
+      const childIndents = includeTag ? indents + 1 : indents;
+
       children.forEach(child => {
         lines.push(child.toXml({
-          indents: indents + 1,
+          indents: childIndents,
           spacesPerIndent,
           alphabetize
         }));
       });
 
-      lines.push(`${spaces}</${this.tag}>`);
+      if (includeTag) lines.push(`${spaces}</${this.tag}>`);
     } else if (this.value != undefined) { // intentionally != for null
       // node has value
       const value = `${formatValue(this.value)}${comment}`;
-      lines.push(`${spaces}<${this.tag}${attrString}>${value}</${this.tag}>`);
+      if (includeTag) {
+        lines.push(`${spaces}<${this.tag}${attrString}>${value}</${this.tag}>`);
+      } else {
+        lines.push(`${spaces}${value}`);
+      }
     } else if (this.comment) {
       // node has comment
-      lines.push(`${spaces}<${this.tag}${attrString}>${comment}</${this.tag}>`)
+      if (includeTag) {
+        lines.push(`${spaces}<${this.tag}${attrString}>${comment}</${this.tag}>`);
+      } else {
+        lines.push(`${spaces}${comment}`);
+      }
     } else {
       // node is empty and does not have a comment
-      lines.push(`${spaces}<${this.tag}${attrString}/>`);
+      if (includeTag) lines.push(`${spaces}<${this.tag}${attrString}/>`);
     }
 
     return lines.join('\n');
@@ -334,19 +345,44 @@ abstract class ParentTunable extends _TunableNode {
   }
 }
 
-/** Node to use when tuning file is empty or cannot be parsed. */
-class NoTagNode extends _TunableNode {
+abstract class NoTagNode extends _TunableNode {
   readonly tag = undefined;
 
-  constructor({ value, comment }: {
-    value?: any;
-    comment?: string;
-  } = {}) {
-    super({ value, comment });
+  toXml(options: {
+    indents?: number;
+    spacesPerIndent?: number;
+    includeDeclaration?: boolean;
+    alphabetize?: boolean;
+    includeTag?: boolean;
+  } = {}): string {
+    options.includeTag = false;
+    return super.toXml(options);
+  }
+}
+
+/** Node for DOM. */
+class _TuningDom extends NoTagNode {
+  constructor({ children }: { children?: TunableNode[]; } = {}) {
+    super({ children });
   }
 
-  clone(): NoTagNode {
-    return new NoTagNode();
+  clone(): TuningDom {
+    return new _TuningDom({
+      children: this.children.map(child => child.clone())
+    });
+  }
+}
+
+/** Node for a single comment that isn't part of a tunable. */
+class CommentNode extends NoTagNode {
+  constructor({ comment }: {
+    comment?: string;
+  } = {}) {
+    super({ comment });
+  }
+
+  clone(): CommentNode {
+    return new CommentNode({ comment: this.comment });
   }
 }
 
@@ -620,7 +656,7 @@ export function C({ name, children, comment }: {
  * 
  * @param args Object containing the arguments
  */
-export function S({ name, string, toHash, stbl }: {
+export function LocString({ name, string, toHash, stbl }: {
   name?: string;
   string: string;
   toHash?: string;
@@ -635,36 +671,46 @@ export function S({ name, string, toHash, stbl }: {
 }
 
 /**
- * Returns a version of `S` that already has a string table baked into it, so
- * that you do not need to pass it every time. Example usage is:
+ * Returns a version of `LocString` that already has a string table baked into
+ * it, so that you do not need to pass it every time. Example usage is:
  * 
  * ```ts
  * const stbl = StringTableResource.create();
- * const S = getStringNodeFunction(stbl);
- * const tunable = S({ string: "This is the string!" });
+ * const LocString = getLocStringFn(stbl);
+ * const tunable = LocString({ string: "This is the string!" });
  * ```
  *  
  * @param stbl String table to use 
  */
-export function getStringNodeFunction(stbl: StringTable): ({ name, toHash, string }: {
+export function getLocStringFn(stbl: StringTable): ({ name, toHash, string }: {
   name?: string;
   toHash?: string;
   string: string;
 }) => Tunable {
   return ({ name, toHash, string }: { name?: string; toHash?: string; string: string }) => {
-    return S({ name, string, toHash, stbl });
+    return LocString({ name, string, toHash, stbl });
   };
 }
 
 /**
- * Parse an XML string as a TunableNode.
+ * Wraps the given nodes in a TuningDom object.
  * 
- * @param xml String containing the XML code to parse as a node
+ * @param nodes Top-level nodes in the DOM
  */
-export function parseNode(xml: string): TunableNode {
+export function makeDom(...nodes: TunableNode[]): TuningDom {
+  return new _TuningDom({ children: nodes });
+}
+
+/**
+ * Parse an XML string as a TuningDom.
+ * 
+ * @param xml String containing the XML code to parse as a DOM
+ */
+export function parseDom(xml: string): TuningDom {
   const dom = parser.parse(xml);
   // TODO: impl
-  return new NoTagNode();
+  return dom;
+  // return new NoTagNode();
 }
 
 //#endregion Functions
