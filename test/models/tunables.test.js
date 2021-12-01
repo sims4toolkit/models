@@ -623,8 +623,22 @@ describe('tunables', function() {
     });
 
     describe('#toXml()', function() {
-      it('should fail -- needs to be implemented', function() {
-        expect(true).to.be.false; // TODO:
+      it('should return an empty string when there are no children', function() {
+        const dom = makeDom();
+        const xml = dom.toXml();
+        expect(xml).to.equal(``);
+      });
+
+      it('should return all children with no indent', function() {
+        const dom = makeDom(T({ value: true }), Comment("comment"), L());
+        const xml = dom.toXml();
+        expect(xml).to.equal(`<T>True</T>\n<!--comment-->\n<L/>`);
+      });
+
+      it('should write indents for children of children', function() {
+        const dom = makeDom(Comment("Hi"), L({ children: [ T(), T() ] }));
+        const xml = dom.toXml();
+        expect(xml).to.equal(`<!--Hi-->\n<L>\n  <T/>\n  <T/>\n</L>`);
       });
     });
   });
