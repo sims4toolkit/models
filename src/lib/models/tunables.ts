@@ -643,6 +643,16 @@ export function C({ name, children, comment }: {
 }
 
 /**
+ * Creates a standalone comment node. It is recommended to put comments in other
+ * nodes; this function primarily exists for parsing nodes from XML.
+ * 
+ * @param comment Comment to put in the node
+ */
+export function Comment(comment: string): CommentNode {
+  return new CommentNode({ comment });
+}
+
+/**
  * Creates and returns a Tunable for a new string. It will put the string in the
  * given string table, and return a node that contains its hash as a value and
  * its string as a comment. If `toHash` is supplied, it will be hashed. If
