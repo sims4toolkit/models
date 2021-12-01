@@ -1606,11 +1606,27 @@ describe('tunables', function() {
   });
 
   describe('#Comment()', function() {
-    it('should fail -- needs to be implemented', function() {
-      expect(true).to.be.false;
+    it('should not have a tag', function() {
+      const node = Comment("this is a comment");
+      expect(node.tag).to.be.undefined;
     });
 
-    // TODO:
+    it('should create a new node with the given comment', function() {
+      const node = Comment("this is a comment");
+      expect(node.comment).to.equal("this is a comment");
+    });
+
+    it('should serialize without any tags', function() {
+      const node = Comment("this is a comment");
+      const xml = node.toXml();
+      expect(xml).to.equal(`<!--this is a comment-->`);
+    });
+
+    it('should serialize without any tags when it is a child', function() {
+      const node = L({ children: [ Comment("this is a comment") ] });
+      const xml = node.toXml();
+      expect(xml).to.equal(`<L>\n  <!--this is a comment-->\n</L>`);
+    });
   });
 
   describe('#LocString()', function() {
