@@ -586,11 +586,17 @@ describe('tunables', function() {
     // exported as a type. This section is just for testing the methods that are
     // on the TuningDom, not the creation of a TuningDom.
 
-    it('should fail -- needs to be implemented', function() {
-      expect(true).to.be.false;
+    describe('#clone()', function() {
+      it('should fail -- needs to be implemented', function() {
+        expect(true).to.be.false; // TODO:
+      });
     });
 
-    // TODO:
+    describe('#toXml()', function() {
+      it('should fail -- needs to be implemented', function() {
+        expect(true).to.be.false; // TODO:
+      });
+    });
   });
 
   describe('#I()', function() {
