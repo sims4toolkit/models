@@ -2,7 +2,7 @@ const { expect } = require('chai');
 const { tunables, hashing, formatting, StringTableResource } = require('../../dst/api');
 const { formatStringKey } = formatting;
 const { fnv32 } = hashing;
-const { I, M, T, E, V, U, L, C, S, getStringNodeFunction, parseNode } = tunables;
+const { I, M, T, E, V, U, L, C, LocString, Comment, makeDom, getLocStringFn, parseDom } = tunables;
 
 describe('tunables', function() {
   describe('TunableNode', function() {
@@ -1597,10 +1597,10 @@ describe('tunables', function() {
     });
   });
 
-  describe('#S()', function() {
+  describe('#LocString()', function() {
     it('should create a node with the "T" tag', function() {
       const stbl = StringTableResource.create();
-      const node = S({ string: 'Test', stbl });
+      const node = LocString({ string: 'Test', stbl });
       expect(node.tag).to.equal('T');
     });
 
@@ -1609,9 +1609,9 @@ describe('tunables', function() {
 
       L({
         children: [
-          S({ string: 'First', stbl }),
-          S({ string: 'Second', stbl }),
-          S({ string: 'Third', stbl }),
+          LocString({ string: 'First', stbl }),
+          LocString({ string: 'Second', stbl }),
+          LocString({ string: 'Third', stbl }),
         ]
       });
 
@@ -1624,7 +1624,7 @@ describe('tunables', function() {
     it('should hash the string if no alternative is given', function() {
       const stbl = StringTableResource.create();
       const string = "Some String";
-      S({ string, stbl });
+      LocString({ string, stbl });
       expect(stbl.entries[0].key).to.equal(fnv32(string));
     });
 
@@ -1632,7 +1632,7 @@ describe('tunables', function() {
       const stbl = StringTableResource.create();
       const string = "Some String";
       const toHash = "Something else to hash";
-      S({ string, toHash, stbl });
+      LocString({ string, toHash, stbl });
       expect(stbl.entries[0].key).to.equal(fnv32(toHash));
     });
 
@@ -1640,7 +1640,7 @@ describe('tunables', function() {
       const stbl = StringTableResource.create();
       const name = "tunable_name";
       const string = "Something";
-      const node = S({ name, string, stbl });
+      const node = LocString({ name, string, stbl });
       expect(node.attributes.n).to.equal(name);
       const expectedValue = formatStringKey(fnv32(string));
       expect(node.value).to.equal(expectedValue);
@@ -1648,17 +1648,17 @@ describe('tunables', function() {
     });
   });
 
-  describe('#getStringNodeFunction()', function() {
+  describe('#getLocStringFn()', function() {
     it('should create a node with the "T" tag', function() {
       const stbl = StringTableResource.create();
-      const S = getStringNodeFunction(stbl);
+      const S = getLocStringFn(stbl);
       const node = S({ string: 'Test' });
       expect(node.tag).to.equal('T');
     });
 
     it('should add the strings to the string table', function() {
       const stbl = StringTableResource.create();
-      const S = getStringNodeFunction(stbl);
+      const S = getLocStringFn(stbl);
 
       L({
         children: [
@@ -1676,7 +1676,7 @@ describe('tunables', function() {
 
     it('should hash the string if no alternative is given', function() {
       const stbl = StringTableResource.create();
-      const S = getStringNodeFunction(stbl);
+      const S = getLocStringFn(stbl);
       const string = "Some String";
       S({ string });
       expect(stbl.entries[0].key).to.equal(fnv32(string));
@@ -1684,7 +1684,7 @@ describe('tunables', function() {
 
     it('should hash the toHash argument if given', function() {
       const stbl = StringTableResource.create();
-      const S = getStringNodeFunction(stbl);
+      const S = getLocStringFn(stbl);
       const string = "Some String";
       const toHash = "Something else to hash";
       S({ string, toHash });
@@ -1693,7 +1693,7 @@ describe('tunables', function() {
 
     it('should return a tunable with a name, value, and comment', function() {
       const stbl = StringTableResource.create();
-      const S = getStringNodeFunction(stbl);
+      const S = getLocStringFn(stbl);
       const name = "tunable_name";
       const string = "Something";
       const node = S({ name, string });
@@ -1704,7 +1704,7 @@ describe('tunables', function() {
     });
   });
 
-  describe('#parseNode()', function() {
+  describe('#parseDom()', function() {
     it('should fail -- needs to be implemented', function() {
       expect(true).to.be.false;
     });
