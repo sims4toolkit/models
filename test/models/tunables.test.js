@@ -587,8 +587,38 @@ describe('tunables', function() {
     // on the TuningDom, not the creation of a TuningDom.
 
     describe('#clone()', function() {
-      it('should fail -- needs to be implemented', function() {
-        expect(true).to.be.false; // TODO:
+      it('should return an empty DOM if original is empty', function() {
+        const dom = makeDom();
+        const clone = dom.clone();
+        expect(clone.children).to.be.an('Array').that.is.empty;
+      });
+
+      it('should copy all children', function() {
+        const dom = makeDom(T({ name: "first" }), T({ name: "second" }));
+        const clone = dom.clone();
+        expect(clone.children).to.be.an('Array').with.lengthOf(2);
+        expect(clone.children[0].name).to.equal("first");
+        expect(clone.children[1].name).to.equal("second");
+      });
+
+      it('should not mutate the children list of the original', function() {
+        const dom = makeDom(T({ name: "first", value: 25 }));
+        const clone = dom.clone();
+        expect(clone.children).to.have.lengthOf(1);
+        expect(dom.children).to.have.lengthOf(1);
+        clone.add(T({ name: "second", value: 50 }));
+        expect(clone.children).to.have.lengthOf(2);
+        expect(dom.children).to.have.lengthOf(1);
+      });
+
+      it('should not mutate child objects of the original', function() {
+        const dom = makeDom(T({ name: "first", value: 25 }));
+        const clone = dom.clone();
+        expect(clone.child.value).to.equal(25);
+        expect(dom.child.value).to.equal(25);
+        clone.child.value = 50;
+        expect(clone.child.value).to.equal(50);
+        expect(dom.child.value).to.equal(25);
       });
     });
 
