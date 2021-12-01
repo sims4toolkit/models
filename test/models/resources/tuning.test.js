@@ -2,7 +2,7 @@ const expect = require('chai').expect;
 const { TuningResource } = require('../../../dst/api');
 
 function getTuning(content) {
-  return TuningResource.from(Buffer.from(content));
+  return TuningResource.fromXml(content);
 }
 
 describe('TuningResource', function() {
@@ -20,6 +20,22 @@ describe('TuningResource', function() {
     });
   });
 
+  describe('#content', function() {
+    // TODO:
+  });
+
+  describe('#dom', function() {
+    // TODO:
+  });
+
+  describe('#hasChanged', function() {
+    // TODO:
+  });
+
+  describe('#buffer', function() {
+    // TODO:
+  });
+
   //#endregion Properties
 
   //#region Initialization
@@ -28,84 +44,33 @@ describe('TuningResource', function() {
     // TODO:
   });
 
+  describe('#create()', function() {
+    // TODO:
+  });
+
   describe('#from()', function() {
     // TODO:
   });
 
-  describe('#create()', function() {
+  describe('#fromXml()', function() {
+    // TODO:
+  });
+
+  describe('#fromNodes()', function() {
+    // TODO:
+  });
+
+  describe('#fromDom()', function() {
     // TODO:
   });
 
   //#endregion Initialization
 
-  //#region Getters
+  //#region Methods
 
-  describe('#getContent()', function() {
+  describe('#updateDom()', function() {
     // TODO:
   });
 
-  describe('#getFileName()', function() {
-    // TODO:
-  });
-
-  describe('#getClassName()', function() {
-    // TODO:
-  });
-
-  describe('#getTypeName()', function() {
-    // TODO:
-  });
-
-  describe('#getModulePath()', function() {
-    // TODO:
-  });
-
-  describe('#getTuningId()', function() {
-    // TODO:
-  });
-
-  //#endregion Getters
-
-  //#region Setters
-
-  describe('#updateContent()', function() {
-    // TODO:
-  });
-
-  describe('#updateFileName()', function() {
-    context('file is missing attributes', function() {
-      // TODO:
-    });
-
-    context('file has attributes', function() {
-      // TODO:
-      // const tun = TuningResource.create();
-      // tun.updateFileName("something");
-      // console.log(tun.getBuffer().toString());
-    });
-  });
-
-  describe('#updateTuningId()', function() {
-    context('file is missing attributes', function() {
-      // TODO:
-    });
-
-    context('file has attributes', function() {
-      // TODO:
-    });
-  });
-
-  //#endregion Setters
-
-  //#region Serializing
-
-  describe('#hasChanged()', function() {
-    // TODO:
-  });
-
-  describe('#getBuffer()', function() {
-    // TODO:
-  });
-
-  //#endregion Serializing
+  //#endregion Methods
 });
