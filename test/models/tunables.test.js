@@ -582,6 +582,14 @@ describe('tunables', function() {
   });
 
   describe('TuningDom', function() {
+    // TuningDom can only be created with makeDom or parseDom, as it is only
+    // exported as a type. This section is just for testing the methods that are
+    // on the TuningDom, not the creation of a TuningDom.
+
+    it('should fail -- needs to be implemented', function() {
+      expect(true).to.be.false;
+    });
+
     // TODO:
   });
 
@@ -1597,6 +1605,14 @@ describe('tunables', function() {
     });
   });
 
+  describe('#Comment()', function() {
+    it('should fail -- needs to be implemented', function() {
+      expect(true).to.be.false;
+    });
+
+    // TODO:
+  });
+
   describe('#LocString()', function() {
     it('should create a node with the "T" tag', function() {
       const stbl = StringTableResource.create();
@@ -1702,6 +1718,14 @@ describe('tunables', function() {
       expect(node.value).to.equal(expectedValue);
       expect(node.comment).to.equal(string);
     });
+  });
+
+  describe('#makeDom()', function() {
+    it('should fail -- needs to be implemented', function() {
+      expect(true).to.be.false;
+    });
+
+    // TODO:
   });
 
   describe('#parseDom()', function() {
