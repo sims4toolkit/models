@@ -1,0 +1,11 @@
+{
+  "files.exclude": {
+    "node_modules": true,
+    "dst": true,
+    "tsconfig.json": true,
+    ".npmignore": true,
+    ".gitignore": true,
+    "package-lock.json": true
+  },
+  "workspace.isHidden": true
+}
