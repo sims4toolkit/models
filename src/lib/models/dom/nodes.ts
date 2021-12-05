@@ -261,25 +261,27 @@ abstract class TuningNodeBase implements TuningNode {
   //#region Methods
 
   addChildren(...children: TuningNode[]): void {
-    if (!this.children)
-      throw new Error("Cannot add children to childless node.");
+    this._ensureChildren();
     this.children.push(...children);
   }
 
   addClones(...children: TuningNode[]): void {
-    if (!this.children)
-      throw new Error("Cannot add children to childless node.");
-      this.children.push(...(children.map(child => child.clone())));
+    this._ensureChildren();
+    this.children.push(...(children.map(child => child.clone())));
   }
 
   abstract clone(): TuningNode;
 
   deepSort(compareFn?: (a: TuningNode, b: TuningNode) => number): void {
+    this._ensureChildren();
     this.sort(compareFn);
-    this.children.forEach(child => child.deepSort());
+    this.children.forEach(child => {
+      if (child.children) child.deepSort();
+    });
   }
 
   sort(compareFn?: (a: TuningNode, b: TuningNode) => number): void {
+    this._ensureChildren();
     this.children.sort(compareFn || ((a, b) => {
       const aName = a.attributes.n;
       const bName = b.attributes.n;
@@ -305,6 +307,11 @@ abstract class TuningNodeBase implements TuningNode {
     if (this.attributes === undefined)
       throw new Error("Cannot set attribute of non-element node.")
     this.attributes[key] = value;
+  }
+
+  private _ensureChildren() {
+    if (!this.children)
+      throw new Error("Cannot mutate children of childless node.");
   }
 
   //#endregion Private Methods
