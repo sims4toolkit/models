@@ -5,7 +5,10 @@
     "tsconfig.json": true,
     ".npmignore": true,
     ".gitignore": true,
-    "package-lock.json": true
+    "package-lock.json": true,
+    ".vscode": true,
+    "src/lib/generators": true,
+    "src/lib/services": true
   },
   "workspace.isHidden": true
 }

@@ -129,14 +129,31 @@ export interface TuningNode {
   clone(): TuningNode;
 
   /**
-   * TODO:
+   * Calls the `sort()` method on this node and all of its descendants.
+   * 
+   * @param compareFn Function used to determine the order of the elements. It
+   * is expected to return a negative value if first argument is less than
+   * second argument, zero if they're equal and a positive value otherwise. If
+   * omitted, the elements are sorted in ascending, ASCII character order.
+   * [Copied from `Array.sort()` documentation]
+   * @throws If this node cannot have children
    */
-  deepSort(): void;
+  deepSort(compareFn?: (a: TuningNode, b: TuningNode) => number): void;
 
   /**
-   * TODO:
+   * Sorts the children of this node using the provided function. If no function
+   * is given, they are sorted in ascending alphanumeric order by their `n`
+   * attribute (their name). Children without names will retain their order
+   * relative to one another and will appear at the end.
+   * 
+   * @param compareFn Function used to determine the order of the elements. It
+   * is expected to return a negative value if first argument is less than
+   * second argument, zero if they're equal and a positive value otherwise. If
+   * omitted, the elements are sorted in ascending, ASCII character order.
+   * [Copied from `Array.sort()` documentation]
+   * @throws If this node cannot have children
    */
-  sort(): void;
+  sort(compareFn?: (a: TuningNode, b: TuningNode) => number): void;
 
   /**
    * TODO:
@@ -154,6 +171,18 @@ abstract class TuningNodeBase implements TuningNode {
   protected _children?: TuningNode[];
   protected _tag?: string;
   protected _value?: TuningValue;
+
+  constructor({ attributes, children, tag, value }: {
+    attributes?: Attributes;
+    children?: TuningNode[];
+    tag?: string;
+    value?: TuningValue;
+  }) {
+    this._attributes = attributes;
+    this._children = children;
+    this._tag = tag;
+    this._value = value;
+  }
 
   //#region Getters
 
@@ -231,15 +260,40 @@ abstract class TuningNodeBase implements TuningNode {
 
   //#region Methods
 
-  abstract addChildren(...children: TuningNode[]): void;
+  addChildren(...children: TuningNode[]): void {
+    if (!this.children)
+      throw new Error("Cannot add children to childless node.");
+    this.children.push(...children);
+  }
 
-  abstract addClones(...children: TuningNode[]): void;
+  addClones(...children: TuningNode[]): void {
+    if (!this.children)
+      throw new Error("Cannot add children to childless node.");
+      this.children.push(...(children.map(child => child.clone())));
+  }
 
   abstract clone(): TuningNode;
 
-  abstract deepSort(): void;
+  deepSort(compareFn?: (a: TuningNode, b: TuningNode) => number): void {
+    this.sort(compareFn);
+    this.children.forEach(child => child.deepSort());
+  }
 
-  abstract sort(): void;
+  sort(compareFn?: (a: TuningNode, b: TuningNode) => number): void {
+    this.children.sort(compareFn || ((a, b) => {
+      const aName = a.attributes.n;
+      const bName = b.attributes.n;
+      if (aName) {
+        if (bName) {
+          if (aName < bName) return -1;
+          if (aName > bName) return 1;
+          return 0;
+        }
+        return -1;
+      }
+      return bName ? 1 : 0;
+    }));
+  }
 
   abstract toXml(): string;
 
