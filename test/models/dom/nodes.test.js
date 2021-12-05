@@ -49,4 +49,100 @@ describe('TuningElementNode', function() {
       // TODO:
     });
   });
+
+  describe('#child', function() {
+    it('should FAIL', function () {
+      // TODO:
+    });
+  });
+
+  describe('#children', function() {
+    it('should FAIL', function () {
+      // TODO:
+    });
+  });
+
+  describe('#hasChildren', function() {
+    it('should FAIL', function () {
+      // TODO:
+    });
+  });
+
+  describe('#id', function() {
+    it('should FAIL', function () {
+      // TODO:
+    });
+  });
+
+  describe('#innerValue', function() {
+    it('should FAIL', function () {
+      // TODO:
+    });
+  });
+
+  describe('#name', function() {
+    it('should FAIL', function () {
+      // TODO:
+    });
+  });
+
+  describe('#numChildren', function() {
+    it('should FAIL', function () {
+      // TODO:
+    });
+  });
+
+  describe('#tag', function() {
+    it('should FAIL', function () {
+      // TODO:
+    });
+  });
+
+  describe('#type', function() {
+    it('should FAIL', function () {
+      // TODO:
+    });
+  });
+
+  describe('#value', function() {
+    it('should FAIL', function () {
+      // TODO:
+    });
+  });
+
+  describe('#addChildren()', function() {
+    it('should FAIL', function () {
+      // TODO:
+    });
+  });
+
+  describe('#addClones()', function() {
+    it('should FAIL', function () {
+      // TODO:
+    });
+  });
+
+  describe('#clone()', function() {
+    it('should FAIL', function () {
+      // TODO:
+    });
+  });
+
+  describe('#deepSort()', function() {
+    it('should FAIL', function () {
+      // TODO:
+    });
+  });
+
+  describe('#sort()', function() {
+    it('should FAIL', function () {
+      // TODO:
+    });
+  });
+
+  describe('#toXml()', function() {
+    it('should FAIL', function () {
+      // TODO:
+    });
+  });
 });
