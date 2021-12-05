@@ -46,6 +46,9 @@ export interface TuningNode {
   /** Shorthand for the `s` attribute. */
   get id(): string | number | bigint;
 
+  /** The value of this node's first child, if it has one. */
+  get innerValue(): TuningValue;
+
   /** Shorthand for the `n` attribute. */
   get name(): string;
 
@@ -76,6 +79,14 @@ export interface TuningNode {
    * exception is thrown.
    */
   set id(id: string | number | bigint);
+
+  /**
+   * Shorthand for setting the value of this node's first child. If this node
+   * cannot have children, or if its first child cannot have a value, an
+   * exception is thrown. If this node can have children, but doesn't, one will
+   * be created.
+   */
+  set innerValue(value: TuningValue);
 
   /**
    * Shorthand for setting the `n` attribute. If this node is not an element, an
@@ -209,6 +220,10 @@ abstract class TuningNodeBase implements TuningNode {
     return this._attributes?.s;
   }
 
+  get innerValue(): TuningValue {
+    return this.child?.value;
+  }
+
   get name(): string {
     return this.attributes?.n;
   }
@@ -241,6 +256,15 @@ abstract class TuningNodeBase implements TuningNode {
 
   set id(id: string | number | bigint) {
     this._setAttribute('s', id);
+  }
+
+  set innerValue(value: TuningValue) {
+    this._ensureChildren();
+    if (this.numChildren === 0) { 
+      this.addChildren(new TuningValueNode(value));
+    } else {
+      this.child.value = value; // might throw, that's OK
+    }
   }
 
   set name(name: string) {
@@ -377,7 +401,7 @@ export class TuningElementNode extends TuningNodeBase {
   } = {}): string {
     const spaces = " ".repeat(indents * spacesPerIndent);
     const lines: string[] = [];
-
+    // FIXME:
     if (this.numChildren === 0) {
       lines.push(`${spaces}<${this.tag}/>`);
     } else {
