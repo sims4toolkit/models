@@ -1,3 +1,5 @@
+import { XML_DECLARATION } from "../../utils/constants";
+
 //#region Types
 
 /** Tags that are valid in tuning. */
@@ -156,9 +158,16 @@ export interface TuningNode {
   sort(compareFn?: (a: TuningNode, b: TuningNode) => number): void;
 
   /**
-   * TODO:
+   * Serializes this node and all of its descendants as XML code.
+   * 
+   * Options
+   * - `indents`: Number of times to indent this node. This will increase by 1
+   * for each recursive call. (Default = 0)
+   * - `spacesPerIndent`: Number of spaces to use per indent. (Default = 2)
+   * 
+   * @param options Object containing options for serializing
    */
-  toXml(): string;
+  toXml(options: { indents?: number; spacesPerIndent?: number;}): string;
 
   //#endregion Methods
 }
@@ -295,7 +304,10 @@ abstract class TuningNodeBase implements TuningNode {
     }));
   }
 
-  abstract toXml(): string;
+  abstract toXml(options: {
+    indents?: number;
+    spacesPerIndent?: number;}
+    ): string;
 
   //#endregion Methods
 
@@ -313,4 +325,27 @@ abstract class TuningNodeBase implements TuningNode {
   }
 
   //#endregion Private Methods
+}
+
+/** A complete tuning document. */
+export class TuningDocument extends TuningNodeBase {
+  constructor(children: TuningNode[] = []) {
+    super({ children })
+  }
+
+  clone(): TuningDocument {
+    return new TuningDocument(this.children.map(child => child.clone()));
+  }
+
+  toXml({ indents = 0, spacesPerIndent = 2 }: {
+    indents?: number;
+    spacesPerIndent?: number;
+  } = {}): string {
+    const spaces = " ".repeat(indents * spacesPerIndent);
+    const lines: string[] = [`${spaces}${XML_DECLARATION}`];
+    this.children.forEach(child => {
+      lines.push(child.toXml({ indents: indents + 1, spacesPerIndent }));
+    });
+    return lines.join('\n');
+  }
 }
