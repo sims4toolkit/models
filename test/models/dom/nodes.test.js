@@ -40,14 +40,32 @@ describe('TuningDocumentNode', function() {
   });
 
   describe('#children', function() {
+    it('should throw when trying to set', function () {
+      const node = newNode();
+      expect(() => node.children = []).to.throw;
+    });
+
     it('should FAIL', function () {
       // TODO:
     });
   });
 
   describe('#hasChildren', function() {
-    it('should FAIL', function () {
-      // TODO:
+    it('should throw when trying to set', function () {
+      const node = newNode();
+      expect(() => node.children = []).to.throw;
+    });
+
+    it('should return true when it has children', function () {
+      const node = newNode(newNode(), newNode());
+      expect(node.hasChildren).to.be.true;
+    });
+
+    it('should return true when it does not have children', function () {
+      // this test is not a typo, the hasChildren getter returns if there is
+      // a children ARRAY -- it does not have to have any items in it
+      const node = newNode();
+      expect(node.hasChildren).to.be.true;
     });
   });
 
@@ -82,6 +100,11 @@ describe('TuningDocumentNode', function() {
   });
 
   describe('#numChildren', function() {
+    it('should throw when trying to set', function () {
+      const node = newNode();
+      expect(() => node.numChildren = 5).to.throw;
+    });
+
     it('should FAIL', function () {
       // TODO:
     });
