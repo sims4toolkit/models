@@ -8,7 +8,157 @@ const {
   TuningCommentNode
 } = nodes;
 
-// TODO: TuningDocumentNode
+describe('TuningDocumentNode', function() {
+  const newNode = (...children) => new TuningDocumentNode(children);
+
+  describe('#constructor', function() {
+    it('should not throw when no children are given', function () {
+      // TODO:
+    });
+
+    it('should add the children that are given', function () {
+      // TODO:
+    });
+  });
+
+  describe('#attributes', function() {
+    it('should throw when trying to set', function () {
+      const node = newNode();
+      expect(() => node.attributes = {}).to.throw;
+    });
+
+    it('should be undefined', function () {
+      const node = newNode();
+      expect(node.attributes).to.be.undefined;
+    });
+  });
+
+  describe('#child', function() {
+    it('should FAIL', function () {
+      // TODO:
+    });
+  });
+
+  describe('#children', function() {
+    it('should FAIL', function () {
+      // TODO:
+    });
+  });
+
+  describe('#hasChildren', function() {
+    it('should FAIL', function () {
+      // TODO:
+    });
+  });
+
+  describe('#id', function() {
+    it('should throw when trying to set', function () {
+      const node = newNode();
+      expect(() => node.id = 123).to.throw;
+    });
+
+    it('should be undefined', function () {
+      const node = newNode();
+      expect(node.id).to.be.undefined;
+    });
+  });
+
+  describe('#innerValue', function() {
+    it('should FAIL', function () {
+      // TODO:
+    });
+  });
+
+  describe('#name', function() {
+    it('should throw when trying to set', function () {
+      const node = newNode();
+      expect(() => node.name = "name").to.throw;
+    });
+
+    it('should be undefined', function () {
+      const node = newNode();
+      expect(node.name).to.be.undefined;
+    });
+  });
+
+  describe('#numChildren', function() {
+    it('should FAIL', function () {
+      // TODO:
+    });
+  });
+
+  describe('#tag', function() {
+    it('should throw when trying to set', function () {
+      const node = newNode();
+      expect(() => node.tag = "T").to.throw;
+    });
+
+    it('should be undefined', function () {
+      const node = newNode();
+      expect(node.tag).to.be.undefined;
+    });
+  });
+
+  describe('#type', function() {
+    it('should throw when trying to set', function () {
+      const node = newNode();
+      expect(() => node.type = "enabled").to.throw;
+    });
+
+    it('should be undefined', function () {
+      const node = newNode();
+      expect(node.type).to.be.undefined;
+    });
+  });
+
+  describe('#value', function() {
+    it('should throw when trying to set', function () {
+      const node = newNode();
+      expect(() => node.value = "test").to.throw;
+    });
+
+    it('should be undefined', function () {
+      const node = newNode();
+      expect(node.value).to.be.undefined;
+    });
+  });
+
+  describe('#addChildren()', function() {
+    it('should FAIL', function () {
+      // TODO:
+    });
+  });
+
+  describe('#addClones()', function() {
+    it('should FAIL', function () {
+      // TODO:
+    });
+  });
+
+  describe('#clone()', function() {
+    it('should FAIL', function () {
+      // TODO:
+    });
+  });
+
+  describe('#deepSort()', function() {
+    it('should FAIL', function () {
+      // TODO:
+    });
+  });
+
+  describe('#sort()', function() {
+    it('should FAIL', function () {
+      // TODO:
+    });
+  });
+
+  describe('#toXml()', function() {
+    it('should FAIL', function () {
+      // TODO:
+    });
+  });
+});
 
 describe('TuningElementNode', function() {
   const newNode = options => new TuningElementNode(options);
