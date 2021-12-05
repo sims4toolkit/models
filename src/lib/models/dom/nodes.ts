@@ -409,6 +409,7 @@ export class TuningElementNode extends TuningNodeBase {
     const spaces = " ".repeat(indents * spacesPerIndent);
     const lines: string[] = [];
 
+    // FIXME: attributes
     if (this.numChildren === 0) {
       lines.push(`${spaces}<${this.tag}/>`);
     } else if (this.numChildren <= 2 && !this.child.hasChildren) {
