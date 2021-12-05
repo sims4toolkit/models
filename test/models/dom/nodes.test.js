@@ -211,15 +211,24 @@ describe('TuningElementNode', function() {
 
   describe('#attributes', function() {
     it('should throw when trying to set', function () {
-      // TODO:
+      const node = newNodeWithTag();
+      expect(() => node.attributes = {}).to.throw;
     });
 
     it('should not be undefined when there are no attributes', function () {
-      // TODO:
+      const node = newNodeWithTag();
+      expect(node.attributes).to.not.be.undefined;
     });
 
     it('should allow mutation', function () {
-      // TODO:
+      const node = new TuningElementNode({
+        tag: 'T',
+        attributes: { n: "name", t: "enabled" }
+      });
+
+      expect(node.attributes.t).to.equal("enabled");
+      node.attributes.t = "disabled";
+      expect(node.attributes.t).to.equal("disabled");
     });
   });
 
@@ -236,8 +245,21 @@ describe('TuningElementNode', function() {
   });
 
   describe('#hasChildren', function() {
-    it('should FAIL', function () {
-      // TODO:
+    it('should throw when trying to set', function () {
+      const node = newNodeWithTag();
+      expect(() => node.children = []).to.throw;
+    });
+
+    it('should return true when it has children', function () {
+      const node = newNodeWithTag(newNodeWithTag(), newNodeWithTag());
+      expect(node.hasChildren).to.be.true;
+    });
+
+    it('should return true when it does not have children', function () {
+      // this test is not a typo, the hasChildren getter returns if there is
+      // a children ARRAY -- it does not have to have any items in it
+      const node = newNodeWithTag();
+      expect(node.hasChildren).to.be.true;
     });
   });
 
