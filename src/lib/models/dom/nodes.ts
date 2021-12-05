@@ -17,9 +17,7 @@ type TuningValue = number | bigint | boolean | string;
 
 //#endregion Types
 
-/**
- * TODO:
- */
+/** A node in a tuning DOM. */
 export interface TuningNode {
   //#region Getters
 
@@ -105,16 +103,44 @@ export interface TuningNode {
 
   //#region Methods
 
+  /**
+   * Adds the given children to this node by object reference. If you are adding
+   * these children to multiple nodes and plan on mutating them, it is
+   * recommended that you use `addClones()` instead in order to prevent 
+   * unexpected mutation.
+   * 
+   * @param children Child nodes to append to this one
+   * @throws If this node cannot have children
+   */
   addChildren(...children: TuningNode[]): void;
 
+  /**
+   * Adds the given children to this node by value. All children are cloned
+   * prior to being added.
+   * 
+   * @param children Child nodes to append to this one
+   * @throws If this node cannot have children
+   */
   addClones(...children: TuningNode[]): void;
 
+  /**
+   * Returns a deep copy of this node.
+   */
   clone(): TuningNode;
 
+  /**
+   * TODO:
+   */
   deepSort(): void;
 
+  /**
+   * TODO:
+   */
   sort(): void;
 
+  /**
+   * TODO:
+   */
   toXml(): string;
 
   //#endregion Methods
