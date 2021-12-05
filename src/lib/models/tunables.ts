@@ -6,9 +6,9 @@ import { formatStringKey } from "../utils/formatting";
 const parser = new XMLParser({
   ignoreAttributes: false,
   attributeNamePrefix: "",
-  commentPropName: "#comment",
+  commentPropName: "comment",
   preserveOrder: true,
-  textNodeName: "#value"
+  textNodeName: "value"
 });
 
 //#region Types & Classes
@@ -383,6 +383,19 @@ class CommentNode extends NoTagNode {
 
   clone(): CommentNode {
     return new CommentNode({ comment: this.comment });
+  }
+}
+
+/** Node for a single value that isn't part of a tunable. */
+class ValueNode extends NoTagNode {
+  constructor({ value }: {
+    value?: any;
+  } = {}) {
+    super({ value });
+  }
+
+  clone(): ValueNode {
+    return new ValueNode({ value: this.value });
   }
 }
 
