@@ -1,4 +1,4 @@
-import type { ResourceKey } from "./types";
+import type { ResourceKey } from "../types";
 import * as zlib from 'zlib';
 import { BinaryDecoder, BinaryEncoder } from '../utils/encoding';
 import { makeList } from '../utils/helpers';

@@ -1,4 +1,4 @@
-import type { ResourceVariant } from "../types";
+import type { ResourceVariant } from "../../types";
 import WritableModel from "../writableModel";
 
 /**
