@@ -43,7 +43,7 @@ export interface TuningNode {
    */
   get children(): TuningNode[];
 
-  /** Whether or not this node has children. */
+  /** Whether or not this node has an array for children. */
   get hasChildren(): boolean;
 
   /** Shorthand for the `s` attribute. */
@@ -181,7 +181,7 @@ export interface TuningNode {
    * 
    * @param options Object containing options for serializing
    */
-  toXml(options: { indents?: number; spacesPerIndent?: number;}): string;
+  toXml(options?: { indents?: number; spacesPerIndent?: number;}): string;
 
   //#endregion Methods
 }
@@ -335,7 +335,7 @@ abstract class TuningNodeBase implements TuningNode {
     }));
   }
 
-  abstract toXml(options: {
+  abstract toXml(options?: {
     indents?: number;
     spacesPerIndent?: number;}
     ): string;
@@ -408,9 +408,12 @@ export class TuningElementNode extends TuningNodeBase {
   } = {}): string {
     const spaces = " ".repeat(indents * spacesPerIndent);
     const lines: string[] = [];
-    // FIXME:
+
     if (this.numChildren === 0) {
       lines.push(`${spaces}<${this.tag}/>`);
+    } else if (this.numChildren <= 2 && !this.child.hasChildren) {
+      const value = this.children.map(child => child.toXml()).join('');
+      lines.push(`${spaces}<${this.tag}>${value}</${this.tag}>`);
     } else {
       lines.push(`${spaces}<${this.tag}>`);
       this.children.forEach(child => {
