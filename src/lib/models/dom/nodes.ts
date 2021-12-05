@@ -163,9 +163,7 @@ export interface TuningNode {
   //#endregion Methods
 }
 
-/**
- * TODO:
- */
+/** A base implementation of TuningNode. */
 abstract class TuningNodeBase implements TuningNode {
   protected _attributes?: Attributes;
   protected _children?: TuningNode[];
