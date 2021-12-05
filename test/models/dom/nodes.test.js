@@ -325,11 +325,14 @@ describe('TuningValueNode', function() {
 
   describe('#constructor', function() {
     it('should throw when no value is given', function () {
-      // TODO:
+      expect(() => new TuningValueNode()).to.throw;
     });
 
     it('should use the value that is given', function () {
-      // TODO:
+      const node1 = new TuningValueNode("hello");
+      expect(node1.value).to.equal("hello");
+      const node2 = new TuningValueNode(123n);
+      expect(node2.value).to.equal(123n);
     });
   });
 
@@ -444,8 +447,16 @@ describe('TuningValueNode', function() {
   });
 
   describe('#value', function() {
-    it('should FAIL', function () {
-      // TODO:
+    it('should change the value when set', function () {
+      const node = newNode("hello");
+      expect(node.value).to.equal("hello");
+      node.value = "goodbye";
+      expect(node.value).to.equal("goodbye");
+    });
+
+    it('should return the current value', function () {
+      const node = newNode("hello");
+      expect(node.value).to.equal("hello");
     });
   });
 
@@ -507,8 +518,41 @@ describe('TuningValueNode', function() {
   });
 
   describe('#toXml()', function() {
-    it('should FAIL', function () {
-      // TODO:
+    it('should not indent if the given number is 0', function () {
+      const node = newNode();
+      expect(node.toXml()).to.equal('test');
+    });
+
+    it('should use a default indentation of 2 spaces', function () {
+      const node = newNode();
+      expect(node.toXml({ indents: 1 })).to.equal('  test');
+    });
+
+    it('should use the number of spaces that are provided', function () {
+      const node = newNode();
+      expect(node.toXml({
+        indents: 1,
+        spacesPerIndent: 4
+      })).to.equal('    test');
+    });
+
+    it('should capitalize boolean values', function () {
+      const trueNode = newNode(true);
+      expect(trueNode.toXml()).to.equal('True');
+      const falseNode = newNode(false);
+      expect(falseNode.toXml()).to.equal('False');
+    });
+
+    it('should write numbers and bigints as strings', function () {
+      const numberNode = newNode(123);
+      expect(numberNode.toXml()).to.equal('123');
+      const bigintNode = newNode(123n);
+      expect(bigintNode.toXml()).to.equal('123');
+    });
+
+    it('should write strings', function () {
+      const node = newNode();
+      expect(node.toXml()).to.equal('test');
     });
   });
 });
