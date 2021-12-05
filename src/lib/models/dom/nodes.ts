@@ -443,3 +443,23 @@ export class TuningValueNode extends TuningNodeBase {
     }
   }
 }
+
+/** A node that contains a comment. */
+export class TuningCommentNode extends TuningNodeBase {
+  constructor(value: string) {
+    super({ value })
+  }
+
+  clone(): TuningCommentNode {
+    return new TuningCommentNode(this.value as string);
+  }
+
+  toXml({ indents = 0, spacesPerIndent = 2 }: {
+    indents?: number;
+    spacesPerIndent?: number;
+  } = {}): string {
+    const spaces = " ".repeat(indents * spacesPerIndent);
+    const comment = this.value == undefined ? '' : this.value;
+    return `${spaces}<!--${comment}-->`;
+  }
+}
