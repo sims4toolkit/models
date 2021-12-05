@@ -43,6 +43,9 @@ export interface TuningNode {
    */
   get children(): TuningNode[];
 
+  /** Whether or not this node has children. */
+  get hasChildren(): boolean;
+
   /** Shorthand for the `s` attribute. */
   get id(): string | number | bigint;
 
@@ -216,6 +219,10 @@ abstract class TuningNodeBase implements TuningNode {
     return this._children;
   }
 
+  get hasChildren(): boolean {
+    return this.children !== undefined;
+  }
+
   get id(): string | number | bigint {
     return this._attributes?.s;
   }
@@ -249,7 +256,7 @@ abstract class TuningNodeBase implements TuningNode {
   //#region Setters
 
   set child(child: TuningNode) {
-    if (!this.children)
+    if (!this.hasChildren)
       throw new Error("Cannot set child of childless node.");
     this.children[0] = child;
   }
@@ -272,7 +279,7 @@ abstract class TuningNodeBase implements TuningNode {
   }
 
   set tag(tag: string) {
-    if (!this._tag) throw new Error("Cannot set tag of non-element node.");
+    if (!this.tag) throw new Error("Cannot set tag of non-element node.");
     if (!tag) throw new Error("Tag must be a non-empty string.");
     this._tag = tag;
   }
@@ -282,7 +289,7 @@ abstract class TuningNodeBase implements TuningNode {
   }
 
   set value(value: TuningValue) {
-    if (this.children)
+    if (this.hasChildren)
       throw new Error("Cannot set value of node with children.");
     this._value = value;
   }
@@ -344,7 +351,7 @@ abstract class TuningNodeBase implements TuningNode {
   }
 
   private _ensureChildren() {
-    if (!this.children)
+    if (!this.hasChildren)
       throw new Error("Cannot mutate children of childless node.");
   }
 
