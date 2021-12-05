@@ -328,13 +328,13 @@ abstract class TuningNodeBase implements TuningNode {
 }
 
 /** A complete tuning document with children. */
-export class TuningDocument extends TuningNodeBase {
+export class TuningDocumentNode extends TuningNodeBase {
   constructor(children: TuningNode[] = []) {
     super({ children })
   }
 
-  clone(): TuningDocument {
-    return new TuningDocument(this.children.map(child => child.clone()));
+  clone(): TuningDocumentNode {
+    return new TuningDocumentNode(this.children.map(child => child.clone()));
   }
 
   toXml({ indents = 0, spacesPerIndent = 2 }: {
@@ -343,7 +343,7 @@ export class TuningDocument extends TuningNodeBase {
   } = {}): string {
     const spaces = " ".repeat(indents * spacesPerIndent);
     const lines: string[] = [`${spaces}${XML_DECLARATION}`];
-    
+
     this.children.forEach(child => {
       lines.push(child.toXml({ indents: indents + 1, spacesPerIndent }));
     });
@@ -353,18 +353,18 @@ export class TuningDocument extends TuningNodeBase {
 }
 
 /** A node with a tag, attributes, and children. */
-export class TuningElement extends TuningNodeBase {
+export class TuningElementNode extends TuningNodeBase {
   constructor({ tag, attributes = {}, children = [] }: {
     tag: string;
     attributes?: Attributes;
     children?: TuningNode[];
   }) {
-    if (!tag) throw new Error("TuningElement tag must be a non-empty string.");
+    if (!tag) throw new Error("Element tag must be a non-empty string.");
     super({ tag, attributes, children });
   }
 
-  clone(): TuningElement {
-    return new TuningElement({
+  clone(): TuningElementNode {
+    return new TuningElementNode({
       tag: this.tag,
       attributes: Object.assign({}, this.attributes),
       children: this.children.map(child => child.clone())
@@ -389,5 +389,33 @@ export class TuningElement extends TuningNodeBase {
     }
 
     return lines.join('\n');
+  }
+}
+
+/** A node that contains a single value. */
+export class TuningValueNode extends TuningNodeBase {
+  constructor(value: TuningValue) {
+    super({ value })
+  }
+
+  clone(): TuningValueNode {
+    return new TuningValueNode(this.value);
+  }
+
+  toXml({ indents = 0, spacesPerIndent = 2 }: {
+    indents?: number;
+    spacesPerIndent?: number;
+  } = {}): string {
+    if (this.value == undefined) return '';
+    const spaces = " ".repeat(indents * spacesPerIndent);
+    switch (typeof this.value) {
+      case 'boolean':
+        return `${spaces}${this.value ? 'True' : 'False'}`;
+      case 'number':
+      case 'bigint':
+        return `${spaces}${this.value.toString()}`;
+      default:
+        return `${spaces}${this.value}`;
+    }
   }
 }
