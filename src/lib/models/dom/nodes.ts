@@ -327,7 +327,7 @@ abstract class TuningNodeBase implements TuningNode {
   //#endregion Private Methods
 }
 
-/** A complete tuning document. */
+/** A complete tuning document with children. */
 export class TuningDocument extends TuningNodeBase {
   constructor(children: TuningNode[] = []) {
     super({ children })
@@ -343,9 +343,51 @@ export class TuningDocument extends TuningNodeBase {
   } = {}): string {
     const spaces = " ".repeat(indents * spacesPerIndent);
     const lines: string[] = [`${spaces}${XML_DECLARATION}`];
+    
     this.children.forEach(child => {
       lines.push(child.toXml({ indents: indents + 1, spacesPerIndent }));
     });
+
+    return lines.join('\n');
+  }
+}
+
+/** A node with a tag, attributes, and children. */
+export class TuningElement extends TuningNodeBase {
+  constructor({ tag, attributes = {}, children = [] }: {
+    tag: string;
+    attributes?: Attributes;
+    children?: TuningNode[];
+  }) {
+    if (!tag) throw new Error("TuningElement tag must be a non-empty string.");
+    super({ tag, attributes, children });
+  }
+
+  clone(): TuningElement {
+    return new TuningElement({
+      tag: this.tag,
+      attributes: Object.assign({}, this.attributes),
+      children: this.children.map(child => child.clone())
+    });
+  }
+
+  toXml({ indents = 0, spacesPerIndent = 2 }: {
+    indents?: number;
+    spacesPerIndent?: number;
+  } = {}): string {
+    const spaces = " ".repeat(indents * spacesPerIndent);
+    const lines: string[] = [];
+
+    if (this.numChildren === 0) {
+      lines.push(`${spaces}<${this.tag}/>`);
+    } else {
+      lines.push(`${spaces}<${this.tag}>`);
+      this.children.forEach(child => {
+        lines.push(child.toXml({ indents: indents + 1, spacesPerIndent }));
+      });
+      lines.push(`${spaces}</${this.tag}>`);
+    }
+
     return lines.join('\n');
   }
 }
