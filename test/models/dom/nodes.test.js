@@ -506,14 +506,14 @@ describe('TuningValueNode', function() {
   describe('#deepSort()', function() {
     it('should throw', function () {
       const node = newNode();
-      expect(node.deepSort()).to.throw;
+      expect(() => node.deepSort()).to.throw;
     });
   });
 
   describe('#sort()', function() {
     it('should throw', function () {
       const node = newNode();
-      expect(node.sort()).to.throw;
+      expect(() => node.sort()).to.throw;
     });
   });
 
