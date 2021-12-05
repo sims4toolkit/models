@@ -319,3 +319,196 @@ describe('TuningElementNode', function() {
     });
   });
 });
+
+describe('TuningValueNode', function() {
+  const newNode = (value = "test") => new TuningValueNode(value);
+
+  describe('#constructor', function() {
+    it('should throw when no value is given', function () {
+      // TODO:
+    });
+
+    it('should use the value that is given', function () {
+      // TODO:
+    });
+  });
+
+  describe('#attributes', function() {
+    it('should throw when trying to set', function () {
+      const node = newNode();
+      expect(() => node.attributes = {}).to.throw;
+    });
+
+    it('should be undefined', function () {
+      const node = newNode();
+      expect(node.attributes).to.be.undefined;
+    });
+  });
+
+  describe('#child', function() {
+    it('should throw when trying to set', function () {
+      const node = newNode();
+      expect(() => node.child = newNode()).to.throw;
+    });
+
+    it('should be undefined', function () {
+      const node = newNode();
+      expect(node.child).to.be.undefined;
+    });
+  });
+
+  describe('#children', function() {
+    it('should throw when trying to set', function () {
+      const node = newNode();
+      expect(() => node.children = []).to.throw;
+    });
+
+    it('should be undefined', function () {
+      const node = newNode();
+      expect(node.children).to.be.undefined;
+    });
+  });
+
+  describe('#hasChildren', function() {
+    it('should be false', function () {
+      const node = newNode();
+      expect(node.hasChildren).to.be.false;
+    });
+  });
+
+  describe('#id', function() {
+    it('should throw when trying to set', function () {
+      const node = newNode();
+      expect(() => node.id = 123n).to.throw;
+    });
+
+    it('should be undefined', function () {
+      const node = newNode();
+      expect(node.id).to.be.undefined;
+    });
+  });
+
+  describe('#innerValue', function() {
+    it('should throw when trying to set', function () {
+      const node = newNode();
+      expect(() => node.innerValue = 123n).to.throw;
+    });
+
+    it('should be undefined', function () {
+      const node = newNode();
+      expect(node.innerValue).to.be.undefined;
+    });
+  });
+
+  describe('#name', function() {
+    it('should throw when trying to set', function () {
+      const node = newNode();
+      expect(() => node.name = "name").to.throw;
+    });
+
+    it('should be undefined', function () {
+      const node = newNode();
+      expect(node.name).to.be.undefined;
+    });
+  });
+
+  describe('#numChildren', function() {
+    it('should be 0', function () {
+      const node = newNode();
+      expect(node.numChildren).to.equal(0);
+    });
+  });
+
+  describe('#tag', function() {
+    it('should throw when trying to set', function () {
+      const node = newNode();
+      expect(() => node.tag = "tag").to.throw;
+    });
+
+    it('should be undefined', function () {
+      const node = newNode();
+      expect(node.tag).to.be.undefined;
+    });
+  });
+
+  describe('#type', function() {
+    it('should throw when trying to set', function () {
+      const node = newNode();
+      expect(() => node.type = "enabled").to.throw;
+    });
+
+    it('should be undefined', function () {
+      const node = newNode();
+      expect(node.type).to.be.undefined;
+    });
+  });
+
+  describe('#value', function() {
+    it('should FAIL', function () {
+      // TODO:
+    });
+  });
+
+  describe('#addChildren()', function() {
+    it('should throw when no children are given', function () {
+      const node = newNode();
+      expect(() => node.addChildren()).to.throw;
+    });
+
+    it('should throw when children are given', function () {
+      const node = newNode();
+      expect(() => node.addChildren(newNode(), newNode())).to.throw;
+    });
+  });
+
+  describe('#addClones()', function() {
+    it('should throw when no children are given', function () {
+      const node = newNode();
+      expect(() => node.addClones()).to.throw;
+    });
+
+    it('should throw when children are given', function () {
+      const node = newNode();
+      expect(() => node.addClones(newNode(), newNode())).to.throw;
+    });
+  });
+
+  describe('#clone()', function() {
+    it('should return a new node with the same value as this one', function () {
+      const node = newNode();
+      expect(node.value).to.equal("test");
+      const clone = node.clone();
+      expect(clone.value).to.equal("test");
+    });
+
+    it('should not mutate the original', function () {
+      const node = newNode();
+      const clone = node.clone();
+      expect(node.value).to.equal("test");
+      expect(clone.value).to.equal("test");
+      clone.value = 123n;
+      expect(node.value).to.equal("test");
+      expect(clone.value).to.equal(123n);
+    });
+  });
+
+  describe('#deepSort()', function() {
+    it('should throw', function () {
+      const node = newNode();
+      expect(node.deepSort()).to.throw;
+    });
+  });
+
+  describe('#sort()', function() {
+    it('should throw', function () {
+      const node = newNode();
+      expect(node.sort()).to.throw;
+    });
+  });
+
+  describe('#toXml()', function() {
+    it('should FAIL', function () {
+      // TODO:
+    });
+  });
+});

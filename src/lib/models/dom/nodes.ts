@@ -430,7 +430,7 @@ export class TuningElementNode extends TuningNodeBase {
 /** A node that contains a single value. */
 export class TuningValueNode extends TuningNodeBase {
   constructor(value: TuningValue) {
-    super({ value })
+    super({ value });
   }
 
   clone(): TuningValueNode {
