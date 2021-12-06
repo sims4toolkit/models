@@ -507,19 +507,24 @@ describe('TuningElementNode', function() {
     });
 
     it('should throw when tag is an empty string', function () {
-      // TODO:
+      expect(() => new TuningElementNode({ tag: '' })).to.throw;
     });
 
-    it('should not throw when no attributes are given', function () {
-      // TODO:
-    });
-
-    it('should not throw when no children are given', function () {
-      // TODO:
+    it('should create a new node with just a tag', function () {
+      expect(new TuningElementNode({ tag: 'T' })).to.not.be.undefined;
     });
 
     it('should create a new node with all of the given values', function () {
-      // TODO:
+      const node = new TuningElementNode({
+        tag: 'L',
+        attributes: { n: "list" },
+        children: [ new TuningValueNode(15) ]
+      });
+
+      expect(node.tag).to.equal('L');
+      expect(node.name).to.equal('list');
+      expect(node.children).to.be.an('Array').with.lengthOf(1);
+      expect(node.child.value).to.equal(15);
     });
   });
 
