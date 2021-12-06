@@ -32,7 +32,6 @@ export interface TuningNode {
 
   /**
    * The first child of this node. If there are no children, it is undefined.
-   * Intended for use with tunable variants.
    */
   get child(): TuningNode;
 
@@ -73,7 +72,7 @@ export interface TuningNode {
 
   /**
    * Sets the first child of this node, if it can have children. If it cannot,
-   * an error is thrown. Intended for use with tunable variants.
+   * an error is thrown. If it can have children, but doesn't one is added.
    */
   set child(child: TuningNode);
 

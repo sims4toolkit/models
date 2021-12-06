@@ -74,8 +74,16 @@ describe('TuningDocumentNode', function() {
       expect(() => node.children = []).to.throw;
     });
 
-    it('should FAIL', function () {
-      // TODO:
+    it('should be an empty array if there are no children', function () {
+      const node = newNode();
+      expect(node.children).to.be.an('Array').that.is.empty;
+    });
+
+    it('should contain all of this node\'s children', function () {
+      const node = newNode(new TuningValueNode(1), new TuningValueNode(2));
+      expect(node.children.length).to.equal(2);
+      expect(node.children[0].value).to.equal(1);
+      expect(node.children[1].value).to.equal(2);
     });
   });
 
@@ -111,8 +119,46 @@ describe('TuningDocumentNode', function() {
   });
 
   describe('#innerValue', function() {
-    it('should FAIL', function () {
-      // TODO:
+    it('should be undefined if there are no children', function () {
+      const node = newNode();
+      expect(node.innerValue).to.be.undefined;
+    });
+
+    it('should be undefined if the first child is an element', function () {
+      const node = newNode(new TuningElementNode({ tag: 'I' }));
+      expect(node.innerValue).to.be.undefined;
+    });
+
+    it('should be the value of the first child if it is a value node', function () {
+      const node = newNode(new TuningValueNode(123n));
+      expect(node.innerValue).to.equal(123n);
+    });
+
+    it('should be the value of the text of the first child if it is a comment', function () {
+      const node = newNode(new TuningCommentNode("This is a comment."));
+      expect(node.innerValue).to.equal("This is a comment.");
+    });
+
+    it('should throw when setting if the first child cannot have a value', function () {
+      it('should be undefined if the first child is an element', function () {
+        const node = newNode(new TuningElementNode({ tag: 'I' }));
+        expect(() => node.innerValue = 123n).to.throw;
+      });
+    });
+
+    it('should set the value of the first child if it can have a value', function () {
+      const child = new TuningValueNode(123n);
+      const node = newNode(child);
+      node.innerValue = 456n;
+      expect(child.value).to.equal(456n);
+    });
+
+    it('should create a new value node child if there are no children', function () {
+      const node = newNode();
+      expect(node.numChildren).to.equal(0);
+      node.innerValue = 123n;
+      expect(node.numChildren).to.equal(1);
+      expect(node.child.value).to.equal(123n);
     });
   });
 
