@@ -297,19 +297,39 @@ describe('TuningDocumentNode', function() {
 
   describe('#clone()', function() {
     it('should return a new, empty document node if there are no children', function () {
-      // TODO:
+      const node = newNode();
+      expect(node.numChildren).to.equal(0);
+      const clone = node.clone();
+      expect(clone.numChildren).to.equal(0);
     });
 
     it('should return a new document node with all children', function () {
-      // TODO:
+      const node = newNode(new TuningValueNode(5), new TuningCommentNode("hi"));
+      expect(node.numChildren).to.equal(2);
+      const clone = node.clone();
+      expect(clone.numChildren).to.equal(2);
+      expect(clone.children[0].value).to.equal(5);
+      expect(clone.children[1].value).to.equal("hi");
     });
 
     it('should not mutate the children array of the original', function () {
-      // TODO:
+      const node = newNode();
+      const clone = node.clone();
+      expect(node.numChildren).to.equal(0);
+      expect(clone.numChildren).to.equal(0);
+      clone.innerValue = 5;
+      expect(node.numChildren).to.equal(0);
+      expect(clone.numChildren).to.equal(1);
     });
 
     it('should not mutate the individual children of the original', function () {
-      // TODO:
+      const node = newNode(new TuningValueNode(5));
+      const clone = node.clone();
+      expect(node.innerValue).to.equal(5);
+      expect(clone.innerValue).to.equal(5);
+      clone.innerValue = 10;
+      expect(node.innerValue).to.equal(5);
+      expect(clone.innerValue).to.equal(10);
     });
   });
 
