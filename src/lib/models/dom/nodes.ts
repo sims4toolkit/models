@@ -360,12 +360,12 @@ abstract class TuningNodeBase implements TuningNode {
 
 /** A complete tuning document with children. */
 export class TuningDocumentNode extends TuningNodeBase {
-  constructor(children: TuningNode[] = []) {
+  constructor(...children: TuningNode[]) {
     super({ children })
   }
 
   clone(): TuningDocumentNode {
-    return new TuningDocumentNode(this.children.map(child => child.clone()));
+    return new TuningDocumentNode(...(this.children.map(child => child.clone())));
   }
 
   toXml({ indents = 0, spacesPerIndent = 2 }: {

@@ -18,17 +18,13 @@ describe('TuningDocumentNode', function() {
 
     it('should add the one child that is given', function () {
       const node = new TuningDocumentNode(new TuningValueNode(5));
-      expect(node.children).to.have.lengthOf(1);
+      expect(node.numChildren).to.equal(1);
       expect(node.child.value).to.equal(5);
     });
 
     it('should add the children that are given', function () {
-      const node = new TuningDocumentNode(
-        new TuningValueNode(1),
-        new TuningValueNode(5)
-        );
-
-      expect(node.children).to.have.lengthOf(2);
+      const node = new TuningDocumentNode(new TuningValueNode(1), new TuningValueNode(5));
+      expect(node.numChildren).to.equal(2);
       expect(node.children[0].value).to.equal(1);
       expect(node.children[1].value).to.equal(5);
     });
@@ -197,7 +193,7 @@ describe('TuningDocumentNode', function() {
 });
 
 describe('TuningElementNode', function() {
-  const newNodeWithTag = (tag = "T") => newNode({ tag });
+  const newNode = (tag = "T") => new TuningElementNode({ tag });
 
   describe('#constructor', function() {
     it('should throw when no tag is given', function () {
@@ -223,12 +219,12 @@ describe('TuningElementNode', function() {
 
   describe('#attributes', function() {
     it('should throw when trying to set', function () {
-      const node = newNodeWithTag();
+      const node = newNode();
       expect(() => node.attributes = {}).to.throw;
     });
 
     it('should not be undefined when there are no attributes', function () {
-      const node = newNodeWithTag();
+      const node = newNode();
       expect(node.attributes).to.not.be.undefined;
     });
 
@@ -258,19 +254,19 @@ describe('TuningElementNode', function() {
 
   describe('#hasChildren', function() {
     it('should throw when trying to set', function () {
-      const node = newNodeWithTag();
+      const node = newNode();
       expect(() => node.children = []).to.throw;
     });
 
     it('should return true when it has children', function () {
-      const node = newNodeWithTag(newNodeWithTag(), newNodeWithTag());
+      const node = newNode(newNode(), newNode());
       expect(node.hasChildren).to.be.true;
     });
 
     it('should return true when it does not have children', function () {
       // this test is not a typo, the hasChildren getter returns if there is
       // a children ARRAY -- it does not have to have any items in it
-      const node = newNodeWithTag();
+      const node = newNode();
       expect(node.hasChildren).to.be.true;
     });
   });
