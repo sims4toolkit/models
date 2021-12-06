@@ -19,6 +19,8 @@ type TuningValue = number | bigint | boolean | string;
 
 //#endregion Types
 
+//#region Models
+
 /** A node in a tuning DOM. */
 export interface TuningNode {
   //#region Getters
@@ -375,7 +377,7 @@ export class TuningDocumentNode extends TuningNodeBase {
     const lines: string[] = [`${spaces}${XML_DECLARATION}`];
 
     this.children.forEach(child => {
-      lines.push(child.toXml({ indents: indents + 1, spacesPerIndent }));
+      lines.push(child.toXml({ indents, spacesPerIndent }));
     });
 
     return lines.join('\n');
@@ -408,14 +410,26 @@ export class TuningElementNode extends TuningNodeBase {
     const spaces = " ".repeat(indents * spacesPerIndent);
     const lines: string[] = [];
 
-    // FIXME: attributes
+    // attributes
+    const attrKeys = Object.keys(this.attributes);
+    const attrNodes: string[] = [];
+    if (attrKeys.length > 0) {
+      attrNodes.push(''); // just for spacing
+      attrKeys.forEach(key => {
+        const value = formatValue(this.attributes[key]);
+        attrNodes.push(`${key}="${value}"`);
+      });
+    }
+    const attrString = attrNodes.join(' ');
+    
+    // tags & children
     if (this.numChildren === 0) {
-      lines.push(`${spaces}<${this.tag}/>`);
+      lines.push(`${spaces}<${this.tag}${attrString}/>`);
     } else if (this.numChildren <= 2 && !this.child.hasChildren) {
       const value = this.children.map(child => child.toXml()).join('');
-      lines.push(`${spaces}<${this.tag}>${value}</${this.tag}>`);
+      lines.push(`${spaces}<${this.tag}${attrString}>${value}</${this.tag}>`);
     } else {
-      lines.push(`${spaces}<${this.tag}>`);
+      lines.push(`${spaces}<${this.tag}${attrString}>`);
       this.children.forEach(child => {
         lines.push(child.toXml({ indents: indents + 1, spacesPerIndent }));
       });
@@ -442,15 +456,7 @@ export class TuningValueNode extends TuningNodeBase {
   } = {}): string {
     if (this.value == undefined) return '';
     const spaces = " ".repeat(indents * spacesPerIndent);
-    switch (typeof this.value) {
-      case 'boolean':
-        return `${spaces}${this.value ? 'True' : 'False'}`;
-      case 'number':
-      case 'bigint':
-        return `${spaces}${this.value.toString()}`;
-      default:
-        return `${spaces}${this.value}`;
-    }
+    return `${spaces}${formatValue(this.value)}`;
   }
 }
 
@@ -469,7 +475,30 @@ export class TuningCommentNode extends TuningNodeBase {
     spacesPerIndent?: number;
   } = {}): string {
     const spaces = " ".repeat(indents * spacesPerIndent);
-    const comment = this.value == undefined ? '' : this.value;
+    const comment = this.value == undefined ? '' : formatValue(this.value);
     return `${spaces}<!--${comment}-->`;
   }
 }
+
+//#endregion Models
+
+//#region Helpers
+
+/**
+ * Formats a value that may appear in tuning as a string.
+ * 
+ * @param value Value to format for XML
+ */
+function formatValue(value: number | bigint | boolean | string): string {
+  switch (typeof value) {
+    case 'boolean':
+      return value ? 'True' : 'False';
+    case 'number':
+    case 'bigint':
+      return value.toString();
+    default:
+      return value;
+  }
+}
+
+//#endregion Helpers
