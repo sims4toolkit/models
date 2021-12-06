@@ -1,4 +1,3 @@
-const { notDeepEqual } = require("assert");
 const { expect } = require("chai");
 const { nodes } = require("../../../dst/api");
 
@@ -999,47 +998,121 @@ describe('TuningElementNode', function() {
 
   describe('#toXml()', function() {
     it('should not indent by default', function () {
-      // TODO:
+      const node = newNode();
+      expect(node.toXml()).to.equal(`<T/>`);
     });
 
     it('should use two spaces by default', function () {
-      // TODO:
+      const node = newNode();
+      expect(node.toXml({ indents: 1 })).to.equal(`  <T/>`);
     });
 
     it('should use the given number of spaces', function () {
-      // TODO:
+      const node = newNode();
+      expect(node.toXml({
+        indents: 1,
+        spacesPerIndent: 4
+      })).to.equal(`    <T/>`);
     });
 
     it('should write attributes when there are children', function() {
-      // TODO:
+      const node = new TuningElementNode({
+        tag: 'T',
+        attributes: { n: "something" },
+        children: [ new TuningValueNode(50) ]
+      });
+
+      expect(node.toXml()).to.equal(`<T n="something">50</T>`);
     });
 
     it('should write attributes when there are no children', function() {
-      // TODO:
+      const node = new TuningElementNode({
+        tag: 'T',
+        attributes: { n: "something" }
+      });
+
+      expect(node.toXml()).to.equal(`<T n="something"/>`);
     });
 
     it('should write open/close tags if there are children', function() {
-      // TODO:
+      const node = new TuningElementNode({
+        tag: 'T',
+        children: [ new TuningValueNode(50) ]
+      });
+
+      expect(node.toXml()).to.equal(`<T>50</T>`);
     });
 
     it('should write one tag if there are no children', function() {
-      // TODO:
+      const node = new TuningElementNode({
+        tag: 'T'
+      });
+
+      expect(node.toXml()).to.equal(`<T/>`);
     });
 
     it('should be on one line if there is one value child', function() {
-      // TODO:
+      const node = new TuningElementNode({
+        tag: 'T',
+        children: [ new TuningValueNode(50) ]
+      });
+
+      expect(node.toXml()).to.equal(`<T>50</T>`);
     });
 
     it('should be on one line if there are two value/comment children', function() {
-      // TODO:
+      const node = new TuningElementNode({
+        tag: 'T',
+        children: [ new TuningValueNode(50), new TuningCommentNode("hi") ]
+      });
+
+      expect(node.toXml()).to.equal(`<T>50<!--hi--></T>`);
     });
 
     it('should put an element child on its own line, indented', function() {
-      // TODO:
+      const node = new TuningElementNode({
+        tag: 'L',
+        children: [
+          new TuningElementNode({
+            tag: 'T',
+            children: [
+              new TuningValueNode(123)
+            ]
+          })
+        ]
+      });
+
+      expect(node.toXml()).to.equal(`<L>\n  <T>123</T>\n</L>`);
     });
 
     it('should increase indentation by 1 for each recursive call', function() {
-      // TODO:
+      const node = new TuningElementNode({
+        tag: 'L',
+        children: [
+          new TuningElementNode({
+            tag: 'U',
+            children: [
+              new TuningElementNode({
+                tag: 'T',
+                attributes: { n: 'first' },
+                children: [ new TuningValueNode(123) ]
+              }),
+              new TuningElementNode({
+                tag: 'T',
+                attributes: { n: 'second' },
+                children: [ new TuningValueNode(456) ]
+              })
+            ]
+          })
+        ]
+      });
+
+      expect(node.toXml()).to.equal(`<L>
+  <U>
+    <T n="first">123</T>
+    <T n="second">456</T>
+  </U>
+</L>`);
     });
   });
 });
