@@ -1,3 +1,4 @@
+const { notDeepEqual } = require("assert");
 const { expect } = require("chai");
 const { nodes } = require("../../../dst/api");
 
@@ -140,10 +141,8 @@ describe('TuningDocumentNode', function() {
     });
 
     it('should throw when setting if the first child cannot have a value', function () {
-      it('should be undefined if the first child is an element', function () {
-        const node = newNode(new TuningElementNode({ tag: 'I' }));
-        expect(() => node.innerValue = 123n).to.throw;
-      });
+      const node = newNode(new TuningElementNode({ tag: 'I' }));
+      expect(() => node.innerValue = 123n).to.throw;
     });
 
     it('should set the value of the first child if it can have a value', function () {
@@ -643,8 +642,52 @@ describe('TuningElementNode', function() {
   });
 
   describe('#innerValue', function() {
-    it('should FAIL', function () {
-      // TODO:
+    it('should be undefined if there are no children', function () {
+      const node = newNode();
+      expect(node.innerValue).to.be.undefined;
+    });
+
+    it('should be undefined if the first child is an element', function () {
+      const node = newNode('L');
+      node.addChildren(new TuningElementNode({ tag: 'T' }));
+      expect(node.innerValue).to.be.undefined;
+    });
+
+    it('should be the value of the first child if it is a value node', function () {
+      const node = newNode();
+      node.addChildren(new TuningValueNode(123n));
+      expect(node.innerValue).to.equal(123n);
+    });
+
+    it('should be the value of the text of the first child if it is a comment', function () {
+      const node = newNode();
+      node.child = new TuningCommentNode("This is a comment.");
+      expect(node.innerValue).to.equal("This is a comment.");
+    });
+
+    it('should throw when setting if the first child cannot have a value', function () {
+      const node = newNode();
+      node.addChildren(new TuningElementNode({ tag: 'T' }));
+      expect(() => node.innerValue = 123n).to.throw;
+    });
+
+    it('should set the value of the first child if it can have a value', function () {
+      const node = new TuningElementNode({
+        tag: 'T',
+        children: [ new TuningValueNode(123) ]
+      });
+
+      expect(node.child.value).to.equal(123);
+      node.innerValue = 456;
+      expect(node.child.value).to.equal(456);
+    });
+
+    it('should create a new value node child if there are no children', function () {
+      const node = newNode();
+      expect(node.numChildren).to.equal(0);
+      node.innerValue = 123n;
+      expect(node.numChildren).to.equal(1);
+      expect(node.child.value).to.equal(123n);
     });
   });
 
