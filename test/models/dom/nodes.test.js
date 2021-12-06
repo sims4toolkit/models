@@ -296,7 +296,19 @@ describe('TuningDocumentNode', function() {
   });
 
   describe('#clone()', function() {
-    it('should FAIL', function () {
+    it('should return a new, empty document node if there are no children', function () {
+      // TODO:
+    });
+
+    it('should return a new document node with all children', function () {
+      // TODO:
+    });
+
+    it('should not mutate the children array of the original', function () {
+      // TODO:
+    });
+
+    it('should not mutate the individual children of the original', function () {
       // TODO:
     });
   });
@@ -314,8 +326,69 @@ describe('TuningDocumentNode', function() {
   });
 
   describe('#toXml()', function() {
-    it('should FAIL', function () {
-      // TODO:
+    const XML_DECLARATION = '<?xml version="1.0" encoding="utf-8"?>';
+
+    it('should not indent if the given number is 0', function () {
+      const node = newNode();
+      expect(node.toXml()).to.equal(XML_DECLARATION);
+    });
+
+    it('should use a default indentation of 2 spaces', function () {
+      const node = newNode();
+      expect(node.toXml({ indents: 1 })).to.equal(`  ${XML_DECLARATION}`);
+    });
+
+    it('should use the number of spaces that are provided', function () {
+      const node = newNode();
+      expect(node.toXml({
+        indents: 1,
+        spacesPerIndent: 4
+      })).to.equal(`    ${XML_DECLARATION}`);
+    });
+
+    it('should just return an XML declaration when there are no children', function () {
+      const node = newNode();
+      expect(node.toXml()).to.equal(XML_DECLARATION);
+    });
+
+    it('should write each child starting on its own line', function () {
+      const node = newNode(
+        new TuningElementNode({
+          tag: 'M',
+          attributes: {
+            n: "module.name",
+            s: 12345n
+          },
+          children: [
+            new TuningElementNode({
+              tag: 'C',
+              attributes: { n: "ClassName" },
+              children: [
+                new TuningElementNode({
+                  tag: 'T',
+                  attributes: { n: "SOMETHING" },
+                  children: [ new TuningValueNode(10) ]
+                })
+              ]
+            })
+          ]
+        }),
+        new TuningElementNode({
+          tag: 'T',
+          children: [
+            new TuningValueNode("0x00000000"),
+            new TuningCommentNode("Some string")
+          ]
+        })
+      );
+
+      expect(node.toXml()).to.equal(`${XML_DECLARATION}
+<M n="module.name" s="12345">
+  <C n="ClassName">
+    <T n="SOMETHING">10</T>
+  </C>
+</M>
+<T>0x00000000<!--Some string--></T>`);
     });
   });
 });
