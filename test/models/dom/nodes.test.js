@@ -620,8 +620,25 @@ describe('TuningElementNode', function() {
   });
 
   describe('#id', function() {
-    it('should FAIL', function () {
-      // TODO:
+    it('should return undefined if there is no `s` attribute', function () {
+      const node = newNode();
+      expect(node.id).to.be.undefined;
+    });
+
+    it('should return the value of the `s` attribute', function () {
+      const node = new TuningElementNode({
+        tag: 'I',
+        attributes: { s: 123n }
+      });
+
+      expect(node.id).to.equal(123n)
+    });
+
+    it('should change the value of the `s` attribute', function () {
+      const node = newNode();
+      expect(node.id).to.be.undefined;
+      node.id = 123n;
+      expect(node.id).to.equal(123n)
     });
   });
 
@@ -632,8 +649,25 @@ describe('TuningElementNode', function() {
   });
 
   describe('#name', function() {
-    it('should FAIL', function () {
-      // TODO:
+    it('should return undefined if there is no `n` attribute', function () {
+      const node = newNode();
+      expect(node.id).to.be.undefined;
+    });
+
+    it('should return the value of the `n` attribute', function () {
+      const node = new TuningElementNode({
+        tag: 'T',
+        attributes: { n: "name" }
+      });
+
+      expect(node.name).to.equal("name")
+    });
+
+    it('should change the value of the `n` attribute', function () {
+      const node = newNode();
+      expect(node.name).to.be.undefined;
+      node.name = "name";
+      expect(node.name).to.equal("name")
     });
   });
 
@@ -650,8 +684,21 @@ describe('TuningElementNode', function() {
   });
 
   describe('#type', function() {
-    it('should FAIL', function () {
-      // TODO:
+    it('should return undefined if there is no `t` attribute', function () {
+      const node = newNode();
+      expect(node.type).to.be.undefined;
+    });
+
+    it('should return the value of the `t` attribute', function () {
+      const node = new TuningElementNode({ tag: 'T', attributes: { t: "enabled" } });
+      expect(node.type).to.equal("enabled")
+    });
+
+    it('should change the value of the `t` attribute', function () {
+      const node = new TuningElementNode({ tag: 'V', attributes: { t: "disabled" } });
+      expect(node.type).to.equal("disabled")
+      node.type = "enabled";
+      expect(node.type).to.equal("enabled")
     });
   });
 
