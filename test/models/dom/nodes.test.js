@@ -672,14 +672,37 @@ describe('TuningElementNode', function() {
   });
 
   describe('#numChildren', function() {
-    it('should FAIL', function () {
-      // TODO:
+    it('should return 0 if there are no children', function () {
+      const node = newNode();
+      expect(node.numChildren).to.equal(0);
+    });
+
+    it('should return number of children if there are any', function () {
+      const node = new TuningElementNode({
+        tag: 'L',
+        children: [
+          new TuningCommentNode("first"),
+          new TuningCommentNode("second"),
+          new TuningCommentNode("third")
+        ]
+      });
+
+      expect(node.numChildren).to.equal(3);
+      node.addChildren(new TuningCommentNode("fourth"));
+      expect(node.numChildren).to.equal(4);
     });
   });
 
   describe('#tag', function() {
-    it('should FAIL', function () {
-      // TODO:
+    it('should be the tag of this node', function () {
+      const node = new TuningElementNode({ tag: 'T' });
+      expect(node.tag).to.equal('T');
+    });
+
+    it('should set the tag of this node', function () {
+      const node = new TuningElementNode({ tag: 'T' });
+      node.tag = 'L';
+      expect(node.tag).to.equal('L');
     });
   });
 
@@ -703,8 +726,14 @@ describe('TuningElementNode', function() {
   });
 
   describe('#value', function() {
-    it('should FAIL', function () {
-      // TODO:
+    it('should be undefined', function () {
+      const node = newNode();
+      expect(node.value).to.be.undefined;
+    });
+
+    it('should throw when setting', function () {
+      const node = newNode();
+      expect(() => node.value = 1).to.throw;
     });
   });
 
