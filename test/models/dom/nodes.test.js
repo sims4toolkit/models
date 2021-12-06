@@ -30,6 +30,16 @@ describe('TuningDocumentNode', function() {
     });
   });
 
+  describe('#from()', function() {
+    it('should be implemented', function() {
+      expect(true).to.be.false; // TODO:
+    });
+
+    it('should not round 64 bit integers', function() {
+      // TODO:
+    });
+  });
+
   describe('#attributes', function() {
     it('should throw when trying to set', function () {
       const node = newNode();

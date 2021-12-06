@@ -1,3 +1,4 @@
+import { XMLParser } from "fast-xml-parser";
 import { XML_DECLARATION } from "../../utils/constants";
 
 //#region Types
@@ -365,6 +366,17 @@ export class TuningDocumentNode extends TuningNodeBase {
     super({ children })
   }
 
+  /**
+   * Parses and returns either a string or a buffer containing XML code as a
+   * TuningDocumentNode, if possible.
+   * 
+   * @param xml XML document to parse as a node
+   * @throws TODO:
+   */
+  static from(xml: string | Buffer): TuningDocumentNode {
+    return parseTuningDocument(xml);
+  }
+
   clone(): TuningDocumentNode {
     return new TuningDocumentNode(...(this.children.map(child => child.clone())));
   }
@@ -499,6 +511,42 @@ function formatValue(value: number | bigint | boolean | string): string {
     default:
       return value;
   }
+}
+
+/**
+ * Parses a string or buffer containing XML code as a TuningDocumentNode.
+ * 
+ * @param xml XML document to parse as a node
+ */
+ function parseTuningDocument(xml: string | Buffer): TuningDocumentNode {
+  const parser = new XMLParser({
+    ignoreAttributes: false,
+    attributeNamePrefix: "",
+    parseAttributeValue: false,
+    parseTagValue: false,
+    commentPropName: "comment",
+    textNodeName: "value",
+    preserveOrder: true
+  });
+
+  interface NodeObj {
+    value?: number | bigint | string;
+    comment?: string;
+  }
+
+  const nodeObjs: NodeObj[] = parser.parse(xml);
+
+  function parseNodeObj(nodeObj: NodeObj): TuningNode {
+    if (nodeObj.value !== undefined) {
+      // TODO:
+    }
+
+    return;
+  }
+
+  //@ts-ignore
+  return nodeObjs;
+  return new TuningDocumentNode(...(nodeObjs.map(parseNodeObj)));
 }
 
 //#endregion Helpers
