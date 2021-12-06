@@ -13,11 +13,24 @@ describe('TuningDocumentNode', function() {
 
   describe('#constructor', function() {
     it('should not throw when no children are given', function () {
-      // TODO:
+      expect(() => new TuningDocumentNode()).to.not.throw;
+    });
+
+    it('should add the one child that is given', function () {
+      const node = new TuningDocumentNode(new TuningValueNode(5));
+      expect(node.children).to.have.lengthOf(1);
+      expect(node.child.value).to.equal(5);
     });
 
     it('should add the children that are given', function () {
-      // TODO:
+      const node = new TuningDocumentNode(
+        new TuningValueNode(1),
+        new TuningValueNode(5)
+        );
+
+      expect(node.children).to.have.lengthOf(2);
+      expect(node.children[0].value).to.equal(1);
+      expect(node.children[1].value).to.equal(5);
     });
   });
 
@@ -184,12 +197,11 @@ describe('TuningDocumentNode', function() {
 });
 
 describe('TuningElementNode', function() {
-  const newNode = options => new TuningElementNode(options);
   const newNodeWithTag = (tag = "T") => newNode({ tag });
 
   describe('#constructor', function() {
     it('should throw when no tag is given', function () {
-      // TODO:
+      expect(() => new TuningElementNode()).to.throw;
     });
 
     it('should throw when tag is an empty string', function () {
