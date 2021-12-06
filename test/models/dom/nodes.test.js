@@ -180,8 +180,14 @@ describe('TuningDocumentNode', function() {
       expect(() => node.numChildren = 5).to.throw;
     });
 
-    it('should FAIL', function () {
-      // TODO:
+    it('should return 0 when there are no children', function () {
+      const node = newNode();
+      expect(node.numChildren).to.equal(0);
+    });
+
+    it('should return number of children when there are some', function () {
+      const node = newNode(new TuningValueNode(123n), new TuningCommentNode("hi"));
+      expect(node.numChildren).to.equal(2);
     });
   });
 
