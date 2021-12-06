@@ -228,14 +228,70 @@ describe('TuningDocumentNode', function() {
   });
 
   describe('#addChildren()', function() {
-    it('should FAIL', function () {
-      // TODO:
+    it('should do nothing when no children are given', function () {
+      const node = newNode();
+      expect(node.numChildren).to.equal(0);
+      node.addChildren();
+      expect(node.numChildren).to.equal(0);
+    });
+
+    it('should add the one child that is given', function () {
+      const node = newNode();
+      expect(node.numChildren).to.equal(0);
+      node.addChildren(new TuningValueNode("hi"));
+      expect(node.numChildren).to.equal(1);
+      expect(node.children[0].value).to.equal("hi");
+    });
+
+    it('should add all children that are given', function () {
+      const node = newNode();
+      expect(node.numChildren).to.equal(0);
+      node.addChildren(new TuningValueNode("hi"), new TuningValueNode("bye"));
+      expect(node.numChildren).to.equal(2);
+      expect(node.children[0].value).to.equal("hi");
+      expect(node.children[1].value).to.equal("bye");
+    });
+
+    it('should mutate the original children', function () {
+      const node = newNode();
+      const child = new TuningValueNode(123n);
+      node.addChildren(child);
+      node.innerValue = 456n;
+      expect(child.value).to.equal(456n);
     });
   });
 
   describe('#addClones()', function() {
-    it('should FAIL', function () {
-      // TODO:
+    it('should do nothing when no children are given', function () {
+      const node = newNode();
+      expect(node.numChildren).to.equal(0);
+      node.addClones();
+      expect(node.numChildren).to.equal(0);
+    });
+
+    it('should add the one child that is given', function () {
+      const node = newNode();
+      expect(node.numChildren).to.equal(0);
+      node.addClones(new TuningValueNode("hi"));
+      expect(node.numChildren).to.equal(1);
+      expect(node.children[0].value).to.equal("hi");
+    });
+
+    it('should add all children that are given', function () {
+      const node = newNode();
+      expect(node.numChildren).to.equal(0);
+      node.addClones(new TuningValueNode("hi"), new TuningValueNode("bye"));
+      expect(node.numChildren).to.equal(2);
+      expect(node.children[0].value).to.equal("hi");
+      expect(node.children[1].value).to.equal("bye");
+    });
+
+    it('should not mutate the original children', function () {
+      const node = newNode();
+      const child = new TuningValueNode(123n);
+      node.addClones(child);
+      node.innerValue = 456n;
+      expect(child.value).to.equal(123n);
     });
   });
 
