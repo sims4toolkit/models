@@ -9,7 +9,7 @@ const {
 } = nodes;
 
 describe('TuningDocumentNode', function() {
-  const newNode = (...children) => new TuningDocumentNode(children);
+  const newNode = (...children) => new TuningDocumentNode(...children);
 
   describe('#constructor', function() {
     it('should not throw when no children are given', function () {
@@ -43,8 +43,28 @@ describe('TuningDocumentNode', function() {
   });
 
   describe('#child', function() {
-    it('should FAIL', function () {
-      // TODO:
+    it('should be undefined if there are no children', function () {
+      const node = newNode();
+      expect(node.child).to.be.undefined;
+    });
+
+    it('should be the same as the first child', function () {
+      const node = newNode(new TuningValueNode("hello"));
+      expect(node.child.value).to.equal("hello");
+    });
+
+    it('should update the first child when set', function () {
+      const node = newNode(new TuningValueNode("hello"));
+      node.child = new TuningValueNode("new text");
+      expect(node.child.value).to.equal("new text");
+    });
+
+    it('should add a child if there are none', function () {
+      const node = newNode();
+      expect(node.numChildren).to.equal(0);
+      node.child = new TuningValueNode("new text");
+      expect(node.numChildren).to.equal(1);
+      expect(node.child.value).to.equal("new text");
     });
   });
 
