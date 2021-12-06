@@ -849,20 +849,151 @@ describe('TuningElementNode', function() {
   });
 
   describe('#clone()', function() {
-    it('should FAIL', function () {
-      // TODO:
+    it('should return a new, empty document node if there are no children', function () {
+      const node = newNode();
+      expect(node.numChildren).to.equal(0);
+      const clone = node.clone();
+      expect(clone.numChildren).to.equal(0);
+    });
+
+    it('should return a new document node with all children', function () {
+      const node = newNode();
+      node.addChildren(new TuningValueNode(5), new TuningCommentNode("hi"));
+      expect(node.numChildren).to.equal(2);
+      const clone = node.clone();
+      expect(clone.numChildren).to.equal(2);
+      expect(clone.children[0].value).to.equal(5);
+      expect(clone.children[1].value).to.equal("hi");
+    });
+
+    it('should not mutate the children array of the original', function () {
+      const node = newNode();
+      const clone = node.clone();
+      expect(node.numChildren).to.equal(0);
+      expect(clone.numChildren).to.equal(0);
+      clone.innerValue = 5;
+      expect(node.numChildren).to.equal(0);
+      expect(clone.numChildren).to.equal(1);
+    });
+
+    it('should not mutate the individual children of the original', function () {
+      const node = newNode();
+      node.addChildren(new TuningValueNode(5));
+      const clone = node.clone();
+      expect(node.innerValue).to.equal(5);
+      expect(clone.innerValue).to.equal(5);
+      clone.innerValue = 10;
+      expect(node.innerValue).to.equal(5);
+      expect(clone.innerValue).to.equal(10);
     });
   });
 
   describe('#deepSort()', function() {
-    it('should FAIL', function () {
-      // TODO:
+    it("should sort childrens' children", function() {
+      const node = new TuningElementNode({
+        tag: 'U',
+        children: [
+          new TuningElementNode({
+            tag: 'L',
+            attributes: { n: "list_b" },
+            children: [
+              new TuningElementNode({ tag: 'T', attributes: { n: "b" } }),
+              new TuningElementNode({ tag: 'T', attributes: { n: "a" } }),
+              new TuningElementNode({ tag: 'T', attributes: { n: "c" } })
+            ]
+          }),
+          new TuningElementNode({
+            tag: 'L',
+            attributes: { n: "list_a" },
+            children: [
+              new TuningElementNode({ tag: 'T', attributes: { n: "b" } }),
+              new TuningElementNode({ tag: 'T', attributes: { n: "a" } }),
+              new TuningElementNode({ tag: 'T', attributes: { n: "c" } })
+            ]
+          })
+        ]
+      });
+
+      node.deepSort();
+      const [ first, second ] = node.children;
+      expect(first.name).to.equal("list_a");
+      expect(first.children[0].name).to.equal("a");
+      expect(first.children[1].name).to.equal("b");
+      expect(first.children[2].name).to.equal("c");
+      expect(second.name).to.equal("list_b");
+      expect(second.children[0].name).to.equal("a");
+      expect(second.children[1].name).to.equal("b");
+      expect(second.children[2].name).to.equal("c");
     });
   });
 
   describe('#sort()', function() {
-    it('should FAIL', function () {
-      // TODO:
+    it('should sort in alphabetical order by name if no fn passed in', function() {
+      const node = new TuningElementNode({
+        tag: "L",
+        children: [
+          new TuningElementNode({ tag: 'T', attributes: { n: "c" } }),
+          new TuningElementNode({ tag: 'T', attributes: { n: "a" } }),
+          new TuningElementNode({ tag: 'T', attributes: { n: "d" } }),
+          new TuningElementNode({ tag: 'T', attributes: { n: "b" } })
+        ]
+      });
+
+      node.sort();
+      expect(node.children[0].name).to.equal('a');
+      expect(node.children[1].name).to.equal('b');
+      expect(node.children[2].name).to.equal('c');
+      expect(node.children[3].name).to.equal('d');
+    });
+
+    it('should sort children according to the given function', function() {
+      const node = new TuningElementNode({
+        tag: "L",
+        children: [
+          new TuningElementNode({
+            tag: 'T',
+            attributes: { n: "ten" },
+            children: [ new TuningValueNode(10) ]
+          }),
+          new TuningElementNode({
+            tag: 'T',
+            attributes: { n: "one" },
+            children: [ new TuningValueNode(1) ]
+          }),
+          new TuningElementNode({
+            tag: 'T',
+            attributes: { n: "five" },
+            children: [ new TuningValueNode(5) ]
+          })
+        ]
+      });
+
+      node.sort((a, b) => a.innerValue - b.innerValue);
+      expect(node.children[0].name).to.equal('one');
+      expect(node.children[1].name).to.equal('five');
+      expect(node.children[2].name).to.equal('ten');
+    });
+
+    it("should not change the order of childrens' children", function() {
+      const node = new TuningElementNode({
+        tag: "L",
+        children: [
+          new TuningElementNode({
+            tag: 'L',
+            attributes: { n: "list" },
+            children: [
+              new TuningElementNode({ tag: 'T', attributes: { n: "b" } }),
+              new TuningElementNode({ tag: 'T', attributes: { n: "a" } }),
+              new TuningElementNode({ tag: 'T', attributes: { n: "c" } })
+            ]
+          })
+        ]
+      });
+
+      node.sort();
+      expect(node.child.children[0].name).to.equal("b");
+      expect(node.child.children[1].name).to.equal("a");
+      expect(node.child.children[2].name).to.equal("c");
     });
   });
 
