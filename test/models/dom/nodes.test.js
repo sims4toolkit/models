@@ -552,14 +552,51 @@ describe('TuningElementNode', function() {
   });
 
   describe('#child', function() {
-    it('should FAIL', function () {
-      // TODO:
+    it('should be undefined if there are no children', function () {
+      const node = newNode();
+      expect(node.child).to.be.undefined;
+    });
+
+    it('should be the same as the first child', function () {
+      const node = newNode();
+      node.addChildren(new TuningValueNode("hello"));
+      expect(node.child.value).to.equal("hello");
+    });
+
+    it('should update the first child when set', function () {
+      const node = newNode();
+      node.addChildren(new TuningValueNode("hello"));
+      expect(node.child.value).to.equal("hello");
+      node.child = new TuningValueNode("new text");
+      expect(node.child.value).to.equal("new text");
+    });
+
+    it('should add a child if there are none', function () {
+      const node = newNode();
+      expect(node.numChildren).to.equal(0);
+      node.child = new TuningValueNode("new text");
+      expect(node.numChildren).to.equal(1);
+      expect(node.child.value).to.equal("new text");
     });
   });
 
   describe('#children', function() {
-    it('should FAIL', function () {
-      // TODO:
+    it('should throw when trying to set', function () {
+      const node = newNode();
+      expect(() => node.children = []).to.throw;
+    });
+
+    it('should be an empty array if there are no children', function () {
+      const node = newNode();
+      expect(node.children).to.be.an('Array').that.is.empty;
+    });
+
+    it('should contain all of this node\'s children', function () {
+      const node = newNode();
+      node.addChildren(new TuningValueNode(1), new TuningValueNode(2));
+      expect(node.children.length).to.equal(2);
+      expect(node.children[0].value).to.equal(1);
+      expect(node.children[1].value).to.equal(2);
     });
   });
 
