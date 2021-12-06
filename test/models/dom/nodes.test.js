@@ -998,7 +998,47 @@ describe('TuningElementNode', function() {
   });
 
   describe('#toXml()', function() {
-    it('should FAIL', function () {
+    it('should not indent by default', function () {
+      // TODO:
+    });
+
+    it('should use two spaces by default', function () {
+      // TODO:
+    });
+
+    it('should use the given number of spaces', function () {
+      // TODO:
+    });
+
+    it('should write attributes when there are children', function() {
+      // TODO:
+    });
+
+    it('should write attributes when there are no children', function() {
+      // TODO:
+    });
+
+    it('should write open/close tags if there are children', function() {
+      // TODO:
+    });
+
+    it('should write one tag if there are no children', function() {
+      // TODO:
+    });
+
+    it('should be on one line if there is one value child', function() {
+      // TODO:
+    });
+
+    it('should be on one line if there are two value/comment children', function() {
+      // TODO:
+    });
+
+    it('should put an element child on its own line, indented', function() {
+      // TODO:
+    });
+
+    it('should increase indentation by 1 for each recursive call', function() {
       // TODO:
     });
   });
