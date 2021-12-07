@@ -526,26 +526,40 @@ function formatValue(value: number | bigint | boolean | string): string {
     parseTagValue: false,
     commentPropName: "comment",
     textNodeName: "value",
-    preserveOrder: true
+    preserveOrder: true,
   });
 
   interface NodeObj {
     value?: number | bigint | string;
-    comment?: string;
+    comment?: { value: string }[];
+    attributes?: { [key: string]: string };
+    [key: string]: any;
   }
 
   const nodeObjs: NodeObj[] = parser.parse(xml);
 
   function parseNodeObj(nodeObj: NodeObj): TuningNode {
-    if (nodeObj.value !== undefined) {
-      // TODO:
+    if (nodeObj.comment) {
+      return new TuningCommentNode(nodeObj.comment[0].value);
+    } else if (nodeObj.value) {
+      return new TuningValueNode(nodeObj.value);
+    } else {
+      let tag: string;
+      let children: TuningNode[];
+      let attributes: Attributes = {};
+      for (const key in nodeObj) {
+        if (key === "attributes") {
+          Object.assign(attributes, nodeObj[key]);
+        } else {
+          // guaranteed to execute once and only once
+          tag = key;
+          children = nodeObj[key].map(parseNodeObj)
+        }
+      }
+      return new TuningElementNode({ tag, children, attributes });
     }
-
-    return;
   }
 
-  //@ts-ignore
-  return nodeObjs;
   return new TuningDocumentNode(...(nodeObjs.map(parseNodeObj)));
 }
 
