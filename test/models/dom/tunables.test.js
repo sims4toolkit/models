@@ -342,31 +342,40 @@ describe("#U()", function() {
 
 describe("#V()", function() {
   it("should create a node with a <V> tag", function() {
-    expect(true).to.be.false; // TODO:
+    const node = V();
+    expect(node.tag).to.equal("V");
   });
 
   it("should create an empty node if no arguments are given", function() {
-    expect(true).to.be.false; // TODO:
+    const node = V();
+    expect(node.numChildren).to.equal(0);
   });
 
   it("should have the name and type that are given", function() {
-    expect(true).to.be.false; // TODO:
+    const node = V({ name: "variant", type: "enabled" });
+    expect(node.name).to.equal("variant");
+    expect(node.type).to.equal("enabled");
   });
 
   it("should have an empty children list if one isn't given", function() {
-    expect(true).to.be.false; // TODO:
+    const node = V();
+    expect(node.children).to.be.an('Array').that.is.empty;
   });
 
   it("should contain the child that is given", function() {
-    expect(true).to.be.false; // TODO:
+    const node = V({ child: T({ name: "enabled" }) });
+    expect(node.numChildren).to.equal(1);
+    expect(node.child.name).to.equal("enabled");
   });
 
   it("should serialize on one line if there is no child", function() {
-    expect(true).to.be.false; // TODO:
+    const node = V({ name: "variant", type: "disabled" });
+    expect(node.toXml()).to.equal(`<V n="variant" t="disabled"/>`);
   });
 
   it("should serialize child on its own line", function() {
-    expect(true).to.be.false; // TODO:
+    const node = V({ type: "enabled", child: T({ name: "enabled" }) });
+    expect(node.toXml()).to.equal(`<V t="enabled">\n  <T n="enabled"/>\n</V>`);
   });
 });
 
