@@ -1,5 +1,5 @@
 {
-  "name": "sims4toolkit-pi",
+  "name": "@s4tk/core",
   "version": "1.0.0",
   "description": "The DBPF interface used by Sims 4 Toolkit.",
   "main": "dst/api.js",
