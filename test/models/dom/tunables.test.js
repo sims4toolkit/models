@@ -288,16 +288,14 @@ describe("#C()", function() {
 });
 
 describe("#Comment()", function() {
-  it("should create a comment node", function() {
-    expect(true).to.be.false; // TODO:
-  });
-
-  it("should contain comment value", function() {
-    expect(true).to.be.false; // TODO:
+  it("should create a comment node with the given value", function() {
+    const node = Comment("Hello");
+    expect(node.value).to.equal("Hello");
   });
 
   it("should serialize with XML comment syntax", function() {
-    expect(true).to.be.false; // TODO:
+    const node = Comment("Hello");
+    expect(node.toXml()).to.equal("<!--Hello-->");
   });
 });
 
