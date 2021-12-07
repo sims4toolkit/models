@@ -3,7 +3,7 @@ const { tunables, hashing, formatting, StringTableResource } = require('../../ds
 const { formatStringKey } = formatting;
 const { fnv32 } = hashing;
 const { I, M, T, E, V, U, L, C, LocString, Comment, makeDom, getLocStringFn, parseDom } = tunables;
-/*
+
 describe('tunables', function() {
   describe('TunableNode', function() {
     // TunableNode is an abstract class and the only export for it is as a type.
@@ -1785,82 +1785,4 @@ describe('tunables', function() {
       expect(node.comment).to.equal(string);
     });
   });
-
-  describe('#makeDom()', function() {
-    it('should create an empty TuningDom when no children are given', function() {
-      const dom = makeDom();
-      expect(dom.children).to.be.an('Array').that.is.empty;
-    });
-
-    it('should create a TuningDom with the given child', function() {
-      const dom = makeDom(T({ name: "tunable" }));
-      expect(dom.children).to.be.an('Array').with.lengthOf(1);
-      expect(dom.child.name).to.equal("tunable");
-    });
-
-    it('should create a TuningDom with the given children', function() {
-      const dom = makeDom(T({ name: "first" }), T({ name: "second" }), T({ name: "third" }));
-      expect(dom.children).to.be.an('Array').with.lengthOf(3);
-      expect(dom.children[0].name).to.equal("first");
-      expect(dom.children[1].name).to.equal("second");
-      expect(dom.children[2].name).to.equal("third");
-    });
-  });
-
-  describe('#parseDom()', function() {
-    context('no xml declaration', function() {
-      it('should fail to load when content is blank', function() {
-        expect(true).to.be.false; // TODO:
-      });
-
-      it('should fail to load when content is invalid', function() {
-        expect(true).to.be.false; // TODO:
-      });
-
-      it('should fail to load when content is valid', function() {
-        expect(true).to.be.false; // TODO:
-      });
-    });
-
-    context('trivial content', function() {
-      it('should load an empty node when there is no xml content', function() {
-        expect(true).to.be.false; // TODO:
-      });
-
-      it('should load an empty node when there isplain text only', function() {
-        expect(true).to.be.false; // TODO:
-      });
-
-      it('should load a single comment when there is only one comment', function() {
-        expect(true).to.be.false; // TODO:
-      });
-    });
-
-    context('non-tuning content', function() {
-      context('XML syntax invalid', function() {
-        it('impl', function() {
-          expect(true).to.be.false; // TODO:
-        });
-      });
-
-      context('XML syntax valid, but tags unknown', function() {
-        it('impl', function() {
-          expect(true).to.be.false; // TODO:
-        });
-      });
-
-      context('XML syntax valid, but attributes unknown', function() {
-        it('impl', function() {
-          expect(true).to.be.false; // TODO:
-        });
-      });
-    });
-
-    context('valid tuning content', function() {
-      it('needs to be implemented', function() {
-        expect(true).to.be.false; // TODO:
-      });
-    });
-  });
 });
-*/
