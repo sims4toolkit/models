@@ -3,15 +3,6 @@ import { XML_DECLARATION } from "../../utils/constants";
 
 //#region Types
 
-/** Tags that are valid in tuning. */
-type TuningTag = 'I' | 'M' | 'T' | 'E' | 'V' | 'U' | 'L' | 'C';
-
-/** Attribute keys that are valid in tuning. */
-type TuningAttributeKey = 'n' | 'c' | 't' | 'm' | 'i' | 'ev' | 'p' | 's';
-
-/** Interface that only supports attributes that should be in tuning. */
-type TuningAttributes = { [key in TuningAttributeKey]?: any; };
-
 /** Generic interface that can support any attributes. */
 type Attributes = { [key: string]: any; };
 
