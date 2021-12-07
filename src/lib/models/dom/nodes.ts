@@ -371,7 +371,6 @@ export class TuningDocumentNode extends TuningNodeBase {
    * TuningDocumentNode, if possible.
    * 
    * @param xml XML document to parse as a node
-   * @throws TODO:
    */
   static from(xml: string | Buffer): TuningDocumentNode {
     return parseTuningDocument(xml);

@@ -1004,6 +1004,22 @@ describe('TuningElementNode', function() {
       expect(node.child.children[1].name).to.equal("a");
       expect(node.child.children[2].name).to.equal("c");
     });
+
+    it("should not do anything when no children have names", function() {
+      const node = new TuningElementNode({
+        tag: "L",
+        children: [
+          new TuningElementNode({ tag: "T" }),
+          new TuningElementNode({ tag: "L" }),
+          new TuningElementNode({ tag: "U" })
+        ]
+      });
+
+      node.sort();
+      expect(node.children[0].tag).to.equal("T");
+      expect(node.children[1].tag).to.equal("L");
+      expect(node.children[2].tag).to.equal("U");
+    });
   });
 
   describe('#toXml()', function() {
