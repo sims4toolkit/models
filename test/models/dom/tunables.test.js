@@ -44,8 +44,11 @@ describe("#I()", function() {
     });
 
     expect(node.numChildren).to.equal(3);
+    expect(node.children[0].tag).to.equal("T");
     expect(node.children[0].name).to.equal("tunable");
+    expect(node.children[1].tag).to.equal("U");
     expect(node.children[1].name).to.equal("tuple");
+    expect(node.children[2].tag).to.equal("L");
     expect(node.children[2].name).to.equal("list");
   });
 
@@ -74,31 +77,61 @@ describe("#I()", function() {
 
 describe("#M()", function() {
   it("should create a node with a <M> tag", function() {
-    expect(true).to.be.false; // TODO:
+    const node = M({ n: "name", s: 123 });
+    expect(node.tag).to.equal("M");
   });
 
-  it("should throw if any attributes are missing", function() {
-    expect(true).to.be.false; // TODO:
+  it("should throw if either attribute is missing", function() {
+    expect(() => M()).to.throw;
+    expect(() => M({ s: 123 })).to.throw;
+    expect(() => M({ n: "name" })).to.throw;
   });
 
-  it("should assign all given attributes correctly", function() {
-    expect(true).to.be.false; // TODO:
+  it("should assign both given attributes correctly", function() {
+    const node = M({ n: "name", s: 123 });
+    expect(node.name).to.equal("name");
+    expect(node.id).to.equal(123);
   });
 
   it("should have an empty children list if none are given", function() {
-    expect(true).to.be.false; // TODO:
+    const node = M({ n: "name", s: 123 });
+    expect(node.children).to.be.an('Array').that.is.empty;
   });
 
   it("should contain the children that are given", function() {
-    expect(true).to.be.false; // TODO:
+    const node = M({
+      n: "name", s: 123,
+      children: [
+        C({ name: "First" }),
+        C({ name: "Second" })
+      ]
+    });
+
+    expect(node.numChildren).to.equal(2);
+    expect(node.children[0].tag).to.equal("C");
+    expect(node.children[0].name).to.equal("First");
+    expect(node.children[1].tag).to.equal("C");
+    expect(node.children[1].name).to.equal("Second");
   });
 
   it("should serialize as one tag without children", function() {
-    expect(true).to.be.false; // TODO:
+    const node = M({ n: "name", s: 123 });
+    expect(node.toXml()).to.equal(`<M n="name" s="123"/>`);
   });
 
   it("should serialize each element child on its own line", function() {
-    expect(true).to.be.false; // TODO:
+    const node = M({
+      n: "name", s: 123,
+      children: [
+        C({ name: "First" }),
+        C({ name: "Second" })
+      ]
+    });
+
+    expect(node.toXml()).to.equal(`<M n="name" s="123">
+  <C n="First"/>
+  <C n="Second"/>
+</M>`);
   });
 });
 
