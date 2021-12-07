@@ -347,12 +347,12 @@ describe("#LocString()", function() {
     const node = LocString({ name, string, stbl });
     expect(node.attributes.n).to.equal(name);
     const expectedValue = formatStringKey(fnv32(string));
-    expect(node.value).to.equal(expectedValue);
-    expect(node.comment).to.equal(string);
+    expect(node.child.value).to.equal(expectedValue);
+    expect(node.children[1].value).to.equal(string);
   });
 });
 
-describe("#getLocString()", function() {
+describe("#getLocStringFn()", function() {
   it('should create a node with the "T" tag', function() {
     const stbl = StringTableResource.create();
     const S = getLocStringFn(stbl);
@@ -403,7 +403,7 @@ describe("#getLocString()", function() {
     const node = S({ name, string });
     expect(node.attributes.n).to.equal(name);
     const expectedValue = formatStringKey(fnv32(string));
-    expect(node.value).to.equal(expectedValue);
-    expect(node.comment).to.equal(string);
+    expect(node.child.value).to.equal(expectedValue);
+    expect(node.children[1].value).to.equal(string);
   });
 });
