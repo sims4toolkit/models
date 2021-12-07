@@ -450,7 +450,7 @@ describe('TuningDocumentNode', function() {
       expect(node.toXml()).to.equal(XML_DECLARATION);
     });
 
-    it('should write each child starting on its own line', function () {
+    it('should write root on its own line', function () {
       const node = newNode(
         new TuningElementNode({
           tag: 'M',
@@ -471,13 +471,6 @@ describe('TuningDocumentNode', function() {
               ]
             })
           ]
-        }),
-        new TuningElementNode({
-          tag: 'T',
-          children: [
-            new TuningValueNode("0x00000000"),
-            new TuningCommentNode("Some string")
-          ]
         })
       );
 
@@ -486,8 +479,7 @@ describe('TuningDocumentNode', function() {
   <C n="ClassName">
     <T n="SOMETHING">10</T>
   </C>
-</M>
-<T>0x00000000<!--Some string--></T>`);
+</M>`);
     });
   });
 });
