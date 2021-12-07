@@ -137,55 +137,67 @@ describe("#M()", function() {
 
 describe("#T()", function() {
   it("should create a node with a <T> tag", function() {
-    expect(true).to.be.false; // TODO:
+    const node = T();
+    expect(node.tag).to.equal("T");
   });
 
   it("should create an empty node if no arguments are given", function() {
-    expect(true).to.be.false; // TODO:
+    const node = T();
+    expect(node.numChildren).to.equal(0);
   });
 
   it("should assign 'name' to the 'n' attribute", function() {
-    expect(true).to.be.false; // TODO:
+    const node = T({ name: "tunable" });
+    expect(node.attributes.n).to.equal("tunable");
   });
 
   it("should assign 'ev' to the 'ev' attribute", function() {
-    expect(true).to.be.false; // TODO:
+    const node = T({ ev: 1 });
+    expect(node.attributes.ev).to.equal(1);
   });
 
   it("should have one child if a value is given", function() {
-    expect(true).to.be.false; // TODO:
+    const node = T({ value: 1234 });
+    expect(node.numChildren).to.equal(1);
+    expect(node.innerValue).to.equal(1234);
   });
 
   it("should have one child if a comment is given", function() {
-    expect(true).to.be.false; // TODO:
+    const node = T({ comment: "This is a comment" });
+    expect(node.numChildren).to.equal(1);
+    expect(node.innerValue).to.equal("This is a comment");
   });
 
   it("should have two children if a value and comment are given", function() {
-    expect(true).to.be.false; // TODO:
+    const node = T({ value: 1234, comment: "Some_Tunable" });
+    expect(node.numChildren).to.equal(2);
+    expect(node.children[0].value).to.equal(1234);
+    expect(node.children[1].value).to.equal("This is a comment");
   });
 
   it("should serialize attributes", function() {
-    expect(true).to.be.false; // TODO:
+    const node = T({ name: "enum_value", ev: 12 });
+    expect(node.toXml()).to.equal(`<T n="enum_value" ev="12"/>`);
   });
 
   it("should serialize without attributes", function() {
-    expect(true).to.be.false; // TODO:
-  });
-
-  it("should serialize as one tag without value/comment", function() {
-    expect(true).to.be.false; // TODO:
+    const node = T();
+    expect(node.toXml()).to.equal(`<T/>`);
   });
 
   it("should serialize on one line with just a value", function() {
-    expect(true).to.be.false; // TODO:
+    const node = T({ value: 123 });
+    expect(node.toXml()).to.equal(`<T>123</T>`);
   });
 
   it("should serialize on one line with just a comment", function() {
-    expect(true).to.be.false; // TODO:
+    const node = T({ comment: "Comment" });
+    expect(node.toXml()).to.equal(`<T><!--Comment--></T>`);
   });
 
   it("should serialize on one line with both value/comment", function() {
-    expect(true).to.be.false; // TODO:
+    const node = T({ value: 123, comment: "Comment" });
+    expect(node.toXml()).to.equal(`<T>123<!--Comment--></T>`);
   });
 });
 
