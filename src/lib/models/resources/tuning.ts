@@ -1,6 +1,5 @@
 import Resource from "./resource";
-import { makeDom, TunableNode, TuningDom } from "../tunables";
-import { parseDom } from "../tunables";
+import { TuningDocumentNode, TuningNode } from "../dom/nodes";
 
 /**
  * Model for a plaintext, XML tuning resource.
@@ -8,7 +7,7 @@ import { parseDom } from "../tunables";
 export default class TuningResource extends Resource {
   readonly variant = 'XML';
   private _content?: string;
-  private _dom?: TuningDom;
+  private _dom?: TuningDocumentNode;
 
   /** Returns the XML content of this tuning resource. */
   get content(): string {
@@ -28,8 +27,11 @@ export default class TuningResource extends Resource {
    * so with the `updateDom()` method (if you mutate the DOM outside of this
    * method, you will encounter mismatched cache issues).
    */
-  get dom(): TuningDom {
-    if (this._dom === undefined) this._dom = parseDom(this._content);
+  get dom(): TuningDocumentNode {
+    if (this._dom === undefined)
+      this._dom = TuningDocumentNode.from(this._content, {
+        allowMultipleRoots: true
+      });
     return this._dom;
   }
 
@@ -38,7 +40,7 @@ export default class TuningResource extends Resource {
   private constructor({ content, buffer, dom }: {
     content?: string;
     buffer?: Buffer;
-    dom?: TuningDom;
+    dom?: TuningDocumentNode;
   } = {}) {
     super({ buffer });
     this._content = content;
@@ -75,21 +77,11 @@ export default class TuningResource extends Resource {
   }
 
   /**
-   * Creates a tuning resource from a variable number of TunableNode objects.
-   * The nodes will be wrapped in a TuningDom.
-   * 
-   * @param nodes Variable number of nodes to create a tuning resource from
-   */
-  static fromNodes(...nodes: TunableNode[]): TuningResource {
-    return TuningResource.fromDom(makeDom(...nodes));
-  }
-
-  /**
    * Creates a tuning resource from a TuningDom object.
    * 
    * @param dom DOM to create tuning resource from
    */
-  static fromDom(dom: TuningDom): TuningResource {
+  static fromDom(dom: TuningDocumentNode): TuningResource {
     return new TuningResource({ dom });
   }
 
@@ -102,7 +94,7 @@ export default class TuningResource extends Resource {
    * 
    * @param fn Callback function where you can alter the DOM
    */
-  updateDom(fn: (dom: TunableNode) => void) {
+  updateDom(fn: (dom: TuningDocumentNode) => void) {
     fn(this.dom);
     this._content = undefined;
     this.uncache();
