@@ -24,12 +24,104 @@ describe('TuningDocumentNode', function() {
   });
 
   describe('#from()', function() {
-    it('should be implemented', function() {
-      expect(true).to.be.false; // TODO:
+    it('should throw if the given XML contains multiple nodes at the root', function() {
+      expect(() => TuningDocumentNode.from(`<T/><T/>`)).to.throw;
     });
 
-    it('should not round 64 bit integers', function() {
-      // TODO:
+    it('should not throw for multiple roots if told not to', function() {
+      const doc = TuningDocumentNode.from(`<T/><T/>`, {
+        allowMultipleRoots: true
+      });
+
+      expect(doc.numChildren).to.equal(2);
+    });
+
+    it('should parse comments', function() {
+      const doc = TuningDocumentNode.from(`<!--This is a comment-->`);
+      expect(doc.numChildren).to.equal(1);
+      expect(doc.child.value).to.equal("This is a comment");
+    });
+
+    it('should parse number values as strings', function() {
+      const doc = TuningDocumentNode.from(`<T>50</T>`);
+      expect(doc.child.innerValue).to.equal("50");
+    });
+
+    it('should parse boolean values as strings', function() {
+      const doc = TuningDocumentNode.from(`<T>True</T>`);
+      expect(doc.child.innerValue).to.equal("True");
+    });
+
+    it('should parse strings', function() {
+      const doc = TuningDocumentNode.from(`<T>something</T>`);
+      expect(doc.child.innerValue).to.equal("something");
+    });
+
+    it('should parse nodes that contain other nodes', function() {
+      const doc = TuningDocumentNode.from(`<I>
+        <L>
+          <T>foo</T>
+          <T>bar</T>
+        </L>
+      </I>`);
+
+      expect(doc.numChildren).to.equal(1);
+      expect(doc.child.numChildren).to.equal(1);
+      const list = doc.child.child;
+      expect(list.children[0].innerValue).to.equal("foo");
+      expect(list.children[1].innerValue).to.equal("bar");
+    });
+
+    it('should parse attributes', function() {
+      const doc = TuningDocumentNode.from(`<M n="module" s="12345">
+        <C n="Class">
+          <T n="TUNABLE">50</T>
+          <V n="VARIANT" t="disabled"/>
+        </C>
+      </M>`);
+
+      const mod = doc.child;
+      expect(mod.name).to.equal("module");
+      expect(mod.id).to.equal("12345");
+      const cls = mod.child;
+      expect(cls.name).to.equal("Class");
+      const [ tunable, variant ] = cls.children;
+      expect(tunable.name).to.equal("TUNABLE");
+      expect(variant.name).to.equal("VARIANT");
+      expect(variant.type).to.equal("disabled");
+    });
+
+    it('should parse tags', function() {
+      const doc = TuningDocumentNode.from(`<M n="module" s="12345">
+        <C n="Class">
+          <T n="TUNABLE">50</T>
+          <V n="VARIANT" t="disabled"/>
+        </C>
+      </M>`);
+
+      const mod = doc.child;
+      expect(mod.tag).to.equal("M");
+      const cls = mod.child;
+      expect(cls.tag).to.equal("C");
+      const [ tunable, variant ] = cls.children;
+      expect(tunable.tag).to.equal("T");
+      expect(variant.tag).to.equal("V");
+    });
+
+    it('should preserve order of nodes', function() {
+      const doc = TuningDocumentNode.from(`<L>
+        <T>5</T>
+        <T>3</T>
+        <T>1</T>
+        <T>4</T>
+        <T>2</T>
+      </L>`);
+
+      expect(doc.child.children[0].innerValue).to.equal("5");
+      expect(doc.child.children[1].innerValue).to.equal("3");
+      expect(doc.child.children[2].innerValue).to.equal("1");
+      expect(doc.child.children[3].innerValue).to.equal("4");
+      expect(doc.child.children[4].innerValue).to.equal("2");
     });
   });
 
