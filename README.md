@@ -1,18 +1,44 @@
-# S4TK Package Interface
+# Sims 4 Toolkit Core Library
 
-[Sims 4 Toolkit (S4TK)](https://sims4toolkit.com) is an upcoming desktop application for editing tuning mods for The Sims 4.
+[Sims 4 Toolkit (S4TK)](https://sims4toolkit.com) is a collection of Node.js libraries and developer tools for creating Sims 4 mods.
 
-S4TK Package Interface is what powers S4TK's ability to read and write DBPFs (i.e. package files) and the resources within them. It is similar in concept to [Sims 4 Package Interface (S4PI)](https://github.com/s4ptacle/Sims4Tools), a .NET library created to achieve the same goal, except it is available for Node.js and only supports the resource types that S4TK does (Tuning, SimData, and String Tables).
-
-To avoid confusion with NPM packages and JavaScript's keyword `package`, all references to Sims 4 Packages will use the acronym "DBPF", which stands for "Database Packed File".
+This repository contains the core code that other S4TK libraries and programs depend on, such as the interfaces and models for DBPFs (package files) and the resources within them (tuning, SimData, and String Tables). It is similar in concept to [Sims 4 Package Interface (S4PI)](https://github.com/s4ptacle/Sims4Tools), a .NET library created to achieve the same goal, except it is available for Node.js and specializes in select resource types (currently, these include Tuning, SimData, and String Tables).
 
 ## Getting Started
 
-TODO: Documentation
+Install S4TK Core Library as a dependency in your Node.js project with `npm i @s4tk/core`.
 
-## Troubleshooting
+The library is written entirely in TypeScript, but is published to npm as JavaScript with TS declarations. Development in either language is perfectly fine, but it is recommended that you use TypeScript for its type safety, since you will be working with models for binary files where types matter.
 
-If you encounter any issues using the `import { x } from '@s4tk/core';` syntax, try using `const { x } = require('@s4tk/core');` (it depends on your project settings which works).
+## Documentation
+
+Complete documentation for the library can be found at [sims4toolkit.com](https://sims4toolkit.com), and if you would like to see some example usage, feel free to view the tests.
+
+## Contributing
+
+All Sims 4 Toolkit repos are open source, including this one. If you would like to contribute to the project, feel free to open an issue or make a pull request. Please follow the below guidelines when doing so.
+
+### Opening Issues
+
+Before submitting an issue, ask yourself:
+
+- Am I using the latest version of the library?
+- \[Features\] Did I search the documentation to see if this feature already exists?
+
+1. Prefix your title with something like "BUG" or "FEATURE" to indicate the kind of issue you're opening. Doing so will help me organize and prioritize issues.
+2. Be descriptive in your title, but not overly so (like the subject of an email).
+3. Be as descriptive as you can be in the body of your issue. If you think something is broken, why? Does it do something contradictory to what the documentation says? Does it behave unexpectedly?
+
+### Pull Requests
+
+Pull requests must meet ALL the following criteria, or they will be rejected.
+
+1. All source code must be written in TypeScript, and use of `any` and `@ts-ignore` should be minimal. This project uses TypeScript for a reason, so it should be used properly.
+2. Everything that is exposed through the API needs to have comprehensive unit tests written with Mocha and Chai in JavaScript. You are free to use whichever Chai syntax you prefer, but `expect` is recommended to keep things consistent.
+3. All existing tests and the ones you wrote must be passing.
+4. Avoid adding new dependencies. If you feel that you need to add a dependency, you must explain why you are adding it and what value it brings to the project. Dependencies with vulnerabilities, even minor ones, will not be accepted into the project under any circumstances\*.
+
+\* = S4TK Core Library is used by S4TK Desktop, which is an application that users install on their computer. It has an internet connection to check for updates, and it also has access to their file system. Therefore, security is incredibly important and will _not_ be overlooked.
 
 ## Tech Stack
 
