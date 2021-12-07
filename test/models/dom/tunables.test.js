@@ -264,31 +264,40 @@ describe("#E()", function() {
 
 describe("#L()", function() {
   it("should create a node with a <L> tag", function() {
-    expect(true).to.be.false; // TODO:
+    const node = L();
+    expect(node.tag).to.equal("L");
   });
 
   it("should create an empty node if no arguments are given", function() {
-    expect(true).to.be.false; // TODO:
+    const node = L();
+    expect(node.numChildren).to.equal(0);
   });
 
   it("should have the name that is given", function() {
-    expect(true).to.be.false; // TODO:
+    const node = L({ name: "list" });
+    expect(node.name).to.equal("list");
   });
 
   it("should have an empty children list if none are given", function() {
-    expect(true).to.be.false; // TODO:
+    const node = L();
+    expect(node.children).to.be.an('Array').that.is.empty;
   });
 
   it("should contain the children that are given", function() {
-    expect(true).to.be.false; // TODO:
+    const node = L({ children: [ T({ name: "first" }), T({ name: "second" }) ] });
+    expect(node.numChildren).to.equal(2);
+    expect(node.children[0].name).to.equal("first");
+    expect(node.children[1].name).to.equal("second");
   });
 
   it("should serialize on one line if there are no children", function() {
-    expect(true).to.be.false; // TODO:
+    const node = L({ name: "list" });
+    expect(node.toXml()).to.equal(`<L n="list"/>`);
   });
 
   it("should serialize each child on its own line", function() {
-    expect(true).to.be.false; // TODO:
+    const node = L({ children: [ T({ name: "first" }) ] });
+    expect(node.toXml()).to.equal(`<L>\n  <T n="first"/>\n</L>`);
   });
 });
 
