@@ -243,7 +243,7 @@ describe('TuningDocumentNode', function() {
       expect(node.numChildren).to.equal(0);
     });
 
-    it('should add the one child that is given', function () {
+    it('should add the one child that is given if the node is empty', function () {
       const node = newNode();
       expect(node.numChildren).to.equal(0);
       node.addChildren(new TuningValueNode("hi"));
@@ -251,13 +251,14 @@ describe('TuningDocumentNode', function() {
       expect(node.children[0].value).to.equal("hi");
     });
 
-    it('should add all children that are given', function () {
+    it('should throw if given more than one child', function () {
       const node = newNode();
-      expect(node.numChildren).to.equal(0);
-      node.addChildren(new TuningValueNode("hi"), new TuningValueNode("bye"));
-      expect(node.numChildren).to.equal(2);
-      expect(node.children[0].value).to.equal("hi");
-      expect(node.children[1].value).to.equal("bye");
+      expect(() => node.addChildren(new TuningValueNode("hi"), new TuningValueNode("bye"))).to.throw;
+    });
+
+    it('should throw if there is already a child', function () {
+      const node = newNode(new TuningValueNode("hi"));
+      expect(() => node.addChildren(new TuningValueNode("bye"))).to.throw;
     });
 
     it('should mutate the original children', function () {
@@ -277,7 +278,7 @@ describe('TuningDocumentNode', function() {
       expect(node.numChildren).to.equal(0);
     });
 
-    it('should add the one child that is given', function () {
+    it('should add the one child that is given if there are none', function () {
       const node = newNode();
       expect(node.numChildren).to.equal(0);
       node.addClones(new TuningValueNode("hi"));
@@ -285,13 +286,14 @@ describe('TuningDocumentNode', function() {
       expect(node.children[0].value).to.equal("hi");
     });
 
-    it('should add all children that are given', function () {
+    it('should throw if more than one child is given', function () {
       const node = newNode();
-      expect(node.numChildren).to.equal(0);
-      node.addClones(new TuningValueNode("hi"), new TuningValueNode("bye"));
-      expect(node.numChildren).to.equal(2);
-      expect(node.children[0].value).to.equal("hi");
-      expect(node.children[1].value).to.equal("bye");
+      expect(() => node.addClones(new TuningValueNode("hi"), new TuningValueNode("bye"))).to.throw;
+    });
+
+    it('should throw if there is already a child', function () {
+      const node = newNode(new TuningValueNode("hi"));
+      expect(() => node.addClones(new TuningValueNode("bye"))).to.throw;
     });
 
     it('should not mutate the original children', function () {

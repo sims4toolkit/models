@@ -376,6 +376,18 @@ export class TuningDocumentNode extends TuningNodeBase {
     return parseTuningDocument(xml);
   }
 
+  addChildren(...children: TuningNode[]): void {
+    if (this.numChildren + children.length > 1)
+      throw new Error("Tuning document should only have one root node.");
+    super.addChildren(...children);
+  }
+
+  addClones(...children: TuningNode[]): void {
+    if (this.numChildren + children.length > 1)
+      throw new Error("Tuning document should only have one root node.");
+    super.addClones(...children);
+  }
+
   clone(): TuningDocumentNode {
     return new TuningDocumentNode(...(this.children.map(child => child.clone())));
   }
