@@ -9,24 +9,17 @@ const {
 } = nodes;
 
 describe('TuningDocumentNode', function() {
-  const newNode = (...children) => new TuningDocumentNode(...children);
+  const newNode = (root) => new TuningDocumentNode(root);
 
   describe('#constructor', function() {
     it('should not throw when no children are given', function () {
       expect(() => new TuningDocumentNode()).to.not.throw;
     });
 
-    it('should add the one child that is given', function () {
+    it('should add the root that is given', function () {
       const node = new TuningDocumentNode(new TuningValueNode(5));
       expect(node.numChildren).to.equal(1);
       expect(node.child.value).to.equal(5);
-    });
-
-    it('should add the children that are given', function () {
-      const node = new TuningDocumentNode(new TuningValueNode(1), new TuningValueNode(5));
-      expect(node.numChildren).to.equal(2);
-      expect(node.children[0].value).to.equal(1);
-      expect(node.children[1].value).to.equal(5);
     });
   });
 
@@ -89,11 +82,16 @@ describe('TuningDocumentNode', function() {
       expect(node.children).to.be.an('Array').that.is.empty;
     });
 
-    it('should contain all of this node\'s children', function () {
-      const node = newNode(new TuningValueNode(1), new TuningValueNode(2));
-      expect(node.children.length).to.equal(2);
+    it('should contain the root node', function () {
+      const node = newNode(new TuningValueNode(1));
+      expect(node.children.length).to.equal(1);
       expect(node.children[0].value).to.equal(1);
-      expect(node.children[1].value).to.equal(2);
+    });
+
+    it('should allow you to push without throwing', function () {
+      const node = newNode();
+      node.children.push(new TuningValueNode("hi"), new TuningValueNode("bye"));
+      expect(node.numChildren).to.equal(2);
     });
   });
 
@@ -193,9 +191,9 @@ describe('TuningDocumentNode', function() {
       expect(node.numChildren).to.equal(0);
     });
 
-    it('should return number of children when there are some', function () {
-      const node = newNode(new TuningValueNode(123n), new TuningCommentNode("hi"));
-      expect(node.numChildren).to.equal(2);
+    it('should return 1 when there is one root', function () {
+      const node = newNode(new TuningValueNode(123n));
+      expect(node.numChildren).to.equal(1);
     });
   });
 
@@ -313,13 +311,12 @@ describe('TuningDocumentNode', function() {
       expect(clone.numChildren).to.equal(0);
     });
 
-    it('should return a new document node with all children', function () {
-      const node = newNode(new TuningValueNode(5), new TuningCommentNode("hi"));
-      expect(node.numChildren).to.equal(2);
+    it('should return a new document node with root node', function () {
+      const node = newNode(new TuningValueNode(5));
+      expect(node.numChildren).to.equal(1);
       const clone = node.clone();
-      expect(clone.numChildren).to.equal(2);
+      expect(clone.numChildren).to.equal(1);
       expect(clone.children[0].value).to.equal(5);
-      expect(clone.children[1].value).to.equal("hi");
     });
 
     it('should not mutate the children array of the original', function () {
@@ -344,20 +341,11 @@ describe('TuningDocumentNode', function() {
   });
 
   describe('#deepSort()', function() {
-    it("should sort childrens' children", function() {
+    it("should sort child's children", function() {
       const node = newNode(
         new TuningElementNode({
           tag: 'L',
-          attributes: { n: "list_b" },
-          children: [
-            new TuningElementNode({ tag: 'T', attributes: { n: "b" } }),
-            new TuningElementNode({ tag: 'T', attributes: { n: "a" } }),
-            new TuningElementNode({ tag: 'T', attributes: { n: "c" } })
-          ]
-        }),
-        new TuningElementNode({
-          tag: 'L',
-          attributes: { n: "list_a" },
+          attributes: { n: "list" },
           children: [
             new TuningElementNode({ tag: 'T', attributes: { n: "b" } }),
             new TuningElementNode({ tag: 'T', attributes: { n: "a" } }),
@@ -367,21 +355,16 @@ describe('TuningDocumentNode', function() {
       );
 
       node.deepSort();
-      const [ first, second ] = node.children;
-      expect(first.name).to.equal("list_a");
-      expect(first.children[0].name).to.equal("a");
-      expect(first.children[1].name).to.equal("b");
-      expect(first.children[2].name).to.equal("c");
-      expect(second.name).to.equal("list_b");
-      expect(second.children[0].name).to.equal("a");
-      expect(second.children[1].name).to.equal("b");
-      expect(second.children[2].name).to.equal("c");
+      expect(node.child.children[0].name).to.equal("a");
+      expect(node.child.children[1].name).to.equal("b");
+      expect(node.child.children[2].name).to.equal("c");
     });
   });
 
   describe('#sort()', function() {
     it('should sort in alphabetical order by name if no fn passed in', function() {
-      const node = newNode(
+      const node = newNode();
+      node.children.push(
         new TuningElementNode({ tag: 'T', attributes: { n: "c" } }),
         new TuningElementNode({ tag: 'T', attributes: { n: "a" } }),
         new TuningElementNode({ tag: 'T', attributes: { n: "d" } }),
@@ -396,7 +379,8 @@ describe('TuningDocumentNode', function() {
     });
 
     it('should sort children according to the given function', function() {
-      const node = newNode(
+      const node = newNode();
+      node.children.push(
         new TuningElementNode({
           tag: 'T',
           attributes: { n: "ten" },

@@ -362,18 +362,34 @@ abstract class TuningNodeBase implements TuningNode {
 
 /** A complete tuning document with children. */
 export class TuningDocumentNode extends TuningNodeBase {
-  constructor(...children: TuningNode[]) {
-    super({ children })
+  constructor(root?: TuningNode) {
+    super({ children: (root ? [root] : []) })
   }
 
   /**
    * Parses and returns either a string or a buffer containing XML code as a
    * TuningDocumentNode, if possible.
    * 
+   * Options
+   * - `allowMultipleRoots`: Whether or not the document should still be created
+   * if it will have multiple roots. If false, an exception will be thrown if
+   * there is more than one root element. (Default = false)
+   * 
    * @param xml XML document to parse as a node
+   * @param options Object containing options
    */
-  static from(xml: string | Buffer): TuningDocumentNode {
-    return parseTuningDocument(xml);
+  static from(xml: string | Buffer, { allowMultipleRoots = false }: {
+    allowMultipleRoots?: boolean;
+  } = {}): TuningDocumentNode {
+    const nodes = parseXml(xml);
+    if (nodes.length <= 1) return new TuningDocumentNode(nodes[0]);
+    if (allowMultipleRoots) {
+      const doc = new TuningDocumentNode();
+      doc.children.push(...nodes);
+      return doc;
+    } else {
+      throw new Error("Tuning document should only have one root node.");
+    }
   }
 
   addChildren(...children: TuningNode[]): void {
@@ -525,11 +541,11 @@ function formatValue(value: number | bigint | boolean | string): string {
 }
 
 /**
- * Parses a string or buffer containing XML code as a TuningDocumentNode.
+ * Parses a string or buffer containing XML as a list of nodes.
  * 
  * @param xml XML document to parse as a node
  */
- function parseTuningDocument(xml: string | Buffer): TuningDocumentNode {
+function parseXml(xml: string | Buffer): TuningNode[] {
   const parser = new XMLParser({
     ignoreAttributes: false,
     attributeNamePrefix: "",
@@ -571,7 +587,7 @@ function formatValue(value: number | bigint | boolean | string): string {
     }
   }
 
-  return new TuningDocumentNode(...(nodeObjs.map(parseNodeObj)));
+  return nodeObjs.map(parseNodeObj);
 }
 
 //#endregion Helpers
