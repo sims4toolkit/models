@@ -1,35 +1,74 @@
 const { expect } = require("chai");
-const { StringTableResource, hashing, tunables } = require("../../../dst/api");
+const { StringTableResource, hashing, tunables, formatting } = require("../../../dst/api");
+const { formatStringKey } = formatting;
 const { fnv32 } = hashing;
 const { I, M, T, E, L, U, V, C, Comment, LocString, getLocStringFn } = tunables;
 
 describe("#I()", function() {
   it("should create a node with a <I> tag", function() {
-    expect(true).to.be.false; // TODO:
+    const node = I({ c: "Class", i: "type", m: "path", n: "name", s: 123 });
+    expect(node.tag).to.equal("I");
   });
 
   it("should throw if any attributes are missing", function() {
-    expect(true).to.be.false; // TODO:
+    expect(() => I()).to.throw;
+    expect(() => I({ i: "type", m: "path", n: "name", s: 123 })).to.throw;
+    expect(() => I({ c: "Class", m: "path", n: "name", s: 123 })).to.throw;
+    expect(() => I({ c: "Class", i: "type", n: "name", s: 123 })).to.throw;
+    expect(() => I({ c: "Class", i: "type", m: "path", s: 123 })).to.throw;
+    expect(() => I({ c: "Class", i: "type", m: "path", n: "name" })).to.throw;
   });
 
   it("should assign all given attributes correctly", function() {
-    expect(true).to.be.false; // TODO:
+    const node = I({ c: "Class", i: "type", m: "path", n: "name", s: 123 });
+    expect(node.attributes.c).to.equal("Class");
+    expect(node.attributes.i).to.equal("type");
+    expect(node.attributes.m).to.equal("path");
+    expect(node.name).to.equal("name");
+    expect(node.id).to.equal(123);
   });
 
   it("should have an empty children list if none are given", function() {
-    expect(true).to.be.false; // TODO:
+    const node = I({ c: "Class", i: "type", m: "path", n: "name", s: 123 });
+    expect(node.children).to.be.an('Array').that.is.empty;
   });
 
   it("should contain the children that are given", function() {
-    expect(true).to.be.false; // TODO:
+    const node = I({
+      c: "Class", i: "type", m: "path", n: "name", s: 123,
+      children: [
+        T({ name: "tunable" }),
+        U({ name: "tuple" }),
+        L({ name: "list" })
+      ]
+    });
+
+    expect(node.numChildren).to.equal(3);
+    expect(node.children[0].name).to.equal("tunable");
+    expect(node.children[1].name).to.equal("tuple");
+    expect(node.children[2].name).to.equal("list");
   });
 
   it("should serialize as one tag without children", function() {
-    expect(true).to.be.false; // TODO:
+    const node = I({ c: "Class", i: "type", m: "path", n: "name", s: 123 });
+    expect(node.toXml()).to.equal(`<I c="Class" i="type" m="path" n="name" s="123"/>`);
   });
 
   it("should serialize each element child on its own line", function() {
-    expect(true).to.be.false; // TODO:
+    const node = I({
+      c: "Class", i: "type", m: "path", n: "name", s: 123,
+      children: [
+        T({ name: "tunable" }),
+        U({ name: "tuple" }),
+        L({ name: "list" })
+      ]
+    });
+
+    expect(node.toXml()).to.equal(`<I c="Class" i="type" m="path" n="name" s="123">
+  <T n="tunable"/>
+  <U n="tuple"/>
+  <L n="list"/>
+</I>`);
   });
 });
 
