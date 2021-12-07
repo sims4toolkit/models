@@ -169,7 +169,7 @@ describe("#T()", function() {
   });
 
   it("should have two children if a value and comment are given", function() {
-    const node = T({ value: 1234, comment: "Some_Tunable" });
+    const node = T({ value: 1234, comment: "This is a comment" });
     expect(node.numChildren).to.equal(2);
     expect(node.children[0].value).to.equal(1234);
     expect(node.children[1].value).to.equal("This is a comment");
@@ -203,51 +203,62 @@ describe("#T()", function() {
 
 describe("#E()", function() {
   it("should create a node with a <E> tag", function() {
-    expect(true).to.be.false; // TODO:
+    const node = E();
+    expect(node.tag).to.equal("E");
   });
 
   it("should create an empty node if no arguments are given", function() {
-    expect(true).to.be.false; // TODO:
+    const node = E();
+    expect(node.numChildren).to.equal(0);
   });
 
   it("should assign 'name' to the 'n' attribute", function() {
-    expect(true).to.be.false; // TODO:
+    const node = E({ name: "tunable" });
+    expect(node.attributes.n).to.equal("tunable");
   });
 
   it("should have one child if a value is given", function() {
-    expect(true).to.be.false; // TODO:
+    const node = E({ value: "VALUE" });
+    expect(node.numChildren).to.equal(1);
+    expect(node.innerValue).to.equal("VALUE");
   });
 
   it("should have one child if a comment is given", function() {
-    expect(true).to.be.false; // TODO:
+    const node = E({ comment: "This is a comment" });
+    expect(node.numChildren).to.equal(1);
+    expect(node.innerValue).to.equal("This is a comment");
   });
 
   it("should have two children if a value and comment are given", function() {
-    expect(true).to.be.false; // TODO:
+    const node = E({ value: "VALUE", comment: "Comment" });
+    expect(node.numChildren).to.equal(2);
+    expect(node.children[0].value).to.equal("VALUE");
+    expect(node.children[1].value).to.equal("Comment");
   });
 
   it("should serialize attributes", function() {
-    expect(true).to.be.false; // TODO:
+    const node = E({ name: "enum" });
+    expect(node.toXml()).to.equal(`<E n="enum"/>`);
   });
 
   it("should serialize without attributes", function() {
-    expect(true).to.be.false; // TODO:
-  });
-
-  it("should serialize as one tag without value/comment", function() {
-    expect(true).to.be.false; // TODO:
+    const node = E();
+    expect(node.toXml()).to.equal(`<E/>`);
   });
 
   it("should serialize on one line with just a value", function() {
-    expect(true).to.be.false; // TODO:
+    const node = E({ value: "VALUE" });
+    expect(node.toXml()).to.equal(`<E>VALUE</E>`);
   });
 
   it("should serialize on one line with just a comment", function() {
-    expect(true).to.be.false; // TODO:
+    const node = E({ comment: "Comment" });
+    expect(node.toXml()).to.equal(`<E><!--Comment--></E>`);
   });
 
   it("should serialize on one line with both value/comment", function() {
-    expect(true).to.be.false; // TODO:
+    const node = E({ value: "VALUE", comment: "Comment" });
+    expect(node.toXml()).to.equal(`<E>VALUE<!--Comment--></E>`);
   });
 });
 
