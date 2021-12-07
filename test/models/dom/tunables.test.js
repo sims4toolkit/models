@@ -381,31 +381,39 @@ describe("#V()", function() {
 
 describe("#C()", function() {
   it("should create a node with a <C> tag", function() {
-    expect(true).to.be.false; // TODO:
+    const node = C({ name: "Class" });
+    expect(node.tag).to.equal("C");
   });
 
-  it("should create an empty node if no arguments are given", function() {
-    expect(true).to.be.false; // TODO:
+  it("should throw if no name is given", function() {
+    expect(() => C()).to.throw;
   });
 
   it("should have the name that is given", function() {
-    expect(true).to.be.false; // TODO:
+    const node = C({ name: "Class" });
+    expect(node.name).to.equal("Class");
   });
 
   it("should have an empty children list if none are given", function() {
-    expect(true).to.be.false; // TODO:
+    const node = C({ name: "Class" });
+    expect(node.children).to.be.an('Array').that.is.empty;
   });
 
   it("should contain the children that are given", function() {
-    expect(true).to.be.false; // TODO:
+    const node = C({ name: "Class", children: [ T({ name: "FIRST" }), T({ name: "SECOND" }) ] });
+    expect(node.numChildren).to.equal(2);
+    expect(node.children[0].name).to.equal("FIRST");
+    expect(node.children[1].name).to.equal("SECOND");
   });
 
   it("should serialize on one line if there are no children", function() {
-    expect(true).to.be.false; // TODO:
+    const node = C({ name: "Class" });
+    expect(node.toXml()).to.equal(`<C n="Class"/>`);
   });
 
   it("should serialize each child on its own line", function() {
-    expect(true).to.be.false; // TODO:
+    const node = C({ name: "Class", children: [ T({ name: "FIRST" }) ] });
+    expect(node.toXml()).to.equal(`<C n="Class">\n  <T n="FIRST"/>\n</C>`);
   });
 });
 

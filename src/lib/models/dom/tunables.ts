@@ -165,7 +165,7 @@ export function V({ name, type, child }: {
   if (name != undefined) attributes.n = name;
   if (type != undefined) attributes.t = type;
   const children = child ? [child] : [];
-  return new TuningElementNode({ tag: 'U', attributes, children });
+  return new TuningElementNode({ tag: 'V', attributes, children });
 }
 
 /**
