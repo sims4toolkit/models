@@ -5,9 +5,6 @@ import { TuningElementNode, TuningCommentNode, TuningValueNode } from "./nodes";
 
 //#region Types
 
-/** Tags that are valid in tuning. */
-type TuningTag = 'I' | 'M' | 'T' | 'E' | 'V' | 'U' | 'L' | 'C';
-
 /** Attribute keys that are valid in tuning. */
 type TuningAttributeKey = 'n' | 'c' | 't' | 'm' | 'i' | 'ev' | 'p' | 's';
 
