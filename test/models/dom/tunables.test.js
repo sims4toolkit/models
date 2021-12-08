@@ -11,12 +11,12 @@ describe("#I()", function() {
   });
 
   it("should throw if any attributes are missing", function() {
-    expect(() => I()).to.throw;
-    expect(() => I({ i: "type", m: "path", n: "name", s: 123 })).to.throw;
-    expect(() => I({ c: "Class", m: "path", n: "name", s: 123 })).to.throw;
-    expect(() => I({ c: "Class", i: "type", n: "name", s: 123 })).to.throw;
-    expect(() => I({ c: "Class", i: "type", m: "path", s: 123 })).to.throw;
-    expect(() => I({ c: "Class", i: "type", m: "path", n: "name" })).to.throw;
+    expect(() => I()).to.throw();
+    expect(() => I({ i: "type", m: "path", n: "name", s: 123 })).to.throw();
+    expect(() => I({ c: "Class", m: "path", n: "name", s: 123 })).to.throw();
+    expect(() => I({ c: "Class", i: "type", n: "name", s: 123 })).to.throw();
+    expect(() => I({ c: "Class", i: "type", m: "path", s: 123 })).to.throw();
+    expect(() => I({ c: "Class", i: "type", m: "path", n: "name" })).to.throw();
   });
 
   it("should assign all given attributes correctly", function() {
@@ -82,9 +82,9 @@ describe("#M()", function() {
   });
 
   it("should throw if either attribute is missing", function() {
-    expect(() => M()).to.throw;
-    expect(() => M({ s: 123 })).to.throw;
-    expect(() => M({ n: "name" })).to.throw;
+    expect(() => M()).to.throw();
+    expect(() => M({ s: 123 })).to.throw();
+    expect(() => M({ n: "name" })).to.throw();
   });
 
   it("should assign both given attributes correctly", function() {
@@ -386,7 +386,7 @@ describe("#C()", function() {
   });
 
   it("should throw if no name is given", function() {
-    expect(() => C()).to.throw;
+    expect(() => C()).to.throw();
   });
 
   it("should have the name that is given", function() {

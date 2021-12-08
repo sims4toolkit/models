@@ -26,14 +26,14 @@ describe('RawResource', function() {
 
     it('should throw when trying to set it', function() {
       const raw = RawResource.from(Buffer.from("hello"), "Just because!");
-      expect(() => raw.reason = "Nothing").to.throw;
+      expect(() => raw.reason = "Nothing").to.throw();
     });
   });
 
   describe('#hasChanged', function() {
     it('should throw when trying to assign a value', function() {
       const raw = getRAW();
-      expect(() => raw.hasChanged = true).to.throw;
+      expect(() => raw.hasChanged = true).to.throw();
     });
 
     it('should return false', function() {
@@ -45,7 +45,7 @@ describe('RawResource', function() {
   describe('#buffer', function() {
     it('should throw when trying to assign a value', function() {
       const raw = getRAW();
-      expect(() => raw.buffer = Buffer.from("hi")).to.throw;
+      expect(() => raw.buffer = Buffer.from("hi")).to.throw();
     });
 
     it('should return the original buffer', function() {
@@ -57,7 +57,7 @@ describe('RawResource', function() {
   describe('#plainText', function() {
     it('should throw when trying to assign a value', function() {
       const raw = getRAW();
-      expect(() => raw.plainText = "hello").to.throw;
+      expect(() => raw.plainText = "hello").to.throw();
     });
 
     it('should return the plain text for a text resource', function() {
@@ -94,7 +94,7 @@ describe('RawResource', function() {
       const raw = getRAW("hello");
       expect(raw.plainText).to.equal("hello");
       expect(raw.buffer.toString()).to.equal("hello");
-      expect(() => raw.uncache()).to.not.throw;
+      expect(() => raw.uncache()).to.not.throw();
       expect(raw.plainText).to.equal("hello");
       expect(raw.buffer.toString()).to.equal("hello");
     });

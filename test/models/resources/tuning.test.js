@@ -221,7 +221,7 @@ describe('TuningResource', function() {
     context('setting', function() {
       it("should throw", function() {
         const tun = TuningResource.create({ content: "<I/>" });
-        expect(() => tun.hasChanged = true).to.throw;
+        expect(() => tun.hasChanged = true).to.throw();
       });
     });
   });
@@ -254,7 +254,7 @@ describe('TuningResource', function() {
     context('setting', function() {
       it("should throw", function() {
         const tun = TuningResource.create({ content: "<I/>" });
-        expect(() => tun.buffer = Buffer.from("hi")).to.throw;
+        expect(() => tun.buffer = Buffer.from("hi")).to.throw();
       });
     });
   });

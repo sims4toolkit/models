@@ -13,7 +13,7 @@ describe('TuningDocumentNode', function() {
 
   describe('#constructor', function() {
     it('should not throw when no children are given', function () {
-      expect(() => new TuningDocumentNode()).to.not.throw;
+      expect(() => new TuningDocumentNode()).to.not.throw();
     });
 
     it('should add the root that is given', function () {
@@ -25,7 +25,30 @@ describe('TuningDocumentNode', function() {
 
   describe('#from()', function() {
     it('should throw if the given XML contains multiple nodes at the root', function() {
-      expect(() => TuningDocumentNode.from(`<T/><T/>`)).to.throw;
+      expect(() => TuningDocumentNode.from(`<T/><T/>`)).to.throw();
+    });
+
+    it('should throw if syntax is invalid and told to validate', function() {
+      // TODO:
+      // expect(true).to.be.false;
+      expect(() => TuningDocumentNode.from(`<T>`, {
+        validateSyntax: true
+      })).to.throw();
+      expect(() => TuningDocumentNode.from(`</T>`, {
+        validateSyntax: true
+      })).to.throw();
+    });
+
+    it('should not throw if syntax is valid and told to validate', function() {
+      // TODO:
+      // expect(true).to.be.false;
+      expect(() => TuningDocumentNode.from(`<T/>`)).to.not.throw();
+    });
+
+    it('should not throw if syntax is invalid but not told to validate', function() {
+      // TODO:
+      expect(() => TuningDocumentNode.from(`<T>`)).to.not.throw();
+      expect(() => TuningDocumentNode.from(`</T>`)).to.not.throw();
     });
 
     it('should not throw for multiple roots if told not to', function() {
@@ -128,7 +151,7 @@ describe('TuningDocumentNode', function() {
   describe('#attributes', function() {
     it('should throw when trying to set', function () {
       const node = newNode();
-      expect(() => node.attributes = {}).to.throw;
+      expect(() => node.attributes = {}).to.throw();
     });
 
     it('should be undefined', function () {
@@ -166,7 +189,7 @@ describe('TuningDocumentNode', function() {
   describe('#children', function() {
     it('should throw when trying to set', function () {
       const node = newNode();
-      expect(() => node.children = []).to.throw;
+      expect(() => node.children = []).to.throw();
     });
 
     it('should be an empty array if there are no children', function () {
@@ -190,7 +213,7 @@ describe('TuningDocumentNode', function() {
   describe('#hasChildren', function() {
     it('should throw when trying to set', function () {
       const node = newNode();
-      expect(() => node.children = []).to.throw;
+      expect(() => node.children = []).to.throw();
     });
 
     it('should return true when it has children', function () {
@@ -209,7 +232,7 @@ describe('TuningDocumentNode', function() {
   describe('#id', function() {
     it('should throw when trying to set', function () {
       const node = newNode();
-      expect(() => node.id = 123).to.throw;
+      expect(() => node.id = 123).to.throw();
     });
 
     it('should be undefined', function () {
@@ -241,7 +264,7 @@ describe('TuningDocumentNode', function() {
 
     it('should throw when setting if the first child cannot have a value', function () {
       const node = newNode(new TuningElementNode({ tag: 'I' }));
-      expect(() => node.innerValue = 123n).to.throw;
+      expect(() => node.innerValue = 123n).to.throw();
     });
 
     it('should set the value of the first child if it can have a value', function () {
@@ -263,7 +286,7 @@ describe('TuningDocumentNode', function() {
   describe('#name', function() {
     it('should throw when trying to set', function () {
       const node = newNode();
-      expect(() => node.name = "name").to.throw;
+      expect(() => node.name = "name").to.throw();
     });
 
     it('should be undefined', function () {
@@ -275,7 +298,7 @@ describe('TuningDocumentNode', function() {
   describe('#numChildren', function() {
     it('should throw when trying to set', function () {
       const node = newNode();
-      expect(() => node.numChildren = 5).to.throw;
+      expect(() => node.numChildren = 5).to.throw();
     });
 
     it('should return 0 when there are no children', function () {
@@ -292,7 +315,7 @@ describe('TuningDocumentNode', function() {
   describe('#tag', function() {
     it('should throw when trying to set', function () {
       const node = newNode();
-      expect(() => node.tag = "T").to.throw;
+      expect(() => node.tag = "T").to.throw();
     });
 
     it('should be undefined', function () {
@@ -304,7 +327,7 @@ describe('TuningDocumentNode', function() {
   describe('#type', function() {
     it('should throw when trying to set', function () {
       const node = newNode();
-      expect(() => node.type = "enabled").to.throw;
+      expect(() => node.type = "enabled").to.throw();
     });
 
     it('should be undefined', function () {
@@ -316,7 +339,7 @@ describe('TuningDocumentNode', function() {
   describe('#value', function() {
     it('should throw when trying to set', function () {
       const node = newNode();
-      expect(() => node.value = "test").to.throw;
+      expect(() => node.value = "test").to.throw();
     });
 
     it('should be undefined', function () {
@@ -343,12 +366,12 @@ describe('TuningDocumentNode', function() {
 
     it('should throw if given more than one child', function () {
       const node = newNode();
-      expect(() => node.addChildren(new TuningValueNode("hi"), new TuningValueNode("bye"))).to.throw;
+      expect(() => node.addChildren(new TuningValueNode("hi"), new TuningValueNode("bye"))).to.throw();
     });
 
     it('should throw if there is already a child', function () {
       const node = newNode(new TuningValueNode("hi"));
-      expect(() => node.addChildren(new TuningValueNode("bye"))).to.throw;
+      expect(() => node.addChildren(new TuningValueNode("bye"))).to.throw();
     });
 
     it('should mutate the original children', function () {
@@ -378,12 +401,12 @@ describe('TuningDocumentNode', function() {
 
     it('should throw if more than one child is given', function () {
       const node = newNode();
-      expect(() => node.addClones(new TuningValueNode("hi"), new TuningValueNode("bye"))).to.throw;
+      expect(() => node.addClones(new TuningValueNode("hi"), new TuningValueNode("bye"))).to.throw();
     });
 
     it('should throw if there is already a child', function () {
       const node = newNode(new TuningValueNode("hi"));
-      expect(() => node.addClones(new TuningValueNode("bye"))).to.throw;
+      expect(() => node.addClones(new TuningValueNode("bye"))).to.throw();
     });
 
     it('should not mutate the original children', function () {
@@ -581,11 +604,11 @@ describe('TuningElementNode', function() {
 
   describe('#constructor', function() {
     it('should throw when no tag is given', function () {
-      expect(() => new TuningElementNode()).to.throw;
+      expect(() => new TuningElementNode()).to.throw();
     });
 
     it('should throw when tag is an empty string', function () {
-      expect(() => new TuningElementNode({ tag: '' })).to.throw;
+      expect(() => new TuningElementNode({ tag: '' })).to.throw();
     });
 
     it('should create a new node with just a tag', function () {
@@ -609,7 +632,7 @@ describe('TuningElementNode', function() {
   describe('#attributes', function() {
     it('should throw when trying to set', function () {
       const node = newNode();
-      expect(() => node.attributes = {}).to.throw;
+      expect(() => node.attributes = {}).to.throw();
     });
 
     it('should not be undefined when there are no attributes', function () {
@@ -661,7 +684,7 @@ describe('TuningElementNode', function() {
   describe('#children', function() {
     it('should throw when trying to set', function () {
       const node = newNode();
-      expect(() => node.children = []).to.throw;
+      expect(() => node.children = []).to.throw();
     });
 
     it('should be an empty array if there are no children', function () {
@@ -681,7 +704,7 @@ describe('TuningElementNode', function() {
   describe('#hasChildren', function() {
     it('should throw when trying to set', function () {
       const node = newNode();
-      expect(() => node.children = []).to.throw;
+      expect(() => node.children = []).to.throw();
     });
 
     it('should return true when it has children', function () {
@@ -747,7 +770,7 @@ describe('TuningElementNode', function() {
     it('should throw when setting if the first child cannot have a value', function () {
       const node = newNode();
       node.addChildren(new TuningElementNode({ tag: 'T' }));
-      expect(() => node.innerValue = 123n).to.throw;
+      expect(() => node.innerValue = 123n).to.throw();
     });
 
     it('should set the value of the first child if it can have a value', function () {
@@ -855,7 +878,7 @@ describe('TuningElementNode', function() {
 
     it('should throw when setting', function () {
       const node = newNode();
-      expect(() => node.value = 1).to.throw;
+      expect(() => node.value = 1).to.throw();
     });
   });
 
@@ -1218,7 +1241,7 @@ describe('TuningValueNode', function() {
 
   describe('#constructor', function() {
     it('should throw when no value is given', function () {
-      expect(() => new TuningValueNode()).to.throw;
+      expect(() => new TuningValueNode()).to.throw();
     });
 
     it('should use the value that is given', function () {
@@ -1232,7 +1255,7 @@ describe('TuningValueNode', function() {
   describe('#attributes', function() {
     it('should throw when trying to set', function () {
       const node = newNode();
-      expect(() => node.attributes = {}).to.throw;
+      expect(() => node.attributes = {}).to.throw();
     });
 
     it('should be undefined', function () {
@@ -1244,7 +1267,7 @@ describe('TuningValueNode', function() {
   describe('#child', function() {
     it('should throw when trying to set', function () {
       const node = newNode();
-      expect(() => node.child = newNode()).to.throw;
+      expect(() => node.child = newNode()).to.throw();
     });
 
     it('should be undefined', function () {
@@ -1256,7 +1279,7 @@ describe('TuningValueNode', function() {
   describe('#children', function() {
     it('should throw when trying to set', function () {
       const node = newNode();
-      expect(() => node.children = []).to.throw;
+      expect(() => node.children = []).to.throw();
     });
 
     it('should be undefined', function () {
@@ -1275,7 +1298,7 @@ describe('TuningValueNode', function() {
   describe('#id', function() {
     it('should throw when trying to set', function () {
       const node = newNode();
-      expect(() => node.id = 123n).to.throw;
+      expect(() => node.id = 123n).to.throw();
     });
 
     it('should be undefined', function () {
@@ -1287,7 +1310,7 @@ describe('TuningValueNode', function() {
   describe('#innerValue', function() {
     it('should throw when trying to set', function () {
       const node = newNode();
-      expect(() => node.innerValue = 123n).to.throw;
+      expect(() => node.innerValue = 123n).to.throw();
     });
 
     it('should be undefined', function () {
@@ -1299,7 +1322,7 @@ describe('TuningValueNode', function() {
   describe('#name', function() {
     it('should throw when trying to set', function () {
       const node = newNode();
-      expect(() => node.name = "name").to.throw;
+      expect(() => node.name = "name").to.throw();
     });
 
     it('should be undefined', function () {
@@ -1318,7 +1341,7 @@ describe('TuningValueNode', function() {
   describe('#tag', function() {
     it('should throw when trying to set', function () {
       const node = newNode();
-      expect(() => node.tag = "tag").to.throw;
+      expect(() => node.tag = "tag").to.throw();
     });
 
     it('should be undefined', function () {
@@ -1330,7 +1353,7 @@ describe('TuningValueNode', function() {
   describe('#type', function() {
     it('should throw when trying to set', function () {
       const node = newNode();
-      expect(() => node.type = "enabled").to.throw;
+      expect(() => node.type = "enabled").to.throw();
     });
 
     it('should be undefined', function () {
@@ -1356,24 +1379,24 @@ describe('TuningValueNode', function() {
   describe('#addChildren()', function() {
     it('should throw when no children are given', function () {
       const node = newNode();
-      expect(() => node.addChildren()).to.throw;
+      expect(() => node.addChildren()).to.throw();
     });
 
     it('should throw when children are given', function () {
       const node = newNode();
-      expect(() => node.addChildren(newNode(), newNode())).to.throw;
+      expect(() => node.addChildren(newNode(), newNode())).to.throw();
     });
   });
 
   describe('#addClones()', function() {
     it('should throw when no children are given', function () {
       const node = newNode();
-      expect(() => node.addClones()).to.throw;
+      expect(() => node.addClones()).to.throw();
     });
 
     it('should throw when children are given', function () {
       const node = newNode();
-      expect(() => node.addClones(newNode(), newNode())).to.throw;
+      expect(() => node.addClones(newNode(), newNode())).to.throw();
     });
   });
 
@@ -1399,14 +1422,14 @@ describe('TuningValueNode', function() {
   describe('#deepSort()', function() {
     it('should throw', function () {
       const node = newNode();
-      expect(() => node.deepSort()).to.throw;
+      expect(() => node.deepSort()).to.throw();
     });
   });
 
   describe('#sort()', function() {
     it('should throw', function () {
       const node = newNode();
-      expect(() => node.sort()).to.throw;
+      expect(() => node.sort()).to.throw();
     });
   });
 
@@ -1455,7 +1478,7 @@ describe('TuningCommentNode', function() {
 
   describe('#constructor', function() {
     it('should throw when no value is given', function () {
-      expect(() => new TuningCommentNode()).to.throw;
+      expect(() => new TuningCommentNode()).to.throw();
     });
 
     it('should use the value that is given', function () {
@@ -1467,7 +1490,7 @@ describe('TuningCommentNode', function() {
   describe('#attributes', function() {
     it('should throw when trying to set', function () {
       const node = newNode();
-      expect(() => node.attributes = {}).to.throw;
+      expect(() => node.attributes = {}).to.throw();
     });
 
     it('should be undefined', function () {
@@ -1479,7 +1502,7 @@ describe('TuningCommentNode', function() {
   describe('#child', function() {
     it('should throw when trying to set', function () {
       const node = newNode();
-      expect(() => node.child = newNode()).to.throw;
+      expect(() => node.child = newNode()).to.throw();
     });
 
     it('should be undefined', function () {
@@ -1491,7 +1514,7 @@ describe('TuningCommentNode', function() {
   describe('#children', function() {
     it('should throw when trying to set', function () {
       const node = newNode();
-      expect(() => node.children = []).to.throw;
+      expect(() => node.children = []).to.throw();
     });
 
     it('should be undefined', function () {
@@ -1510,7 +1533,7 @@ describe('TuningCommentNode', function() {
   describe('#id', function() {
     it('should throw when trying to set', function () {
       const node = newNode();
-      expect(() => node.id = 123n).to.throw;
+      expect(() => node.id = 123n).to.throw();
     });
 
     it('should be undefined', function () {
@@ -1522,7 +1545,7 @@ describe('TuningCommentNode', function() {
   describe('#innerValue', function() {
     it('should throw when trying to set', function () {
       const node = newNode();
-      expect(() => node.innerValue = 123n).to.throw;
+      expect(() => node.innerValue = 123n).to.throw();
     });
 
     it('should be undefined', function () {
@@ -1534,7 +1557,7 @@ describe('TuningCommentNode', function() {
   describe('#name', function() {
     it('should throw when trying to set', function () {
       const node = newNode();
-      expect(() => node.name = "name").to.throw;
+      expect(() => node.name = "name").to.throw();
     });
 
     it('should be undefined', function () {
@@ -1553,7 +1576,7 @@ describe('TuningCommentNode', function() {
   describe('#tag', function() {
     it('should throw when trying to set', function () {
       const node = newNode();
-      expect(() => node.tag = "tag").to.throw;
+      expect(() => node.tag = "tag").to.throw();
     });
 
     it('should be undefined', function () {
@@ -1565,7 +1588,7 @@ describe('TuningCommentNode', function() {
   describe('#type', function() {
     it('should throw when trying to set', function () {
       const node = newNode();
-      expect(() => node.type = "enabled").to.throw;
+      expect(() => node.type = "enabled").to.throw();
     });
 
     it('should be undefined', function () {
@@ -1591,24 +1614,24 @@ describe('TuningCommentNode', function() {
   describe('#addChildren()', function() {
     it('should throw when no children are given', function () {
       const node = newNode();
-      expect(() => node.addChildren()).to.throw;
+      expect(() => node.addChildren()).to.throw();
     });
 
     it('should throw when children are given', function () {
       const node = newNode();
-      expect(() => node.addChildren(newNode(), newNode())).to.throw;
+      expect(() => node.addChildren(newNode(), newNode())).to.throw();
     });
   });
 
   describe('#addClones()', function() {
     it('should throw when no children are given', function () {
       const node = newNode();
-      expect(() => node.addClones()).to.throw;
+      expect(() => node.addClones()).to.throw();
     });
 
     it('should throw when children are given', function () {
       const node = newNode();
-      expect(() => node.addClones(newNode(), newNode())).to.throw;
+      expect(() => node.addClones(newNode(), newNode())).to.throw();
     });
   });
 
@@ -1634,14 +1657,14 @@ describe('TuningCommentNode', function() {
   describe('#deepSort()', function() {
     it('should throw', function () {
       const node = newNode();
-      expect(() => node.deepSort()).to.throw;
+      expect(() => node.deepSort()).to.throw();
     });
   });
 
   describe('#sort()', function() {
     it('should throw', function () {
       const node = newNode();
-      expect(() => node.sort()).to.throw;
+      expect(() => node.sort()).to.throw();
     });
   });
 

@@ -501,13 +501,13 @@ describe('StringTableResource', function() {
     it('should throw after adding a string with a duplicate hash', function() {
       const stbl = StringTableResource.create();
       stbl.addAndHash("Hi");
-      expect(() => stbl.addAndHash("Hi")).to.throw;
+      expect(() => stbl.addAndHash("Hi")).to.throw();
     }); 
 
     it('should not throw for a duplicate hash if told to ignore it', function() {
       const stbl = StringTableResource.create();
       stbl.addAndHash("Hi");
-      expect(() => stbl.addAndHash("Hi", { allowDuplicateKey: true })).to.not.throw;
+      expect(() => stbl.addAndHash("Hi", { allowDuplicateKey: true })).to.not.throw();
     }); 
   });
 
@@ -685,7 +685,7 @@ describe('StringTableResource', function() {
     });
 
     it('should not be assignable', function() {
-      expect(() => stbl.entries = []).to.throw;
+      expect(() => stbl.entries = []).to.throw();
     });
   });
 
@@ -1310,7 +1310,7 @@ describe('StringTableResource', function() {
   describe('#buffer', function() {
     it('should not be assignable', function() {
       const stbl = StringTableResource.create();
-      expect(() => stbl.buffer = undefined).to.throw;
+      expect(() => stbl.buffer = undefined).to.throw();
     })
 
     context('fresh string table', function() {
