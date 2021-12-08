@@ -1,5 +1,5 @@
 const expect = require('chai').expect;
-const { TuningResource, nodes } = require('../../../dst/api');
+const { TuningResource, nodes, tunables } = require('../../../dst/api');
 const { TuningDocumentNode } = nodes;
 
 const XML_DECLARATION = '<?xml version="1.0" encoding="utf-8"?>';
@@ -110,29 +110,45 @@ describe('TuningResource', function() {
   describe('#root', function() {
     context('getting', function() {
       it("should return undefined if the DOM has no children", function() {
-        // TODO:
+        const tun = TuningResource.create();
+        expect(tun.root).to.be.undefined;
       });
 
       it("should return the child of the DOM if it's the only one", function() {
-        // TODO:
+        const tun = TuningResource.create({ content: "<T>Hi</T>" });
+        expect(tun.root.tag).to.equal("T");
+        expect(tun.root.innerValue).to.equal("Hi");
       });
 
       it("should return the first child of the DOM if there are more than one", function() {
-        // TODO:
+        const tun = TuningResource.create({ content: "<T>Hi</T><L><U/></L>" });
+        expect(tun.root.tag).to.equal("T");
+        expect(tun.root.innerValue).to.equal("Hi");
       });
     });
 
     context('setting', function() {
       it("should update the first child of the DOM", function() {
-        // TODO:
+        const dom = TuningDocumentNode.from("<T>50</T>");
+        const tun = TuningResource.create({ dom });
+        tun.root = tunables.E({ value: "VALUE" });
+        expect(dom.child.tag).to.equal("E");
+        expect(dom.child.innerValue).to.equal("VALUE");
       });
 
       it("should uncache the buffer", function() {
-        // TODO:
+        const tun = TuningResource.from(Buffer.from("<T>50</T>"));
+        expect(tun.hasChanged).to.be.false;
+        tun.root = tunables.E({ value: "VALUE" });
+        expect(tun.hasChanged).to.be.true;
       });
 
       it("should reset the content", function() {
-        // TODO:
+        const dom = TuningDocumentNode.from("<T>50</T>");
+        const tun = TuningResource.create({ dom });
+        expect(tun.content).to.equal(`${XML_DECLARATION}\n<T>50</T>`);
+        tun.root = tunables.E({ value: "VALUE" });
+        expect(tun.content).to.equal(`${XML_DECLARATION}\n<E>VALUE</E>`);
       });
     });
   });
