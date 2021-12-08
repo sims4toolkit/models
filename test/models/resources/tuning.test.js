@@ -1,8 +1,16 @@
+const fs = require('fs');
+const path = require('path');
 const expect = require('chai').expect;
 const { TuningResource, nodes, tunables } = require('../../../dst/api');
 const { TuningDocumentNode } = nodes;
 
 const XML_DECLARATION = '<?xml version="1.0" encoding="utf-8"?>';
+
+function getTuningFromFile(filename) {
+  const filepath = path.resolve(__dirname, `../../data/tuning/${filename}.xml`);
+  const buffer = fs.readFileSync(filepath);
+  return TuningResource.from(buffer);
+}
 
 describe('TuningResource', function() {
   //#region Properties
@@ -367,6 +375,39 @@ describe('TuningResource', function() {
     it("should immediately cache the buffer", function() {
       const tun = TuningResource.from(Buffer.from("Hello"));
       expect(tun.hasChanged).to.be.false;
+    });
+
+    it('should be able to handle real files', function() {
+      const tun = getTuningFromFile("ExampleTrait");
+
+      // instance
+      expect(tun.root.tag).to.equal("I");
+      expect(tun.root.attributes.c).to.equal("Trait");
+      expect(tun.root.attributes.i).to.equal("trait");
+      expect(tun.root.attributes.m).to.equal("traits.trait");
+      expect(tun.root.name).to.equal("trait_HotHeaded");
+      expect(tun.root.id).to.equal("16845");
+
+      // tunables
+      expect(tun.root.numChildren).to.equal(17);
+      expect(tun.root.children[0].tag).to.equal("L");
+      expect(tun.root.children[0].name).to.equal("actor_mixers");
+      expect(tun.root.children[6].tag).to.equal("T");
+      expect(tun.root.children[6].name).to.equal("display_name");
+      expect(tun.root.children[6].innerValue).to.equal("0x80A081AC");
+      expect(tun.root.children[6].children[1].value).to.equal("Hot-Headed");
+      expect(tun.root.children[16].tag).to.equal("V");
+      expect(tun.root.children[16].name).to.equal("whim_set");
+
+      // searching
+      const buffReplacements = tun.root.children.find(child => child.name === "buff_replacements");
+      expect(buffReplacements.numChildren).to.equal(3);
+      expect(buffReplacements.child.tag).to.equal("U");
+      expect(buffReplacements.child.child.tag).to.equal("T");
+      expect(buffReplacements.child.child.name).to.equal("key");
+      expect(buffReplacements.child.child.innerValue).to.equal("12827");
+      expect(buffReplacements.child.children[1].child.name).to.equal("buff_type");
+      expect(buffReplacements.child.children[1].child.innerValue).to.equal("27323");
     });
   });
 

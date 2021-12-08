@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<I c="Trait" i="trait" m="traits.trait" n="trait_HotHeaded" s="16845">
+  <L n="actor_mixers">
+    <U>
+      <T n="key">13998<!--sim_Chat--></T>
+      <L n="value">
+        <T>27704<!--mixer_social_RileUp_targeted_mean_alwaysOn--></T>
+      </L>
+    </U>
+  </L>
+  <L n="ages">
+    <E>TEEN</E>
+    <E>ADULT</E>
+    <E>CHILD</E>
+    <E>ELDER</E>
+    <E>YOUNGADULT</E>
+  </L>
+  <L n="buff_replacements">
+    <U>
+      <T n="key">12827<!--MoodBuff_Hidden_Furious--></T>
+      <U n="value">
+        <T n="buff_type">27323<!--MoodBuff_Hidden_HotHead2--></T>
+      </U>
+    </U>
+    <U>
+      <T n="key">12831<!--MoodBuff_Hidden_Angry--></T>
+      <U n="value">
+        <T n="buff_type">27321<!--MoodBuff_Hidden_HotHead1--></T>
+      </U>
+    </U>
+    <U>
+      <T n="key">12840<!--MoodBuff_Hidden_Enraged--></T>
+      <U n="value">
+        <T n="buff_type">27320<!--MoodBuff_Hidden_HotHead3--></T>
+      </U>
+    </U>
+  </L>
+  <L n="buffs">
+    <U>
+      <T n="buff_type">12691<!--Buff_Trait_HotHeaded--></T>
+    </U>
+  </L>
+  <T n="cas_trait_asm_param">HotHeaded</T>
+  <L n="conflicting_traits">
+    <T>9322<!--trait_Cheerful--></T>
+    <T>9332<!--trait_Gloomy--></T>
+  </L>
+  <T n="display_name">0x80A081AC<!--Hot-Headed--></T>
+  <T n="display_name_gender_neutral">0x392630FC<!--Hot-Headed--></T>
+  <T n="icon" p="InGame\UI\Icons\CAS\Traits\trait_hotheaded_cas.png">2f7d0004:00000000:c4ec3e0a68620978</T>
+  <V n="loot_on_trait_add" t="enabled">
+    <L n="enabled">
+      <T>168033<!--loot_Statistic_LifeSkill_ConflictResolution_Trait_LossLarge--></T>
+    </L>
+  </V>
+  <E n="min_lod_value">MINIMUM</E>
+  <L n="species">
+    <E />
+  </L>
+  <L n="tags">
+    <E>TraitPersonality</E>
+    <E>TraitGroup_Emotional</E>
+  </L>
+  <T n="trait_description">0xB72DA8C3<!--These Sims tend to be Angry, can Rile up other Sims, and become Angry when targeted with Mischief.--></T>
+  <E n="trait_type">PERSONALITY</E>
+  <V n="ui_category" t="ui_trait_category_tag" />
+  <V n="whim_set" t="enabled">
+    <T n="enabled">34797<!--whimset_HasTraitHotheaded--></T>
+  </V>
+</I>
