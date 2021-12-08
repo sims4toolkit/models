@@ -107,6 +107,36 @@ describe('TuningResource', function() {
     });
   });
 
+  describe('#root', function() {
+    context('getting', function() {
+      it("should return undefined if the DOM has no children", function() {
+        // TODO:
+      });
+
+      it("should return the child of the DOM if it's the only one", function() {
+        // TODO:
+      });
+
+      it("should return the first child of the DOM if there are more than one", function() {
+        // TODO:
+      });
+    });
+
+    context('setting', function() {
+      it("should update the first child of the DOM", function() {
+        // TODO:
+      });
+
+      it("should uncache the buffer", function() {
+        // TODO:
+      });
+
+      it("should reset the content", function() {
+        // TODO:
+      });
+    });
+  });
+
   describe('#hasChanged', function() {
     context('getting', function() {
       it("should return true after being created", function() {
@@ -241,19 +271,21 @@ describe('TuningResource', function() {
   //#region Methods
 
   describe('#updateDom()', function() {
-    it('should uncache the buffer when changes are made', function() {
+    it('should uncache the buffer', function() {
       // TODO:
     });
 
-    it('should reset the content when changes are made', function() {
+    it('should reset the content', function() {
+      // TODO:
+    });
+  });
+
+  describe('#updateRoot()', function() {
+    it('should uncache the buffer', function() {
       // TODO:
     });
 
-    it('should uncache the buffer even if no changes are made', function() {
-      // TODO:
-    });
-
-    it('should reset the content even if no changes are made', function() {
+    it('should reset the content', function() {
       // TODO:
     });
   });

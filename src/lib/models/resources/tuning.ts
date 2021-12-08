@@ -43,6 +43,25 @@ export default class TuningResource extends Resource {
     this.uncache();
   }
 
+  /**
+   * Shorthand for getting the first child of the DOM, since tuning resources
+   * should only have one child in their DOM anyways. To mutate the root, use
+   * `updateRoot()` so that the cache is handled properly.
+   */
+  get root(): TuningNode {
+    return this.dom.child;
+  }
+
+  /**
+   * Sets the first child of the DOM, resets the plain text content, and
+   * uncaches the resource.
+   */
+  set root(node: TuningNode) {
+    this.updateDom(dom => {
+      dom.child = node;
+    });
+  }
+
   //#region Initialization
 
   private constructor({ content, buffer, dom }: {
@@ -96,6 +115,19 @@ export default class TuningResource extends Resource {
    */
   updateDom(fn: (dom: TuningDocumentNode) => void) {
     fn(this.dom);
+    this._content = undefined;
+    this.uncache();
+  }
+
+  /**
+   * Allows you to alter the first child of the DOM in a way that keeps the
+   * content and buffer in sync. If you alter the DOM outside of this method,
+   * you can encounter some problems with mis-matched caches.
+   * 
+   * @param fn Callback function in which you can alter the root of the DOM
+   */
+  updateRoot(fn: (root: TuningNode) => void) {
+    fn(this.root);
     this._content = undefined;
     this.uncache();
   }
