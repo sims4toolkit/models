@@ -219,9 +219,11 @@ describe('TuningResource', function() {
     });
 
     context('setting', function() {
-      it("should throw", function() {
+      it("should not do anything", function() {
         const tun = TuningResource.create({ content: "<I/>" });
-        expect(() => tun.hasChanged = true).to.throw();
+        expect(tun.hasChanged).to.be.true;
+        tun.hasChanged = false;
+        expect(tun.hasChanged).to.be.true;
       });
     });
   });
@@ -252,9 +254,10 @@ describe('TuningResource', function() {
     });
 
     context('setting', function() {
-      it("should throw", function() {
-        const tun = TuningResource.create({ content: "<I/>" });
-        expect(() => tun.buffer = Buffer.from("hi")).to.throw();
+      it("should not do anything", function() {
+        const tun = TuningResource.from(Buffer.from("<I/>"));
+        tun.buffer = Buffer.from("hi");
+        expect(tun.buffer.toString()).to.equal("<I/>");
       });
     });
   });

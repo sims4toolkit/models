@@ -24,16 +24,19 @@ describe('RawResource', function() {
       expect(raw.reason).to.equal("Just because!");
     });
 
-    it('should throw when trying to set it', function() {
+    it('should not be assignable', function() {
       const raw = RawResource.from(Buffer.from("hello"), "Just because!");
-      expect(() => raw.reason = "Nothing").to.throw();
+      raw.reason = "Nothing";
+      expect(raw.reason).to.equal("Just because!");
     });
   });
 
   describe('#hasChanged', function() {
-    it('should throw when trying to assign a value', function() {
+    it('should not be assignable', function() {
       const raw = getRAW();
-      expect(() => raw.hasChanged = true).to.throw();
+      expect(raw.hasChanged).to.be.false;
+      raw.hasChanged = true;
+      expect(raw.hasChanged).to.be.false;
     });
 
     it('should return false', function() {
@@ -43,9 +46,11 @@ describe('RawResource', function() {
   });
 
   describe('#buffer', function() {
-    it('should throw when trying to assign a value', function() {
+    it('should not be assignable', function() {
       const raw = getRAW();
-      expect(() => raw.buffer = Buffer.from("hi")).to.throw();
+      const buffer = raw.buffer;
+      raw.buffer = Buffer.from("hi");
+      expect(raw.buffer).to.equal(buffer);
     });
 
     it('should return the original buffer', function() {
@@ -55,9 +60,10 @@ describe('RawResource', function() {
   });
 
   describe('#plainText', function() {
-    it('should throw when trying to assign a value', function() {
+    it('should not be assignable', function() {
       const raw = getRAW();
-      expect(() => raw.plainText = "hello").to.throw();
+      raw.plainText = "hello";
+      expect(raw.plainText).to.equal("default content");
     });
 
     it('should return the plain text for a text resource', function() {

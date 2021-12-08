@@ -1310,8 +1310,11 @@ describe('StringTableResource', function() {
   describe('#buffer', function() {
     it('should not be assignable', function() {
       const stbl = StringTableResource.create();
-      expect(() => stbl.buffer = undefined).to.throw();
-    })
+      const buffer = stbl.buffer;
+      stbl.buffer = undefined;
+      expect(stbl.buffer).to.equal(buffer);
+      expect(stbl.buffer).to.not.be.undefined;
+    });
 
     context('fresh string table', function() {
       context('stbl is empty', function() {
