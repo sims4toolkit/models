@@ -20,9 +20,17 @@ export default class StringTableResource extends Resource {
     this._nextId = this._entries.length;
   }
 
-  /** Creates and returns a new, empty string table. */
-  static create(): StringTableResource {
-    return new StringTableResource([]);
+  /**
+   * Creates and returns a new string table resource from the given entries. If
+   * no entries are provided, the string table is empty.
+   * 
+   * Entries should be a list of objects that have a numeric `key` value and a
+   * string `string` value.
+   * 
+   * @param entries Initial data for this string table 
+   */
+  static create(entries: KeyStringPair[] = []): StringTableResource {
+    return new StringTableResource(entries);
   }
 
   /**
@@ -41,15 +49,6 @@ export default class StringTableResource extends Resource {
         throw e;
       }
     }
-  }
-
-  /**
-   * Returns a new String Table created from a list of entries.
-   * 
-   * @param json List of entries to load into the string table
-   */
-  static fromJson(json: KeyStringPair[]): StringTableResource {
-    return new StringTableResource(json);
   }
 
   /**

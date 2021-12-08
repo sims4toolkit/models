@@ -98,6 +98,21 @@ describe('StringTableResource', function() {
       const stbl = StringTableResource.create();
       expect(stbl.hasChanged).to.be.true;
     });
+
+    it('should return a stbl with the given contents', function() {
+      const stbl = StringTableResource.create([
+        { key: 123, string: "First" },
+        { key: 456, string: "Second" },
+        { key: 789, string: "Third" },
+      ]);
+
+      expect(stbl.getById(0).key).to.equal(123);
+      expect(stbl.getById(0).string).to.equal("First");
+      expect(stbl.getById(1).key).to.equal(456);
+      expect(stbl.getById(1).string).to.equal("Second");
+      expect(stbl.getById(2).key).to.equal(789);
+      expect(stbl.getById(2).string).to.equal("Third");
+    });
   });
 
   describe('#from()', function() {
@@ -185,28 +200,6 @@ describe('StringTableResource', function() {
         expect(stblWrapper).to.not.throw();
         expect(stbl).to.be.undefined;
       });
-    });
-  });
-
-  describe('#fromJson()', function() {
-    it('should return an empty stbl when the json is empty', function() {
-      const stbl = StringTableResource.fromJson([]);
-      expect(stbl.entries).to.be.empty;
-    });
-
-    it('should return a stbl with the contents of a non-empty json', function() {
-      const stbl = StringTableResource.fromJson([
-        { key: 123, string: "First" },
-        { key: 456, string: "Second" },
-        { key: 789, string: "Third" },
-      ]);
-
-      expect(stbl.getById(0).key).to.equal(123);
-      expect(stbl.getById(0).string).to.equal("First");
-      expect(stbl.getById(1).key).to.equal(456);
-      expect(stbl.getById(1).string).to.equal("Second");
-      expect(stbl.getById(2).key).to.equal(789);
-      expect(stbl.getById(2).string).to.equal("Third");
     });
   });
 
