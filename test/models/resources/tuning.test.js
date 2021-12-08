@@ -360,11 +360,13 @@ describe('TuningResource', function() {
 
   describe('#from()', function() {
     it("should create a tuning resource with the content of the given buffer", function() {
-      // TODO:
+      const tun = TuningResource.from(Buffer.from("Hello"));
+      expect(tun.content).to.equal("Hello");
     });
 
     it("should immediately cache the buffer", function() {
-      // TODO:
+      const tun = TuningResource.from(Buffer.from("Hello"));
+      expect(tun.hasChanged).to.be.false;
     });
   });
 
