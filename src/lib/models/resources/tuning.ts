@@ -75,7 +75,10 @@ export default class TuningResource extends Resource {
   }
 
   clone(): TuningResource {
-    return new TuningResource({ content: this._content });
+    return new TuningResource({
+      content: this.content,
+      dom: this.dom.clone()
+    });
   }
 
   /**
@@ -133,6 +136,6 @@ export default class TuningResource extends Resource {
   }
 
   protected _serialize(): Buffer {
-    return Buffer.from(this._content, 'utf-8');
+    return Buffer.from(this.content, 'utf-8');
   }
 }

@@ -221,19 +221,25 @@ describe('TuningResource', function() {
   describe('#buffer', function() {
     context('getting', function() {
       it("should return the buffer for an empty resource", function() {
-        // TODO:
+        const tun = TuningResource.create();
+        expect(tun.buffer.toString()).to.equal('');
       });
 
       it("should return the original buffer for a resource created from a buffer", function() {
-        // TODO:
+        const buffer = Buffer.from("Hello");
+        const tun = TuningResource.from(buffer);
+        expect(tun.buffer).to.equal(buffer);
       });
 
       it("should return the buffer for a resource created from a string", function() {
-        // TODO:
+        const tun = TuningResource.create({ content: "Hello" });
+        expect(tun.buffer.toString()).to.equal('Hello');
       });
 
       it("should return the buffer for a resource created from a DOM", function() {
-        // TODO:
+        const dom = TuningDocumentNode.from("<T>50</T>");
+        const tun = TuningResource.create({ dom });
+        expect(tun.buffer.toString()).to.equal(`${XML_DECLARATION}\n<T>50</T>`);
       });
     });
 
