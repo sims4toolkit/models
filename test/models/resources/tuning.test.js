@@ -72,37 +72,58 @@ describe('TuningResource', function() {
   describe('#dom', function() {
     context('getting', function() {
       it("should return an empty DOM for an empty resource", function() {
-        // TODO:
+        const tun = TuningResource.create();
+        expect(tun.dom.numChildren).to.equal(0);
       });
 
       it("should return the DOM for tuning created from a buffer", function() {
-        // TODO:
+        const tun = TuningResource.from(Buffer.from("<T>50</T>"));
+        expect(tun.dom.child.tag).to.equal("T");
+        expect(tun.dom.child.innerValue).to.equal("50");
       });
 
       it("should return the DOM for tuning created from a string", function() {
-        // TODO:
+        const tun = TuningResource.create({ content: "<T>50</T>" });
+        expect(tun.dom.child.tag).to.equal("T");
+        expect(tun.dom.child.innerValue).to.equal("50");
       });
 
       it("should return the original DOM for tuning created from a DOM", function() {
-        // TODO:
+        const dom = TuningDocumentNode.from("<T>50</T>");
+        const tun = TuningResource.create({ dom });
+        expect(tun.dom).to.equal(dom);
       });
 
       it("should not reset the content or uncache the buffer when mutated", function() {
-        // TODO:
+        const tun = TuningResource.from(Buffer.from("<T>50</T>"));
+        expect(tun.hasChanged).to.be.false;
+        expect(tun.content).to.equal("<T>50</T>");
+        tun.dom.child.innerValue = 25;
+        expect(tun.hasChanged).to.be.false;
+        expect(tun.content).to.equal("<T>50</T>");
       });
     });
 
     context('setting', function() {
       it("should update the DOM", function() {
-        // TODO:
+        const dom = TuningDocumentNode.from("<T>50</T>");
+        const tun = TuningResource.create({ dom });
+        tun.dom = TuningDocumentNode.from("<T>25</T>");
+        expect(tun.dom.child.innerValue).to.equal("25");
       });
 
       it("should uncache the buffer", function() {
-        // TODO:
+        const tun = TuningResource.from(Buffer.from("<T>50</T>"));
+        expect(tun.hasChanged).to.be.false;
+        tun.dom = TuningDocumentNode.from("<T>25</T>");
+        expect(tun.hasChanged).to.be.true;
       });
 
       it("should reset the content", function() {
-        // TODO:
+        const tun = TuningResource.from(Buffer.from("<T>50</T>"));
+        expect(tun.content).to.equal(`<T>50</T>`);
+        tun.dom = TuningDocumentNode.from("<T>25</T>");
+        expect(tun.content).to.equal(`${XML_DECLARATION}\n<T>25</T>`);
       });
     });
   });
