@@ -71,6 +71,10 @@ describe('TuningResource', function() {
       it("should return the original DOM for tuning created from a DOM", function() {
         // TODO:
       });
+
+      it("should not reset the content or uncache the buffer when mutated", function() {
+        // TODO:
+      });
     });
 
     context('setting', function() {
@@ -151,15 +155,57 @@ describe('TuningResource', function() {
   //#region Initialization
 
   describe('#clone()', function() {
-    // TODO:
+    it("should create a new resource with the same content, buffer, and DOM", function() {
+      // TODO:
+    });
+
+    it("should not mutate the original's content", function() {
+      // TODO:
+    });
+
+    it("should not uncache the original's buffer", function() {
+      // TODO:
+    });
+
+    it("should not mutate the original's DOM", function() {
+      // TODO:
+    });
   });
 
   describe('#create()', function() {
-    // TODO:
+    context('not given any arguments', function() {
+      it("should ...", function() {
+        // TODO:
+      });
+    });
+
+    context('given content', function() {
+      it("should ...", function() {
+        // TODO:
+      });
+    });
+
+    context('given DOM', function() {
+      it("should ...", function() {
+        // TODO:
+      });
+    });
+
+    context('given content and DOM', function() {
+      it("should ...", function() {
+        // TODO:
+      });
+    });
   });
 
   describe('#from()', function() {
-    // TODO:
+    it("should create a tuning resource with the content of the given buffer", function() {
+      // TODO:
+    });
+
+    it("should immediately cache the buffer", function() {
+      // TODO:
+    });
   });
 
   //#endregion Initialization
@@ -167,7 +213,27 @@ describe('TuningResource', function() {
   //#region Methods
 
   describe('#updateDom()', function() {
-    // TODO:
+    it('should uncache the buffer when changes are made', function() {
+      // TODO:
+    });
+
+    it('should reset the content when changes are made', function() {
+      // TODO:
+    });
+
+    it('should uncache the buffer even if no changes are made', function() {
+      // TODO:
+    });
+
+    it('should reset the content even if no changes are made', function() {
+      // TODO:
+    });
+  });
+
+  describe('#uncache()', function() {
+    it('should uncache the buffer', function() {
+      // TODO:
+    });
   });
 
   //#endregion Methods
