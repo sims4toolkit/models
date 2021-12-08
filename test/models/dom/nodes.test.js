@@ -28,29 +28,6 @@ describe('TuningDocumentNode', function() {
       expect(() => TuningDocumentNode.from(`<T/><T/>`)).to.throw();
     });
 
-    it('should throw if syntax is invalid and told to validate', function() {
-      // TODO:
-      // expect(true).to.be.false;
-      expect(() => TuningDocumentNode.from(`<T>`, {
-        validateSyntax: true
-      })).to.throw();
-      expect(() => TuningDocumentNode.from(`</T>`, {
-        validateSyntax: true
-      })).to.throw();
-    });
-
-    it('should not throw if syntax is valid and told to validate', function() {
-      // TODO:
-      // expect(true).to.be.false;
-      expect(() => TuningDocumentNode.from(`<T/>`)).to.not.throw();
-    });
-
-    it('should not throw if syntax is invalid but not told to validate', function() {
-      // TODO:
-      expect(() => TuningDocumentNode.from(`<T>`)).to.not.throw();
-      expect(() => TuningDocumentNode.from(`</T>`)).to.not.throw();
-    });
-
     it('should not throw for multiple roots if told not to', function() {
       const doc = TuningDocumentNode.from(`<T/><T/>`, {
         allowMultipleRoots: true
@@ -149,9 +126,10 @@ describe('TuningDocumentNode', function() {
   });
 
   describe('#attributes', function() {
-    it('should throw when trying to set', function () {
+    it('should not be assignable', function () {
       const node = newNode();
-      expect(() => node.attributes = {}).to.throw();
+      node.attributes = { n: "name" };
+      expect(node.attributes).to.be.undefined;
     });
 
     it('should be undefined', function () {
@@ -187,9 +165,10 @@ describe('TuningDocumentNode', function() {
   });
 
   describe('#children', function() {
-    it('should throw when trying to set', function () {
+    it('should not be assignable', function () {
       const node = newNode();
-      expect(() => node.children = []).to.throw();
+      node.children = [new TuningCommentNode("hi")];
+      expect(node.children).to.be.empty;
     });
 
     it('should be an empty array if there are no children', function () {
@@ -211,9 +190,10 @@ describe('TuningDocumentNode', function() {
   });
 
   describe('#hasChildren', function() {
-    it('should throw when trying to set', function () {
+    it('should not be assignable', function () {
       const node = newNode();
-      expect(() => node.children = []).to.throw();
+      node.hasChildren = false;
+      expect(node.hasChildren).to.be.true;
     });
 
     it('should return true when it has children', function () {
@@ -296,9 +276,10 @@ describe('TuningDocumentNode', function() {
   });
 
   describe('#numChildren', function() {
-    it('should throw when trying to set', function () {
+    it('should not be assignable', function () {
       const node = newNode();
-      expect(() => node.numChildren = 5).to.throw();
+      node.numChildren = 5
+      expect(node.numChildren).to.equal(0);
     });
 
     it('should return 0 when there are no children', function () {
@@ -630,9 +611,10 @@ describe('TuningElementNode', function() {
   });
 
   describe('#attributes', function() {
-    it('should throw when trying to set', function () {
+    it('should not be assignable', function () {
       const node = newNode();
-      expect(() => node.attributes = {}).to.throw();
+      node.attributes = { n: "name" };
+      expect(node.attributes.n).to.be.undefined;
     });
 
     it('should not be undefined when there are no attributes', function () {
@@ -684,7 +666,8 @@ describe('TuningElementNode', function() {
   describe('#children', function() {
     it('should throw when trying to set', function () {
       const node = newNode();
-      expect(() => node.children = []).to.throw();
+      node.children = [newNode()];
+      expect(node.children)
     });
 
     it('should be an empty array if there are no children', function () {

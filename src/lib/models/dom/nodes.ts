@@ -365,21 +365,17 @@ export class TuningDocumentNode extends TuningNodeBase {
    * - `allowMultipleRoots`: Whether or not the document should still be created
    * if it will have multiple roots. If false, an exception will be thrown if
    * there is more than one root element. (Default = false)
-   * - `validateSyntax`: Whether or not the document should still be created if
-   * there are any syntax errors. If true, an exception will be thrown if there
-   * are any syntax errors. (Default = false)
    * 
    * @param xml XML document to parse as a node
    * @param options Object containing options
    */
   static from(xml: string | Buffer, {
-    allowMultipleRoots = false,
-    validateSyntax = false
+    allowMultipleRoots = false
   }: {
     allowMultipleRoots?: boolean;
     validateSyntax?: boolean;
   } = {}): TuningDocumentNode {
-    const nodes = parseXml(xml, validateSyntax);
+    const nodes = parseXml(xml);
     if (nodes.length <= 1) return new TuningDocumentNode(nodes[0]);
     if (allowMultipleRoots) {
       const doc = new TuningDocumentNode();
@@ -542,9 +538,8 @@ function formatValue(value: number | bigint | boolean | string): string {
  * Parses a string or buffer containing XML as a list of nodes.
  * 
  * @param xml XML document to parse as a node
- * @param validateSyntax Whether or not to throw for syntax errors
  */
-function parseXml(xml: string | Buffer, validateSyntax: boolean): TuningNode[] {
+function parseXml(xml: string | Buffer): TuningNode[] {
   const parser = new XMLParser({
     ignoreAttributes: false,
     attributeNamePrefix: "",
@@ -562,7 +557,7 @@ function parseXml(xml: string | Buffer, validateSyntax: boolean): TuningNode[] {
     [key: string]: any;
   }
 
-  const nodeObjs: NodeObj[] = parser.parse(xml, validateSyntax);
+  const nodeObjs: NodeObj[] = parser.parse(xml);
 
   function parseNodeObj(nodeObj: NodeObj): TuningNode {
     if (nodeObj.comment) {
