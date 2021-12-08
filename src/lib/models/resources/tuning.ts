@@ -9,13 +9,13 @@ export default class TuningResource extends Resource {
   private _content?: string;
   private _dom?: TuningDocumentNode;
 
-  /** Returns the XML content of this tuning resource. */
+  /** The XML content of this tuning resource. */
   get content(): string {
-    if (this._content === undefined) this._content = this._dom?.toXml();
+    if (this._content == undefined) this._content = this._dom?.toXml();
     return this._content;
   }
 
-  /** Sets the content of this resource, resets the DOM, and uncaches it. */
+  /** Sets the plain text content, resets the DOM, and uncaches the resource. */
   set content(content: string) {
     this._content = content;
     this._dom = undefined;
@@ -23,16 +23,24 @@ export default class TuningResource extends Resource {
   }
 
   /**
-   * Returns the DOM of this tuning resource. If you need to mutate the DOM, do
-   * so with the `updateDom()` method (if you mutate the DOM outside of this
-   * method, you will encounter mismatched cache issues).
+   * The DOM for this tuning resource. To mutate the DOM, use `updateDom()` so
+   * that cache is handled properly.
    */
   get dom(): TuningDocumentNode {
-    if (this._dom === undefined)
+    if (this._dom == undefined)
       this._dom = TuningDocumentNode.from(this._content, {
         allowMultipleRoots: true
       });
     return this._dom;
+  }
+
+  /**
+   * Sets the DOM, resets the plain text content, and uncaches the resource.
+   */
+  set dom(dom: TuningDocumentNode) {
+    this._dom = dom;
+    this._content = undefined;
+    this.uncache();
   }
 
   //#region Initialization
@@ -52,10 +60,20 @@ export default class TuningResource extends Resource {
   }
 
   /**
-   * Creates a new blank tuning resource.
+   * Creates a new tuning resource with the given content. If no content is
+   * given, the tuning resource is blank.
+   * 
+   * Initial Content
+   * - `content`: The XML content of the resource as a string.
+   * - `dom`: The TuningDocumentNode to use as this resource's DOM.
+   * 
+   * @param initialContent Object containing initial content of this resource
    */
-  static create(): TuningResource {
-    return new TuningResource();
+  static create(initialContent: {
+    content?: string;
+    dom?: TuningDocumentNode;
+  } = {}): TuningResource {
+    return new TuningResource(initialContent);
   }
 
   /**
@@ -67,32 +85,14 @@ export default class TuningResource extends Resource {
     return new TuningResource({ content: buffer.toString('utf-8'), buffer });
   }
 
-  /**
-   * Creates a tuning resource from a string containing XML.
-   * 
-   * @param content String to create a tuning resource from
-   */
-  static fromXml(content: string): TuningResource {
-    return new TuningResource({ content });
-  }
-
-  /**
-   * Creates a tuning resource from a TuningDom object.
-   * 
-   * @param dom DOM to create tuning resource from
-   */
-  static fromDom(dom: TuningDocumentNode): TuningResource {
-    return new TuningResource({ dom });
-  }
-
   //#endregion Initialization
   
   /**
    * Allows you to alter the DOM in a way that keeps the content and buffer in
    * sync. If you alter the DOM outside of this method, you can encounter some
-   * serious problems with mis-matched caches.
+   * problems with mis-matched caches.
    * 
-   * @param fn Callback function where you can alter the DOM
+   * @param fn Callback function in which you can alter the DOM
    */
   updateDom(fn: (dom: TuningDocumentNode) => void) {
     fn(this.dom);
