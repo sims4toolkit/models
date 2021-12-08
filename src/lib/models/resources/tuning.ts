@@ -11,7 +11,7 @@ export default class TuningResource extends Resource {
 
   /** The XML content of this tuning resource. */
   get content(): string {
-    if (this._content == undefined) this._content = this._dom?.toXml();
+    if (this._content == undefined) this._content = this._dom?.toXml() || '';
     return this._content;
   }
 

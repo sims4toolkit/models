@@ -1,9 +1,8 @@
 const expect = require('chai').expect;
-const { TuningResource } = require('../../../dst/api');
+const { TuningResource, nodes } = require('../../../dst/api');
+const { TuningDocumentNode } = nodes;
 
-function getTuning(content) {
-  return TuningResource.create({ content });
-}
+const XML_DECLARATION = '<?xml version="1.0" encoding="utf-8"?>';
 
 describe('TuningResource', function() {
   //#region Properties
@@ -15,7 +14,7 @@ describe('TuningResource', function() {
     });
 
     it('should be "XML" when loaded', function() {
-      const tun = getTuning("file content");
+      const tun = TuningResource.from(Buffer.from("file content"));
       expect(tun.variant).to.equal("XML");
     });
   });
@@ -23,19 +22,25 @@ describe('TuningResource', function() {
   describe('#content', function() {
     context('getting', function() {
       it("should return an empty string for an empty resource", function() {
-        // TODO:
+        const tun = TuningResource.create();
+        expect(tun.content).to.equal('');
       });
 
       it("should return the content for tuning created from a buffer", function() {
-        // TODO:
+        const buffer = Buffer.from(`<I n="some_file"></I>`);
+        const tun = TuningResource.from(buffer);
+        expect(tun.content).to.equal(`<I n="some_file"></I>`);
       });
 
       it("should return the content for tuning created from a string", function() {
-        // TODO:
+        const tun = TuningResource.create({ content: `<I n="some_file"></I>` });
+        expect(tun.content).to.equal(`<I n="some_file"></I>`);
       });
 
       it("should return the content for tuning created from a DOM", function() {
-        // TODO:
+        const dom = TuningDocumentNode.from(`<I n="some_file"></I>`);
+        const tun = TuningResource.create({ dom });
+        expect(tun.content).to.equal(`${XML_DECLARATION}\n<I n="some_file"/>`)
       });
     });
 
@@ -117,7 +122,7 @@ describe('TuningResource', function() {
 
     context('setting', function() {
       it("should throw", function() {
-        const tun = getTuning("<I/>");
+        const tun = TuningResource.create({ content: "<I/>" });
         expect(() => tun.hasChanged = true).to.throw;
       });
     });
@@ -144,7 +149,7 @@ describe('TuningResource', function() {
 
     context('setting', function() {
       it("should throw", function() {
-        const tun = getTuning("<I/>");
+        const tun = TuningResource.create({ content: "<I/>" });
         expect(() => tun.buffer = Buffer.from("hi")).to.throw;
       });
     });
