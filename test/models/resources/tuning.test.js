@@ -256,20 +256,43 @@ describe('TuningResource', function() {
   //#region Initialization
 
   describe('#clone()', function() {
-    it("should create a new resource with the same content, buffer, and DOM", function() {
-      // TODO:
+    it("should create a new resource with the same content and DOM", function() {
+      const tun = TuningResource.create({ content: "<T>50</T>" });
+      const clone = tun.clone();
+      expect(clone.content).to.equal("<T>50</T>");
+      expect(clone.root.tag).to.equal("T");
+      expect(clone.root.innerValue).to.equal("50");
+    });
+
+    it("should not transfer the buffer to the clone", function() {
+      const tun = TuningResource.from(Buffer.from("hello"));
+      expect(tun.hasChanged).to.be.false;
+      const clone = tun.clone()
+      expect(clone.hasChanged).to.be.true;
     });
 
     it("should not mutate the original's content", function() {
-      // TODO:
+      const tun = TuningResource.create({ content: "<T>50</T>" });
+      const clone = tun.clone();
+      clone.content = "hello";
+      expect(tun.content).to.equal("<T>50</T>");
+      expect(clone.content).to.equal("hello");
     });
 
     it("should not uncache the original's buffer", function() {
-      // TODO:
+      const tun = TuningResource.from(Buffer.from("hello"));
+      expect(tun.hasChanged).to.be.false;
+      tun.clone()
+      expect(tun.hasChanged).to.be.false;
     });
 
     it("should not mutate the original's DOM", function() {
-      // TODO:
+      const dom = TuningDocumentNode.from("<T>50</T>")
+      const tun = TuningResource.create({ dom });
+      const clone = tun.clone();
+      clone.root.innerValue = "25";
+      expect(tun.root.innerValue).to.equal("50");
+      expect(clone.root.innerValue).to.equal("25");
     });
   });
 
