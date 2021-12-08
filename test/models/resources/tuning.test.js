@@ -232,25 +232,43 @@ describe('TuningResource', function() {
 
   describe('#create()', function() {
     context('not given any arguments', function() {
-      it("should ...", function() {
+      it("should create a tuning resource with an empty DOM", function() {
+        // TODO:
+      });
+
+      it("should create a tuning resource with empty content", function() {
         // TODO:
       });
     });
 
     context('given content', function() {
-      it("should ...", function() {
+      it("should create a tuning resource with the given content", function() {
+        // TODO:
+      });
+
+      it("should generate a DOM from the content", function() {
         // TODO:
       });
     });
 
     context('given DOM', function() {
-      it("should ...", function() {
+      it("should create a tuning resource with the given DOM", function() {
+        // TODO:
+      });
+
+      it("should generate content from the DOM", function() {
         // TODO:
       });
     });
 
-    context('given content and DOM', function() {
-      it("should ...", function() {
+    context('given content and DOM that match', function() {
+      it("should create a tuning resource with the given content and DOM", function() {
+        // TODO:
+      });
+    });
+
+    context('given content and DOM that don\'t match', function() {
+      it("should create a tuning resource with the given content and DOM", function() {
         // TODO:
       });
     });
