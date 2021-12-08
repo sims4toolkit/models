@@ -345,27 +345,64 @@ describe('TuningResource', function() {
 
   describe('#updateDom()', function() {
     it('should uncache the buffer', function() {
-      // TODO:
+      const tun = TuningResource.from(Buffer.from("<T>50</T>"));
+      expect(tun.hasChanged).to.be.false;
+      tun.updateDom(dom => {
+        dom.child.innerValue = 25;
+      });
+      expect(tun.hasChanged).to.be.true;
+    });
+
+    it('should update the DOM', function() {
+      const tun = TuningResource.from(Buffer.from("<T>50</T>"));
+      tun.updateDom(dom => {
+        dom.child.innerValue = 25;
+      });
+      expect(tun.dom.child.innerValue).to.equal(25);
     });
 
     it('should reset the content', function() {
-      // TODO:
+      const tun = TuningResource.from(Buffer.from("<T>50</T>"));
+      tun.updateDom(dom => {
+        dom.child.innerValue = 25;
+      });
+      expect(tun.content).to.equal(`${XML_DECLARATION}\n<T>25</T>`);
     });
   });
 
   describe('#updateRoot()', function() {
     it('should uncache the buffer', function() {
-      // TODO:
+      const tun = TuningResource.from(Buffer.from("<T>50</T>"));
+      expect(tun.hasChanged).to.be.false;
+      tun.updateRoot(root => {
+        root.innerValue = 25;
+      });
+      expect(tun.hasChanged).to.be.true;
+    });
+
+    it('should update the root', function() {
+      const tun = TuningResource.from(Buffer.from("<T>50</T>"));
+      tun.updateRoot(root => {
+        root.innerValue = 25;
+      });
+      expect(tun.root.innerValue).to.equal(25);
     });
 
     it('should reset the content', function() {
-      // TODO:
+      const tun = TuningResource.from(Buffer.from("<T>50</T>"));
+      tun.updateRoot(root => {
+        root.innerValue = 25;
+      });
+      expect(tun.content).to.equal(`${XML_DECLARATION}\n<T>25</T>`);
     });
   });
 
   describe('#uncache()', function() {
     it('should uncache the buffer', function() {
-      // TODO:
+      const tun = TuningResource.from(Buffer.from("Hello"));
+      expect(tun.hasChanged).to.be.false;
+      tun.uncache();
+      expect(tun.hasChanged).to.be.true;
     });
   });
 
