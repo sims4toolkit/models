@@ -685,9 +685,10 @@ describe('TuningElementNode', function() {
   });
 
   describe('#hasChildren', function() {
-    it('should throw when trying to set', function () {
+    it('should not be assignable', function () {
       const node = newNode();
-      expect(() => node.children = []).to.throw();
+      node.children = [newNode()];
+      expect(node.children).to.be.empty;
     });
 
     it('should return true when it has children', function () {
@@ -1223,8 +1224,9 @@ describe('TuningValueNode', function() {
   const newNode = (value = "test") => new TuningValueNode(value);
 
   describe('#constructor', function() {
-    it('should throw when no value is given', function () {
-      expect(() => new TuningValueNode()).to.throw();
+    it('should have undefined content when no value is given', function () {
+      const node = new TuningValueNode();
+      expect(node.value).to.be.undefined;
     });
 
     it('should use the value that is given', function () {
@@ -1236,9 +1238,10 @@ describe('TuningValueNode', function() {
   });
 
   describe('#attributes', function() {
-    it('should throw when trying to set', function () {
+    it('should not be assignable', function () {
       const node = newNode();
-      expect(() => node.attributes = {}).to.throw();
+      node.attributes = {};
+      expect(node.attributes).to.be.undefined;
     });
 
     it('should be undefined', function () {
@@ -1260,9 +1263,10 @@ describe('TuningValueNode', function() {
   });
 
   describe('#children', function() {
-    it('should throw when trying to set', function () {
+    it('should not be assignable', function () {
       const node = newNode();
-      expect(() => node.children = []).to.throw();
+      node.children = [];
+      expect(node.children).to.be.undefined;
     });
 
     it('should be undefined', function () {
@@ -1453,6 +1457,11 @@ describe('TuningValueNode', function() {
       const node = newNode();
       expect(node.toXml()).to.equal('test');
     });
+
+    it("should return a blank string when there is no value", function() {
+      const node = new TuningValueNode();
+      expect(node.toXml()).to.equal('');
+    })
   });
 });
 
@@ -1460,8 +1469,9 @@ describe('TuningCommentNode', function() {
   const newNode = (value = "Comment") => new TuningCommentNode(value);
 
   describe('#constructor', function() {
-    it('should throw when no value is given', function () {
-      expect(() => new TuningCommentNode()).to.throw();
+    it('have undefined content when none is given', function () {
+      const node = new TuningCommentNode();
+      expect(node.value).to.be.undefined;
     });
 
     it('should use the value that is given', function () {
@@ -1471,9 +1481,10 @@ describe('TuningCommentNode', function() {
   });
 
   describe('#attributes', function() {
-    it('should throw when trying to set', function () {
+    it('should not be assignable', function () {
       const node = newNode();
-      expect(() => node.attributes = {}).to.throw();
+      node.attributes = {};
+      expect(node.attributes).to.be.undefined;
     });
 
     it('should be undefined', function () {
@@ -1495,9 +1506,10 @@ describe('TuningCommentNode', function() {
   });
 
   describe('#children', function() {
-    it('should throw when trying to set', function () {
+    it('should not be assignable', function () {
       const node = newNode();
-      expect(() => node.children = []).to.throw();
+      node.children = [];
+      expect(node.children).to.be.undefined;
     });
 
     it('should be undefined', function () {
@@ -1673,6 +1685,11 @@ describe('TuningCommentNode', function() {
     it('should wrap value in XML comment syntax', function () {
       const node = newNode();
       expect(node.toXml()).to.equal('<!--Comment-->');
+    });
+
+    it("should return a blank comment when there is no value", function() {
+      const node = new TuningCommentNode();
+      expect(node.toXml()).to.equal('<!---->');
     });
   });
 });
