@@ -2,7 +2,7 @@ const expect = require('chai').expect;
 const { TuningResource } = require('../../../dst/api');
 
 function getTuning(content) {
-  return TuningResource.fromXml(content);
+  return TuningResource.create({ content });
 }
 
 describe('TuningResource', function() {
@@ -21,19 +21,129 @@ describe('TuningResource', function() {
   });
 
   describe('#content', function() {
-    // TODO:
+    context('getting', function() {
+      it("should return an empty string for an empty resource", function() {
+        // TODO:
+      });
+
+      it("should return the content for tuning created from a buffer", function() {
+        // TODO:
+      });
+
+      it("should return the content for tuning created from a string", function() {
+        // TODO:
+      });
+
+      it("should return the content for tuning created from a DOM", function() {
+        // TODO:
+      });
+    });
+
+    context('setting', function() {
+      it("should update the content", function() {
+        // TODO:
+      });
+
+      it("should uncache the buffer", function() {
+        // TODO:
+      });
+
+      it("should reset the DOM", function() {
+        // TODO:
+      });
+    });
   });
 
   describe('#dom', function() {
-    // TODO:
+    context('getting', function() {
+      it("should return an empty DOM for an empty resource", function() {
+        // TODO:
+      });
+
+      it("should return the DOM for tuning created from a buffer", function() {
+        // TODO:
+      });
+
+      it("should return the DOM for tuning created from a string", function() {
+        // TODO:
+      });
+
+      it("should return the original DOM for tuning created from a DOM", function() {
+        // TODO:
+      });
+    });
+
+    context('setting', function() {
+      it("should update the DOM", function() {
+        // TODO:
+      });
+
+      it("should uncache the buffer", function() {
+        // TODO:
+      });
+
+      it("should reset the content", function() {
+        // TODO:
+      });
+    });
   });
 
   describe('#hasChanged', function() {
-    // TODO:
+    context('getting', function() {
+      it("should return true after being created", function() {
+        // TODO:
+      });
+
+      it("should return false after being loaded from a buffer", function() {
+        // TODO:
+      });
+
+      it("should return true after content is changed", function() {
+        // TODO:
+      });
+
+      it("should return true after DOM is changed in updateDom", function() {
+        // TODO:
+      });
+
+      it("should return false after DOM is mutated unsafely", function() {
+        // TODO:
+      });
+    });
+
+    context('setting', function() {
+      it("should throw", function() {
+        const tun = getTuning("<I/>");
+        expect(() => tun.hasChanged = true).to.throw;
+      });
+    });
   });
 
   describe('#buffer', function() {
-    // TODO:
+    context('getting', function() {
+      it("should return the buffer for an empty resource", function() {
+        // TODO:
+      });
+
+      it("should return the original buffer for a resource created from a buffer", function() {
+        // TODO:
+      });
+
+      it("should return the buffer for a resource created from a string", function() {
+        // TODO:
+      });
+
+      it("should return the buffer for a resource created from a DOM", function() {
+        // TODO:
+      });
+    });
+
+    context('setting', function() {
+      it("should throw", function() {
+        const tun = getTuning("<I/>");
+        expect(() => tun.buffer = Buffer.from("hi")).to.throw;
+      });
+    });
   });
 
   //#endregion Properties
@@ -49,18 +159,6 @@ describe('TuningResource', function() {
   });
 
   describe('#from()', function() {
-    // TODO:
-  });
-
-  describe('#fromXml()', function() {
-    // TODO:
-  });
-
-  describe('#fromNodes()', function() {
-    // TODO:
-  });
-
-  describe('#fromDom()', function() {
     // TODO:
   });
 
