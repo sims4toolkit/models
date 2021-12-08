@@ -28,7 +28,7 @@ export default class TuningResource extends Resource {
    */
   get dom(): TuningDocumentNode {
     if (this._dom == undefined)
-      this._dom = TuningDocumentNode.from(this._content, {
+      this._dom = TuningDocumentNode.from(this.content, {
         allowMultipleRoots: true
       });
     return this._dom;

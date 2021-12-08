@@ -233,43 +233,61 @@ describe('TuningResource', function() {
   describe('#create()', function() {
     context('not given any arguments', function() {
       it("should create a tuning resource with an empty DOM", function() {
-        // TODO:
+        const tun = TuningResource.create();
+        expect(tun.dom.numChildren).to.equal(0);
       });
 
       it("should create a tuning resource with empty content", function() {
-        // TODO:
+        const tun = TuningResource.create();
+        expect(tun.content).to.equal('');
       });
     });
 
     context('given content', function() {
       it("should create a tuning resource with the given content", function() {
-        // TODO:
+        const tun = TuningResource.create({ content: "hi" });
+        expect(tun.content).to.equal("hi");
       });
 
       it("should generate a DOM from the content", function() {
-        // TODO:
+        const tun = TuningResource.create({ content: "<I><T>50</T></I>" });
+        expect(tun.dom.numChildren).to.equal(1);
+        expect(tun.dom.child.child.innerValue).to.equal("50");
       });
     });
 
     context('given DOM', function() {
       it("should create a tuning resource with the given DOM", function() {
-        // TODO:
+        const dom = TuningDocumentNode.from(`<I n="some_file"/>`);
+        const tun = TuningResource.create({ dom });
+        expect(tun.dom.numChildren).to.equal(1);
+        expect(tun.root.name).to.equal("some_file");
       });
 
       it("should generate content from the DOM", function() {
-        // TODO:
+        const dom = TuningDocumentNode.from(`<I n="some_file"/>`);
+        const tun = TuningResource.create({ dom });
+        expect(tun.content).to.equal(`${XML_DECLARATION}\n<I n="some_file"/>`);
       });
     });
 
     context('given content and DOM that match', function() {
       it("should create a tuning resource with the given content and DOM", function() {
-        // TODO:
+        const content = `${XML_DECLARATION}\n<I n="some_file"/>`;
+        const dom = TuningDocumentNode.from(`<I n="some_file"/>`);
+        const tun = TuningResource.create({ content, dom });
+        expect(tun.content).to.equal(content);
+        expect(tun.dom).to.equal(dom);
       });
     });
 
     context('given content and DOM that don\'t match', function() {
       it("should create a tuning resource with the given content and DOM", function() {
-        // TODO:
+        const content = `something`;
+        const dom = TuningDocumentNode.from(`<I n="some_file"/>`);
+        const tun = TuningResource.create({ content, dom });
+        expect(tun.content).to.equal(content);
+        expect(tun.dom).to.equal(dom);
       });
     });
   });
