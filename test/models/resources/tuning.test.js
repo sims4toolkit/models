@@ -110,23 +110,36 @@ describe('TuningResource', function() {
   describe('#hasChanged', function() {
     context('getting', function() {
       it("should return true after being created", function() {
-        // TODO:
+        const tun = TuningResource.create();
+        expect(tun.hasChanged).to.be.true;
       });
 
       it("should return false after being loaded from a buffer", function() {
-        // TODO:
+        const tun = TuningResource.from(Buffer.from("hi"));
+        expect(tun.hasChanged).to.be.false;
       });
 
       it("should return true after content is changed", function() {
-        // TODO:
+        const tun = TuningResource.from(Buffer.from("hi"));
+        expect(tun.hasChanged).to.be.false;
+        tun.content = "hello";
+        expect(tun.hasChanged).to.be.true;
       });
 
       it("should return true after DOM is changed in updateDom", function() {
-        // TODO:
+        const tun = TuningResource.from(Buffer.from("<T>Hi</T>"));
+        expect(tun.hasChanged).to.be.false;
+        tun.updateDom(dom => {
+          dom.child.innerValue = "Bye";
+        });
+        expect(tun.hasChanged).to.be.true;
       });
 
       it("should return false after DOM is mutated unsafely", function() {
-        // TODO:
+        const tun = TuningResource.from(Buffer.from("<T>Hi</T>"));
+        expect(tun.hasChanged).to.be.false;
+        tun.dom.child.innerValue = "Bye";
+        expect(tun.hasChanged).to.be.false;
       });
     });
 
