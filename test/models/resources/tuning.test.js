@@ -46,15 +46,25 @@ describe('TuningResource', function() {
 
     context('setting', function() {
       it("should update the content", function() {
-        // TODO:
+        const tun = TuningResource.create();
+        expect(tun.content).to.equal("");
+        tun.content = "<I/>";
+        expect(tun.content).to.equal("<I/>");
       });
 
       it("should uncache the buffer", function() {
-        // TODO:
+        const buffer = Buffer.from("hi");
+        const tun = TuningResource.from(buffer);
+        expect(tun.hasChanged).to.be.false;
+        tun.content = "hello";
+        expect(tun.hasChanged).to.be.true;
       });
 
       it("should reset the DOM", function() {
-        // TODO:
+        const tun = TuningResource.create({ content: "<T>50</T>" });
+        expect(tun.dom.child.innerValue).to.equal("50");
+        tun.content = "<T>25</T>";
+        expect(tun.dom.child.innerValue).to.equal("25");
       });
     });
   });
