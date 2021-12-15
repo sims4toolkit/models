@@ -30,6 +30,57 @@ export default class SimDataResource extends Resource {
   }
 }
 
+//#region Schema models
+
+class SimDataSchema {
+  name: string;
+  hash: number;
+  columns: SimDataSchemaColumn[];
+}
+
+class SimDataSchemaColumn {
+  name: string;
+  type: SimDataType;
+  flags: number;
+}
+
+//#endregion Schema models
+
+//#region Value models
+
+abstract class SimDataValue {
+  abstract readonly type: SimDataType;
+}
+
+class SimDataPrimitiveValue extends SimDataValue {
+  readonly type: SimDataType;
+  value: any;
+}
+
+class SimDataVectorValue extends SimDataValue {
+  readonly type = SimDataType.Vector;
+  childType: SimDataType;
+  children: SimDataValue[];
+}
+
+class SimDataVariantValue extends SimDataValue {
+  readonly type = SimDataType.Variant;
+  variantHash: number;
+  child?: SimDataValue;
+}
+
+class SimDataObjectValue extends SimDataValue {
+  readonly type = SimDataType.Object;
+  schema: SimDataSchema;
+  rows: { name: string; value: SimDataValue; }[];
+}
+
+class SimDataInstance extends SimDataObjectValue {
+  name: string;
+}
+
+//#endregion Value models
+
 //#region Data Types
 
 /**
