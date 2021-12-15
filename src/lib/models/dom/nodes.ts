@@ -373,7 +373,6 @@ export class TuningDocumentNode extends TuningNodeBase {
     allowMultipleRoots = false
   }: {
     allowMultipleRoots?: boolean;
-    validateSyntax?: boolean;
   } = {}): TuningDocumentNode {
     const nodes = parseXml(xml);
     if (nodes.length <= 1) return new TuningDocumentNode(nodes[0]);
