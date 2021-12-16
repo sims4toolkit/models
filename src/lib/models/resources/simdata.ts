@@ -39,6 +39,7 @@ export default class SimDataResource extends Resource {
    */
   static create(): SimDataResource {
     // TODO:
+    return
   }
 
   /**
@@ -46,6 +47,7 @@ export default class SimDataResource extends Resource {
    */
   static from(buffer: Buffer): SimDataResource {
     // TODO:
+    return
   }
 
   /**

@@ -1,6 +1,7 @@
 import Resource from "./resource";
 import { BinaryEncoder, BinaryDecoder } from "../../utils/encoding";
 import { fnv32 } from "../../utils/hashing";
+import { removeFromArray } from "../../utils/helpers";
 
 /**
  * Model for binary string table resources.
@@ -284,14 +285,8 @@ export default class StringTableResource extends Resource {
    * @param entries Entries to remove from this string table
    */
   remove(...entries: StringEntry[]) {
-    let entryRemoved = false;
-    entries.forEach(entry => {
-      const index = this.findIndex(entry);
-      if (index < 0 || index >= this.length) return;
-      this.entries.splice(index, 1);
-      entryRemoved = true;
-    });
-    if (entryRemoved) this.uncache();
+    if (removeFromArray<StringEntry>(entries, this.entries))
+      this.uncache();
   }
 
   //#endregion Public Methods - DELETE
