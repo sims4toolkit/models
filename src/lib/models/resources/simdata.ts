@@ -66,8 +66,7 @@ export default class SimDataResource extends Resource {
    * @param schemas Schemas to remove
    */
   removeSchemas(...schemas: SimDataSchema[]) {
-    if (removeFromArray<SimDataSchema>(schemas, this.schemas))
-      this.uncache();
+    if (removeFromArray(schemas, this.schemas)) this.uncache();
   }
 
   /**
@@ -86,8 +85,7 @@ export default class SimDataResource extends Resource {
    * @param instances Instances to remove
    */
   removeInstances(...instances: SimDataInstance[]) {
-    if (removeFromArray<SimDataInstance>(instances, this.instances))
-      this.uncache();
+    if (removeFromArray(instances, this.instances)) this.uncache();
   }
 
   protected _serialize(): Buffer {
@@ -162,8 +160,7 @@ class SimDataSchema extends SimDataFragment {
    * @param columns Columns to remove to this schema
    */
    removeColumns(...columns: SimDataSchemaColumn[]) {
-    this.columns.push(...columns);
-    this.uncache();
+    if(removeFromArray(columns, this.columns)) this.uncache();
   }
 
   delete() {

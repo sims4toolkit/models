@@ -285,8 +285,7 @@ export default class StringTableResource extends Resource {
    * @param entries Entries to remove from this string table
    */
   remove(...entries: StringEntry[]) {
-    if (removeFromArray<StringEntry>(entries, this.entries))
-      this.uncache();
+    if (removeFromArray(entries, this.entries)) this.uncache();
   }
 
   //#endregion Public Methods - DELETE
