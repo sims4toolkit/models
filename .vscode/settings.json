@@ -8,7 +8,9 @@
     "package-lock.json": true,
     ".vscode": true,
     "src/lib/generators": true,
-    "src/lib/services": true
+    "src/lib/services": true,
+    "package.json": true,
+    "README.md": true
   },
   "workspace.isHidden": true
 }

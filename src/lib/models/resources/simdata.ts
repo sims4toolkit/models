@@ -3,50 +3,181 @@ import { BinaryEncoder, BinaryDecoder } from "../../utils/encoding";
 import { fnv32 } from "../../utils/hashing";
 
 /**
- * A resource that contains binary tuning (SimData).
+ * A resource for SimData (binary tuning). SimDatas are essentially mini
+ * relational databases, but to simplify working with them as well as for
+ * consistency with Sims 4 Studio, this model uses the concept of "instances".
+ * An "instance" is simply an object table that has a name.
  */
 export default class SimDataResource extends Resource {
   readonly variant = 'DATA';
 
-  //#region Initialization
+  private _schemas: SimDataSchema[];
+  /** The schemas in this SimData. */
+  get schemas() { return this._schemas; }
+  
+  private _instances: SimDataInstance[];
+  /** The instance in this SimData. */
+  get instances() { return this._instances; }
 
-  private constructor(buffer?: Buffer) {
+  private constructor({ schemas = [], instances = [], buffer }: {
+    schemas?: SimDataSchema[];
+    instances?: SimDataInstance[];
+    buffer?: Buffer;
+  } = {}) {
     super({ buffer });
-    // TODO: read buffer as simdata
+    this._schemas = schemas;
+    this._instances = instances;
   }
 
   clone(): SimDataResource {
     return undefined;
   }
 
-  static from(buffer: Buffer): SimDataResource {
-    return 
+  /**
+   * TODO:
+   */
+  static create(): SimDataResource {
+    // TODO:
   }
 
-  //#endregion Initialization
+  /**
+   * TODO:
+   */
+  static from(buffer: Buffer): SimDataResource {
+    // TODO:
+  }
+
+  /**
+   * Adds schemas to this SimData and uncaches the buffer.
+   * 
+   * @param schemas Schemas to add
+   */
+  addSchemas(...schemas: SimDataSchema[]) {
+    this.schemas.push(...schemas);
+    this.uncache();
+  }
+
+  /**
+   * Removes schemas from this SimData and uncaches the buffer.
+   * 
+   * @param schemas Schemas to remove
+   */
+  removeSchemas(...schemas: SimDataSchema[]) {
+    // TODO:
+    this.uncache();
+  }
+
+  /**
+   * Adds instances to this SimData and uncaches the buffer.
+   * 
+   * @param instances Instances to add
+   */
+  addInstances(...instances: SimDataInstance[]) {
+    this.instances.push(...instances);
+    this.uncache();
+  }
+
+  /**
+   * Removes instances from this SimData and uncaches the buffer.
+   * 
+   * @param instances Instances to remove
+   */
+  removeInstances(...instances: SimDataInstance[]) {
+    // TODO:
+    this.uncache();
+  }
 
   protected _serialize(): Buffer {
     return undefined; // TODO: impl
   }
 }
 
-//#region Schema models
+//#region Helper models
 
-class SimDataSchema {
-  name: string;
-  hash: number;
-  columns: SimDataSchemaColumn[];
+
+interface Uncacheable {
+  /** The object that this one belongs to. */
+  readonly owner?: Uncacheable;
+
+  /** Notifies this object's owner to uncache. */
+  uncache(): void;
+}
+
+abstract class SimDataFragment implements Uncacheable {
+  constructor(public owner?: Uncacheable) {}
+  
+  uncache(): void { this.owner?.uncache(); }
+
+  /** Removes this object from its owner. */
+  abstract delete(): void;
+}
+
+class SimDataSchema extends SimDataFragment {
+  readonly owner?: SimDataResource;
+
+  private _name: string;
+  /** The name of this schema. */
+  get name() { return this._name; }
+  set name(name) { this._name = name; this.uncache(); }
+
+  private _hash: number;
+  /** The hash of this schema. This is not necessarily the hash of the name. */
+  get hash() { return this._hash; }
+  set hash(hash) { this._hash = hash; this.uncache(); }
+
+  private _columns: SimDataSchemaColumn[];
+  /** The columns in this schema. Do not add or remove items from this array
+   * manually - use the `addColumns()` and `removeColumns()` methods for that.
+   * If you do mutate the array, be sure to call `uncache()` afterwards. */
+  get columns() { return this._columns; }
+  set columns(columns) { this._columns = columns; this.uncache(); }
+
+  constructor({ name, hash, columns = [], owner }: {
+    name: string;
+    hash: number;
+    columns?: SimDataSchemaColumn[];
+    owner?: SimDataResource;
+  }) {
+    super(owner);
+    this._name = name;
+    this._hash = hash;
+    this._columns = columns;
+  }
+
+  /**
+   * Adds columns to this schema and then uncaches it.
+   * 
+   * @param columns Columns to add to this schema
+   */
+  addColumns(...columns: SimDataSchemaColumn[]) {
+    this.columns.push(...columns);
+    this.uncache();
+  }
+
+  /**
+   * Removes columns from this schema and then uncaches it.
+   * 
+   * @param columns Columns to remove to this schema
+   */
+   removeColumns(...columns: SimDataSchemaColumn[]) {
+    this.columns.push(...columns);
+    this.uncache();
+  }
+
+  delete() {
+    this.owner?.removeSchemas(this);
+    // removeSchemas already uncaches
+  }
 }
 
 class SimDataSchemaColumn {
-  name: string;
-  type: SimDataType;
-  flags: number;
+  constructor(
+    public name: string,
+    public type: SimDataType,
+    public flags: number,
+    private _owner: SimDataSchema
+  ) {}
 }
-
-//#endregion Schema models
-
-//#region Value models
 
 abstract class SimDataValue {
   abstract readonly type: SimDataType;
@@ -79,7 +210,7 @@ class SimDataInstance extends SimDataObjectValue {
   name: string;
 }
 
-//#endregion Value models
+//#endregion Helper models
 
 //#region Data Types
 
