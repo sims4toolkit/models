@@ -1,5 +1,5 @@
 import Resource from "../resource";
-import { TuningDocumentNode, TuningNode } from "../../dom/nodes";
+import { XmlDocumentNode, XmlNode } from "../../dom/nodes";
 
 /**
  * Model for a plaintext, XML tuning resource.
@@ -7,7 +7,7 @@ import { TuningDocumentNode, TuningNode } from "../../dom/nodes";
 export default class TuningResource extends Resource {
   readonly variant = 'XML';
   private _content?: string;
-  private _dom?: TuningDocumentNode;
+  private _dom?: XmlDocumentNode;
 
   /** The XML content of this tuning resource. */
   get content(): string {
@@ -26,9 +26,9 @@ export default class TuningResource extends Resource {
    * The DOM for this tuning resource. To mutate the DOM, use `updateDom()` so
    * that cache is handled properly.
    */
-  get dom(): TuningDocumentNode {
+  get dom(): XmlDocumentNode {
     if (this._dom == undefined)
-      this._dom = TuningDocumentNode.from(this.content, {
+      this._dom = XmlDocumentNode.from(this.content, {
         allowMultipleRoots: true
       });
     return this._dom;
@@ -37,7 +37,7 @@ export default class TuningResource extends Resource {
   /**
    * Sets the DOM, resets the plain text content, and uncaches the resource.
    */
-  set dom(dom: TuningDocumentNode) {
+  set dom(dom: XmlDocumentNode) {
     this._dom = dom;
     this._content = undefined;
     this.uncache();
@@ -48,7 +48,7 @@ export default class TuningResource extends Resource {
    * should only have one child in their DOM anyways. To mutate the root, use
    * `updateRoot()` so that the cache is handled properly.
    */
-  get root(): TuningNode {
+  get root(): XmlNode {
     return this.dom.child;
   }
 
@@ -56,7 +56,7 @@ export default class TuningResource extends Resource {
    * Sets the first child of the DOM, resets the plain text content, and
    * uncaches the resource.
    */
-  set root(node: TuningNode) {
+  set root(node: XmlNode) {
     this.updateDom(dom => {
       dom.child = node;
     });
@@ -67,7 +67,7 @@ export default class TuningResource extends Resource {
   private constructor({ content, buffer, dom }: {
     content?: string;
     buffer?: Buffer;
-    dom?: TuningDocumentNode;
+    dom?: XmlDocumentNode;
   } = {}) {
     super({ buffer });
     this._content = content;
@@ -93,7 +93,7 @@ export default class TuningResource extends Resource {
    */
   static create(initialContent: {
     content?: string;
-    dom?: TuningDocumentNode;
+    dom?: XmlDocumentNode;
   } = {}): TuningResource {
     return new TuningResource(initialContent);
   }
@@ -116,7 +116,7 @@ export default class TuningResource extends Resource {
    * 
    * @param fn Callback function in which you can alter the DOM
    */
-  updateDom(fn: (dom: TuningDocumentNode) => void) {
+  updateDom(fn: (dom: XmlDocumentNode) => void) {
     fn(this.dom);
     this._content = undefined;
     this.uncache();
@@ -129,7 +129,7 @@ export default class TuningResource extends Resource {
    * 
    * @param fn Callback function in which you can alter the root of the DOM
    */
-  updateRoot(fn: (root: TuningNode) => void) {
+  updateRoot(fn: (root: XmlNode) => void) {
     fn(this.root);
     this._content = undefined;
     this.uncache();

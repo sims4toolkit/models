@@ -6,15 +6,15 @@ import { XML_DECLARATION } from "../../utils/constants";
 /** Generic interface that can support any attributes. */
 type Attributes = { [key: string]: any; };
 
-/** Types that may appear as the value of a tuning node. */
-type TuningValue = number | bigint | boolean | string;
+/** Types that may appear in a value node. */
+type XmlValue = number | bigint | boolean | string;
 
 //#endregion Types
 
 //#region Models
 
-/** A node in a tuning DOM. */
-export interface TuningNode {
+/** A node in an XML DOM. */
+export interface XmlNode {
   //#region Getters
 
   /**
@@ -27,14 +27,14 @@ export interface TuningNode {
   /**
    * The first child of this node. If there are no children, it is undefined.
    */
-  get child(): TuningNode;
+  get child(): XmlNode;
 
   /**
    * The children of this node. This is guaranteed to be an array if this node
    * can have children (e.g. a document or an element), but is undefined if it
    * cannot (e.g. values or comments).
    */
-  get children(): TuningNode[];
+  get children(): XmlNode[];
 
   /** Whether or not this node has an array for children. */
   get hasChildren(): boolean;
@@ -43,7 +43,7 @@ export interface TuningNode {
   get id(): string | number | bigint;
 
   /** The value of this node's first child, if it has one. */
-  get innerValue(): TuningValue;
+  get innerValue(): XmlValue;
 
   /** Shorthand for the `n` attribute. */
   get name(): string;
@@ -58,7 +58,7 @@ export interface TuningNode {
   get type(): string;
 
   /** The value of this node. */
-  get value(): TuningValue;
+  get value(): XmlValue;
 
   //#endregion Getters
 
@@ -68,7 +68,7 @@ export interface TuningNode {
    * Sets the first child of this node, if it can have children. If it cannot,
    * an error is thrown. If it can have children, but doesn't one is added.
    */
-  set child(child: TuningNode);
+  set child(child: XmlNode);
 
   /**
    * Shorthand for setting the `s` attribute. If this node is not an element, an
@@ -82,7 +82,7 @@ export interface TuningNode {
    * exception is thrown. If this node can have children, but doesn't, one will
    * be created.
    */
-  set innerValue(value: TuningValue);
+  set innerValue(value: XmlValue);
 
   /**
    * Shorthand for setting the `n` attribute. If this node is not an element, an
@@ -106,7 +106,7 @@ export interface TuningNode {
    * Sets the value of this node. If this node cannot have a value (i.e. it has
    * children instead), an exception is thrown.
    */
-  set value(value: TuningValue);
+  set value(value: XmlValue);
 
   //#endregion Setters
 
@@ -121,7 +121,7 @@ export interface TuningNode {
    * @param children Child nodes to append to this one
    * @throws If this node cannot have children
    */
-  addChildren(...children: TuningNode[]): void;
+  addChildren(...children: XmlNode[]): void;
 
   /**
    * Adds the given children to this node by value. All children are cloned
@@ -130,12 +130,12 @@ export interface TuningNode {
    * @param children Child nodes to append to this one
    * @throws If this node cannot have children
    */
-  addClones(...children: TuningNode[]): void;
+  addClones(...children: XmlNode[]): void;
 
   /**
    * Returns a deep copy of this node.
    */
-  clone(): TuningNode;
+  clone(): XmlNode;
 
   /**
    * Calls the `sort()` method on this node and all of its descendants.
@@ -147,7 +147,7 @@ export interface TuningNode {
    * [Copied from `Array.sort()` documentation]
    * @throws If this node cannot have children
    */
-  deepSort(compareFn?: (a: TuningNode, b: TuningNode) => number): void;
+  deepSort(compareFn?: (a: XmlNode, b: XmlNode) => number): void;
 
   /**
    * Sorts the children of this node using the provided function. If no function
@@ -162,7 +162,7 @@ export interface TuningNode {
    * [Copied from `Array.sort()` documentation]
    * @throws If this node cannot have children
    */
-  sort(compareFn?: (a: TuningNode, b: TuningNode) => number): void;
+  sort(compareFn?: (a: XmlNode, b: XmlNode) => number): void;
 
   /**
    * Serializes this node and all of its descendants as XML code.
@@ -179,18 +179,18 @@ export interface TuningNode {
   //#endregion Methods
 }
 
-/** A base implementation of TuningNode. */
-abstract class TuningNodeBase implements TuningNode {
+/** A base implementation of XmlNode. */
+abstract class XmlNodeBase implements XmlNode {
   protected _attributes?: Attributes;
-  protected _children?: TuningNode[];
+  protected _children?: XmlNode[];
   protected _tag?: string;
-  protected _value?: TuningValue;
+  protected _value?: XmlValue;
 
   constructor({ attributes, children, tag, value }: {
     attributes?: Attributes;
-    children?: TuningNode[];
+    children?: XmlNode[];
     tag?: string;
-    value?: TuningValue;
+    value?: XmlValue;
   }) {
     this._attributes = attributes;
     this._children = children;
@@ -204,11 +204,11 @@ abstract class TuningNodeBase implements TuningNode {
     return this._attributes;
   }
 
-  get child(): TuningNode {
+  get child(): XmlNode {
     return this.children?.[0];
   }
 
-  get children(): TuningNode[] {
+  get children(): XmlNode[] {
     return this._children;
   }
 
@@ -220,7 +220,7 @@ abstract class TuningNodeBase implements TuningNode {
     return this._attributes?.s;
   }
 
-  get innerValue(): TuningValue {
+  get innerValue(): XmlValue {
     return this.child?.value;
   }
 
@@ -240,7 +240,7 @@ abstract class TuningNodeBase implements TuningNode {
     return this.attributes?.t;
   }
 
-  get value(): TuningValue {
+  get value(): XmlValue {
     return this._value;
   }
 
@@ -248,7 +248,7 @@ abstract class TuningNodeBase implements TuningNode {
 
   //#region Setters
 
-  set child(child: TuningNode) {
+  set child(child: XmlNode) {
     if (!this.hasChildren)
       throw new Error("Cannot set child of childless node.");
     this.children[0] = child;
@@ -258,10 +258,10 @@ abstract class TuningNodeBase implements TuningNode {
     this._setAttribute('s', id);
   }
 
-  set innerValue(value: TuningValue) {
+  set innerValue(value: XmlValue) {
     this._ensureChildren();
     if (this.numChildren === 0) { 
-      this.addChildren(new TuningValueNode(value));
+      this.addChildren(new XmlValueNode(value));
     } else {
       this.child.value = value; // might throw, that's OK
     }
@@ -281,7 +281,7 @@ abstract class TuningNodeBase implements TuningNode {
     this._setAttribute('t', type);
   }
 
-  set value(value: TuningValue) {
+  set value(value: XmlValue) {
     if (this.hasChildren)
       throw new Error("Cannot set value of node with children.");
     this._value = value;
@@ -291,19 +291,19 @@ abstract class TuningNodeBase implements TuningNode {
 
   //#region Methods
 
-  addChildren(...children: TuningNode[]): void {
+  addChildren(...children: XmlNode[]): void {
     this._ensureChildren();
     this.children.push(...children);
   }
 
-  addClones(...children: TuningNode[]): void {
+  addClones(...children: XmlNode[]): void {
     this._ensureChildren();
     this.children.push(...(children.map(child => child.clone())));
   }
 
-  abstract clone(): TuningNode;
+  abstract clone(): XmlNode;
 
-  deepSort(compareFn?: (a: TuningNode, b: TuningNode) => number): void {
+  deepSort(compareFn?: (a: XmlNode, b: XmlNode) => number): void {
     this._ensureChildren();
     this.sort(compareFn);
     this.children.forEach(child => {
@@ -311,7 +311,7 @@ abstract class TuningNodeBase implements TuningNode {
     });
   }
 
-  sort(compareFn?: (a: TuningNode, b: TuningNode) => number): void {
+  sort(compareFn?: (a: XmlNode, b: XmlNode) => number): void {
     this._ensureChildren();
     this.children.sort(compareFn || ((a, b) => {
       const aName = a.attributes.n;
@@ -351,15 +351,15 @@ abstract class TuningNodeBase implements TuningNode {
   //#endregion Private Methods
 }
 
-/** A complete tuning document with children. */
-export class TuningDocumentNode extends TuningNodeBase {
-  constructor(root?: TuningNode) {
+/** A complete XML document with children. */
+export class XmlDocumentNode extends XmlNodeBase {
+  constructor(root?: XmlNode) {
     super({ children: (root ? [root] : []) })
   }
 
   /**
    * Parses and returns either a string or a buffer containing XML code as a
-   * TuningDocumentNode, if possible.
+   * XmlDocumentNode, if possible.
    * 
    * Options
    * - `allowMultipleRoots`: Whether or not the document should still be created
@@ -373,32 +373,32 @@ export class TuningDocumentNode extends TuningNodeBase {
     allowMultipleRoots = false
   }: {
     allowMultipleRoots?: boolean;
-  } = {}): TuningDocumentNode {
+  } = {}): XmlDocumentNode {
     const nodes = parseXml(xml);
-    if (nodes.length <= 1) return new TuningDocumentNode(nodes[0]);
+    if (nodes.length <= 1) return new XmlDocumentNode(nodes[0]);
     if (allowMultipleRoots) {
-      const doc = new TuningDocumentNode();
+      const doc = new XmlDocumentNode();
       doc.children.push(...nodes);
       return doc;
     } else {
-      throw new Error("Tuning document should only have one root node.");
+      throw new Error("XML document should only have one root node.");
     }
   }
 
-  addChildren(...children: TuningNode[]): void {
+  addChildren(...children: XmlNode[]): void {
     if (this.numChildren + children.length > 1)
-      throw new Error("Tuning document should only have one root node.");
+      throw new Error("XML document should only have one root node.");
     super.addChildren(...children);
   }
 
-  addClones(...children: TuningNode[]): void {
+  addClones(...children: XmlNode[]): void {
     if (this.numChildren + children.length > 1)
-      throw new Error("Tuning document should only have one root node.");
+      throw new Error("XML document should only have one root node.");
     super.addClones(...children);
   }
 
-  clone(): TuningDocumentNode {
-    return new TuningDocumentNode(...(this.children.map(child => child.clone())));
+  clone(): XmlDocumentNode {
+    return new XmlDocumentNode(...(this.children.map(child => child.clone())));
   }
 
   toXml({ indents = 0, spacesPerIndent = 2 }: {
@@ -417,18 +417,18 @@ export class TuningDocumentNode extends TuningNodeBase {
 }
 
 /** A node with a tag, attributes, and children. */
-export class TuningElementNode extends TuningNodeBase {
+export class XmlElementNode extends XmlNodeBase {
   constructor({ tag, attributes = {}, children = [] }: {
     tag: string;
     attributes?: Attributes;
-    children?: TuningNode[];
+    children?: XmlNode[];
   }) {
     if (!tag) throw new Error("Element tag must be a non-empty string.");
     super({ tag, attributes, children });
   }
 
-  clone(): TuningElementNode {
-    return new TuningElementNode({
+  clone(): XmlElementNode {
+    return new XmlElementNode({
       tag: this.tag,
       attributes: Object.assign({}, this.attributes),
       children: this.children.map(child => child.clone())
@@ -473,13 +473,13 @@ export class TuningElementNode extends TuningNodeBase {
 }
 
 /** A node that contains a single value. */
-export class TuningValueNode extends TuningNodeBase {
-  constructor(value: TuningValue) {
+export class XmlValueNode extends XmlNodeBase {
+  constructor(value: XmlValue) {
     super({ value });
   }
 
-  clone(): TuningValueNode {
-    return new TuningValueNode(this.value);
+  clone(): XmlValueNode {
+    return new XmlValueNode(this.value);
   }
 
   toXml({ indents = 0, spacesPerIndent = 2 }: {
@@ -493,13 +493,13 @@ export class TuningValueNode extends TuningNodeBase {
 }
 
 /** A node that contains a comment. */
-export class TuningCommentNode extends TuningNodeBase {
+export class XmlCommentNode extends XmlNodeBase {
   constructor(value: string) {
     super({ value })
   }
 
-  clone(): TuningCommentNode {
-    return new TuningCommentNode(this.value as string);
+  clone(): XmlCommentNode {
+    return new XmlCommentNode(this.value as string);
   }
 
   toXml({ indents = 0, spacesPerIndent = 2 }: {
@@ -517,7 +517,7 @@ export class TuningCommentNode extends TuningNodeBase {
 //#region Helpers
 
 /**
- * Formats a value that may appear in tuning as a string.
+ * Formats a value that may appear in XML as a string.
  * 
  * @param value Value to format for XML
  */
@@ -538,7 +538,7 @@ function formatValue(value: number | bigint | boolean | string): string {
  * 
  * @param xml XML document to parse as a node
  */
-function parseXml(xml: string | Buffer): TuningNode[] {
+function parseXml(xml: string | Buffer): XmlNode[] {
   const parser = new XMLParser({
     ignoreAttributes: false,
     attributeNamePrefix: "",
@@ -558,14 +558,14 @@ function parseXml(xml: string | Buffer): TuningNode[] {
 
   const nodeObjs: NodeObj[] = parser.parse(xml);
 
-  function parseNodeObj(nodeObj: NodeObj): TuningNode {
+  function parseNodeObj(nodeObj: NodeObj): XmlNode {
     if (nodeObj.comment) {
-      return new TuningCommentNode(nodeObj.comment[0].value);
+      return new XmlCommentNode(nodeObj.comment[0].value);
     } else if (nodeObj.value) {
-      return new TuningValueNode(nodeObj.value);
+      return new XmlValueNode(nodeObj.value);
     } else {
       let tag: string;
-      let children: TuningNode[];
+      let children: XmlNode[];
       let attributes: Attributes = {};
       for (const key in nodeObj) {
         if (key === "attributes") {
@@ -576,7 +576,7 @@ function parseXml(xml: string | Buffer): TuningNode[] {
           children = nodeObj[key].map(parseNodeObj)
         }
       }
-      return new TuningElementNode({ tag, children, attributes });
+      return new XmlElementNode({ tag, children, attributes });
     }
   }
 

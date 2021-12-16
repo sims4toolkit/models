@@ -1,7 +1,7 @@
 import type StringTableResource from "../stringTable/stringTableResource";
-import type { TuningNode } from "../../dom/nodes";
+import type { XmlNode } from "../../dom/nodes";
 import { formatStringKey } from "../../../utils/formatting";
-import { TuningElementNode, TuningCommentNode, TuningValueNode } from "../../dom/nodes";
+import { XmlElementNode, XmlCommentNode, XmlValueNode } from "../../dom/nodes";
 
 //#region Types
 
@@ -34,9 +34,9 @@ type TuningAttributes = { [key in TuningAttributeKey]?: any; };
   m: string;
   n: string;
   s: string | number | bigint;
-  children?: TuningNode[];
-}): TuningElementNode {
-  return new TuningElementNode({
+  children?: XmlNode[];
+}): XmlElementNode {
+  return new XmlElementNode({
     tag: 'I',
     attributes: { c, i, m, n, s },
     children
@@ -56,9 +56,9 @@ type TuningAttributes = { [key in TuningAttributeKey]?: any; };
 export function M({ n, s, children = [] }: {
   n: string;
   s: string | number | bigint;
-  children?: TuningNode[];
-}): TuningElementNode {
-  return new TuningElementNode({ tag: 'M', attributes: { n, s }, children });
+  children?: XmlNode[];
+}): XmlElementNode {
+  return new XmlElementNode({ tag: 'M', attributes: { n, s }, children });
 }
 
 /**
@@ -77,14 +77,14 @@ export function T({ name, ev, value, comment }: {
   ev?: string | number | bigint;
   value?: any;
   comment?: string;
-} = {}): TuningElementNode {
+} = {}): XmlElementNode {
   const attributes: TuningAttributes = {};
   if (name != undefined) attributes.n = name;
   if (ev != undefined) attributes.ev = ev;
-  const children: TuningNode[] = [];
-  if (value != undefined) children.push(new TuningValueNode(value));
-  if (comment) children.push(new TuningCommentNode(comment));
-  return new TuningElementNode({ tag: 'T', attributes, children });
+  const children: XmlNode[] = [];
+  if (value != undefined) children.push(new XmlValueNode(value));
+  if (comment) children.push(new XmlCommentNode(comment));
+  return new XmlElementNode({ tag: 'T', attributes, children });
 }
 
 /**
@@ -101,13 +101,13 @@ export function E({ name, value, comment }: {
   name?: string;
   value?: string;
   comment?: string;
-} = {}): TuningElementNode {
+} = {}): XmlElementNode {
   const attributes: TuningAttributes = {};
   if (name != undefined) attributes.n = name;
-  const children: TuningNode[] = [];
-  if (value != undefined) children.push(new TuningValueNode(value));
-  if (comment) children.push(new TuningCommentNode(comment));
-  return new TuningElementNode({ tag: 'E', attributes, children });
+  const children: XmlNode[] = [];
+  if (value != undefined) children.push(new XmlValueNode(value));
+  if (comment) children.push(new XmlCommentNode(comment));
+  return new XmlElementNode({ tag: 'E', attributes, children });
 }
 
 /**
@@ -121,11 +121,11 @@ export function E({ name, value, comment }: {
  */
 export function L({ name, children = [] }: {
   name?: string;
-  children?: TuningNode[];
-} = {}): TuningElementNode {
+  children?: XmlNode[];
+} = {}): XmlElementNode {
   const attributes: TuningAttributes = {};
   if (name != undefined) attributes.n = name;
-  return new TuningElementNode({ tag: 'L', attributes, children });
+  return new XmlElementNode({ tag: 'L', attributes, children });
 }
 
 /**
@@ -139,11 +139,11 @@ export function L({ name, children = [] }: {
  */
 export function U({ name, children = [] }: {
   name?: string;
-  children?: TuningNode[];
-} = {}): TuningElementNode {
+  children?: XmlNode[];
+} = {}): XmlElementNode {
   const attributes: TuningAttributes = {};
   if (name != undefined) attributes.n = name;
-  return new TuningElementNode({ tag: 'U', attributes, children });
+  return new XmlElementNode({ tag: 'U', attributes, children });
 }
 
 /**
@@ -159,13 +159,13 @@ export function U({ name, children = [] }: {
 export function V({ name, type, child }: {
   name?: string;
   type?: string;
-  child?: TuningNode;
-} = {}): TuningElementNode {
+  child?: XmlNode;
+} = {}): XmlElementNode {
   const attributes: TuningAttributes = {};
   if (name != undefined) attributes.n = name;
   if (type != undefined) attributes.t = type;
   const children = child ? [child] : [];
-  return new TuningElementNode({ tag: 'V', attributes, children });
+  return new XmlElementNode({ tag: 'V', attributes, children });
 }
 
 /**
@@ -179,11 +179,11 @@ export function V({ name, type, child }: {
  */
 export function C({ name, children = [] }: {
   name: string;
-  children?: TuningNode[];
-}): TuningNode {
+  children?: XmlNode[];
+}): XmlNode {
   const attributes: TuningAttributes = {};
   if (name != undefined) attributes.n = name;
-  return new TuningElementNode({ tag: 'C', attributes, children });
+  return new XmlElementNode({ tag: 'C', attributes, children });
 }
 
 /**
@@ -191,8 +191,8 @@ export function C({ name, children = [] }: {
  * 
  * @param comment Comment to put in the node
  */
-export function Comment(comment: string): TuningCommentNode {
-  return new TuningCommentNode(comment);
+export function Comment(comment: string): XmlCommentNode {
+  return new XmlCommentNode(comment);
 }
 
 /**
@@ -214,7 +214,7 @@ export function LocString({ name, string, toHash, stbl }: {
   string: string;
   toHash?: string;
   stbl: StringTableResource;
-}): TuningElementNode {
+}): XmlElementNode {
   const entry = stbl.addAndHash(string, { toHash });
   return T({
     name,
@@ -239,7 +239,7 @@ export function getLocStringFn(stbl: StringTableResource): ({ name, toHash, stri
   name?: string;
   toHash?: string;
   string: string;
-}) => TuningElementNode {
+}) => XmlElementNode {
   return ({ name, toHash, string }: {
     name?: string;
     toHash?: string;

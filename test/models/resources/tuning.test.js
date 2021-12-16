@@ -2,7 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const expect = require('chai').expect;
 const { TuningResource, nodes, tunables } = require('../../../dst/api');
-const { TuningDocumentNode } = nodes;
+const { XmlDocumentNode } = nodes;
 
 const XML_DECLARATION = '<?xml version="1.0" encoding="utf-8"?>';
 
@@ -46,7 +46,7 @@ describe('TuningResource', function() {
       });
 
       it("should return the content for tuning created from a DOM", function() {
-        const dom = TuningDocumentNode.from(`<I n="some_file"></I>`);
+        const dom = XmlDocumentNode.from(`<I n="some_file"></I>`);
         const tun = TuningResource.create({ dom });
         expect(tun.content).to.equal(`${XML_DECLARATION}\n<I n="some_file"/>`)
       });
@@ -97,7 +97,7 @@ describe('TuningResource', function() {
       });
 
       it("should return the original DOM for tuning created from a DOM", function() {
-        const dom = TuningDocumentNode.from("<T>50</T>");
+        const dom = XmlDocumentNode.from("<T>50</T>");
         const tun = TuningResource.create({ dom });
         expect(tun.dom).to.equal(dom);
       });
@@ -114,23 +114,23 @@ describe('TuningResource', function() {
 
     context('setting', function() {
       it("should update the DOM", function() {
-        const dom = TuningDocumentNode.from("<T>50</T>");
+        const dom = XmlDocumentNode.from("<T>50</T>");
         const tun = TuningResource.create({ dom });
-        tun.dom = TuningDocumentNode.from("<T>25</T>");
+        tun.dom = XmlDocumentNode.from("<T>25</T>");
         expect(tun.dom.child.innerValue).to.equal("25");
       });
 
       it("should uncache the buffer", function() {
         const tun = TuningResource.from(Buffer.from("<T>50</T>"));
         expect(tun.hasChanged).to.be.false;
-        tun.dom = TuningDocumentNode.from("<T>25</T>");
+        tun.dom = XmlDocumentNode.from("<T>25</T>");
         expect(tun.hasChanged).to.be.true;
       });
 
       it("should reset the content", function() {
         const tun = TuningResource.from(Buffer.from("<T>50</T>"));
         expect(tun.content).to.equal(`<T>50</T>`);
-        tun.dom = TuningDocumentNode.from("<T>25</T>");
+        tun.dom = XmlDocumentNode.from("<T>25</T>");
         expect(tun.content).to.equal(`${XML_DECLARATION}\n<T>25</T>`);
       });
     });
@@ -158,7 +158,7 @@ describe('TuningResource', function() {
 
     context('setting', function() {
       it("should update the first child of the DOM", function() {
-        const dom = TuningDocumentNode.from("<T>50</T>");
+        const dom = XmlDocumentNode.from("<T>50</T>");
         const tun = TuningResource.create({ dom });
         tun.root = tunables.E({ value: "VALUE" });
         expect(dom.child.tag).to.equal("E");
@@ -173,7 +173,7 @@ describe('TuningResource', function() {
       });
 
       it("should reset the content", function() {
-        const dom = TuningDocumentNode.from("<T>50</T>");
+        const dom = XmlDocumentNode.from("<T>50</T>");
         const tun = TuningResource.create({ dom });
         expect(tun.content).to.equal(`${XML_DECLARATION}\n<T>50</T>`);
         tun.root = tunables.E({ value: "VALUE" });
@@ -247,7 +247,7 @@ describe('TuningResource', function() {
       });
 
       it("should return the buffer for a resource created from a DOM", function() {
-        const dom = TuningDocumentNode.from("<T>50</T>");
+        const dom = XmlDocumentNode.from("<T>50</T>");
         const tun = TuningResource.create({ dom });
         expect(tun.buffer.toString()).to.equal(`${XML_DECLARATION}\n<T>50</T>`);
       });
@@ -298,7 +298,7 @@ describe('TuningResource', function() {
     });
 
     it("should not mutate the original's DOM", function() {
-      const dom = TuningDocumentNode.from("<T>50</T>")
+      const dom = XmlDocumentNode.from("<T>50</T>")
       const tun = TuningResource.create({ dom });
       const clone = tun.clone();
       clone.root.innerValue = "25";
@@ -335,14 +335,14 @@ describe('TuningResource', function() {
 
     context('given DOM', function() {
       it("should create a tuning resource with the given DOM", function() {
-        const dom = TuningDocumentNode.from(`<I n="some_file"/>`);
+        const dom = XmlDocumentNode.from(`<I n="some_file"/>`);
         const tun = TuningResource.create({ dom });
         expect(tun.dom.numChildren).to.equal(1);
         expect(tun.root.name).to.equal("some_file");
       });
 
       it("should generate content from the DOM", function() {
-        const dom = TuningDocumentNode.from(`<I n="some_file"/>`);
+        const dom = XmlDocumentNode.from(`<I n="some_file"/>`);
         const tun = TuningResource.create({ dom });
         expect(tun.content).to.equal(`${XML_DECLARATION}\n<I n="some_file"/>`);
       });
@@ -351,7 +351,7 @@ describe('TuningResource', function() {
     context('given content and DOM that match', function() {
       it("should create a tuning resource with the given content and DOM", function() {
         const content = `${XML_DECLARATION}\n<I n="some_file"/>`;
-        const dom = TuningDocumentNode.from(`<I n="some_file"/>`);
+        const dom = XmlDocumentNode.from(`<I n="some_file"/>`);
         const tun = TuningResource.create({ content, dom });
         expect(tun.content).to.equal(content);
         expect(tun.dom).to.equal(dom);
@@ -361,7 +361,7 @@ describe('TuningResource', function() {
     context('given content and DOM that don\'t match', function() {
       it("should create a tuning resource with the given content and DOM", function() {
         const content = `something`;
-        const dom = TuningDocumentNode.from(`<I n="some_file"/>`);
+        const dom = XmlDocumentNode.from(`<I n="some_file"/>`);
         const tun = TuningResource.create({ content, dom });
         expect(tun.content).to.equal(content);
         expect(tun.dom).to.equal(dom);

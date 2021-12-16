@@ -2,22 +2,22 @@ const { expect } = require("chai");
 const { nodes } = require("../../../dst/api");
 
 const {
-  TuningDocumentNode,
-  TuningElementNode,
-  TuningValueNode,
-  TuningCommentNode
+  XmlDocumentNode,
+  XmlElementNode,
+  XmlValueNode,
+  XmlCommentNode
 } = nodes;
 
-describe('TuningDocumentNode', function() {
-  const newNode = (root) => new TuningDocumentNode(root);
+describe('XmlDocumentNode', function() {
+  const newNode = (root) => new XmlDocumentNode(root);
 
   describe('#constructor', function() {
     it('should not throw when no children are given', function () {
-      expect(() => new TuningDocumentNode()).to.not.throw();
+      expect(() => new XmlDocumentNode()).to.not.throw();
     });
 
     it('should add the root that is given', function () {
-      const node = new TuningDocumentNode(new TuningValueNode(5));
+      const node = new XmlDocumentNode(new XmlValueNode(5));
       expect(node.numChildren).to.equal(1);
       expect(node.child.value).to.equal(5);
     });
@@ -25,11 +25,11 @@ describe('TuningDocumentNode', function() {
 
   describe('#from()', function() {
     it('should throw if the given XML contains multiple nodes at the root', function() {
-      expect(() => TuningDocumentNode.from(`<T/><T/>`)).to.throw();
+      expect(() => XmlDocumentNode.from(`<T/><T/>`)).to.throw();
     });
 
     it('should not throw for multiple roots if told not to', function() {
-      const doc = TuningDocumentNode.from(`<T/><T/>`, {
+      const doc = XmlDocumentNode.from(`<T/><T/>`, {
         allowMultipleRoots: true
       });
 
@@ -37,28 +37,28 @@ describe('TuningDocumentNode', function() {
     });
 
     it('should parse comments', function() {
-      const doc = TuningDocumentNode.from(`<!--This is a comment-->`);
+      const doc = XmlDocumentNode.from(`<!--This is a comment-->`);
       expect(doc.numChildren).to.equal(1);
       expect(doc.child.value).to.equal("This is a comment");
     });
 
     it('should parse number values as strings', function() {
-      const doc = TuningDocumentNode.from(`<T>50</T>`);
+      const doc = XmlDocumentNode.from(`<T>50</T>`);
       expect(doc.child.innerValue).to.equal("50");
     });
 
     it('should parse boolean values as strings', function() {
-      const doc = TuningDocumentNode.from(`<T>True</T>`);
+      const doc = XmlDocumentNode.from(`<T>True</T>`);
       expect(doc.child.innerValue).to.equal("True");
     });
 
     it('should parse strings', function() {
-      const doc = TuningDocumentNode.from(`<T>something</T>`);
+      const doc = XmlDocumentNode.from(`<T>something</T>`);
       expect(doc.child.innerValue).to.equal("something");
     });
 
     it('should parse nodes that contain other nodes', function() {
-      const doc = TuningDocumentNode.from(`<I>
+      const doc = XmlDocumentNode.from(`<I>
         <L>
           <T>foo</T>
           <T>bar</T>
@@ -73,7 +73,7 @@ describe('TuningDocumentNode', function() {
     });
 
     it('should parse attributes', function() {
-      const doc = TuningDocumentNode.from(`<M n="module" s="12345">
+      const doc = XmlDocumentNode.from(`<M n="module" s="12345">
         <C n="Class">
           <T n="TUNABLE">50</T>
           <V n="VARIANT" t="disabled"/>
@@ -92,7 +92,7 @@ describe('TuningDocumentNode', function() {
     });
 
     it('should parse tags', function() {
-      const doc = TuningDocumentNode.from(`<M n="module" s="12345">
+      const doc = XmlDocumentNode.from(`<M n="module" s="12345">
         <C n="Class">
           <T n="TUNABLE">50</T>
           <V n="VARIANT" t="disabled"/>
@@ -109,7 +109,7 @@ describe('TuningDocumentNode', function() {
     });
 
     it('should preserve order of nodes', function() {
-      const doc = TuningDocumentNode.from(`<L>
+      const doc = XmlDocumentNode.from(`<L>
         <T>5</T>
         <T>3</T>
         <T>1</T>
@@ -145,20 +145,20 @@ describe('TuningDocumentNode', function() {
     });
 
     it('should be the same as the first child', function () {
-      const node = newNode(new TuningValueNode("hello"));
+      const node = newNode(new XmlValueNode("hello"));
       expect(node.child.value).to.equal("hello");
     });
 
     it('should update the first child when set', function () {
-      const node = newNode(new TuningValueNode("hello"));
-      node.child = new TuningValueNode("new text");
+      const node = newNode(new XmlValueNode("hello"));
+      node.child = new XmlValueNode("new text");
       expect(node.child.value).to.equal("new text");
     });
 
     it('should add a child if there are none', function () {
       const node = newNode();
       expect(node.numChildren).to.equal(0);
-      node.child = new TuningValueNode("new text");
+      node.child = new XmlValueNode("new text");
       expect(node.numChildren).to.equal(1);
       expect(node.child.value).to.equal("new text");
     });
@@ -167,7 +167,7 @@ describe('TuningDocumentNode', function() {
   describe('#children', function() {
     it('should not be assignable', function () {
       const node = newNode();
-      node.children = [new TuningCommentNode("hi")];
+      node.children = [new XmlCommentNode("hi")];
       expect(node.children).to.be.empty;
     });
 
@@ -177,14 +177,14 @@ describe('TuningDocumentNode', function() {
     });
 
     it('should contain the root node', function () {
-      const node = newNode(new TuningValueNode(1));
+      const node = newNode(new XmlValueNode(1));
       expect(node.children.length).to.equal(1);
       expect(node.children[0].value).to.equal(1);
     });
 
     it('should allow you to push without throwing', function () {
       const node = newNode();
-      node.children.push(new TuningValueNode("hi"), new TuningValueNode("bye"));
+      node.children.push(new XmlValueNode("hi"), new XmlValueNode("bye"));
       expect(node.numChildren).to.equal(2);
     });
   });
@@ -228,27 +228,27 @@ describe('TuningDocumentNode', function() {
     });
 
     it('should be undefined if the first child is an element', function () {
-      const node = newNode(new TuningElementNode({ tag: 'I' }));
+      const node = newNode(new XmlElementNode({ tag: 'I' }));
       expect(node.innerValue).to.be.undefined;
     });
 
     it('should be the value of the first child if it is a value node', function () {
-      const node = newNode(new TuningValueNode(123n));
+      const node = newNode(new XmlValueNode(123n));
       expect(node.innerValue).to.equal(123n);
     });
 
     it('should be the value of the text of the first child if it is a comment', function () {
-      const node = newNode(new TuningCommentNode("This is a comment."));
+      const node = newNode(new XmlCommentNode("This is a comment."));
       expect(node.innerValue).to.equal("This is a comment.");
     });
 
     it('should throw when setting if the first child cannot have a value', function () {
-      const node = newNode(new TuningElementNode({ tag: 'I' }));
+      const node = newNode(new XmlElementNode({ tag: 'I' }));
       expect(() => node.innerValue = 123n).to.throw();
     });
 
     it('should set the value of the first child if it can have a value', function () {
-      const child = new TuningValueNode(123n);
+      const child = new XmlValueNode(123n);
       const node = newNode(child);
       node.innerValue = 456n;
       expect(child.value).to.equal(456n);
@@ -288,7 +288,7 @@ describe('TuningDocumentNode', function() {
     });
 
     it('should return 1 when there is one root', function () {
-      const node = newNode(new TuningValueNode(123n));
+      const node = newNode(new XmlValueNode(123n));
       expect(node.numChildren).to.equal(1);
     });
   });
@@ -340,24 +340,24 @@ describe('TuningDocumentNode', function() {
     it('should add the one child that is given if the node is empty', function () {
       const node = newNode();
       expect(node.numChildren).to.equal(0);
-      node.addChildren(new TuningValueNode("hi"));
+      node.addChildren(new XmlValueNode("hi"));
       expect(node.numChildren).to.equal(1);
       expect(node.children[0].value).to.equal("hi");
     });
 
     it('should throw if given more than one child', function () {
       const node = newNode();
-      expect(() => node.addChildren(new TuningValueNode("hi"), new TuningValueNode("bye"))).to.throw();
+      expect(() => node.addChildren(new XmlValueNode("hi"), new XmlValueNode("bye"))).to.throw();
     });
 
     it('should throw if there is already a child', function () {
-      const node = newNode(new TuningValueNode("hi"));
-      expect(() => node.addChildren(new TuningValueNode("bye"))).to.throw();
+      const node = newNode(new XmlValueNode("hi"));
+      expect(() => node.addChildren(new XmlValueNode("bye"))).to.throw();
     });
 
     it('should mutate the original children', function () {
       const node = newNode();
-      const child = new TuningValueNode(123n);
+      const child = new XmlValueNode(123n);
       node.addChildren(child);
       node.innerValue = 456n;
       expect(child.value).to.equal(456n);
@@ -375,24 +375,24 @@ describe('TuningDocumentNode', function() {
     it('should add the one child that is given if there are none', function () {
       const node = newNode();
       expect(node.numChildren).to.equal(0);
-      node.addClones(new TuningValueNode("hi"));
+      node.addClones(new XmlValueNode("hi"));
       expect(node.numChildren).to.equal(1);
       expect(node.children[0].value).to.equal("hi");
     });
 
     it('should throw if more than one child is given', function () {
       const node = newNode();
-      expect(() => node.addClones(new TuningValueNode("hi"), new TuningValueNode("bye"))).to.throw();
+      expect(() => node.addClones(new XmlValueNode("hi"), new XmlValueNode("bye"))).to.throw();
     });
 
     it('should throw if there is already a child', function () {
-      const node = newNode(new TuningValueNode("hi"));
-      expect(() => node.addClones(new TuningValueNode("bye"))).to.throw();
+      const node = newNode(new XmlValueNode("hi"));
+      expect(() => node.addClones(new XmlValueNode("bye"))).to.throw();
     });
 
     it('should not mutate the original children', function () {
       const node = newNode();
-      const child = new TuningValueNode(123n);
+      const child = new XmlValueNode(123n);
       node.addClones(child);
       node.innerValue = 456n;
       expect(child.value).to.equal(123n);
@@ -408,7 +408,7 @@ describe('TuningDocumentNode', function() {
     });
 
     it('should return a new document node with root node', function () {
-      const node = newNode(new TuningValueNode(5));
+      const node = newNode(new XmlValueNode(5));
       expect(node.numChildren).to.equal(1);
       const clone = node.clone();
       expect(clone.numChildren).to.equal(1);
@@ -426,7 +426,7 @@ describe('TuningDocumentNode', function() {
     });
 
     it('should not mutate the individual children of the original', function () {
-      const node = newNode(new TuningValueNode(5));
+      const node = newNode(new XmlValueNode(5));
       const clone = node.clone();
       expect(node.innerValue).to.equal(5);
       expect(clone.innerValue).to.equal(5);
@@ -439,13 +439,13 @@ describe('TuningDocumentNode', function() {
   describe('#deepSort()', function() {
     it("should sort child's children", function() {
       const node = newNode(
-        new TuningElementNode({
+        new XmlElementNode({
           tag: 'L',
           attributes: { n: "list" },
           children: [
-            new TuningElementNode({ tag: 'T', attributes: { n: "b" } }),
-            new TuningElementNode({ tag: 'T', attributes: { n: "a" } }),
-            new TuningElementNode({ tag: 'T', attributes: { n: "c" } })
+            new XmlElementNode({ tag: 'T', attributes: { n: "b" } }),
+            new XmlElementNode({ tag: 'T', attributes: { n: "a" } }),
+            new XmlElementNode({ tag: 'T', attributes: { n: "c" } })
           ]
         })
       );
@@ -461,10 +461,10 @@ describe('TuningDocumentNode', function() {
     it('should sort in alphabetical order by name if no fn passed in', function() {
       const node = newNode();
       node.children.push(
-        new TuningElementNode({ tag: 'T', attributes: { n: "c" } }),
-        new TuningElementNode({ tag: 'T', attributes: { n: "a" } }),
-        new TuningElementNode({ tag: 'T', attributes: { n: "d" } }),
-        new TuningElementNode({ tag: 'T', attributes: { n: "b" } })
+        new XmlElementNode({ tag: 'T', attributes: { n: "c" } }),
+        new XmlElementNode({ tag: 'T', attributes: { n: "a" } }),
+        new XmlElementNode({ tag: 'T', attributes: { n: "d" } }),
+        new XmlElementNode({ tag: 'T', attributes: { n: "b" } })
       );
 
       node.sort();
@@ -477,20 +477,20 @@ describe('TuningDocumentNode', function() {
     it('should sort children according to the given function', function() {
       const node = newNode();
       node.children.push(
-        new TuningElementNode({
+        new XmlElementNode({
           tag: 'T',
           attributes: { n: "ten" },
-          children: [ new TuningValueNode(10) ]
+          children: [ new XmlValueNode(10) ]
         }),
-        new TuningElementNode({
+        new XmlElementNode({
           tag: 'T',
           attributes: { n: "one" },
-          children: [ new TuningValueNode(1) ]
+          children: [ new XmlValueNode(1) ]
         }),
-        new TuningElementNode({
+        new XmlElementNode({
           tag: 'T',
           attributes: { n: "five" },
-          children: [ new TuningValueNode(5) ]
+          children: [ new XmlValueNode(5) ]
         })
       );
 
@@ -502,13 +502,13 @@ describe('TuningDocumentNode', function() {
 
     it("should not change the order of childrens' children", function() {
       const node = newNode(
-        new TuningElementNode({
+        new XmlElementNode({
           tag: 'L',
           attributes: { n: "list" },
           children: [
-            new TuningElementNode({ tag: 'T', attributes: { n: "b" } }),
-            new TuningElementNode({ tag: 'T', attributes: { n: "a" } }),
-            new TuningElementNode({ tag: 'T', attributes: { n: "c" } })
+            new XmlElementNode({ tag: 'T', attributes: { n: "b" } }),
+            new XmlElementNode({ tag: 'T', attributes: { n: "a" } }),
+            new XmlElementNode({ tag: 'T', attributes: { n: "c" } })
           ]
         })
       );
@@ -548,21 +548,21 @@ describe('TuningDocumentNode', function() {
 
     it('should write root on its own line', function () {
       const node = newNode(
-        new TuningElementNode({
+        new XmlElementNode({
           tag: 'M',
           attributes: {
             n: "module.name",
             s: 12345n
           },
           children: [
-            new TuningElementNode({
+            new XmlElementNode({
               tag: 'C',
               attributes: { n: "ClassName" },
               children: [
-                new TuningElementNode({
+                new XmlElementNode({
                   tag: 'T',
                   attributes: { n: "SOMETHING" },
-                  children: [ new TuningValueNode(10) ]
+                  children: [ new XmlValueNode(10) ]
                 })
               ]
             })
@@ -580,27 +580,27 @@ describe('TuningDocumentNode', function() {
   });
 });
 
-describe('TuningElementNode', function() {
-  const newNode = (tag = "T") => new TuningElementNode({ tag });
+describe('XmlElementNode', function() {
+  const newNode = (tag = "T") => new XmlElementNode({ tag });
 
   describe('#constructor', function() {
     it('should throw when no tag is given', function () {
-      expect(() => new TuningElementNode()).to.throw();
+      expect(() => new XmlElementNode()).to.throw();
     });
 
     it('should throw when tag is an empty string', function () {
-      expect(() => new TuningElementNode({ tag: '' })).to.throw();
+      expect(() => new XmlElementNode({ tag: '' })).to.throw();
     });
 
     it('should create a new node with just a tag', function () {
-      expect(new TuningElementNode({ tag: 'T' })).to.not.be.undefined;
+      expect(new XmlElementNode({ tag: 'T' })).to.not.be.undefined;
     });
 
     it('should create a new node with all of the given values', function () {
-      const node = new TuningElementNode({
+      const node = new XmlElementNode({
         tag: 'L',
         attributes: { n: "list" },
-        children: [ new TuningValueNode(15) ]
+        children: [ new XmlValueNode(15) ]
       });
 
       expect(node.tag).to.equal('L');
@@ -623,7 +623,7 @@ describe('TuningElementNode', function() {
     });
 
     it('should allow mutation', function () {
-      const node = new TuningElementNode({
+      const node = new XmlElementNode({
         tag: 'T',
         attributes: { n: "name", t: "enabled" }
       });
@@ -642,22 +642,22 @@ describe('TuningElementNode', function() {
 
     it('should be the same as the first child', function () {
       const node = newNode();
-      node.addChildren(new TuningValueNode("hello"));
+      node.addChildren(new XmlValueNode("hello"));
       expect(node.child.value).to.equal("hello");
     });
 
     it('should update the first child when set', function () {
       const node = newNode();
-      node.addChildren(new TuningValueNode("hello"));
+      node.addChildren(new XmlValueNode("hello"));
       expect(node.child.value).to.equal("hello");
-      node.child = new TuningValueNode("new text");
+      node.child = new XmlValueNode("new text");
       expect(node.child.value).to.equal("new text");
     });
 
     it('should add a child if there are none', function () {
       const node = newNode();
       expect(node.numChildren).to.equal(0);
-      node.child = new TuningValueNode("new text");
+      node.child = new XmlValueNode("new text");
       expect(node.numChildren).to.equal(1);
       expect(node.child.value).to.equal("new text");
     });
@@ -677,7 +677,7 @@ describe('TuningElementNode', function() {
 
     it('should contain all of this node\'s children', function () {
       const node = newNode();
-      node.addChildren(new TuningValueNode(1), new TuningValueNode(2));
+      node.addChildren(new XmlValueNode(1), new XmlValueNode(2));
       expect(node.children.length).to.equal(2);
       expect(node.children[0].value).to.equal(1);
       expect(node.children[1].value).to.equal(2);
@@ -711,7 +711,7 @@ describe('TuningElementNode', function() {
     });
 
     it('should return the value of the `s` attribute', function () {
-      const node = new TuningElementNode({
+      const node = new XmlElementNode({
         tag: 'I',
         attributes: { s: 123n }
       });
@@ -735,32 +735,32 @@ describe('TuningElementNode', function() {
 
     it('should be undefined if the first child is an element', function () {
       const node = newNode('L');
-      node.addChildren(new TuningElementNode({ tag: 'T' }));
+      node.addChildren(new XmlElementNode({ tag: 'T' }));
       expect(node.innerValue).to.be.undefined;
     });
 
     it('should be the value of the first child if it is a value node', function () {
       const node = newNode();
-      node.addChildren(new TuningValueNode(123n));
+      node.addChildren(new XmlValueNode(123n));
       expect(node.innerValue).to.equal(123n);
     });
 
     it('should be the value of the text of the first child if it is a comment', function () {
       const node = newNode();
-      node.child = new TuningCommentNode("This is a comment.");
+      node.child = new XmlCommentNode("This is a comment.");
       expect(node.innerValue).to.equal("This is a comment.");
     });
 
     it('should throw when setting if the first child cannot have a value', function () {
       const node = newNode();
-      node.addChildren(new TuningElementNode({ tag: 'T' }));
+      node.addChildren(new XmlElementNode({ tag: 'T' }));
       expect(() => node.innerValue = 123n).to.throw();
     });
 
     it('should set the value of the first child if it can have a value', function () {
-      const node = new TuningElementNode({
+      const node = new XmlElementNode({
         tag: 'T',
-        children: [ new TuningValueNode(123) ]
+        children: [ new XmlValueNode(123) ]
       });
 
       expect(node.child.value).to.equal(123);
@@ -784,7 +784,7 @@ describe('TuningElementNode', function() {
     });
 
     it('should return the value of the `n` attribute', function () {
-      const node = new TuningElementNode({
+      const node = new XmlElementNode({
         tag: 'T',
         attributes: { n: "name" }
       });
@@ -807,29 +807,29 @@ describe('TuningElementNode', function() {
     });
 
     it('should return number of children if there are any', function () {
-      const node = new TuningElementNode({
+      const node = new XmlElementNode({
         tag: 'L',
         children: [
-          new TuningCommentNode("first"),
-          new TuningCommentNode("second"),
-          new TuningCommentNode("third")
+          new XmlCommentNode("first"),
+          new XmlCommentNode("second"),
+          new XmlCommentNode("third")
         ]
       });
 
       expect(node.numChildren).to.equal(3);
-      node.addChildren(new TuningCommentNode("fourth"));
+      node.addChildren(new XmlCommentNode("fourth"));
       expect(node.numChildren).to.equal(4);
     });
   });
 
   describe('#tag', function() {
     it('should be the tag of this node', function () {
-      const node = new TuningElementNode({ tag: 'T' });
+      const node = new XmlElementNode({ tag: 'T' });
       expect(node.tag).to.equal('T');
     });
 
     it('should set the tag of this node', function () {
-      const node = new TuningElementNode({ tag: 'T' });
+      const node = new XmlElementNode({ tag: 'T' });
       node.tag = 'L';
       expect(node.tag).to.equal('L');
     });
@@ -842,12 +842,12 @@ describe('TuningElementNode', function() {
     });
 
     it('should return the value of the `t` attribute', function () {
-      const node = new TuningElementNode({ tag: 'T', attributes: { t: "enabled" } });
+      const node = new XmlElementNode({ tag: 'T', attributes: { t: "enabled" } });
       expect(node.type).to.equal("enabled")
     });
 
     it('should change the value of the `t` attribute', function () {
-      const node = new TuningElementNode({ tag: 'V', attributes: { t: "disabled" } });
+      const node = new XmlElementNode({ tag: 'V', attributes: { t: "disabled" } });
       expect(node.type).to.equal("disabled")
       node.type = "enabled";
       expect(node.type).to.equal("enabled")
@@ -877,7 +877,7 @@ describe('TuningElementNode', function() {
     it('should add the one child that is given', function () {
       const node = newNode();
       expect(node.numChildren).to.equal(0);
-      node.addChildren(new TuningValueNode("hi"));
+      node.addChildren(new XmlValueNode("hi"));
       expect(node.numChildren).to.equal(1);
       expect(node.children[0].value).to.equal("hi");
     });
@@ -885,7 +885,7 @@ describe('TuningElementNode', function() {
     it('should add all children that are given', function () {
       const node = newNode();
       expect(node.numChildren).to.equal(0);
-      node.addChildren(new TuningValueNode("hi"), new TuningValueNode("bye"));
+      node.addChildren(new XmlValueNode("hi"), new XmlValueNode("bye"));
       expect(node.numChildren).to.equal(2);
       expect(node.children[0].value).to.equal("hi");
       expect(node.children[1].value).to.equal("bye");
@@ -893,7 +893,7 @@ describe('TuningElementNode', function() {
 
     it('should mutate the original children', function () {
       const node = newNode();
-      const child = new TuningValueNode(123n);
+      const child = new XmlValueNode(123n);
       node.addChildren(child);
       node.innerValue = 456n;
       expect(child.value).to.equal(456n);
@@ -911,7 +911,7 @@ describe('TuningElementNode', function() {
     it('should add the one child that is given', function () {
       const node = newNode();
       expect(node.numChildren).to.equal(0);
-      node.addClones(new TuningValueNode("hi"));
+      node.addClones(new XmlValueNode("hi"));
       expect(node.numChildren).to.equal(1);
       expect(node.children[0].value).to.equal("hi");
     });
@@ -919,7 +919,7 @@ describe('TuningElementNode', function() {
     it('should add all children that are given', function () {
       const node = newNode();
       expect(node.numChildren).to.equal(0);
-      node.addClones(new TuningValueNode("hi"), new TuningValueNode("bye"));
+      node.addClones(new XmlValueNode("hi"), new XmlValueNode("bye"));
       expect(node.numChildren).to.equal(2);
       expect(node.children[0].value).to.equal("hi");
       expect(node.children[1].value).to.equal("bye");
@@ -927,7 +927,7 @@ describe('TuningElementNode', function() {
 
     it('should not mutate the original children', function () {
       const node = newNode();
-      const child = new TuningValueNode(123n);
+      const child = new XmlValueNode(123n);
       node.addClones(child);
       node.innerValue = 456n;
       expect(child.value).to.equal(123n);
@@ -944,7 +944,7 @@ describe('TuningElementNode', function() {
 
     it('should return a new document node with all children', function () {
       const node = newNode();
-      node.addChildren(new TuningValueNode(5), new TuningCommentNode("hi"));
+      node.addChildren(new XmlValueNode(5), new XmlCommentNode("hi"));
       expect(node.numChildren).to.equal(2);
       const clone = node.clone();
       expect(clone.numChildren).to.equal(2);
@@ -964,7 +964,7 @@ describe('TuningElementNode', function() {
 
     it('should not mutate the individual children of the original', function () {
       const node = newNode();
-      node.addChildren(new TuningValueNode(5));
+      node.addChildren(new XmlValueNode(5));
       const clone = node.clone();
       expect(node.innerValue).to.equal(5);
       expect(clone.innerValue).to.equal(5);
@@ -976,25 +976,25 @@ describe('TuningElementNode', function() {
 
   describe('#deepSort()', function() {
     it("should sort childrens' children", function() {
-      const node = new TuningElementNode({
+      const node = new XmlElementNode({
         tag: 'U',
         children: [
-          new TuningElementNode({
+          new XmlElementNode({
             tag: 'L',
             attributes: { n: "list_b" },
             children: [
-              new TuningElementNode({ tag: 'T', attributes: { n: "b" } }),
-              new TuningElementNode({ tag: 'T', attributes: { n: "a" } }),
-              new TuningElementNode({ tag: 'T', attributes: { n: "c" } })
+              new XmlElementNode({ tag: 'T', attributes: { n: "b" } }),
+              new XmlElementNode({ tag: 'T', attributes: { n: "a" } }),
+              new XmlElementNode({ tag: 'T', attributes: { n: "c" } })
             ]
           }),
-          new TuningElementNode({
+          new XmlElementNode({
             tag: 'L',
             attributes: { n: "list_a" },
             children: [
-              new TuningElementNode({ tag: 'T', attributes: { n: "b" } }),
-              new TuningElementNode({ tag: 'T', attributes: { n: "a" } }),
-              new TuningElementNode({ tag: 'T', attributes: { n: "c" } })
+              new XmlElementNode({ tag: 'T', attributes: { n: "b" } }),
+              new XmlElementNode({ tag: 'T', attributes: { n: "a" } }),
+              new XmlElementNode({ tag: 'T', attributes: { n: "c" } })
             ]
           })
         ]
@@ -1015,13 +1015,13 @@ describe('TuningElementNode', function() {
 
   describe('#sort()', function() {
     it('should sort in alphabetical order by name if no fn passed in', function() {
-      const node = new TuningElementNode({
+      const node = new XmlElementNode({
         tag: "L",
         children: [
-          new TuningElementNode({ tag: 'T', attributes: { n: "c" } }),
-          new TuningElementNode({ tag: 'T', attributes: { n: "a" } }),
-          new TuningElementNode({ tag: 'T', attributes: { n: "d" } }),
-          new TuningElementNode({ tag: 'T', attributes: { n: "b" } })
+          new XmlElementNode({ tag: 'T', attributes: { n: "c" } }),
+          new XmlElementNode({ tag: 'T', attributes: { n: "a" } }),
+          new XmlElementNode({ tag: 'T', attributes: { n: "d" } }),
+          new XmlElementNode({ tag: 'T', attributes: { n: "b" } })
         ]
       });
 
@@ -1033,23 +1033,23 @@ describe('TuningElementNode', function() {
     });
 
     it('should sort children according to the given function', function() {
-      const node = new TuningElementNode({
+      const node = new XmlElementNode({
         tag: "L",
         children: [
-          new TuningElementNode({
+          new XmlElementNode({
             tag: 'T',
             attributes: { n: "ten" },
-            children: [ new TuningValueNode(10) ]
+            children: [ new XmlValueNode(10) ]
           }),
-          new TuningElementNode({
+          new XmlElementNode({
             tag: 'T',
             attributes: { n: "one" },
-            children: [ new TuningValueNode(1) ]
+            children: [ new XmlValueNode(1) ]
           }),
-          new TuningElementNode({
+          new XmlElementNode({
             tag: 'T',
             attributes: { n: "five" },
-            children: [ new TuningValueNode(5) ]
+            children: [ new XmlValueNode(5) ]
           })
         ]
       });
@@ -1061,16 +1061,16 @@ describe('TuningElementNode', function() {
     });
 
     it("should not change the order of childrens' children", function() {
-      const node = new TuningElementNode({
+      const node = new XmlElementNode({
         tag: "L",
         children: [
-          new TuningElementNode({
+          new XmlElementNode({
             tag: 'L',
             attributes: { n: "list" },
             children: [
-              new TuningElementNode({ tag: 'T', attributes: { n: "b" } }),
-              new TuningElementNode({ tag: 'T', attributes: { n: "a" } }),
-              new TuningElementNode({ tag: 'T', attributes: { n: "c" } })
+              new XmlElementNode({ tag: 'T', attributes: { n: "b" } }),
+              new XmlElementNode({ tag: 'T', attributes: { n: "a" } }),
+              new XmlElementNode({ tag: 'T', attributes: { n: "c" } })
             ]
           })
         ]
@@ -1083,12 +1083,12 @@ describe('TuningElementNode', function() {
     });
 
     it("should not do anything when no children have names", function() {
-      const node = new TuningElementNode({
+      const node = new XmlElementNode({
         tag: "L",
         children: [
-          new TuningElementNode({ tag: "T" }),
-          new TuningElementNode({ tag: "L" }),
-          new TuningElementNode({ tag: "U" })
+          new XmlElementNode({ tag: "T" }),
+          new XmlElementNode({ tag: "L" }),
+          new XmlElementNode({ tag: "U" })
         ]
       });
 
@@ -1119,17 +1119,17 @@ describe('TuningElementNode', function() {
     });
 
     it('should write attributes when there are children', function() {
-      const node = new TuningElementNode({
+      const node = new XmlElementNode({
         tag: 'T',
         attributes: { n: "something" },
-        children: [ new TuningValueNode(50) ]
+        children: [ new XmlValueNode(50) ]
       });
 
       expect(node.toXml()).to.equal(`<T n="something">50</T>`);
     });
 
     it('should write attributes when there are no children', function() {
-      const node = new TuningElementNode({
+      const node = new XmlElementNode({
         tag: 'T',
         attributes: { n: "something" }
       });
@@ -1138,16 +1138,16 @@ describe('TuningElementNode', function() {
     });
 
     it('should write open/close tags if there are children', function() {
-      const node = new TuningElementNode({
+      const node = new XmlElementNode({
         tag: 'T',
-        children: [ new TuningValueNode(50) ]
+        children: [ new XmlValueNode(50) ]
       });
 
       expect(node.toXml()).to.equal(`<T>50</T>`);
     });
 
     it('should write one tag if there are no children', function() {
-      const node = new TuningElementNode({
+      const node = new XmlElementNode({
         tag: 'T'
       });
 
@@ -1155,31 +1155,31 @@ describe('TuningElementNode', function() {
     });
 
     it('should be on one line if there is one value child', function() {
-      const node = new TuningElementNode({
+      const node = new XmlElementNode({
         tag: 'T',
-        children: [ new TuningValueNode(50) ]
+        children: [ new XmlValueNode(50) ]
       });
 
       expect(node.toXml()).to.equal(`<T>50</T>`);
     });
 
     it('should be on one line if there are two value/comment children', function() {
-      const node = new TuningElementNode({
+      const node = new XmlElementNode({
         tag: 'T',
-        children: [ new TuningValueNode(50), new TuningCommentNode("hi") ]
+        children: [ new XmlValueNode(50), new XmlCommentNode("hi") ]
       });
 
       expect(node.toXml()).to.equal(`<T>50<!--hi--></T>`);
     });
 
     it('should put an element child on its own line, indented', function() {
-      const node = new TuningElementNode({
+      const node = new XmlElementNode({
         tag: 'L',
         children: [
-          new TuningElementNode({
+          new XmlElementNode({
             tag: 'T',
             children: [
-              new TuningValueNode(123)
+              new XmlValueNode(123)
             ]
           })
         ]
@@ -1189,21 +1189,21 @@ describe('TuningElementNode', function() {
     });
 
     it('should increase indentation by 1 for each recursive call', function() {
-      const node = new TuningElementNode({
+      const node = new XmlElementNode({
         tag: 'L',
         children: [
-          new TuningElementNode({
+          new XmlElementNode({
             tag: 'U',
             children: [
-              new TuningElementNode({
+              new XmlElementNode({
                 tag: 'T',
                 attributes: { n: 'first' },
-                children: [ new TuningValueNode(123) ]
+                children: [ new XmlValueNode(123) ]
               }),
-              new TuningElementNode({
+              new XmlElementNode({
                 tag: 'T',
                 attributes: { n: 'second' },
-                children: [ new TuningValueNode(456) ]
+                children: [ new XmlValueNode(456) ]
               })
             ]
           })
@@ -1220,19 +1220,19 @@ describe('TuningElementNode', function() {
   });
 });
 
-describe('TuningValueNode', function() {
-  const newNode = (value = "test") => new TuningValueNode(value);
+describe('XmlValueNode', function() {
+  const newNode = (value = "test") => new XmlValueNode(value);
 
   describe('#constructor', function() {
     it('should have undefined content when no value is given', function () {
-      const node = new TuningValueNode();
+      const node = new XmlValueNode();
       expect(node.value).to.be.undefined;
     });
 
     it('should use the value that is given', function () {
-      const node1 = new TuningValueNode("hello");
+      const node1 = new XmlValueNode("hello");
       expect(node1.value).to.equal("hello");
-      const node2 = new TuningValueNode(123n);
+      const node2 = new XmlValueNode(123n);
       expect(node2.value).to.equal(123n);
     });
   });
@@ -1459,23 +1459,23 @@ describe('TuningValueNode', function() {
     });
 
     it("should return a blank string when there is no value", function() {
-      const node = new TuningValueNode();
+      const node = new XmlValueNode();
       expect(node.toXml()).to.equal('');
     })
   });
 });
 
-describe('TuningCommentNode', function() {
-  const newNode = (value = "Comment") => new TuningCommentNode(value);
+describe('XmlCommentNode', function() {
+  const newNode = (value = "Comment") => new XmlCommentNode(value);
 
   describe('#constructor', function() {
     it('have undefined content when none is given', function () {
-      const node = new TuningCommentNode();
+      const node = new XmlCommentNode();
       expect(node.value).to.be.undefined;
     });
 
     it('should use the value that is given', function () {
-      const node = new TuningCommentNode("hello");
+      const node = new XmlCommentNode("hello");
       expect(node.value).to.equal("hello");
     });
   });
@@ -1688,7 +1688,7 @@ describe('TuningCommentNode', function() {
     });
 
     it("should return a blank comment when there is no value", function() {
-      const node = new TuningCommentNode();
+      const node = new XmlCommentNode();
       expect(node.toXml()).to.equal('<!---->');
     });
   });
