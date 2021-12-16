@@ -1,7 +1,7 @@
-import Resource from "./resource";
-import { BinaryEncoder, BinaryDecoder } from "../../utils/encoding";
-import { fnv32 } from "../../utils/hashing";
-import { removeFromArray } from "../../utils/helpers";
+import Resource from "../resource";
+import { BinaryEncoder, BinaryDecoder } from "../../../utils/encoding";
+import { fnv32 } from "../../../utils/hashing";
+import { removeFromArray } from "../../../utils/helpers";
 
 /**
  * Model for binary string table resources.

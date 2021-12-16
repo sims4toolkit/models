@@ -1,5 +1,5 @@
 import type { ResourceVariant } from "../../types";
-import WritableModel from "../writableModel";
+import WritableModel from "../abstract/writableModel";
 
 /**
  * A base class for all resources.

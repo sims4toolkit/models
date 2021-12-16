@@ -1,7 +1,7 @@
-import type StringTableResource from "../resources/stringtable";
-import type { TuningNode } from "./nodes";
-import { formatStringKey } from "../../utils/formatting";
-import { TuningElementNode, TuningCommentNode, TuningValueNode } from "./nodes";
+import type StringTableResource from "../stringTable/stringTableResource";
+import type { TuningNode } from "../../dom/nodes";
+import { formatStringKey } from "../../../utils/formatting";
+import { TuningElementNode, TuningCommentNode, TuningValueNode } from "../../dom/nodes";
 
 //#region Types
 

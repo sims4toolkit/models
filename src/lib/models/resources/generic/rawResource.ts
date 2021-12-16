@@ -1,4 +1,4 @@
-import Resource from './resource';
+import Resource from '../resource';
 
 /**
  * Model for resources that have intentionally not been parsed.

@@ -1,5 +1,5 @@
-import Resource from "./resource";
-import { TuningDocumentNode, TuningNode } from "../dom/nodes";
+import Resource from "../resource";
+import { TuningDocumentNode, TuningNode } from "../../dom/nodes";
 
 /**
  * Model for a plaintext, XML tuning resource.
