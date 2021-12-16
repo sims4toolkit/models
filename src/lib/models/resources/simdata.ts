@@ -15,10 +15,20 @@ export default class SimDataResource extends Resource {
   private _schemas: SimDataSchema[];
   /** The schemas in this SimData. */
   get schemas() { return this._schemas; }
+  set schemas(schemas) {
+    schemas.forEach(schema => schema.owner = this);
+    this._schemas = schemas;
+    this.uncache();
+  }
   
   private _instances: SimDataInstance[];
   /** The instance in this SimData. */
   get instances() { return this._instances; }
+  set instances(instances) {
+    instances.forEach(instance => instance.owner = this);
+    this._instances = instances;
+    this.uncache();
+  }
 
   private constructor({ schemas = [], instances = [], buffer }: {
     schemas?: SimDataSchema[];
@@ -26,8 +36,10 @@ export default class SimDataResource extends Resource {
     buffer?: Buffer;
   } = {}) {
     super({ buffer });
+    schemas.forEach(schema => schema.owner = this);
     this._schemas = schemas;
-    this._instances = instances;
+    instances.forEach(instance => instance.owner = this);
+    this._instances = instances; 
   }
 
   clone(): SimDataResource {
@@ -56,6 +68,7 @@ export default class SimDataResource extends Resource {
    * @param schemas Schemas to add
    */
   addSchemas(...schemas: SimDataSchema[]) {
+    schemas.forEach(schema => schema.owner = this);
     this.schemas.push(...schemas);
     this.uncache();
   }
@@ -75,6 +88,7 @@ export default class SimDataResource extends Resource {
    * @param instances Instances to add
    */
   addInstances(...instances: SimDataInstance[]) {
+    instances.forEach(instance => instance.owner = this);
     this.instances.push(...instances);
     this.uncache();
   }
@@ -95,16 +109,16 @@ export default class SimDataResource extends Resource {
 
 //#region Helper models
 
-interface Uncacheable {
+interface OwnedObject {
   /** The object that this one belongs to. */
-  readonly owner?: Uncacheable;
+  owner?: OwnedObject;
 
   /** Notifies this object's owner to uncache. */
   uncache(): void;
 }
 
-abstract class SimDataFragment implements Uncacheable {
-  constructor(public owner?: Uncacheable) {}
+abstract class SimDataFragment implements OwnedObject {
+  constructor(public owner?: OwnedObject) {}
   
   uncache(): void { this.owner?.uncache(); }
 
@@ -113,7 +127,7 @@ abstract class SimDataFragment implements Uncacheable {
 }
 
 class SimDataSchema extends SimDataFragment {
-  readonly owner?: SimDataResource;
+  owner?: SimDataResource;
 
   private _name: string;
   /** The name of this schema. */
@@ -130,7 +144,11 @@ class SimDataSchema extends SimDataFragment {
    * manually - use the `addColumns()` and `removeColumns()` methods for that.
    * If you do mutate the array, be sure to call `uncache()` afterwards. */
   get columns() { return this._columns; }
-  set columns(columns) { this._columns = columns; this.uncache(); }
+  set columns(columns) {
+    columns.forEach(column => column.owner = this);
+    this._columns = columns;
+    this.uncache();
+  }
 
   constructor({ name, hash, columns = [], owner }: {
     name: string;
@@ -141,6 +159,7 @@ class SimDataSchema extends SimDataFragment {
     super(owner);
     this._name = name;
     this._hash = hash;
+    columns.forEach(column => column.owner = this);
     this._columns = columns;
   }
 
@@ -150,6 +169,7 @@ class SimDataSchema extends SimDataFragment {
    * @param columns Columns to add to this schema
    */
   addColumns(...columns: SimDataSchemaColumn[]) {
+    columns.forEach(column => column.owner = this);
     this.columns.push(...columns);
     this.uncache();
   }
@@ -159,26 +179,51 @@ class SimDataSchema extends SimDataFragment {
    * 
    * @param columns Columns to remove to this schema
    */
-   removeColumns(...columns: SimDataSchemaColumn[]) {
+  removeColumns(...columns: SimDataSchemaColumn[]) {
     if(removeFromArray(columns, this.columns)) this.uncache();
   }
 
   delete() {
-    this.owner?.removeSchemas(this);
-    // removeSchemas already uncaches
+    this.owner?.removeSchemas(this); // removeSchemas() uncaches
   }
 }
 
-class SimDataSchemaColumn {
-  constructor(
-    public name: string,
-    public type: SimDataType,
-    public flags: number,
-    private _owner: SimDataSchema
-  ) {}
+class SimDataSchemaColumn extends SimDataFragment {
+  owner?: SimDataSchema;
+
+  private _name: string;
+  /** The name of this column. */
+  get name() { return this._name; }
+  set name(name) { this._name = name; this.uncache(); }
+
+  private _type: SimDataType;
+  /** The data type of this column. */
+  get type() { return this._type; }
+  set type(type) { this._type = type; this.uncache(); }
+
+  private _flags: number;
+  /** The flags for this column. Must be uint32. */
+  get flags() { return this._flags; }
+  set flags(flags) { this._flags = flags; this.uncache(); }
+
+  constructor({ name, type, flags = 0, owner }: {
+    name: string;
+    type: SimDataType;
+    flags?: number;
+    owner?: SimDataSchema;
+  }) {
+    super(owner);
+    this._name = name;
+    this._type = type;
+    this._flags = flags;
+  }
+
+  delete(): void {
+    this.owner?.removeColumns(this); // removeColumns() uncaches
+  }
 }
 
-abstract class SimDataValue {
+abstract class SimDataValue extends SimDataFragment {
   abstract readonly type: SimDataType;
 }
 
