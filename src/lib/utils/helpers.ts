@@ -10,3 +10,21 @@ export function makeList<T>(length: number, fn: (index: number) => T): T[] {
   for (let i = 0; i < length; i++) list.push(fn(i));
   return list;
 }
+
+/**
+ * Removes objects from the given array by reference equality.
+ * 
+ * @param toRemove Objects to remove
+ * @param removeFrom Array to remove objects from
+ * @returns True if at least one item was removed, else false
+ */
+export function removeFromArray<T>(toRemove: T[], removeFrom: T[]) {
+  let anyRemoved = false;
+  toRemove.forEach(obj => {
+    const index = removeFrom.findIndex(o => o === obj);
+    if (index < 0) return;
+    removeFrom.splice(index, 1);
+    anyRemoved = true;
+  });
+  return anyRemoved;
+}

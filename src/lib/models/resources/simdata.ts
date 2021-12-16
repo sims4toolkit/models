@@ -1,6 +1,7 @@
 import Resource from "./resource";
 import { BinaryEncoder, BinaryDecoder } from "../../utils/encoding";
 import { fnv32 } from "../../utils/hashing";
+import { removeFromArray } from "../../utils/helpers";
 
 /**
  * A resource for SimData (binary tuning). SimDatas are essentially mini
@@ -63,8 +64,8 @@ export default class SimDataResource extends Resource {
    * @param schemas Schemas to remove
    */
   removeSchemas(...schemas: SimDataSchema[]) {
-    // TODO:
-    this.uncache();
+    if (removeFromArray<SimDataSchema>(schemas, this.schemas))
+      this.uncache();
   }
 
   /**
@@ -83,8 +84,8 @@ export default class SimDataResource extends Resource {
    * @param instances Instances to remove
    */
   removeInstances(...instances: SimDataInstance[]) {
-    // TODO:
-    this.uncache();
+    if (removeFromArray<SimDataInstance>(instances, this.instances))
+      this.uncache();
   }
 
   protected _serialize(): Buffer {
@@ -93,7 +94,6 @@ export default class SimDataResource extends Resource {
 }
 
 //#region Helper models
-
 
 interface Uncacheable {
   /** The object that this one belongs to. */
