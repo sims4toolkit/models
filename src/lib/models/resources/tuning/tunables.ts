@@ -1,7 +1,7 @@
 import type StringTableResource from "../stringTable/stringTableResource";
-import type { XmlNode } from "../../dom/nodes";
+import type { XmlNode } from "../../xml/dom";
 import { formatStringKey } from "../../../utils/formatting";
-import { XmlElementNode, XmlCommentNode, XmlValueNode } from "../../dom/nodes";
+import { XmlElementNode, XmlCommentNode, XmlValueNode } from "../../xml/dom";
 
 //#region Types
 

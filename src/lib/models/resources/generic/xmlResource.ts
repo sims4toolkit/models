@@ -1,5 +1,5 @@
 import Resource from "../resource";
-import { XmlDocumentNode, XmlNode } from "../../dom/nodes";
+import { XmlDocumentNode, XmlNode } from "../../xml/dom";
 
 /**
  * Model for a plaintext, XML tuning resource.

@@ -1,12 +1,12 @@
 const { expect } = require("chai");
-const { nodes } = require("../../../dst/api");
+const { xmlDom } = require("../../../dst/api");
 
 const {
   XmlDocumentNode,
   XmlElementNode,
   XmlValueNode,
   XmlCommentNode
-} = nodes;
+} = xmlDom;
 
 describe('XmlDocumentNode', function() {
   const newNode = (root) => new XmlDocumentNode(root);

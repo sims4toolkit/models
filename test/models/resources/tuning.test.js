@@ -1,8 +1,8 @@
 const fs = require('fs');
 const path = require('path');
 const expect = require('chai').expect;
-const { TuningResource, nodes, tunables } = require('../../../dst/api');
-const { XmlDocumentNode } = nodes;
+const { TuningResource, xmlDom, tunables } = require('../../../dst/api');
+const { XmlDocumentNode } = xmlDom;
 
 const XML_DECLARATION = '<?xml version="1.0" encoding="utf-8"?>';
 
