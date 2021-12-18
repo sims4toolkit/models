@@ -2,14 +2,14 @@ import Resource from "../resource";
 import { XmlDocumentNode, XmlNode } from "../../xml/dom";
 
 /**
- * Model for a plaintext, XML tuning resource.
+ * Model for a plaintext, XML resource.
  */
 export default class XmlResource extends Resource {
   readonly variant = 'XML';
   private _content?: string;
   private _dom?: XmlDocumentNode;
 
-  /** The XML content of this tuning resource. */
+  /** The XML content of this resource. */
   get content(): string {
     if (this._content == undefined) this._content = this._dom?.toXml() || '';
     return this._content;
@@ -23,7 +23,7 @@ export default class XmlResource extends Resource {
   }
 
   /**
-   * The DOM for this tuning resource. To mutate the DOM, use `updateDom()` so
+   * The DOM for this resource. To mutate the DOM, use `updateDom()` so
    * that cache is handled properly.
    */
   get dom(): XmlDocumentNode {
@@ -44,7 +44,7 @@ export default class XmlResource extends Resource {
   }
 
   /**
-   * Shorthand for getting the first child of the DOM, since tuning resources
+   * Shorthand for getting the first child of the DOM, since XML resources
    * should only have one child in their DOM anyways. To mutate the root, use
    * `updateRoot()` so that the cache is handled properly.
    */
@@ -82,12 +82,12 @@ export default class XmlResource extends Resource {
   }
 
   /**
-   * Creates a new tuning resource with the given content. If no content is
+   * Creates a new XML resource with the given content. If no content is
    * given, the tuning resource is blank.
    * 
    * Initial Content
    * - `content`: The XML content of the resource as a string.
-   * - `dom`: The TuningDocumentNode to use as this resource's DOM.
+   * - `dom`: The XmlDocumentNode to use as this resource's DOM.
    * 
    * @param initialContent Object containing initial content of this resource
    */
@@ -99,9 +99,9 @@ export default class XmlResource extends Resource {
   }
 
   /**
-   * Creates a tuning resource from a buffer containing XML.
+   * Creates an XML resource from a buffer containing XML.
    * 
-   * @param buffer Buffer to create a tuning resource from
+   * @param buffer Buffer to create an XML resource from
    */
   static from(buffer: Buffer): XmlResource {
     return new XmlResource({ content: buffer.toString('utf-8'), buffer });
