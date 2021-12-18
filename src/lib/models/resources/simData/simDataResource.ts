@@ -31,7 +31,7 @@ export default class SimDataResource extends Resource {
     this.uncache();
   }
 
-  private constructor({ schemas = [], instances = [], buffer }: {
+  protected constructor({ schemas = [], instances = [], buffer }: {
     schemas?: SimDataSchema[];
     instances?: SimDataInstance[];
     buffer?: Buffer;

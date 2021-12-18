@@ -64,7 +64,7 @@ export default class XmlResource extends Resource {
 
   //#region Initialization
 
-  constructor({ content, buffer, dom }: {
+  protected constructor({ content, buffer, dom }: {
     content?: string;
     buffer?: Buffer;
     dom?: XmlDocumentNode;

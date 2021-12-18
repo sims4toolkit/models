@@ -13,7 +13,7 @@ export default class StringTableResource extends Resource {
 
   //#region Initialization
 
-  private constructor(entries: KeyStringPair[], buffer?: Buffer) {
+  protected constructor(entries: KeyStringPair[] = [], buffer?: Buffer) {
     super({ buffer });
     this._entries = entries.map((entry, id) => {
       return new StringEntry(id, entry.key, entry.string, this);

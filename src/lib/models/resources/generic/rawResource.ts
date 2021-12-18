@@ -12,7 +12,7 @@ export default class RawResource extends Resource {
     return this._reason;
   }
 
-  private constructor(buffer: Buffer, reason: string) {
+  protected constructor(buffer: Buffer, reason?: string) {
     super({ buffer });
     this._reason = reason;
   }

@@ -19,7 +19,7 @@ export default class Dbpf extends WritableModel {
   private _nextId: number;
   private _entries: ResourceEntry[];
 
-  private constructor(entries: ResourceEntry[], buffer?: Buffer) {
+  protected constructor(entries: ResourceEntry[] = [], buffer?: Buffer) {
     super({ buffer });
     this._entries = entries;
     this._nextId = entries.length;

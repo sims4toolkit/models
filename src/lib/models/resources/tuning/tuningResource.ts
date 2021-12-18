@@ -6,7 +6,7 @@ import XmlResource from "../generic/xmlResource";
  * Model for a plaintext, XML tuning resource.
  */
 export default class TuningResource extends XmlResource {
-  constructor(params: {
+  protected constructor(params: {
     content?: string;
     buffer?: Buffer;
     dom?: XmlDocumentNode;
