@@ -1,4 +1,5 @@
 import Dbpf from "./lib/models/dbpf";
+import XmlResource from "./lib/models/resources/generic/xmlResource";
 import RawResource from "./lib/models/resources/generic/rawResource";
 import TuningResource from "./lib/models/resources/tuning/tuningResource";
 import SimDataResource from "./lib/models/resources/simData/simDataResource";
@@ -10,11 +11,14 @@ import * as formatting from "./lib/utils/formatting";
 
 
 export {
+  // Models
   Dbpf,
   RawResource,
+  XmlResource,
   TuningResource,
   SimDataResource,
   StringTableResource,
+  // Modules
   xmlDom,
   tunables,
   hashing,

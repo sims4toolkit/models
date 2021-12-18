@@ -1,13 +1,13 @@
 const fs = require('fs');
 const path = require('path');
 const expect = require('chai').expect;
-const { TuningResource, xmlDom, tunables } = require('../../../dst/api');
+const { TuningResource, xmlDom, tunables } = require('../../../../dst/api');
 const { XmlDocumentNode } = xmlDom;
 
 const XML_DECLARATION = '<?xml version="1.0" encoding="utf-8"?>';
 
 function getTuningFromFile(filename) {
-  const filepath = path.resolve(__dirname, `../../data/tuning/${filename}.xml`);
+  const filepath = path.resolve(__dirname, `../../../data/tuning/${filename}.xml`);
   const buffer = fs.readFileSync(filepath);
   return TuningResource.from(buffer);
 }

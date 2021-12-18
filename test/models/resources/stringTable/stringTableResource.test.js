@@ -1,7 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const expect = require('chai').expect;
-const { StringTableResource, hashing } = require('../../../dst/api');
+const { StringTableResource, hashing } = require('../../../../dst/api');
 
 //#region Helpers
 
@@ -12,7 +12,7 @@ function getSTBL(filename, options = undefined) {
     return StringTableResource.from(cachedBuffers[filename], options);
   }
 
-  const filepath = path.resolve(__dirname, `../../data/stbls/${filename}.stbl`);
+  const filepath = path.resolve(__dirname, `../../../data/stbls/${filename}.stbl`);
   const buffer = fs.readFileSync(filepath);
   cachedBuffers[filename] = buffer;
   return StringTableResource.from(buffer, options);

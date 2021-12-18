@@ -1,5 +1,5 @@
 const expect = require('chai').expect;
-const { RawResource, StringTableResource } = require('../../../dst/api');
+const { RawResource, StringTableResource } = require('../../../../dst/api');
 
 function getRAW(content = "default content") {
   return RawResource.from(Buffer.from(content));

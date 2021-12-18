@@ -1,5 +1,5 @@
 const { expect } = require("chai");
-const { StringTableResource, hashing, tunables, formatting } = require("../../../dst/api");
+const { StringTableResource, hashing, tunables, formatting } = require("../../../../dst/api");
 const { formatStringKey } = formatting;
 const { fnv32 } = hashing;
 const { I, M, T, E, L, U, V, C, Comment, LocString, getLocStringFn } = tunables;
