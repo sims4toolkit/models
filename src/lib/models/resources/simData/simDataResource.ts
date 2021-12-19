@@ -2,13 +2,13 @@ import Resource from "../resource";
 import { BinaryEncoder, BinaryDecoder } from "../../../utils/encoding";
 import { fnv32 } from "../../../utils/hashing";
 import { removeFromArray } from "../../../utils/helpers";
-import { SimDataInstance, SimDataSchema } from "./simDataFragments";
+import { SimDataInstance, SimDataSchema } from "./fragments";
 
 /**
  * A resource for SimData (binary tuning). SimDatas are essentially mini
- * relational databases, but to simplify working with them as well as for
- * consistency with Sims 4 Studio, this model uses the concept of "instances".
- * An "instance" is simply an object table that has a name.
+ * relational databases, but to simplify working with them (and for consistency
+ * with Sims 4 Studio), this model uses the concept of "instances". An
+ * "instance" is an object value that has a name.
  */
 export default class SimDataResource extends Resource {
   readonly variant = 'DATA';

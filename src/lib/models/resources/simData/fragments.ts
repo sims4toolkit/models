@@ -1,14 +1,21 @@
 import type SimDataResource from "./simDataResource";
+import type { Cell, ObjectCell } from "./cells";
 import CacheableModel from "../../abstract/cacheableModel";
 import { SimDataType } from "./simDataTypes";
 import { removeFromArray } from "../../../utils/helpers";
 
 
+/**
+ * A base for all sub-models that appear in a SimData.
+ */
 abstract class SimDataFragment extends CacheableModel {
   /** Removes this object from its owner. */
   abstract delete(): void;
 }
 
+/**
+ * A schema in a SimData.
+ */
 export class SimDataSchema extends SimDataFragment {
   owner?: SimDataResource;
 
@@ -71,6 +78,9 @@ export class SimDataSchema extends SimDataFragment {
   }
 }
 
+/**
+ * A column in a SimData's schema.
+ */
 class SimDataSchemaColumn extends SimDataFragment {
   owner?: SimDataSchema;
 
@@ -106,35 +116,40 @@ class SimDataSchemaColumn extends SimDataFragment {
   }
 }
 
-abstract class SimDataValue extends SimDataFragment {
-  abstract readonly type: SimDataType;
+/**
+ * TODO:
+ */
+export class SimDataInstance extends SimDataFragment implements ObjectCell {
+  readonly dataType: SimDataType.Object;
 
-  delete(): void {} // TODO: delete
-}
+  private _name: string;
+  /** TODO: */
+  public get name(): string { return this._name; }
+  public set name(value: string) { this._name = value; this.uncache(); }
 
-class SimDataPrimitiveValue extends SimDataValue {
-  readonly type: SimDataType;
-  value: any;
-}
+  private _schemaHash: number;
+  /** TODO: */
+  public get schemaHash(): number { return this._schemaHash; }
+  public set schemaHash(value: number) { this._schemaHash = value; this.uncache(); }
+  
+  private _rows: Cell[] = [];
+  /** TODO: */
+  public get rows(): Cell[] { return this._rows; }
+  public set rows(value: Cell[]) { this._rows = value; this.uncache(); }
 
-class SimDataVectorValue extends SimDataValue {
-  readonly type = SimDataType.Vector;
-  childType: SimDataType;
-  children: SimDataValue[];
-}
+  constructor({ name, schema, rows = [], owner }: {
+    name: string;
+    schema: SimDataSchema;
+    rows?: Cell[];
+    owner?: SimDataResource;
+  }) {
+    super(owner);
+    this._name = name;
+    this._schemaHash = schema.hash; // FIXME: should just use entire schema?
+    this._rows = rows; // FIXME: set owner?
+  }
 
-class SimDataVariantValue extends SimDataValue {
-  readonly type = SimDataType.Variant;
-  variantHash: number;
-  child?: SimDataValue;
-}
-
-class SimDataObjectValue extends SimDataValue {
-  readonly type = SimDataType.Object;
-  schema: SimDataSchema;
-  rows: { name: string; value: SimDataValue; }[];
-}
-
-export class SimDataInstance extends SimDataObjectValue {
-  name: string;
+  delete(): void {
+    //TODO:
+  }
 }
