@@ -28,26 +28,6 @@ export enum SimDataType {
   Undefined // 22
 }
 
-export type SimDataNumber = 
-  SimDataType.Int8 |
-  SimDataType.UInt8 |
-  SimDataType.Int16 |
-  SimDataType.UInt16 |
-  SimDataType.Int32 |
-  SimDataType.UInt32 |
-  SimDataType.Float |
-  SimDataType.LocalizationKey;
-
-export type SimDataBigInt = 
-  SimDataType.Int64 |
-  SimDataType.UInt64 |
-  SimDataType.TableSetReference;
-
-export type SimDataString =
-  SimDataType.Character |
-  SimDataType.String |
-  SimDataType.HashedString;
-
 /**
  * Namespace that contains helper functions for SimDataTypes.
  */

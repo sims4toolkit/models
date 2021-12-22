@@ -117,25 +117,25 @@ class SimDataSchemaColumn extends SimDataFragment {
 }
 
 /**
- * TODO:
+ * An object cell that has a name and should be part of the interface.
  */
 export class SimDataInstance extends SimDataFragment implements ObjectCell {
   readonly dataType: SimDataType.Object;
 
   private _name: string;
-  /** TODO: */
-  public get name(): string { return this._name; }
-  public set name(value: string) { this._name = value; this.uncache(); }
+  /** The name of this instance. */
+  public get name() { return this._name; }
+  public set name(value) { this._name = value; this.uncache(); }
 
-  private _schemaHash: number;
-  /** TODO: */
-  public get schemaHash(): number { return this._schemaHash; }
-  public set schemaHash(value: number) { this._schemaHash = value; this.uncache(); }
+  private _schema: SimDataSchema;
+  /** The schema that this instance follows. */
+  public get schema() { return this._schema; }
+  public set schema(value) { this._schema = value; this.uncache(); }
   
   private _rows: Cell[] = [];
-  /** TODO: */
-  public get rows(): Cell[] { return this._rows; }
-  public set rows(value: Cell[]) { this._rows = value; this.uncache(); }
+  /** The values for this instance's columns. */
+  public get rows() { return this._rows; }
+  public set rows(value) { this._rows = value; this.uncache(); }
 
   constructor({ name, schema, rows = [], owner }: {
     name: string;
@@ -145,7 +145,7 @@ export class SimDataInstance extends SimDataFragment implements ObjectCell {
   }) {
     super(owner);
     this._name = name;
-    this._schemaHash = schema.hash; // FIXME: should just use entire schema?
+    this._schema = schema; // FIXME: should just use entire schema?
     this._rows = rows; // FIXME: set owner?
   }
 
