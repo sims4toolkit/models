@@ -77,7 +77,7 @@ export interface Float4Cell extends Cell {
 export interface ObjectCell extends Cell {
   dataType: SimDataType.Object;
   schema: SimDataSchema;
-  rows: Cell[];
+  values: Cell[];
 }
 
 export interface VectorCell<T extends Cell> extends Cell {

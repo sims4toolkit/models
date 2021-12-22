@@ -4,18 +4,11 @@ import CacheableModel from "../../abstract/cacheableModel";
 import { SimDataType } from "./simDataTypes";
 import { removeFromArray } from "../../../utils/helpers";
 
-
-/**
- * A base for all sub-models that appear in a SimData.
- */
 abstract class SimDataFragment extends CacheableModel {
   /** Removes this object from its owner. */
   abstract delete(): void;
 }
 
-/**
- * A schema in a SimData.
- */
 export class SimDataSchema extends SimDataFragment {
   owner?: SimDataResource;
 
@@ -78,10 +71,7 @@ export class SimDataSchema extends SimDataFragment {
   }
 }
 
-/**
- * A column in a SimData's schema.
- */
-class SimDataSchemaColumn extends SimDataFragment {
+export class SimDataSchemaColumn extends SimDataFragment {
   owner?: SimDataSchema;
 
   private _name: string;
@@ -116,11 +106,9 @@ class SimDataSchemaColumn extends SimDataFragment {
   }
 }
 
-/**
- * An object cell that has a name and should be part of the interface.
- */
 export class SimDataInstance extends SimDataFragment implements ObjectCell {
   readonly dataType: SimDataType.Object;
+  owner?: SimDataResource;
 
   private _name: string;
   /** The name of this instance. */
@@ -132,24 +120,55 @@ export class SimDataInstance extends SimDataFragment implements ObjectCell {
   public get schema() { return this._schema; }
   public set schema(value) { this._schema = value; this.uncache(); }
   
-  private _rows: Cell[] = [];
+  private _values: Cell[] = [];
   /** The values for this instance's columns. */
-  public get rows() { return this._rows; }
-  public set rows(value) { this._rows = value; this.uncache(); }
+  public get values() { return this._values; }
+  public set values(value) { this._values = value; this.uncache(); }
 
-  constructor({ name, schema, rows = [], owner }: {
+  constructor({ name, schema, values = [], owner }: {
     name: string;
     schema: SimDataSchema;
-    rows?: Cell[];
+    values?: Cell[];
     owner?: SimDataResource;
   }) {
     super(owner);
     this._name = name;
-    this._schema = schema; // FIXME: should just use entire schema?
-    this._rows = rows; // FIXME: set owner?
+    this._schema = schema;
+    this._values = values;
   }
 
   delete(): void {
-    //TODO:
+    this.owner?.removeInstances(this); // removeInstances() uncaches
+  }
+
+  /**
+   * Adds values (Cells) to this instance and then uncaches it.
+   * 
+   * @param values Value cells to add to this schema
+   */
+  addValues(...values: Cell[]) {
+    this.values.push(...values);
+    this.uncache();
+  }
+
+  /**
+   * Removes values (Cells) from this instance and then uncaches it. Values are
+   * removed by reference equality, find the exact objects you want to remove
+   * and then pass them in to this function.
+   * 
+   * @param values Value cells to remove from this schema
+   */
+  removeValues(...values: Cell[]) {
+    if(removeFromArray(values, this.values)) this.uncache();
+  }
+
+  /**
+   * Allows you to alter the values in a way that uncaches the instance for you.
+   * 
+   * @param fn Callback function in which you can alter the values
+   */
+  updateValues(fn: (values: Cell[]) => void) {
+    fn(this.values);
+    this.uncache();
   }
 }
