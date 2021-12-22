@@ -1,5 +1,6 @@
-import type { ResourceVariant } from "../../types";
 import WritableModel from "../abstract/writableModel";
+
+type ResourceVariant = 'RAW' | 'XML' | 'DATA' | 'STBL';
 
 /**
  * A base class for all resources.

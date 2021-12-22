@@ -1,4 +1,3 @@
-import type { ResourceKey } from "../types";
 import * as zlib from 'zlib';
 import { BinaryDecoder, BinaryEncoder } from '../utils/encoding';
 import { makeList } from '../utils/helpers';
@@ -9,6 +8,13 @@ import StringTable from './resources/stringTable/stringTableResource';
 import Tuning from './resources/tuning/tuningResource';
 import RawResource from './resources/generic/rawResource';
 import WritableModel from "./abstract/writableModel";
+
+/** The (ideally) unique identifier for a resource. */
+interface ResourceKey {
+  type: number;
+  group: number;
+  instance: number | bigint;
+}
 
 /**
  * Model for a Sims 4 package file (also called a "Database Packed File", or
