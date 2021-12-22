@@ -1,6 +1,8 @@
 import type { SimDataSchema } from "./fragments";
 import { SimDataType } from "./simDataTypes";
 
+//#region SimDataType Groupings
+
 type SimDataNumber = 
   SimDataType.Int8 |
   SimDataType.UInt8 |
@@ -21,46 +23,50 @@ type SimDataString =
   SimDataType.String |
   SimDataType.HashedString;
 
-interface Cell {
+//#endregion SimDataType Groupings
+
+//#region Cell Interfaces
+
+export interface Cell {
   dataType: SimDataType;
 }
 
-interface StringCell extends Cell {
+export interface StringCell extends Cell {
   dataType: SimDataString;
   value: string;
 }
 
-interface NumberCell extends Cell {
+export interface NumberCell extends Cell {
   dataType: SimDataNumber;
   value: number;
 }
 
-interface BigIntCell extends Cell {
+export interface BigIntCell extends Cell {
   dataType: SimDataBigInt;
   value: bigint;
 }
 
-interface ResourceKeyCell extends Cell {
+export interface ResourceKeyCell extends Cell {
   dataType: SimDataType.ResourceKey;
   type: number;
   group: number;
   instance: bigint;
 }
 
-interface Float2Cell extends Cell {
+export interface Float2Cell extends Cell {
   dataType: SimDataType.Float2;
   x: number;
   y: number;
 }
 
-interface Float3Cell extends Cell {
+export interface Float3Cell extends Cell {
   dataType: SimDataType.Float3;
   x: number;
   y: number;
   z: number;
 }
 
-interface Float4Cell extends Cell {
+export interface Float4Cell extends Cell {
   dataType: SimDataType.Float4;
   x: number;
   y: number;
@@ -68,18 +74,20 @@ interface Float4Cell extends Cell {
   w: number;
 }
 
-interface ObjectCell extends Cell {
+export interface ObjectCell extends Cell {
   dataType: SimDataType.Object;
   schema: SimDataSchema;
   rows: Cell[];
 }
 
-interface VectorCell<T extends Cell> extends Cell {
+export interface VectorCell<T extends Cell> extends Cell {
   dataType: SimDataType.Vector;
   children: T[];
 }
 
-interface VariantCell<T extends Cell> extends Cell {
+export interface VariantCell<T extends Cell> extends Cell {
   dataType: SimDataType.Variant;
   child?: T;
 }
+
+//#endregion Cell Interfaces
