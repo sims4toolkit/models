@@ -12,6 +12,30 @@ export default class StringTableResource extends Resource {
   private _nextId: number;
   private _entries: StringEntry[];
 
+  /**
+   * The entries in this string table. Individual entries can be mutated and
+   * cacheing will be handled (e.g. `entries[1].string = "New text"` is
+   * perfectly safe), however, mutating the array itself by adding or removing
+   * entries should be avoided whenever possible, because doing so is a surefire
+   * way to mess up the cache. 
+   * 
+   * To add entries, use the `add()` and `addAndHash()` methods. To remove
+   * entries, either use the `remove()` method on the string table or the 
+   * `delete()` method on the entry you want to remove.
+   * 
+   * If you insist on removing from or sorting the array manually, you can, as
+   * long as you remember to call `uncache()` when you are done. If you insist
+   * on adding entries manually, it's your funeral. Seriously, just use `add()`.
+   */
+  get entries(): StringEntry[] {
+    return this._entries;
+  }
+
+  /** The number of entries in this string table. */
+  get length(): number {
+    return this.entries.length;
+  }
+
   //#region Initialization
 
   protected constructor(entries: KeyStringPair[] = [], buffer?: Buffer) {
@@ -148,18 +172,6 @@ export default class StringTableResource extends Resource {
   //#region Public Methods - READ
 
   /**
-   * All of the entries in this string table. You can mutate individual entries
-   * and cacheing will be handled for you, but if you mutate the list itself
-   * (e.g. by calling `push()` or `splice()`), the cache will fall out of sync
-   * and you will need to call `uncache()` to reset it. To prevent cacheing
-   * issues, use the built-in methods on the string table and entry objects to
-   * add or remove entries.
-   */
-  get entries(): StringEntry[] {
-    return this._entries;
-  }
-
-  /**
    * Finds and returns any errors that are in this string table. Returns an
    * empty array if there are no errors.
    */
@@ -214,11 +226,6 @@ export default class StringTableResource extends Resource {
    */
   getByKey(key: number): StringEntry {
     return this.entries.find(entry => entry.key === key);
-  }
-
-  /** The number of entries in this string table. */
-  get length(): number {
-    return this.entries.length;
   }
 
   /**
