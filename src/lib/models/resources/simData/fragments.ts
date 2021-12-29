@@ -5,6 +5,8 @@ import CacheableModel from "../../abstract/cacheableModel";
 import { SimDataType } from "./simDataTypes";
 import { removeFromArray } from "../../../utils/helpers";
 
+// FIXME: since instances should reference the exact schema that they follow, should it be cloned when the instance is cloned?
+
 /**
  * A schema that objects in a SimData can follow.
  */
@@ -36,21 +38,29 @@ export class SimDataSchema extends CacheableModel {
   }
 
   /**
-   * Adds columns to this schema and uncaches it. The provided arguments can
-   * either be instances of SimDataSchemaColumn or plain JS objects with `name`
-   * and `type` properties.
+   * Adds columns to this schema and uncaches it. The provided columns should
+   * be new objects (i.e. columns that are not already part of another schema).
+   * If you want to copy columns from another schema, use `addColumnClones()`
+   * instead, so as to not affect the internal cache.
    * 
    * @param columns Columns to add to this schema
    */
-  addColumns(...columns: {
-    name: string;
-    type: SimDataType;
-    flags?: number;
-  }[]) {
+  addColumns(...columns: SimDataSchemaColumn[]) {
     columns.forEach(({ name, type, flags = 0 }) => {
       this.columns.push(new SimDataSchemaColumn(name, type, flags, this));
     });
+
     this.uncache();
+  }
+
+  /**
+   * Clones and adds the given columns to this schema. This method ensures that
+   * the columns that get added are new objects, so as to avoid cacheing issues.
+   * 
+   * @param columns Columns to add to this schema
+   */
+  addColumnClones(...columns: SimDataSchemaColumn[]) {
+    this.addColumns(...(columns.map(column => column.clone())));
   }
 
   /**
@@ -64,8 +74,19 @@ export class SimDataSchema extends CacheableModel {
     if(removeFromArray(columns, this.columns)) this.uncache();
   }
 
+  /**
+   * Removes this schema from its owning SimDataResource, if it has one.
+   */
   delete() {
     this.owner?.removeSchemas(this); // removeSchemas() uncaches
+  }
+
+  /**
+   * Creates a deep copy of this schema, with all values except for owner being
+   * copied over.
+   */
+  clone(): SimDataSchema {
+    return new SimDataSchema(this.name, this.hash, this.columns.map(column => column.clone()));
   }
 }
 
@@ -80,8 +101,19 @@ export class SimDataSchemaColumn extends CacheableModel {
     this._watchProps('name', 'type', 'flags');
   }
 
+  /**
+   * Removes this column from its owning SimDataSchema, if it has one.
+   */
   delete(): void {
     this.owner?.removeColumns(this); // removeColumns() uncaches
+  }
+
+  /**
+   * Creates a deep copy of this column, with all values except for owner being
+   * copied over.
+   */
+  clone(): SimDataSchemaColumn {
+    return new SimDataSchemaColumn(this.name, this.type, this.flags);
   }
 }
 
@@ -97,7 +129,18 @@ export class SimDataInstance extends ObjectCell {
     this._watchProps('name');
   }
 
+  /**
+   * Removes this instance from its owning SimDataResource, if it has one.
+   */
   delete(): void {
     this.owner?.removeInstances(this); // removeInstances() uncaches
+  }
+
+  /**
+   * Creates a deep copy of this instance, with all values except for owner
+   * being copied over.
+   */
+  clone(): SimDataInstance {
+    return new SimDataInstance(this.name, this.schema.clone(), this.values.map(cell => cell.clone()));
   }
 }

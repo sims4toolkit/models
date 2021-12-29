@@ -77,9 +77,7 @@ abstract class MultiValueCell<T extends Cell> extends Cell {
    * you remember to call `uncache()` when you are done. If you insist on adding
    * values manually, it's your funeral. Doing so will likely mess up ownership.
    */
-  get values() {
-    return this._values;
-  }
+  get values() { return this._values; }
 
   constructor(dataType: SimDataType, values: T[], owner?: CacheableModel) {
     super(dataType, owner);
