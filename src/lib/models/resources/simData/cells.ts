@@ -304,6 +304,9 @@ export class Float4Cell extends Cell {
   }
 }
 
+/**
+ * A cell that contains rows that line up with schema columns.
+ */
 export class ObjectCell extends MultiValueCell<Cell> {
   readonly dataType: SimDataType.Object;
 
@@ -327,8 +330,15 @@ export class ObjectCell extends MultiValueCell<Cell> {
       throw new Error("Schema must be specified for object cell.");
     }
   }
+
+  clone(): ObjectCell {
+    return new ObjectCell(this.schema, this.values.map(cell => cell.clone()));
+  }
 }
 
+/**
+ * A cell that contains a list of values of the same type.
+ */
 export class VectorCell<T extends Cell> extends MultiValueCell<T> {
   readonly dataType: SimDataType.Vector;
 
@@ -348,18 +358,28 @@ export class VectorCell<T extends Cell> extends MultiValueCell<T> {
       super.validate();
     }
   }
+
+  clone(): VectorCell {
+    return new VectorCell(this.values.map(cell => cell.clone()));
+  }
 }
 
+/**
+ * A cell that may contain another cell.
+ */
 export class VariantCell extends SingleValueCell<Cell> {
   readonly dataType: SimDataType.Variant;
 
   constructor(value: Cell, owner?: CacheableModel) {
     super(SimDataType.Variant, value, owner);
-    value.owner = this;
   }
 
   validate(): void {
     this.value?.validate();
+  }
+
+  clone(): VariantCell {
+    return new VariantCell(this.value?.clone());
   }
 }
 
