@@ -61,6 +61,8 @@ abstract class SingleValueCell<T extends SingleValueCellType> extends Cell {
  * A SimData cell that contains other cells of the same type.
  */
 abstract class MultiValueCell<T extends Cell> extends Cell {
+  private _values: T[];
+
   /**
    * The values in this cell. Individual values can be mutated and cacheing will
    * be handled (e.g. `values[0].value = 5` is perfectly safe), however,
@@ -75,13 +77,14 @@ abstract class MultiValueCell<T extends Cell> extends Cell {
    * you remember to call `uncache()` when you are done. If you insist on adding
    * values manually, it's your funeral. Doing so will likely mess up ownership.
    */
-  public values: T[];
+  get values() {
+    return this._values;
+  }
 
   constructor(dataType: SimDataType, values: T[], owner?: CacheableModel) {
     super(dataType, owner);
-    this.values = values;
+    this._values = values;
     values.forEach(cell => cell.owner = this);
-    this._watchProps('values');
   }
 
   /**
