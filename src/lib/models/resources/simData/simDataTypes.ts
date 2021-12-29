@@ -178,7 +178,7 @@ export namespace SimDataTypeUtils {
       case SimDataType.TableSetReference:
         // fallthrough
       case SimDataType.UInt64:
-        return value >= 0 && value <= 0xFFFFFFFFFFFFFFFFn;
+        return value >= 0n && value <= 0xFFFFFFFFFFFFFFFFn;
       default:
         throw new Error(`Type ${dataType} is not a SimDataBigInt.`);
     }
