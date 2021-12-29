@@ -1,7 +1,7 @@
-import { removeFromArray } from "../../../utils/helpers";
-import CacheableModel from "../../abstract/cacheableModel";
 import type { SimDataSchema } from "./fragments";
+import CacheableModel from "../../abstract/cacheableModel";
 import { SimDataType } from "./simDataTypes";
+import { removeFromArray } from "../../../utils/helpers";
 
 //#region SimDataType Groupings
 
@@ -29,57 +29,23 @@ type SimDataText =
 
 //#region Cells
 
+/**
+ * A value that appears in a SimData table.
+ */
 export abstract class Cell extends CacheableModel {
-  public owner?: Cell;
-
-  constructor(readonly dataType: SimDataType, owner?: Cell) {
+  constructor(public readonly dataType: SimDataType, owner?: CacheableModel) {
     super(owner);
-  }
-
-  /**
-   * Adds values to this cell, if it can contain other cells. If this cell
-   * doesn't support recursive values, an exception is thrown.
-   * 
-   * @param cells Cells to add to this one
-   */
-  abstract add(...cells: Cell[]): void;
-
-  /**
-   * Removes values from this cell, if it can contain other cells. If this cell
-   * doesn't support recursive values, an exception is thrown. Cells are removed
-   * by reference equality. Find the exact objects to remove and then pass them
-   * in to this function (or, call their `delete()` method).
-   * 
-   * @param cells Cells to add to this one
-   */
-  abstract remove(...cells: Cell[]): void;
-
-  /**
-   * Removes this cell from its owner, if it has one.
-   */
-  delete(): void {
-    this.owner?.remove?.(this);
   }
 
   /**
    * Verifies that this cell's content is valid, and if it isn't, an exception
    * is thrown.
    */
-  validate(): void {}
+  abstract validate(): void;
 }
 
-abstract class NonRecursiveCell extends Cell {
-  add(...cells: Cell[]): void {
-    throw new Error(`Cannot add to this cell: ${this}`);
-  }
-
-  remove(...cells: Cell[]): void {
-    throw new Error(`Cannot remove from this cell: ${this}`);
-  }
-}
-
-abstract class SingleValueCell<T> extends NonRecursiveCell {
-  constructor(dataType: SimDataType, public value: T, owner?: Cell) {
+abstract class SingleValueCell<T> extends Cell {
+  constructor(dataType: SimDataType, public value: T, owner?: CacheableModel) {
     super(dataType, owner);
     this._watchProps('value');
   }
@@ -88,11 +54,11 @@ abstract class SingleValueCell<T> extends NonRecursiveCell {
 export class TextCell extends SingleValueCell<string> {
   readonly dataType: SimDataText;
 
-  constructor(dataType: SimDataText, value: string, owner?: Cell) {
+  constructor(dataType: SimDataText, value: string, owner?: CacheableModel) {
     super(dataType, value, owner);
   }
 
-  validate() {
+  validate(): void {
     if (!this.value) throw new Error("Text cell must be a non-empty string.");
   }
 }
@@ -100,69 +66,82 @@ export class TextCell extends SingleValueCell<string> {
 export class NumberCell extends SingleValueCell<number> {
   readonly dataType: SimDataNumber;
 
-  constructor(dataType: SimDataNumber, value: number, owner?: Cell) {
+  constructor(dataType: SimDataNumber, value: number, owner?: CacheableModel) {
     super(dataType, value, owner);
   }
 
-  // TODO: Validate between min/max value
+  validate(): void {
+    // TODO: impl
+  }
 }
 
 export class BigIntCell extends SingleValueCell<bigint> {
   readonly dataType: SimDataBigInt;
 
-  constructor(dataType: SimDataBigInt, value: bigint, owner?: Cell) {
+  constructor(dataType: SimDataBigInt, value: bigint, owner?: CacheableModel) {
     super(dataType, value, owner);
   }
 
-  // TODO: Validate between min/max value
+  validate(): void {
+    // TODO: impl
+  }
 }
 
-export class ResourceKeyCell extends NonRecursiveCell {
+export class ResourceKeyCell extends Cell {
   readonly dataType: SimDataType.ResourceKey;
 
-  constructor(public type: number, public group: number, public instance: bigint, owner?: Cell) {
+  constructor(public type: number, public group: number, public instance: bigint, owner?: CacheableModel) {
     super(SimDataType.ResourceKey, owner);
     this._watchProps('type', 'group', 'instance');
   }
 
-  // TODO: Validate between min/max value
+  validate(): void {
+    // TODO: impl
+  }
 }
 
-export class Float2Cell extends NonRecursiveCell {
+export class Float2Cell extends Cell {
   readonly dataType: SimDataType.Float2;
 
-  constructor(public x: number, public y: number, owner?: Cell) {
+  constructor(public x: number, public y: number, owner?: CacheableModel) {
     super(SimDataType.Float2, owner);
     this._watchProps('x', 'y');
   }
 
-  // TODO: Validate between min/max value
+  validate(): void {
+    // TODO: impl
+  }
 }
 
-export class Float3Cell extends NonRecursiveCell {
+export class Float3Cell extends Cell {
   readonly dataType: SimDataType.Float3;
 
-  constructor(public x: number, public y: number, public z: number, owner?: Cell) {
+  constructor(public x: number, public y: number, public z: number, owner?: CacheableModel) {
     super(SimDataType.Float3, owner);
     this._watchProps('x', 'y', 'z');
   }
 
-  // TODO: Validate between min/max value
+  validate(): void {
+    // TODO: impl
+  }
 }
 
-export class Float4Cell extends NonRecursiveCell {
+export class Float4Cell extends Cell {
   readonly dataType: SimDataType.Float4;
 
-  constructor(public x: number, public y: number, public z: number, public w: number, owner?: Cell) {
+  constructor(public x: number, public y: number, public z: number, public w: number, owner?: CacheableModel) {
     super(SimDataType.Float4, owner);
     this._watchProps('x', 'y', 'z', 'w');
   }
 
-  // TODO: Validate between min/max value
+  validate(): void {
+    // TODO: impl
+  }
 }
 
 abstract class MultiValueCell<T extends Cell> extends Cell {
   /**
+   * TODO:
    * The values in this cell. This should not be mutated directly - use the
    * provided methods to add, remove, or edit the values, or else the cache will
    * be off. If you must mutate it in in some unique way, do one of the
@@ -173,18 +152,18 @@ abstract class MultiValueCell<T extends Cell> extends Cell {
    */
   public values: T[];
 
-  constructor(dataType: SimDataType, values: T[], owner?: Cell) {
+  constructor(dataType: SimDataType, values: T[], owner?: CacheableModel) {
     super(dataType, owner);
     this.values = values;
     this._watchProps('values');
   }
 
-  add(...values: T[]) {
+  addValues(...values: T[]) {
     this.values.push(...values);
     this.uncache();
   }
 
-  remove(...values: T[]) {
+  removeValues(...values: T[]) {
     if(removeFromArray(values, this.values)) this.uncache();
   }
   
@@ -218,7 +197,7 @@ abstract class MultiValueCell<T extends Cell> extends Cell {
 export class ObjectCell extends MultiValueCell<Cell> {
   readonly dataType: SimDataType.Object;
 
-  constructor(public schema: SimDataSchema, values: Cell[], owner?: Cell) {
+  constructor(public schema: SimDataSchema, values: Cell[], owner?: CacheableModel) {
     super(SimDataType.Object, values, owner);
     this._watchProps('schema');
   }
@@ -243,7 +222,7 @@ export class ObjectCell extends MultiValueCell<Cell> {
 export class VectorCell<T extends Cell> extends MultiValueCell<T> {
   readonly dataType: SimDataType.Vector;
 
-  constructor(values: T[], owner?: Cell) {
+  constructor(values: T[], owner?: CacheableModel) {
     super(SimDataType.Vector, values, owner);
   }
 
@@ -264,8 +243,8 @@ export class VectorCell<T extends Cell> extends MultiValueCell<T> {
 export class VariantCell extends SingleValueCell<Cell> {
   readonly dataType: SimDataType.Variant;
 
-  constructor(public value: Cell, owner?: Cell) {
-    super(SimDataType.Variant, owner);
+  constructor(value: Cell, owner?: CacheableModel) {
+    super(SimDataType.Variant, value, owner);
     value.owner = this;
   }
 

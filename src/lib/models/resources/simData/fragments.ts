@@ -1,64 +1,62 @@
 import type SimDataResource from "./simDataResource";
-import type { Cell, ObjectCell } from "./cells";
+import type { Cell } from "./cells";
+import { ObjectCell } from "./cells";
 import CacheableModel from "../../abstract/cacheableModel";
 import { SimDataType } from "./simDataTypes";
 import { removeFromArray } from "../../../utils/helpers";
 
-abstract class SimDataFragment extends CacheableModel {
-  /** Removes this object from its owner. */
-  abstract delete(): void;
-}
-
-export class SimDataSchema extends SimDataFragment {
+/**
+ * A schema that objects in a SimData can follow.
+ */
+export class SimDataSchema extends CacheableModel {
   owner?: SimDataResource;
-
-  private _name: string;
-  /** The name of this schema. */
-  get name() { return this._name; }
-  set name(name) { this._name = name; this.uncache(); }
-
-  private _hash: number;
-  /** The hash of this schema. This is not necessarily the hash of the name. */
-  get hash() { return this._hash; }
-  set hash(hash) { this._hash = hash; this.uncache(); }
-
   private _columns: SimDataSchemaColumn[];
-  /** The columns in this schema. Do not add or remove items from this array
-   * manually - use the `addColumns()` and `removeColumns()` methods for that.
-   * If you do mutate the array, be sure to call `uncache()` afterwards. */
-  get columns() { return this._columns; }
-  set columns(columns) {
-    columns.forEach(column => column.owner = this);
-    this._columns = columns;
-    this.uncache();
-  }
 
-  constructor({ name, hash, columns = [], owner }: {
-    name: string;
-    hash: number;
-    columns?: SimDataSchemaColumn[];
-    owner?: SimDataResource;
-  }) {
+  /**
+   * The columns in this schema. Individual columns can be mutated and cacheing
+   * will be handled (e.g. `columns[0].name = "col_name"` is perfectly safe),
+   * however, mutating the array itself by adding or removing columns should be
+   * avoided whenever possible, because doing so is a surefire way to mess up
+   * the cache. 
+   * 
+   * To add or remove columns, use the `addColumns()` and `removeColumns()`
+   * methods, or you may also call `delete()` on the column you wish to remove.
+   * 
+   * If you insist on removing from or sorting the array manually, you can, as
+   * long as you remember to call `uncache()` when you are done. If you insist
+   * on adding columns manually, it's your funeral.
+   */
+  get columns() { return this._columns; }
+
+  constructor(public name: string, public hash: number, columns: SimDataSchemaColumn[], owner?: SimDataResource) {
     super(owner);
-    this._name = name;
-    this._hash = hash;
-    columns.forEach(column => column.owner = this);
-    this._columns = columns;
+    this._columns = columns || [];
+    this.columns.forEach(column => column.owner = this);
+    this._watchProps('name', 'hash');
   }
 
   /**
-   * Adds columns to this schema and then uncaches it.
+   * Adds columns to this schema and uncaches it. The provided arguments can
+   * either be instances of SimDataSchemaColumn or plain JS objects with `name`
+   * and `type` properties.
    * 
    * @param columns Columns to add to this schema
    */
-  addColumns(...columns: SimDataSchemaColumn[]) {
-    columns.forEach(column => column.owner = this);
-    this.columns.push(...columns);
+  addColumns(...columns: {
+    name: string;
+    type: SimDataType;
+    flags?: number;
+  }[]) {
+    columns.forEach(({ name, type, flags = 0 }) => {
+      this.columns.push(new SimDataSchemaColumn(name, type, flags, this));
+    });
     this.uncache();
   }
 
   /**
-   * Removes columns from this schema and then uncaches it.
+   * Removes the given columns from this schema and then uncaches it. Columns
+   * are removed by reference equality, so the given objects must be the exact
+   * objects that exist in this SimData.
    * 
    * @param columns Columns to remove to this schema
    */
@@ -71,34 +69,15 @@ export class SimDataSchema extends SimDataFragment {
   }
 }
 
-export class SimDataSchemaColumn extends SimDataFragment {
+/**
+ * A column in a SimData schema.
+ */
+export class SimDataSchemaColumn extends CacheableModel {
   owner?: SimDataSchema;
 
-  private _name: string;
-  /** The name of this column. */
-  get name() { return this._name; }
-  set name(name) { this._name = name; this.uncache(); }
-
-  private _type: SimDataType;
-  /** The data type of this column. */
-  get type() { return this._type; }
-  set type(type) { this._type = type; this.uncache(); }
-
-  private _flags: number;
-  /** The flags for this column. Must be uint32. */
-  get flags() { return this._flags; }
-  set flags(flags) { this._flags = flags; this.uncache(); }
-
-  constructor({ name, type, flags = 0, owner }: {
-    name: string;
-    type: SimDataType;
-    flags?: number;
-    owner?: SimDataSchema;
-  }) {
+  constructor(public name: string, public type: SimDataType, public flags: number, owner?: SimDataSchema) {
     super(owner);
-    this._name = name;
-    this._type = type;
-    this._flags = flags;
+    this._watchProps('name', 'type', 'flags');
   }
 
   delete(): void {
@@ -106,69 +85,19 @@ export class SimDataSchemaColumn extends SimDataFragment {
   }
 }
 
-export class SimDataInstance extends SimDataFragment implements ObjectCell {
-  readonly dataType: SimDataType.Object;
+/**
+ * A top-level object cell with a name. These are the only cells that appear in
+ * a SimData XML, so these are the models that users are familiar with.
+ */
+export class SimDataInstance extends ObjectCell {
   owner?: SimDataResource;
 
-  private _name: string;
-  /** The name of this instance. */
-  public get name() { return this._name; }
-  public set name(value) { this._name = value; this.uncache(); }
-
-  private _schema: SimDataSchema;
-  /** The schema that this instance follows. */
-  public get schema() { return this._schema; }
-  public set schema(value) { this._schema = value; this.uncache(); }
-  
-  private _values: Cell[] = [];
-  /** The values for this instance's columns. */
-  public get values() { return this._values; }
-  public set values(value) { this._values = value; this.uncache(); }
-
-  constructor({ name, schema, values = [], owner }: {
-    name: string;
-    schema: SimDataSchema;
-    values?: Cell[];
-    owner?: SimDataResource;
-  }) {
-    super(owner);
-    this._name = name;
-    this._schema = schema;
-    this._values = values;
+  constructor(public name: string, schema: SimDataSchema, values: Cell[], owner?: SimDataResource) {
+    super(schema, values, owner);
+    this._watchProps('name');
   }
 
   delete(): void {
     this.owner?.removeInstances(this); // removeInstances() uncaches
-  }
-
-  /**
-   * Adds values (Cells) to this instance and then uncaches it.
-   * 
-   * @param values Value cells to add to this schema
-   */
-  addValues(...values: Cell[]) {
-    this.values.push(...values);
-    this.uncache();
-  }
-
-  /**
-   * Removes values (Cells) from this instance and then uncaches it. Values are
-   * removed by reference equality, find the exact objects you want to remove
-   * and then pass them in to this function.
-   * 
-   * @param values Value cells to remove from this schema
-   */
-  removeValues(...values: Cell[]) {
-    if(removeFromArray(values, this.values)) this.uncache();
-  }
-
-  /**
-   * Allows you to alter the values in a way that uncaches the instance for you.
-   * 
-   * @param fn Callback function in which you can alter the values
-   */
-  updateValues(fn: (values: Cell[]) => void) {
-    fn(this.values);
-    this.uncache();
   }
 }
