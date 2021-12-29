@@ -171,6 +171,9 @@ export class BooleanCell extends SingleValueCell<boolean> {
   }
 }
 
+/**
+ * A cell that contains any kind of text, such as a string or character.
+ */
 export class TextCell extends SingleValueCell<string> {
   readonly dataType: SimDataText;
 
@@ -181,8 +184,16 @@ export class TextCell extends SingleValueCell<string> {
   validate(): void {
     if (!this.value) throw new Error("Text cell must be a non-empty string.");
   }
+
+  clone(): TextCell {
+    return new TextCell(this.dataType, this.value);
+  }
 }
 
+/**
+ * A cell that contains any numerical value that can fit in an ES number. This
+ * includes all integers 32-bit and smaller, floats, and localization keys.
+ */
 export class NumberCell extends SingleValueCell<number> {
   readonly dataType: SimDataNumber;
 
@@ -193,8 +204,16 @@ export class NumberCell extends SingleValueCell<number> {
   validate(): void {
     // TODO: impl
   }
+
+  clone(): NumberCell {
+    return new NumberCell(this.dataType, this.value);
+  }
 }
 
+/**
+ * A cell that contains any numerical value that requires 64 bits or higher.
+ * This includes 64-bit integers and table set references.
+ */
 export class BigIntCell extends SingleValueCell<bigint> {
   readonly dataType: SimDataBigInt;
 
@@ -205,8 +224,15 @@ export class BigIntCell extends SingleValueCell<bigint> {
   validate(): void {
     // TODO: impl
   }
+
+  clone(): BigIntCell {
+    return new BigIntCell(this.dataType, this.value);
+  }
 }
 
+/**
+ * A cell that contains a resource key value.
+ */
 export class ResourceKeyCell extends Cell {
   readonly dataType: SimDataType.ResourceKey;
 
@@ -218,8 +244,15 @@ export class ResourceKeyCell extends Cell {
   validate(): void {
     // TODO: impl
   }
+
+  clone(): ResourceKeyCell {
+    return new ResourceKeyCell(this.type, this.group, this.instance);
+  }
 }
 
+/**
+ * A cell that contains two floating point numbers.
+ */
 export class Float2Cell extends Cell {
   readonly dataType: SimDataType.Float2;
 
@@ -228,11 +261,16 @@ export class Float2Cell extends Cell {
     this._watchProps('x', 'y');
   }
 
-  validate(): void {
-    // TODO: impl
+  validate(): void { }
+
+  clone(): Float2Cell {
+    return new Float2Cell(this.x, this.y);
   }
 }
 
+/**
+ * A cell that contains three floating point numbers.
+ */
 export class Float3Cell extends Cell {
   readonly dataType: SimDataType.Float3;
 
@@ -241,11 +279,16 @@ export class Float3Cell extends Cell {
     this._watchProps('x', 'y', 'z');
   }
 
-  validate(): void {
-    // TODO: impl
+  validate(): void { }
+
+  clone(): Float3Cell {
+    return new Float3Cell(this.x, this.y, this.z);
   }
 }
 
+/**
+ * A cell that contains four floating point numbers.
+ */
 export class Float4Cell extends Cell {
   readonly dataType: SimDataType.Float4;
 
@@ -254,8 +297,10 @@ export class Float4Cell extends Cell {
     this._watchProps('x', 'y', 'z', 'w');
   }
 
-  validate(): void {
-    // TODO: impl
+  validate(): void { }
+
+  clone(): Float4Cell {
+    return new Float4Cell(this.x, this.y, this.z, this.w);
   }
 }
 
