@@ -1,33 +1,10 @@
 import type { SimDataSchema } from "./fragments";
+import type { SimDataNumber, SimDataBigInt, SimDataText, SimDataFloatVector } from "./simDataTypes";
 import CacheableModel from "../../abstract/cacheableModel";
-import { SimDataType } from "./simDataTypes";
+import { SimDataType, SimDataTypeUtils } from "./simDataTypes";
 import { removeFromArray } from "../../../utils/helpers";
 
-//#region SimDataType Groupings
-
-type SimDataNumber = 
-  SimDataType.Int8 |
-  SimDataType.UInt8 |
-  SimDataType.Int16 |
-  SimDataType.UInt16 |
-  SimDataType.Int32 |
-  SimDataType.UInt32 |
-  SimDataType.Float |
-  SimDataType.LocalizationKey;
-
-type SimDataBigInt = 
-  SimDataType.Int64 |
-  SimDataType.UInt64 |
-  SimDataType.TableSetReference;
-
-type SimDataText =
-  SimDataType.Character |
-  SimDataType.String |
-  SimDataType.HashedString;
-
 type SingleValueCellType = boolean | number | bigint | string | Cell;
-
-//#endregion SimDataType Groupings
 
 //#region Abstract Cells
 
@@ -41,9 +18,18 @@ export abstract class Cell extends CacheableModel {
 
   /**
    * Verifies that this cell's content is valid, and if it isn't, an exception
-   * is thrown.
+   * is thrown with the reason why it is invalid.
+   * 
+   * Options
+   * - `ignoreCache`: Whether or not cache should be validated. Feel free to
+   *   set this to `true` if you're just reading or generating SimDatas, the
+   *   only time cache really matters is when you're editing SimDatas. Default
+   *   value is `false`.
+   * 
+   * @param options Options for validation
+   * @throws If this cell is not in a valid state
    */
-  abstract validate(): void;
+  abstract validate(options?: { ignoreCache?: boolean; }): void;
 
   /**
    * Creates a deep copy of this cell, retaining all information except for
@@ -146,8 +132,36 @@ abstract class MultiValueCell<T extends Cell> extends Cell {
     this.uncache();
   }
 
+  validate({ ignoreCache = false } = {}): void {
+    this.values.forEach(value => {
+      if (!ignoreCache && value.owner !== this) {
+        throw new Error("Cache Problem: Child cell has another owner.");
+      }
+
+      value.validate();
+    });
+  }
+}
+
+/**
+ * A SimData cell that contains multiple 4-byte floats.
+ */
+abstract class FloatVectorCell extends Cell {
+  readonly dataType: SimDataFloatVector;
+  protected _floats: number[];
+
+  constructor(dataType: SimDataFloatVector, public x: number, public y: number, owner?: CacheableModel) {
+    super(dataType, owner);
+    this._floats = [x, y];
+    this._watchProps('x', 'y');
+  }
+
   validate(): void {
-    this.values.forEach(value => value.validate());
+    this._floats.forEach(float => {
+      if (!SimDataTypeUtils.isNumberInRange(float, SimDataType.Float)) {
+        throw new Error(`Float vector contains a value that is not a 4-byte float: ${float}`);
+      }
+    });
   }
 }
 
@@ -203,7 +217,9 @@ export class NumberCell extends SingleValueCell<number> {
   }
 
   validate(): void {
-    // TODO: impl
+    if (!SimDataTypeUtils.isNumberInRange(this.value, this.dataType)) {
+      throw new Error(`Value of ${this.value} is not within the range of ${this.dataType}.`);
+    }
   }
 
   clone(): NumberCell {
@@ -223,7 +239,9 @@ export class BigIntCell extends SingleValueCell<bigint> {
   }
 
   validate(): void {
-    // TODO: impl
+    if (!SimDataTypeUtils.isBigIntInRange(this.value, this.dataType)) {
+      throw new Error(`Value of ${this.value} is not within the range of ${this.dataType}.`);
+    }
   }
 
   clone(): BigIntCell {
@@ -243,7 +261,12 @@ export class ResourceKeyCell extends Cell {
   }
 
   validate(): void {
-    // TODO: impl
+    if (!SimDataTypeUtils.isNumberInRange(this.type, SimDataType.UInt32))
+      throw new Error(`ResourceKeyCell's type is not a UInt32: ${this.type}`);
+    if (!SimDataTypeUtils.isNumberInRange(this.group, SimDataType.UInt32))
+      throw new Error(`ResourceKeyCell's group is not a UInt32: ${this.group}`);
+    if (!SimDataTypeUtils.isBigIntInRange(this.instance, SimDataType.TableSetReference))
+      throw new Error(`ResourceKeyCell's instance is not a UInt64: ${this.instance}`);
   }
 
   clone(): ResourceKeyCell {
@@ -254,15 +277,12 @@ export class ResourceKeyCell extends Cell {
 /**
  * A cell that contains two floating point numbers.
  */
-export class Float2Cell extends Cell {
+export class Float2Cell extends FloatVectorCell {
   readonly dataType: SimDataType.Float2;
 
-  constructor(public x: number, public y: number, owner?: CacheableModel) {
-    super(SimDataType.Float2, owner);
-    this._watchProps('x', 'y');
+  constructor(x: number, y: number, owner?: CacheableModel) {
+    super(SimDataType.Float2, x, y, owner);
   }
-
-  validate(): void { }
 
   clone(): Float2Cell {
     return new Float2Cell(this.x, this.y);
@@ -272,15 +292,14 @@ export class Float2Cell extends Cell {
 /**
  * A cell that contains three floating point numbers.
  */
-export class Float3Cell extends Cell {
+export class Float3Cell extends FloatVectorCell {
   readonly dataType: SimDataType.Float3;
 
-  constructor(public x: number, public y: number, public z: number, owner?: CacheableModel) {
-    super(SimDataType.Float3, owner);
-    this._watchProps('x', 'y', 'z');
+  constructor(x: number, y: number, public z: number, owner?: CacheableModel) {
+    super(SimDataType.Float3, x, y, owner);
+    this._floats.push(z);
+    this._watchProps('z');
   }
-
-  validate(): void { }
 
   clone(): Float3Cell {
     return new Float3Cell(this.x, this.y, this.z);
@@ -290,15 +309,14 @@ export class Float3Cell extends Cell {
 /**
  * A cell that contains four floating point numbers.
  */
-export class Float4Cell extends Cell {
+export class Float4Cell extends FloatVectorCell {
   readonly dataType: SimDataType.Float4;
 
-  constructor(public x: number, public y: number, public z: number, public w: number, owner?: CacheableModel) {
-    super(SimDataType.Float4, owner);
-    this._watchProps('x', 'y', 'z', 'w');
+  constructor(x: number, y: number, public z: number, public w: number, owner?: CacheableModel) {
+    super(SimDataType.Float4, x, y, owner);
+    this._floats.push(z, w);
+    this._watchProps('z', 'w');
   }
-
-  validate(): void { }
 
   clone(): Float4Cell {
     return new Float4Cell(this.x, this.y, this.z, this.w);
@@ -319,11 +337,11 @@ export class ObjectCell extends MultiValueCell<Cell> {
   validate(): void {
     if (this.schema) {
       this.schema.columns.forEach((column, index) => {
-        const value = this.values[index];
-        if (!value)
-          throw new Error(`Missing value for column with name "${column.name}"`);
-        if (value.dataType !== column.type)
-          throw new Error(`Value's type does not match its column: ${value.dataType} ≠ ${column.type}`);
+        const cell = this.values[index];
+        if (!cell)
+          throw new Error(`Missing cell for column with name "${column.name}"`);
+        if (cell.dataType !== column.type)
+          throw new Error(`Cell's type does not match its column: ${cell.dataType} ≠ ${column.type}`);
       });
 
       super.validate();
@@ -350,9 +368,10 @@ export class VectorCell<T extends Cell> extends MultiValueCell<T> {
   validate(): void {
     if (this.values.length > 0) {
       const childType = this.values[0].dataType;
+
       this.values.forEach(child => {
         if (child.dataType !== childType) {
-          throw new Error(`Not all vector children have the same time: ${childType} ≠ ${child.dataType}`);
+          throw new Error(`Not all vector children have the same type: ${childType} ≠ ${child.dataType}`);
         }
       });
 
@@ -376,7 +395,11 @@ export class VariantCell extends SingleValueCell<Cell> {
     super(SimDataType.Variant, value, owner);
   }
 
-  validate(): void {
+  validate({ ignoreCache = false } = {}): void {
+    if (!ignoreCache && this.value.owner !== this) {
+      throw new Error("Cache Problem: Child cell has another owner.");
+    }
+
     this.value?.validate();
   }
 

@@ -28,6 +28,32 @@ export enum SimDataType {
   Undefined // 22
 }
 
+export type SimDataNumber = 
+  SimDataType.Int8 |
+  SimDataType.UInt8 |
+  SimDataType.Int16 |
+  SimDataType.UInt16 |
+  SimDataType.Int32 |
+  SimDataType.UInt32 |
+  SimDataType.Float |
+  SimDataType.LocalizationKey;
+
+export type SimDataBigInt = 
+  SimDataType.Int64 |
+  SimDataType.UInt64 |
+  SimDataType.TableSetReference;
+
+export type SimDataText =
+  SimDataType.Character |
+  SimDataType.String |
+  SimDataType.HashedString;
+
+export type SimDataFloatVector =
+  SimDataType.Float2 |
+  SimDataType.Float3 |
+  SimDataType.Float4;
+
+
 /**
  * Namespace that contains helper functions for SimDataTypes.
  */
@@ -75,7 +101,7 @@ export namespace SimDataTypeUtils {
    * 
    * @param dataType The SimDataType to get the number of bytes for
    */
-  function getBytes(dataType: SimDataType): number {
+  export function getBytes(dataType: SimDataType): number {
     switch (dataType) {
       case SimDataType.Boolean:
       case SimDataType.Character:
@@ -108,5 +134,25 @@ export namespace SimDataTypeUtils {
       default:
         throw new Error(`DataType ${dataType} not recognized.`);
     }
+  }
+
+  /**
+   * Verifies that the given value is within the range for the give type.
+   * 
+   * @param value Value to verify
+   * @param dataType Data type to determine range for
+   */
+  export function isNumberInRange(value: number, dataType: SimDataNumber): boolean {
+    // TODO:
+  }
+
+  /**
+   * Verifies that the given value is within the range for the give type.
+   * 
+   * @param value Value to verify
+   * @param dataType Data type to determine range for
+   */
+  export function isBigIntInRange(value: bigint, dataType: SimDataBigInt): boolean {
+    // TODO:
   }
 }
