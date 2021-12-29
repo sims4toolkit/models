@@ -143,7 +143,26 @@ export namespace SimDataTypeUtils {
    * @param dataType Data type to determine range for
    */
   export function isNumberInRange(value: number, dataType: SimDataNumber): boolean {
-    // TODO:
+    switch (dataType) {
+      case SimDataType.Int8:
+        return value >= -0x80 && value <= 0x7F;
+      case SimDataType.UInt8:
+        return value >= 0 && value <= 0xFF;
+      case SimDataType.Int16:
+        return value >= -0x80000 && value <= 0x7FFF;
+      case SimDataType.UInt16:
+        return value >= 0 && value <= 0xFFFF;
+      case SimDataType.Int32:
+        return value >= -0x800000000 && value <= 0x7FFFFFFF;
+      case SimDataType.LocalizationKey:
+        // fallthrough
+      case SimDataType.UInt32:
+        return value >= 0 && value <= 0xFFFFFFFF;
+      case SimDataType.Float:
+        return true; // FIXME: find limits
+      default:
+        throw new Error(`Type ${dataType} is not a SimDataNumber.`);
+    }
   }
 
   /**
@@ -153,6 +172,15 @@ export namespace SimDataTypeUtils {
    * @param dataType Data type to determine range for
    */
   export function isBigIntInRange(value: bigint, dataType: SimDataBigInt): boolean {
-    // TODO:
+    switch (dataType) {
+      case SimDataType.Int64:
+        return value >= -0x8000000000000000n && value <= 0x7FFFFFFFFFFFFFFFn;
+      case SimDataType.TableSetReference:
+        // fallthrough
+      case SimDataType.UInt64:
+        return value >= 0 && value <= 0xFFFFFFFFFFFFFFFFn;
+      default:
+        throw new Error(`Type ${dataType} is not a SimDataBigInt.`);
+    }
   }
 }
