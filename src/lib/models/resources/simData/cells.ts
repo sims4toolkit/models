@@ -94,6 +94,7 @@ abstract class MultiValueCell<T extends Cell> extends Cell {
   constructor(dataType: SimDataType, values: T[], owner?: CacheableModel) {
     super(dataType, owner);
     this.values = values;
+    values.forEach(cell => cell.owner = this);
     this._watchProps('values');
   }
 
@@ -359,8 +360,9 @@ export class VectorCell<T extends Cell> extends MultiValueCell<T> {
     }
   }
 
-  clone(): VectorCell {
-    return new VectorCell(this.values.map(cell => cell.clone()));
+  clone(): VectorCell<T> {
+    //@ts-expect-error Cells are guaranteed to be of type T
+    return new VectorCell<T>(this.values.map(cell => cell.clone()));
   }
 }
 
