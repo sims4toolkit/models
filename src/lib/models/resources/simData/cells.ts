@@ -25,9 +25,11 @@ type SimDataText =
   SimDataType.String |
   SimDataType.HashedString;
 
+type SingleValueCellType = boolean | number | bigint | string | Cell;
+
 //#endregion SimDataType Groupings
 
-//#region Cells
+//#region Abstract Cells
 
 /**
  * A value that appears in a SimData table.
@@ -42,12 +44,130 @@ export abstract class Cell extends CacheableModel {
    * is thrown.
    */
   abstract validate(): void;
+
+  /**
+   * Creates a deep copy of this cell, retaining all information except for
+   * the owner.
+   */
+  abstract clone(): Cell;
+
+  /**
+   * Deletes this cell from its owning cell, if it has one.
+   */
+  delete(): void {
+    (this.owner as MultiValueCell<Cell>)?.removeValues?.(this);
+  }
 }
 
-abstract class SingleValueCell<T> extends Cell {
+/**
+ * A SimData cell that contains a single value. This value can either be a
+ * number, bigint, string, boolean, or another cell.
+ */
+abstract class SingleValueCell<T extends SingleValueCellType> extends Cell {
   constructor(dataType: SimDataType, public value: T, owner?: CacheableModel) {
     super(dataType, owner);
+    if (value instanceof CacheableModel) value.owner = this;
     this._watchProps('value');
+  }
+}
+
+/**
+ * A SimData cell that contains other cells of the same type.
+ */
+abstract class MultiValueCell<T extends Cell> extends Cell {
+  /**
+   * The values in this cell. Individual values can be mutated and cacheing will
+   * be handled (e.g. `values[0].value = 5` is perfectly safe), however,
+   * mutating the array itself by adding, removing, or setting values should be
+   * avoided whenever possible, because doing so is a surefire way to mess up
+   * the cache. 
+   * 
+   * To add, remove, or set values, use the `addValues()`, `removeValues()`, and
+   * `setValues()` methods.
+   * 
+   * If you insist on removing or setting values manually, you can, as long as
+   * you remember to call `uncache()` when you are done. If you insist on adding
+   * values manually, it's your funeral. Doing so will likely mess up ownership.
+   */
+  public values: T[];
+
+  constructor(dataType: SimDataType, values: T[], owner?: CacheableModel) {
+    super(dataType, owner);
+    this.values = values;
+    this._watchProps('values');
+  }
+
+  /**
+   * Values (cells) to add. Make sure that the cells being added do not already
+   * belong to another model, or else their cache ownership will be broken.
+   * If adding cells that belong to another model, use `addValueClones()`.
+   * 
+   * @param values Values to add to this cell
+   */
+  addValues(...values: T[]) {
+    values.forEach(cell => {
+      cell.owner = this;
+      this.values.push(cell);
+    });
+
+    this.uncache();
+  }
+
+  /**
+   * Values (cells) to add. Each cell will be cloned before it is added,
+   * ensuring that the cache ownership of the original values is kept intact.
+   * 
+   * @param values Values to clone and add to this cell
+   */
+  addValueClones(...values: T[]) {
+    //@ts-expect-error The cell clones are guaranteed to be of type T
+    this.addValues(...(values.map(cell => cell.clone())));
+  }
+
+  /**
+   * Values (cells) to remove. All cells are objects, and they are removed by
+   * reference equality. You must pass in the exact objects you want to remove.
+   * 
+   * @param values Values to add to this cell
+   */
+  removeValues(...values: T[]) {
+    if(removeFromArray(values, this.values)) this.uncache();
+  }
+  
+  /**
+   * Sets the value at the given index.
+   * 
+   * @param index Index of value to set
+   * @param value Value to set
+   */
+  setValue(index: number, value: T) {
+    this.values[index] = value;
+    this.uncache();
+  }
+
+  validate(): void {
+    this.values.forEach(value => value.validate());
+  }
+}
+
+//#endregion Abstract Cells
+
+//#region Cells
+
+/**
+ * A cell that contains a boolean value.
+ */
+export class BooleanCell extends SingleValueCell<boolean> {
+  readonly dataType: SimDataType.Boolean;
+
+  constructor(value: boolean, owner?: CacheableModel) {
+    super(SimDataType.Boolean, value, owner);
+  }
+
+  validate(): void { }
+
+  clone(): BooleanCell {
+    return new BooleanCell(this.value);
   }
 }
 
@@ -136,61 +256,6 @@ export class Float4Cell extends Cell {
 
   validate(): void {
     // TODO: impl
-  }
-}
-
-abstract class MultiValueCell<T extends Cell> extends Cell {
-  /**
-   * TODO:
-   * The values in this cell. This should not be mutated directly - use the
-   * provided methods to add, remove, or edit the values, or else the cache will
-   * be off. If you must mutate it in in some unique way, do one of the
-   * following:
-   * - Mutate the array in the callback of the `update()` method.
-   * - Call `uncache()` after making edits.
-   * - Assign values to itself (`cell.values = cell.values`) after making edits.
-   */
-  public values: T[];
-
-  constructor(dataType: SimDataType, values: T[], owner?: CacheableModel) {
-    super(dataType, owner);
-    this.values = values;
-    this._watchProps('values');
-  }
-
-  addValues(...values: T[]) {
-    this.values.push(...values);
-    this.uncache();
-  }
-
-  removeValues(...values: T[]) {
-    if(removeFromArray(values, this.values)) this.uncache();
-  }
-  
-  /**
-   * Sets the value at the given index.
-   * 
-   * @param index Index of value to set
-   * @param value Value to set
-   */
-  set(index: number, value: T) {
-    this.values[index] = value;
-    this.uncache();
-  }
-
-  /**
-   * Provides a context in which the values can be mutated safely, as it will
-   * be uncached afterwards.
-   * 
-   * @param fn Callback function in which values can be mutated
-   */
-  update(fn: (values: T[]) => void) {
-    fn(this.values);
-    this.uncache();
-  }
-
-  validate(): void {
-    this.values.forEach(value => value.validate());
   }
 }
 

@@ -10,7 +10,7 @@ export default abstract class CacheableModel {
   private _cachedProps: string[] = [];
 
   constructor(public owner?: CacheableModel) {
-    this._cachedProps = ['owner'];
+    this._cachedProps = [];
 
     return new Proxy(this, {
       set(obj: CacheableModel, prop: string, value: any) {
