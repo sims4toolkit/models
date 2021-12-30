@@ -140,7 +140,8 @@ export class SimDataInstance extends ObjectCell {
    * Creates a deep copy of this instance, with all values except for owner
    * being copied over.
    */
-  clone(): SimDataInstance {
-    return new SimDataInstance(this.name, this.schema.clone(), this.values.map(cell => cell.clone()));
+  clone({ cloneSchema = false }: { cloneSchema?: boolean; } = {}): SimDataInstance {
+    const schema = cloneSchema ? this.schema.clone() : this.schema;
+    return new SimDataInstance(this.name, schema, this.values.map(cell => cell.clone()));
   }
 }

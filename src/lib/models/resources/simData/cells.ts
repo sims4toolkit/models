@@ -5,6 +5,7 @@ import { SimDataType, SimDataTypeUtils } from "./simDataTypes";
 import { removeFromArray } from "../../../utils/helpers";
 
 type SingleValueCellType = boolean | number | bigint | string | Cell;
+interface CellCloneOptions { cloneSchema?: boolean; };
 
 //#region Abstract Cells
 
@@ -33,9 +34,17 @@ export abstract class Cell extends CacheableModel {
 
   /**
    * Creates a deep copy of this cell, retaining all information except for
-   * the owner.
+   * the owner. Everything contained and owned by this cell will also be
+   * cloned, except for the schema of any objects. If you need to clone the
+   * schemas, set `cloneSchema: true`.
+   * 
+   * Options
+   * - `cloneSchema`: Whether or not the schema reference by this cell should
+   * be cloned. Default is `false`.
+   * 
+   * @param options Options for cloning
    */
-  abstract clone(): Cell;
+  abstract clone(options?: CellCloneOptions): Cell;
 
   /**
    * Deletes this cell from its owning cell, if it has one.
@@ -351,8 +360,9 @@ export class ObjectCell extends MultiValueCell<Cell> {
     }
   }
 
-  clone(): ObjectCell {
-    return new ObjectCell(this.schema, this.values.map(cell => cell.clone()));
+  clone({ cloneSchema = false }: CellCloneOptions = {}): ObjectCell {
+    const schema = cloneSchema ? this.schema.clone() : this.schema;
+    return new ObjectCell(schema, this.values.map(cell => cell.clone()));
   }
 }
 
@@ -380,9 +390,9 @@ export class VectorCell<T extends Cell> extends MultiValueCell<T> {
     }
   }
 
-  clone(): VectorCell<T> {
+  clone(options: CellCloneOptions = {}): VectorCell<T> {
     //@ts-expect-error Cells are guaranteed to be of type T
-    return new VectorCell<T>(this.values.map(cell => cell.clone()));
+    return new VectorCell<T>(this.values.map(cell => cell.clone(options)));
   }
 }
 
@@ -404,8 +414,8 @@ export class VariantCell extends SingleValueCell<Cell> {
     this.value?.validate();
   }
 
-  clone(): VariantCell {
-    return new VariantCell(this.value?.clone());
+  clone(options: CellCloneOptions = {}): VariantCell {
+    return new VariantCell(this.value?.clone(options));
   }
 }
 
