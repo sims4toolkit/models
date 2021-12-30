@@ -11,8 +11,9 @@ import { SimDataInstance, SimDataSchema } from "./fragments";
  * "instance" is an object cell that has a name.
  */
 export default class SimDataResource extends Resource {
+  static SUPPORTED_VERSION = 0x101;
+
   readonly variant = 'DATA';
-  
   private _schemas: SimDataSchema[];
   private _instances: SimDataInstance[];
 
@@ -27,33 +28,74 @@ export default class SimDataResource extends Resource {
    * remove schemas, use the `removeSchemas()` method or call `delete()` on
    * individual schemas.
    * 
-   * If you insist on removing from or sorting the array manually, you can, as
+   * If you insist on removing from or editing the array manually, you can, as
    * long as you remember to call `uncache()` when you are done. If you insist
-   * on adding columns manually, it's your funeral.
+   * on adding schemas manually, it's your funeral.
    */
   get schemas() { return this._schemas; }
   
-  /** The instances (named objects) in this SimData. */
+  /**
+   * The instances in this SimData. Instances are not "real" parts of a SimData,
+   * but this model uses them as a convenient way to avoid working with data
+   * tables directly.
+   * 
+   * Individual instances can be mutated and cacheing will be handled (e.g. 
+   * `instances[0].name = "Instance"` is perfectly safe), however, mutating the
+   * array itself by adding or removing instances should be avoided whenever
+   * possible, because doing so is a surefire way to mess up the cache. 
+   * 
+   * To add instances, use the `addInstances()` or `addInstanceClones()`
+   * methods. To remove instances, use the `removeInstances()` method or call
+   * `delete()` on individual instances.
+   * 
+   * If you insist on removing from or editing the array manually, you can, as
+   * long as you remember to call `uncache()` when you are done. If you insist
+   * on adding instances manually, it's your funeral.
+   */
   get instances() { return this._instances; }
 
-  protected constructor(schemas: SimDataSchema[], instances: SimDataInstance[], buffer?: Buffer) {
+  protected constructor(
+    public version: number,
+    public unused: number,
+    schemas: SimDataSchema[],
+    instances: SimDataInstance[],
+    buffer?: Buffer
+  ) {
     super({ buffer });
-    schemas.forEach(schema => schema.owner = this);
     this._schemas = schemas;
-    instances.forEach(instance => instance.owner = this);
+    schemas.forEach(schema => schema.owner = this);
     this._instances = instances; 
+    instances.forEach(instance => instance.owner = this);
+    this._watchProps('version', 'unused');
   }
 
   clone(): SimDataResource {
-    return undefined;
+    const newSchemas = this.schemas.map(s => s.clone());
+    const instances = this.instances.map(i => i.clone({ newSchemas }));
+    return new SimDataResource(this.version, this.unused, newSchemas, instances);
   }
 
   /**
-   * TODO:
+   * Creates a new SimDataResource with the given optional parameters.
+   * 
+   * Arguments
+   * - `version`: The version of the SimData. This should be 0x101; it can be
+   * left out and it will be 0x101 by default.
+   * - `unused`: The "unused" UInt32 in the SimData header. This number should
+   * correspond to the group number of the pack associated with this SimData,
+   * or be 0 if it does not require a pack. Default is 0.
+   * - `schemas`: A list of the schemas in this SimData. Default is empty.
+   * - `instances`: A list of the instances in this SimData. Default is empty.
+   * 
+   * @param arguments Arguments for creating this SimData
    */
-  static create(): SimDataResource {
-    // TODO:
-    return
+  static create({ version = SimDataResource.SUPPORTED_VERSION, unused = 0, schemas = [], instances = [] }: {
+    version?: number;
+    unused?: number;
+    schemas?: SimDataSchema[];
+    instances?: SimDataInstance[];
+  } = {}): SimDataResource {
+    return new SimDataResource(version, unused, schemas, instances);
   }
 
   /**
@@ -70,13 +112,16 @@ export default class SimDataResource extends Resource {
    * @param schemas Schemas to add
    */
   addSchemas(...schemas: SimDataSchema[]) {
-    schemas.forEach(schema => schema.owner = this);
     this.schemas.push(...schemas);
+    schemas.forEach(schema => schema.owner = this);
     this.uncache();
   }
 
   /**
-   * Removes schemas from this SimData and uncaches the buffer.
+   * Removes schemas from this SimData and uncaches the buffer. Note that
+   * schemas are removed by reference equality, so the passed in schemas must be
+   * the exact objects you want to remove. Alternatively, you can call
+   * `delete()` on the schemas themselves to remove them one by one.
    * 
    * @param schemas Schemas to remove
    */
@@ -90,13 +135,16 @@ export default class SimDataResource extends Resource {
    * @param instances Instances to add
    */
   addInstances(...instances: SimDataInstance[]) {
-    instances.forEach(instance => instance.owner = this);
     this.instances.push(...instances);
+    instances.forEach(instance => instance.owner = this);
     this.uncache();
   }
 
   /**
-   * Removes instances from this SimData and uncaches the buffer.
+   * Removes instances from this SimData and uncaches the buffer. Note that
+   * instances are removed by reference equality, so the passed in instances
+   * must be the exact objects you want to remove. Alternatively, you can call
+   * `delete()` on the instances themselves to remove them one by one.
    * 
    * @param instances Instances to remove
    */

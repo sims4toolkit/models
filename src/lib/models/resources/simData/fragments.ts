@@ -1,5 +1,5 @@
 import type SimDataResource from "./simDataResource";
-import type { Cell } from "./cells";
+import type { Cell, CellCloneOptions } from "./cells";
 import { ObjectCell } from "./cells";
 import CacheableModel from "../../abstract/cacheableModel";
 import { SimDataType } from "./simDataTypes";
@@ -134,12 +134,8 @@ export class SimDataInstance extends ObjectCell {
     this.owner?.removeInstances(this); // removeInstances() uncaches
   }
 
-  /**
-   * Creates a deep copy of this instance, with all values except for owner
-   * being copied over.
-   */
-  clone({ cloneSchema = false }: { cloneSchema?: boolean; } = {}): SimDataInstance {
-    const schema = cloneSchema ? this.schema.clone() : this.schema;
-    return new SimDataInstance(this.name, schema, this.values.map(cell => cell.clone()));
+  clone(options?: CellCloneOptions): SimDataInstance {
+    const { schema, values } = this._internalClone(options);
+    return new SimDataInstance(this.name, schema, values);
   }
 }

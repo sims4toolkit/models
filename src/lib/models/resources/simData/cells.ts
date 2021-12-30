@@ -5,7 +5,11 @@ import { SimDataType, SimDataTypeUtils } from "./simDataTypes";
 import { removeFromArray } from "../../../utils/helpers";
 
 type SingleValueCellType = boolean | number | bigint | string | Cell;
-interface CellCloneOptions { cloneSchema?: boolean; };
+
+export interface CellCloneOptions {
+  cloneSchema?: boolean;
+  newSchemas?: SimDataSchema[];
+};
 
 //#region Abstract Cells
 
@@ -360,9 +364,29 @@ export class ObjectCell extends MultiValueCell<Cell> {
     }
   }
 
-  clone({ cloneSchema = false }: CellCloneOptions = {}): ObjectCell {
-    const schema = cloneSchema ? this.schema.clone() : this.schema;
-    return new ObjectCell(schema, this.values.map(cell => cell.clone()));
+  clone(options?: CellCloneOptions): ObjectCell {
+    const { schema, values } = this._internalClone(options);
+    return new ObjectCell(schema, values);
+  }
+
+  /**
+   * Returns the schema and values for a clone.
+   * 
+   * @param options Options for cloning
+   */
+  protected _internalClone({ cloneSchema = false, newSchemas }: CellCloneOptions = {}): {
+    schema: SimDataSchema;
+    values: Cell[];
+  } {
+    if (cloneSchema) {
+      var schema = this.schema.clone();
+    } else if (newSchemas) {
+      var schema = newSchemas.find(schema => schema.hash === this.schema.hash) || this.schema;
+    } else {
+      var schema = this.schema;
+    }
+
+    return { schema, values: this.values.map(cell => cell.clone()) };
   }
 }
 
