@@ -5,8 +5,6 @@ import CacheableModel from "../../abstract/cacheableModel";
 import { SimDataType } from "./simDataTypes";
 import { removeFromArray } from "../../../utils/helpers";
 
-// FIXME: since instances should reference the exact schema that they follow, should it be cloned when the instance is cloned?
-
 /**
  * A schema that objects in a SimData can follow.
  */
