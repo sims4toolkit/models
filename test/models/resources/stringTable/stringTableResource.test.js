@@ -685,7 +685,9 @@ describe('StringTableResource', function() {
     });
 
     it('should not be assignable', function() {
-      expect(() => stbl.entries = []).to.throw();
+      const stbl = getSTBL('SmallSTBL');
+      stbl.entries = [];
+      expect(stbl.entries).to.not.be.empty;
     });
   });
 

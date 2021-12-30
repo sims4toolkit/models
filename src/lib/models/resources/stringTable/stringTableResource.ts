@@ -43,7 +43,7 @@ export default class StringTableResource extends Resource {
     this._entries = entries.map((entry, id) => {
       return new StringEntry(id, entry.key, entry.string, this);
     });
-    this._nextId = this._entries.length;
+    this._nextId = this.length;
   }
 
   /**
@@ -301,7 +301,7 @@ export default class StringTableResource extends Resource {
   //#region Protected Methods
 
   protected _serialize(): Buffer {
-    return writeStbl(this._entries);
+    return writeStbl(this.entries);
   }
 
   //#endregion Protected Methods

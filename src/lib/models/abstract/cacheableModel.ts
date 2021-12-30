@@ -4,18 +4,15 @@
  * they are changed.
  */
 export default abstract class CacheableModel {
-  // HACK: This is the easiest way to implement this, but it is inefficient both
-  // in terms of space and time. Ideally, there should be one static set per 
-  // class that is used, but for now, this will stay in for simplicity.
   private _cachedProps: string[] = [];
 
   constructor(public owner?: CacheableModel) {
     this._cachedProps = [];
 
     return new Proxy(this, {
-      set(obj: CacheableModel, prop: string, value: any) {
-        const ref = Reflect.set(obj, prop, value);
-        if (obj._cachedProps.includes(prop)) obj.uncache();
+      set(target: CacheableModel, property: string, value: any) {
+        const ref = Reflect.set(target, property, value);
+        if (target._cachedProps.includes(property)) target.uncache();
         return ref;
       }
     });

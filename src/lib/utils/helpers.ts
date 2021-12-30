@@ -28,3 +28,20 @@ export function removeFromArray<T>(toRemove: T[], removeFrom: T[]) {
   });
   return anyRemoved;
 }
+
+/**
+ * Returns a proxy that will listen for any changes to the given array.
+ * 
+ * @param arr Array to get proxy for
+ * @param fn Function to call when the array is mutated
+ * @returns Proxy for given array
+ */
+export function getArrayProxy<T>(arr: T[], fn: (target: T[], property: string | symbol, value: any) => void): T[] {
+  return new Proxy(arr, {
+    set: function(target, property, value) {
+      const ref = Reflect.set(target, property, value);
+      fn(target, property, value);
+      return ref;
+    }
+  });
+}
