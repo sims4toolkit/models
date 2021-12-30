@@ -4,13 +4,20 @@ import { fnv32 } from "../../../utils/hashing";
 import { removeFromArray } from "../../../utils/helpers";
 import { SimDataInstance, SimDataSchema } from "./fragments";
 
+interface SimDataResourceDto {
+  version: number;
+  unused: number;
+  schemas: SimDataSchema[];
+  instances: SimDataInstance[];
+}
+
 /**
  * A resource for SimData (binary tuning). SimDatas are essentially mini
  * relational databases, but to simplify working with them (and for consistency
  * with Sims 4 Studio), this model uses the concept of "instances". An
  * "instance" is an object cell that has a name.
  */
-export default class SimDataResource extends Resource {
+export default class SimDataResource extends Resource implements SimDataResourceDto {
   static SUPPORTED_VERSION = 0x101;
 
   readonly variant = 'DATA';
@@ -99,11 +106,13 @@ export default class SimDataResource extends Resource {
   }
 
   /**
-   * TODO:
+   * Creats a new SimDataResource from a buffer containing a binary DATA file.
+   * 
+   * @param buffer Buffer to read
    */
   static from(buffer: Buffer): SimDataResource {
-    // TODO:
-    return
+    const { version, unused, schemas, instances } = readDATA(buffer);
+    return new SimDataResource(version, unused, schemas, instances, buffer);
   }
 
   /**
@@ -153,6 +162,24 @@ export default class SimDataResource extends Resource {
   }
 
   protected _serialize(): Buffer {
-    return undefined; // TODO: impl
+    return writeDATA(this);
   }
+}
+
+/**
+ * Reads a binary DATA file in a buffer as a SimData.
+ * 
+ * @param buffer Buffer to read
+ */
+function readDATA(buffer: Buffer): SimDataResourceDto {
+  // TODO:
+}
+
+/**
+ * Writes a SimData model as a binary DATA file.
+ * 
+ * @param model SimData model to write
+ */
+function writeDATA(model: SimDataResourceDto): Buffer {
+  // TODO:
 }
