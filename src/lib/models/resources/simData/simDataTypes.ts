@@ -53,6 +53,18 @@ export type SimDataFloatVector =
   SimDataType.Float3 |
   SimDataType.Float4;
 
+export type SimDataPrimitiveType =
+  SimDataNumber |
+  SimDataBigInt |
+  SimDataText |
+  SimDataFloatVector |
+  SimDataType.Boolean |
+  SimDataType.ResourceKey;
+
+export type SimDataRecursiveType =
+  SimDataType.Object |
+  SimDataType.Variant |
+  SimDataType.Vector;
 
 /**
  * Namespace that contains helper functions for SimDataTypes.

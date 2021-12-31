@@ -3,7 +3,7 @@ import { BinaryEncoder, BinaryDecoder } from "../../../utils/encoding";
 import { fnv32 } from "../../../utils/hashing";
 import { makeList, removeFromArray } from "../../../utils/helpers";
 import { SimDataInstance, SimDataSchema, SimDataSchemaColumn } from "./fragments";
-import type { SimDataText, SimDataNumber, SimDataBigInt } from "./simDataTypes";
+import type { SimDataRecursiveType } from "./simDataTypes";
 import { SimDataType, SimDataTypeUtils } from "./simDataTypes";
 import * as cells from "./cells";
 
@@ -322,6 +322,85 @@ function readData(buffer: Buffer): SimDataResourceDto {
 
   //#region Cells
 
+  function readVariantCell(typeHash: number, tableInfo: BinaryTableInfo): cells.VariantCell {
+    const dataType = tableInfo.mnDataType;
+
+    // objs are different, because variants point directly to their data
+    const childCell: cells.Cell = (dataType === SimDataType.Object) ?
+      readObjectCell(getTableInfo(decoder.tell())) :
+      readCell(dataType);
+    
+    return new cells.VariantCell(typeHash, childCell);
+  }
+
+  function readVectorCell(count: number, tableInfo: BinaryTableInfo): cells.VectorCell {
+    const childType = tableInfo.mnDataType;
+
+    // objs are different, because vectors point directly to their data
+    const childGenFn: () => cells.Cell = childType === SimDataType.Object ?
+      (() => {
+        const childTableInfo = getTableInfo(decoder.tell());
+        return () => readObjectCell(childTableInfo);
+      })() :
+      () => readCell(childType);
+
+    return new cells.VectorCell(makeList(count, childGenFn));
+  }
+
+  function readObjectCell(tableInfo: BinaryTableInfo): cells.ObjectCell {
+    const binarySchema = getBinarySchema(tableInfo.startof_mnSchemaOffset + tableInfo.mnSchemaOffset);
+    const schema = schemas.find(schema => schema.hash === binarySchema.mnSchemaHash);
+
+    const children: cells.Cell[] = [];
+    binarySchema.mColumn.forEach(column => {
+      decoder.savePos(() => {
+        decoder.skip(column.mnOffset);
+        children.push(readCell(column.mnDataType));
+      });
+    });
+
+    decoder.skip(binarySchema.mnSchemaSize);
+    return new cells.ObjectCell(schema, children);
+  }
+
+  function readCellFromPointer(dataType: SimDataRecursiveType): cells.Cell {
+    // BT uses uint32 for offset of object and vector, but I'm intentionally
+    // using an int32 because the value CAN be negative (variant is signed,
+    // it's a newer data type, introduced in 0x101)
+    const startPos = decoder.tell();
+    const dataOffset = decoder.int32();
+    const dataPos = startPos + dataOffset;
+    const tableInfo = getTableInfo(dataPos);
+
+    switch (dataType) {
+      case SimDataType.Object:
+        if (dataOffset === RELOFFSET_NULL)
+          throw new Error("Object cell does not have any data defined.");
+        return decoder.savePos<cells.ObjectCell>(() => {
+          decoder.seek(dataPos);
+          return readObjectCell(tableInfo);
+        });
+      case SimDataType.Vector:
+        const count = decoder.uint32();
+        if (dataOffset === RELOFFSET_NULL || count === 0)
+          return new cells.VectorCell<cells.Cell>([]);
+        return decoder.savePos<cells.VectorCell<cells.Cell>>(() => {
+          decoder.seek(dataPos);
+          return readVectorCell(count, tableInfo);
+        });
+      case SimDataType.Variant:
+        const typeHash = decoder.uint32();
+        if (dataOffset === RELOFFSET_NULL)
+          return new cells.VariantCell(typeHash, undefined);
+        return decoder.savePos<cells.VariantCell>(() => {
+          decoder.seek(dataPos);
+          return readVariantCell(typeHash, tableInfo);
+        });
+      default:
+        throw new Error(`Cannot read pointer for ${dataType}`);
+    }
+  }
+
   function readCell(dataType: SimDataType): cells.Cell {
     switch (dataType) {
       case SimDataType.Boolean:
@@ -351,16 +430,10 @@ function readData(buffer: Buffer): SimDataResourceDto {
         return cells.Float4Cell.decode(decoder);
       case SimDataType.ResourceKey:
         return cells.ResourceKeyCell.decode(decoder);
-      case SimDataType.Variant:
-        break; // TODO:
-      case SimDataType.Object:
-        break; // TODO:
-      case SimDataType.Vector:
-        break; // TODO:
       case SimDataType.Undefined:
-        // intentionally blank
+        throw new Error(`Cannot get value for data type ${dataType}`);
       default: 
-        throw new Error(`Unsupported data type: ${dataType}.`);
+        return readCellFromPointer(dataType);
     }
   }
 

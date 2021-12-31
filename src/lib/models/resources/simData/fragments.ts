@@ -138,4 +138,14 @@ export class SimDataInstance extends ObjectCell {
     const { schema, values } = this._internalClone(options);
     return new SimDataInstance(this.name, schema, values);
   }
+
+  /**
+   * Creates a SimDataInstance from an ObjectCell. Nothing is cloned - exact
+   * references are maintained. Additionally, the owner is not copied.
+   * 
+   * @param source ObjectCell to base this instance off of
+   */
+  static fromObjectCell(name: string, source: ObjectCell): SimDataInstance {
+    return new SimDataInstance(name, source.schema, source.values);
+  }
 }

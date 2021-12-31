@@ -74,7 +74,7 @@ abstract class SingleValueCell<T extends SingleValueCellType> extends Cell {
 /**
  * A SimData cell that contains other cells of the same type.
  */
-abstract class MultiValueCell<T extends Cell> extends Cell {
+abstract class MultiValueCell<T extends Cell = Cell> extends Cell {
   private _values: T[];
 
   /**
@@ -524,7 +524,7 @@ export class ObjectCell extends MultiValueCell<Cell> {
 /**
  * A cell that contains a list of values of the same type.
  */
-export class VectorCell<T extends Cell> extends MultiValueCell<T> {
+export class VectorCell<T extends Cell = Cell> extends MultiValueCell<T> {
   readonly dataType: SimDataType.Vector;
 
   constructor(values: T[], owner?: CacheableModel) {
@@ -557,8 +557,9 @@ export class VectorCell<T extends Cell> extends MultiValueCell<T> {
 export class VariantCell extends SingleValueCell<Cell> {
   readonly dataType: SimDataType.Variant;
 
-  constructor(value: Cell, owner?: CacheableModel) {
+  constructor(public typeHash: number, value: Cell, owner?: CacheableModel) {
     super(SimDataType.Variant, value, owner);
+    this._watchProps('typeHash');
   }
 
   validate({ ignoreCache = false } = {}): void {
@@ -570,7 +571,7 @@ export class VariantCell extends SingleValueCell<Cell> {
   }
 
   clone(options: CellCloneOptions = {}): VariantCell {
-    return new VariantCell(this.value?.clone(options));
+    return new VariantCell(this.typeHash, this.value?.clone(options));
   }
 }
 
