@@ -3,6 +3,7 @@ import type { SimDataNumber, SimDataBigInt, SimDataText, SimDataFloatVector } fr
 import CacheableModel from "../../abstract/cacheableModel";
 import { SimDataType, SimDataTypeUtils } from "./simDataTypes";
 import { removeFromArray } from "../../../utils/helpers";
+import type { BinaryDecoder } from "../../../utils/encoding";
 
 type SingleValueCellType = boolean | number | bigint | string | Cell;
 
@@ -198,6 +199,15 @@ export class BooleanCell extends SingleValueCell<boolean> {
   clone(): BooleanCell {
     return new BooleanCell(this.value);
   }
+
+  /**
+   * Creates a BooleanCell by reading a boolean value from the decoder.
+   * 
+   * @param decoder Decoder from which to read the corresponding value
+   */
+  static decode(decoder: BinaryDecoder): BooleanCell {
+    return new BooleanCell(decoder.boolean());
+  }
 }
 
 /**
@@ -216,6 +226,34 @@ export class TextCell extends SingleValueCell<string> {
 
   clone(): TextCell {
     return new TextCell(this.dataType, this.value);
+  }
+
+  /**
+   * Creates a TextCell by reading a value of the give data type from the
+   * given decoder.
+   * 
+   * @param dataType Type of text cell to create
+   * @param decoder Decoder from which to read the corresponding value
+   */
+  static decode(dataType: SimDataText, decoder: BinaryDecoder): TextCell {
+    function getValue(): string {
+      if (dataType === SimDataType.Character) return decoder.charsUtf8(1);
+
+      // BT uses uint32 for offset, but I'm intentionally using an int32
+      // because the value CAN be negative, and JS numbers don't wrap
+      const pos = decoder.tell() + decoder.int32();
+
+      // don't need to read the hash of hashed strings, because it can/will be
+      // calculated later anyways
+      if (dataType === SimDataType.HashedString) decoder.skip(4);
+
+      return decoder.savePos<string>(() => {
+        decoder.seek(pos);
+        return decoder.string();
+      });
+    }
+
+    return new TextCell(dataType, getValue());
   }
 }
 
@@ -239,6 +277,38 @@ export class NumberCell extends SingleValueCell<number> {
   clone(): NumberCell {
     return new NumberCell(this.dataType, this.value);
   }
+
+  /**
+   * Creates a NumberCell by reading a value of the give data type from the
+   * given decoder.
+   * 
+   * @param dataType Type of number cell to create
+   * @param decoder Decoder from which to read the corresponding value
+   */
+  static decode(dataType: SimDataNumber, decoder: BinaryDecoder): NumberCell {
+    function getValue(): number {
+      switch (dataType) {
+        case SimDataType.Int8:
+          return decoder.int8();
+        case SimDataType.UInt8:
+          return decoder.uint8();
+        case SimDataType.Int16:
+          return decoder.int16();
+        case SimDataType.UInt16:
+          return decoder.uint16();
+        case SimDataType.Int32:
+          return decoder.int32();
+        case SimDataType.UInt32:
+          // fallthrough
+        case SimDataType.LocalizationKey:
+          return decoder.uint32();
+        case SimDataType.Float:
+          return decoder.float();
+      }
+    }
+
+    return new NumberCell(dataType, getValue());
+  }
 }
 
 /**
@@ -260,6 +330,28 @@ export class BigIntCell extends SingleValueCell<bigint> {
 
   clone(): BigIntCell {
     return new BigIntCell(this.dataType, this.value);
+  }
+
+  /**
+   * Creates a BigIntCell by reading a value of the give data type from the
+   * given decoder.
+   * 
+   * @param dataType Type of bigint cell to create
+   * @param decoder Decoder from which to read the corresponding value
+   */
+  static decode(dataType: SimDataBigInt, decoder: BinaryDecoder): BigIntCell {
+    function getValue(): bigint {
+      switch (dataType) {
+        case SimDataType.Int64:
+          return decoder.int64();
+        case SimDataType.UInt64:
+          // fallthrough
+        case SimDataType.TableSetReference:
+          return decoder.uint64();
+      }
+    }
+
+    return new BigIntCell(dataType, getValue());
   }
 }
 
@@ -286,6 +378,18 @@ export class ResourceKeyCell extends Cell {
   clone(): ResourceKeyCell {
     return new ResourceKeyCell(this.type, this.group, this.instance);
   }
+
+  /**
+   * Creates a ResourceKeyCell by reading its values from the decoder.
+   * 
+   * @param decoder Decoder from which to read the values
+   */
+  static decode(decoder: BinaryDecoder): ResourceKeyCell {
+    const instance = decoder.uint64();
+    const type = decoder.uint32();
+    const group = decoder.uint32();
+    return new ResourceKeyCell(type, group, instance);
+  }
 }
 
 /**
@@ -300,6 +404,15 @@ export class Float2Cell extends FloatVectorCell {
 
   clone(): Float2Cell {
     return new Float2Cell(this.x, this.y);
+  }
+
+  /**
+   * Creates a Float2Cell by reading its values from the decoder.
+   * 
+   * @param decoder Decoder from which to read the values
+   */
+  static decode(decoder: BinaryDecoder): Float2Cell {
+    return new Float2Cell(decoder.float(), decoder.float());
   }
 }
 
@@ -318,6 +431,15 @@ export class Float3Cell extends FloatVectorCell {
   clone(): Float3Cell {
     return new Float3Cell(this.x, this.y, this.z);
   }
+
+  /**
+   * Creates a Float3Cell by reading its values from the decoder.
+   * 
+   * @param decoder Decoder from which to read the values
+   */
+  static decode(decoder: BinaryDecoder): Float3Cell {
+    return new Float3Cell(decoder.float(), decoder.float(), decoder.float());
+  }
 }
 
 /**
@@ -334,6 +456,15 @@ export class Float4Cell extends FloatVectorCell {
 
   clone(): Float4Cell {
     return new Float4Cell(this.x, this.y, this.z, this.w);
+  }
+
+  /**
+   * Creates a Float4Cell by reading its values from the decoder.
+   * 
+   * @param decoder Decoder from which to read the values
+   */
+  static decode(decoder: BinaryDecoder): Float4Cell {
+    return new Float4Cell(decoder.float(), decoder.float(), decoder.float(), decoder.float());
   }
 }
 
