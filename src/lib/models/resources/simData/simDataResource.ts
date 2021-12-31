@@ -64,6 +64,12 @@ export default class SimDataResource extends Resource implements SimDataResource
    */
   get instances() { return this._instances; }
 
+  /** Shorthand for `instances[0]` */
+  get instance() { return this._instances[0]; }
+
+  /** Shorthand for `instances[0].row` */
+  get props() { return this.instance.row; }
+
   protected constructor(
     public version: number,
     public unused: number,
@@ -351,16 +357,16 @@ function readData(buffer: Buffer): SimDataResourceDto {
     const binarySchema = getBinarySchema(tableInfo.startof_mnSchemaOffset + tableInfo.mnSchemaOffset);
     const schema = schemas.find(schema => schema.hash === binarySchema.mnSchemaHash);
 
-    const children: cells.Cell[] = [];
+    const row: cells.ObjectCellRow = {};
     binarySchema.mColumn.forEach(column => {
       decoder.savePos(() => {
         decoder.skip(column.mnOffset);
-        children.push(readCell(column.mnDataType));
+        row[column.name] = readCell(column.mnDataType);
       });
     });
 
     decoder.skip(binarySchema.mnSchemaSize);
-    return new cells.ObjectCell(schema, children);
+    return new cells.ObjectCell(schema, row);
   }
 
   function readCellFromPointer(dataType: SimDataRecursiveType): cells.Cell {

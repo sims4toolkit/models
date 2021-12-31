@@ -1,5 +1,5 @@
 import type SimDataResource from "./simDataResource";
-import type { Cell, CellCloneOptions } from "./cells";
+import type { Cell, CellCloneOptions, ObjectCellRow } from "./cells";
 import { ObjectCell } from "./cells";
 import CacheableModel from "../../abstract/cacheableModel";
 import { SimDataType } from "./simDataTypes";
@@ -122,8 +122,8 @@ export class SimDataSchemaColumn extends CacheableModel {
 export class SimDataInstance extends ObjectCell {
   owner?: SimDataResource;
 
-  constructor(public name: string, schema: SimDataSchema, values: Cell[], owner?: SimDataResource) {
-    super(schema, values, owner);
+  constructor(public name: string, schema: SimDataSchema, row: ObjectCellRow, owner?: SimDataResource) {
+    super(schema, row, owner);
     this._watchProps('name');
   }
 
@@ -135,8 +135,8 @@ export class SimDataInstance extends ObjectCell {
   }
 
   clone(options?: CellCloneOptions): SimDataInstance {
-    const { schema, values } = this._internalClone(options);
-    return new SimDataInstance(this.name, schema, values);
+    const { schema, row } = this._internalClone(options);
+    return new SimDataInstance(this.name, schema, row);
   }
 
   /**
@@ -146,6 +146,7 @@ export class SimDataInstance extends ObjectCell {
    * @param source ObjectCell to base this instance off of
    */
   static fromObjectCell(name: string, source: ObjectCell): SimDataInstance {
-    return new SimDataInstance(name, source.schema, source.values);
+    // FIXME: proxy of a proxy.. is this a concern anywhere else?
+    return new SimDataInstance(name, source.schema, source.row);
   }
 }

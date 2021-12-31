@@ -5,7 +5,9 @@ import { SimDataType, SimDataTypeUtils } from "./simDataTypes";
 import { removeFromArray } from "../../../utils/helpers";
 import type { BinaryDecoder } from "../../../utils/encoding";
 
-type SingleValueCellType = boolean | number | bigint | string | Cell;
+type PrimitiveType = boolean | number | bigint | string;
+
+export interface ObjectCellRow { [key: string]: Cell; };
 
 export interface CellCloneOptions {
   cloneSchema?: boolean;
@@ -50,112 +52,16 @@ export abstract class Cell extends CacheableModel {
    * @param options Options for cloning
    */
   abstract clone(options?: CellCloneOptions): Cell;
-
-  /**
-   * Deletes this cell from its owning cell, if it has one.
-   */
-  delete(): void {
-    (this.owner as MultiValueCell<Cell>)?.removeValues?.(this);
-  }
 }
 
 /**
  * A SimData cell that contains a single value. This value can either be a
  * number, bigint, string, boolean, or another cell.
  */
-abstract class SingleValueCell<T extends SingleValueCellType> extends Cell {
+abstract class PrimitiveValueCell<T extends PrimitiveType> extends Cell {
   constructor(dataType: SimDataType, public value: T, owner?: CacheableModel) {
     super(dataType, owner);
-    if (value instanceof CacheableModel) value.owner = this;
     this._watchProps('value');
-  }
-}
-
-/**
- * A SimData cell that contains other cells of the same type.
- */
-abstract class MultiValueCell<T extends Cell = Cell> extends Cell {
-  private _values: T[];
-
-  /**
-   * The values in this cell. Individual values can be mutated and cacheing will
-   * be handled (e.g. `values[0].value = 5` is perfectly safe), however,
-   * mutating the array itself by adding, removing, or setting values should be
-   * avoided whenever possible, because doing so is a surefire way to mess up
-   * the cache. 
-   * 
-   * To add, remove, or set values, use the `addValues()`, `removeValues()`, and
-   * `setValues()` methods.
-   * 
-   * If you insist on removing or setting values manually, you can, as long as
-   * you remember to call `uncache()` when you are done. If you insist on adding
-   * values manually, it's your funeral. Doing so will likely mess up ownership.
-   */
-  get values() { return this._values; }
-
-  constructor(dataType: SimDataType, values: T[], owner?: CacheableModel) {
-    super(dataType, owner);
-    this._values = values;
-    values.forEach(cell => cell.owner = this);
-  }
-
-  /**
-   * Values (cells) to add. Make sure that the cells being added do not already
-   * belong to another model, or else their cache ownership will be broken.
-   * If adding cells that belong to another model, use `addValueClones()`.
-   * 
-   * @param values Values to add to this cell
-   */
-  addValues(...values: T[]) {
-    values.forEach(cell => {
-      cell.owner = this;
-      this.values.push(cell);
-    });
-
-    this.uncache();
-  }
-
-  /**
-   * Values (cells) to add. Each cell will be cloned before it is added,
-   * ensuring that the cache ownership of the original values is kept intact.
-   * 
-   * @param values Values to clone and add to this cell
-   */
-  addValueClones(...values: T[]) {
-    //@ts-expect-error The cell clones are guaranteed to be of type T
-    this.addValues(...(values.map(cell => cell.clone())));
-  }
-
-  /**
-   * Values (cells) to remove. All cells are objects, and they are removed by
-   * reference equality. You must pass in the exact objects you want to remove.
-   * 
-   * @param values Values to add to this cell
-   */
-  removeValues(...values: T[]) {
-    if(removeFromArray(values, this.values)) this.uncache();
-  }
-  
-  /**
-   * Sets the value at the given index.
-   * 
-   * @param index Index of value to set
-   * @param value Value to set
-   */
-  setValue(index: number, value: T) {
-    while (index >= this.values.length) this.values.push(undefined);
-    this.values[index] = value;
-    this.uncache();
-  }
-
-  validate({ ignoreCache = false } = {}): void {
-    this.values.forEach(value => {
-      if (!ignoreCache && value.owner !== this) {
-        throw new Error("Cache Problem: Child cell has another owner.");
-      }
-
-      value.validate();
-    });
   }
 }
 
@@ -188,7 +94,7 @@ abstract class FloatVectorCell extends Cell {
 /**
  * A cell that contains a boolean value.
  */
-export class BooleanCell extends SingleValueCell<boolean> {
+export class BooleanCell extends PrimitiveValueCell<boolean> {
   readonly dataType: SimDataType.Boolean;
 
   constructor(value: boolean, owner?: CacheableModel) {
@@ -221,7 +127,7 @@ export class BooleanCell extends SingleValueCell<boolean> {
 /**
  * A cell that contains any kind of text, such as a string or character.
  */
-export class TextCell extends SingleValueCell<string> {
+export class TextCell extends PrimitiveValueCell<string> {
   readonly dataType: SimDataText;
 
   constructor(dataType: SimDataText, value: string, owner?: CacheableModel) {
@@ -278,7 +184,7 @@ export class TextCell extends SingleValueCell<string> {
  * A cell that contains any numerical value that can fit in an ES number. This
  * includes all integers 32-bit and smaller, floats, and localization keys.
  */
-export class NumberCell extends SingleValueCell<number> {
+export class NumberCell extends PrimitiveValueCell<number> {
   readonly dataType: SimDataNumber;
 
   constructor(dataType: SimDataNumber, value: number, owner?: CacheableModel) {
@@ -341,7 +247,7 @@ export class NumberCell extends SingleValueCell<number> {
  * A cell that contains any numerical value that requires 64 bits or higher.
  * This includes 64-bit integers and table set references.
  */
-export class BigIntCell extends SingleValueCell<bigint> {
+export class BigIntCell extends PrimitiveValueCell<bigint> {
   readonly dataType: SimDataBigInt;
 
   constructor(dataType: SimDataBigInt, value: bigint, owner?: CacheableModel) {
@@ -534,66 +440,80 @@ export class Float4Cell extends FloatVectorCell {
 /**
  * A cell that contains rows that line up with schema columns.
  */
-export class ObjectCell extends MultiValueCell<Cell> {
+export class ObjectCell extends Cell {
   readonly dataType: SimDataType.Object;
+  private _row: ObjectCellRow;
 
-  constructor(public schema: SimDataSchema, values: Cell[], owner?: CacheableModel) {
-    super(SimDataType.Object, values, owner);
+  /**
+   * An object that maps column names to the cells that belong to those columns.
+   * Mutating children of this object is safe, as is mutating the object itself.
+   * For example, `row.column_name.value = 5` and `row.column_name = new Cell(..)`
+   * are both safe in terms of cacheing.
+   */
+  get row() { return this._row; }
+
+  private set row(row: ObjectCellRow) {
+    for (const colName in row) row[colName].owner = this;
+
+    this._row = new Proxy(row, {
+      // FIXME: Does this count deleting?
+      set(target: ObjectCellRow, property: string, child: Cell) {
+        const ref = Reflect.set(target, property, child);
+        child.uncache();
+        return ref;
+      }
+    });
+  }
+
+  /** Shorthand for `this.schema.columns.length`. */
+  get schemaLength() { return this.schema.columns.length; }
+
+  /** Shorthand for `Object.keys(this.row).length`. */
+  get rowLength() { return Object.keys(this.row).length; }
+
+  constructor(public schema: SimDataSchema, row: ObjectCellRow, owner?: CacheableModel) {
+    super(SimDataType.Object, owner);
+    this.row = row;
     this._watchProps('schema');
   }
 
-  validate(): void {
+  validate({ ignoreCache = false } = {}): void {
     if (this.schema) {
-      if (this.schema.columns.length !== this.values.length)
-        throw new Error(`Length of schema does not match length of values: ${this.schema.columns.length} ≠ ${this.values.length}`);
-      this.schema.columns.forEach((column, index) => {
-        const cell = this.values[index];
+      if (this.schemaLength !== this.rowLength)
+        throw new Error(`Length of schema does not match length of row: ${this.schemaLength} ≠ ${this.rowLength}`);
+
+      this.schema.columns.forEach(column => {
+        const cell = this.row[column.name];
+
         if (!cell)
           throw new Error(`Missing cell for column with name "${column.name}"`);
+
         if (cell.dataType !== column.type)
           throw new Error(`Cell's type does not match its column: ${cell.dataType} ≠ ${column.type}`);
-      });
 
-      super.validate();
+        if (!ignoreCache && cell.owner !== this)
+          throw new Error("Cache Problem: Child cell has another owner.");
+
+        cell.validate({ ignoreCache });
+      });
     } else {
       throw new Error("Schema must be specified for object cell.");
     }
   }
 
-  /**
-   * Gets a child value by the name of its column.
-   * 
-   * @param columnName Name of column to get value for
-   */
-  getValueByName(columnName: string): Cell {
-    const index = this._getColumnIndex(columnName);
-    return this.values[index];
-  }
-
-  /**
-   * Sets a child value by the name of its column.
-   * 
-   * @param columnName Name of column to set value for
-   * @param value Value to set
-   */
-  setValueByName(columnName: string, value: Cell) {
-    const index = this._getColumnIndex(columnName);
-    this.setValue(index, value);
-  }
-
   clone(options?: CellCloneOptions): ObjectCell {
-    const { schema, values } = this._internalClone(options);
-    return new ObjectCell(schema, values);
+    const { schema, row } = this._internalClone(options);
+    return new ObjectCell(schema, row);
   }
 
   /**
-   * Returns the schema and values for a clone.
+   * Returns the schema and row for a clone.
    * 
    * @param options Options for cloning
    */
   protected _internalClone({ cloneSchema = false, newSchemas }: CellCloneOptions = {}): {
     schema: SimDataSchema;
-    values: Cell[];
+    row: ObjectCellRow;
   } {
     if (cloneSchema) {
       var schema = this.schema.clone();
@@ -603,11 +523,12 @@ export class ObjectCell extends MultiValueCell<Cell> {
       var schema = this.schema;
     }
 
-    return { schema, values: this.values.map(cell => cell.clone()) };
-  }
+    const row: ObjectCellRow = {};
+    for (const columnName in this.row) {
+      row[columnName] = this.row[columnName].clone({ cloneSchema, newSchemas });
+    }
 
-  private _getColumnIndex(columnName: string): number {
-    return this.schema.columns.findIndex(column => column.name === columnName);
+    return { schema, row };
   }
 
   /**
@@ -616,37 +537,125 @@ export class ObjectCell extends MultiValueCell<Cell> {
    * @param schema Schema for this ObjectCell to follow
    */
   static getDefault(schema: SimDataSchema): ObjectCell {
-    return new ObjectCell(schema, Array(schema.columns.length).fill(undefined));
+    const row: ObjectCellRow = {};
+    schema.columns.forEach(column => row[column.name] = undefined);
+    return new ObjectCell(schema, row);
   }
 }
 
 /**
  * A cell that contains a list of values of the same type.
  */
-export class VectorCell<T extends Cell = Cell> extends MultiValueCell<T> {
+export class VectorCell<T extends Cell = Cell> extends Cell {
   readonly dataType: SimDataType.Vector;
+  private _children: T[];
 
-  constructor(values: T[], owner?: CacheableModel) {
-    super(SimDataType.Vector, values, owner);
+  /**
+   * The children of this cell. Individual child cells can be mutated and
+   * cacheing will be handled (e.g. `children[0].value = 5` is perfectly safe),
+   * however, mutating the array itself by adding, removing, or setting children
+   * should be avoided whenever possible, because doing so is a surefire way to
+   * mess up the cache. 
+   * 
+   * To add, remove, or set children, use the `addChildren()`,
+   * `addChildClones()`, `removeChildren()`, and `setChild()` methods.
+   * 
+   * If you insist on removing or setting children manually, you can, as long as
+   * you remember to call `uncache()` when you are done. If you insist on adding
+   * children manually, it's your funeral.
+   */
+  get children() {
+    return this._children;
   }
 
-  validate(): void {
-    if (this.values.length > 0) {
-      const childType = this.values[0].dataType;
+  private set children(children: T[]) {
+    this._children = children;
+    children.forEach(child => child.owner = this);
+  }
 
-      this.values.forEach(child => {
+  /** Shorthand for children.length */
+  get length() {
+    return this.children.length;
+  }
+
+  constructor(children: T[], owner?: CacheableModel) {
+    super(SimDataType.Vector, owner);
+    this.children = children;
+  }
+
+  /**
+   * Child cells to add. Make sure that the cells being added do not already
+   * belong to another model, or else their cache ownership will be broken.
+   * If adding cells that belong to another model, use `addChildClones()`.
+   * 
+   * @param children Children to add to this cell
+   */
+  addChildren(...children: T[]) {
+    children.forEach(child => {
+      child.owner = this;
+      this.children.push(child);
+    });
+
+    this.uncache();
+  }
+
+  /**
+   * Child cells to add. Each cell will be cloned before it is added,
+   * ensuring that the cache ownership of the original children is kept intact.
+   * 
+   * @param children Children to clone and add to this cell
+   */
+  addChildClones(...children: T[]) {
+    //@ts-expect-error The cell clones are guaranteed to be of type T
+    this.addChildren(...(values.map(cell => cell.clone())));
+  }
+
+  /**
+   * Child cells to remove. All cells are objects, and they are removed by
+   * reference equality. You must pass in the exact objects you want to remove.
+   * 
+   * @param children Children to remove from this cell
+   */
+  removeChildren(...children: T[]) {
+    if(removeFromArray(children, this.children)) this.uncache();
+  }
+  
+  /**
+   * Sets the child at the given index. If the index is negative, nothing
+   * happens. If the index is out of bounds, the array will be padded with
+   * undefined values up to the specified index.
+   * 
+   * @param index Index of child to set
+   * @param child Child to set
+   */
+  setChild(index: number, child: T) {
+    if (index < 0) return;
+    while (index >= this.children.length) this.children.push(undefined);
+    this.children[index] = child;
+    this.uncache();
+  }
+
+  validate({ ignoreCache = false } = {}): void {
+    if (this.children.length > 0) {
+      const childType = this.children[0].dataType;
+
+      this.children.forEach(child => {
         if (child.dataType !== childType) {
           throw new Error(`Not all vector children have the same type: ${childType} ≠ ${child.dataType}`);
         }
-      });
 
-      super.validate();
+        if (!ignoreCache && child.owner !== this) {
+          throw new Error("Cache Problem: Child cell has another owner.");
+        }
+  
+        child.validate({ ignoreCache });
+      });
     }
   }
 
   clone(options: CellCloneOptions = {}): VectorCell<T> {
     //@ts-expect-error Cells are guaranteed to be of type T
-    return new VectorCell<T>(this.values.map(cell => cell.clone(options)));
+    return new VectorCell<T>(this.children.map(child => child.clone(options)));
   }
 
   /**
@@ -662,24 +671,25 @@ export class VectorCell<T extends Cell = Cell> extends MultiValueCell<T> {
 /**
  * A cell that may contain another cell.
  */
-export class VariantCell extends SingleValueCell<Cell> {
+export class VariantCell extends Cell {
   readonly dataType: SimDataType.Variant;
 
-  constructor(public typeHash: number, value: Cell, owner?: CacheableModel) {
-    super(SimDataType.Variant, value, owner);
-    this._watchProps('typeHash');
+  constructor(public typeHash: number, public child: Cell, owner?: CacheableModel) {
+    super(SimDataType.Variant, owner);
+    if (child) child.owner = this;
+    this._watchProps('typeHash', 'child');
   }
 
   validate({ ignoreCache = false } = {}): void {
-    if (!ignoreCache && this.value.owner !== this) {
+    if (!ignoreCache && this.child.owner !== this) {
       throw new Error("Cache Problem: Child cell has another owner.");
     }
 
-    this.value?.validate();
+    this.child?.validate({ ignoreCache });
   }
 
   clone(options: CellCloneOptions = {}): VariantCell {
-    return new VariantCell(this.typeHash, this.value?.clone(options));
+    return new VariantCell(this.typeHash, this.child?.clone(options));
   }
 
   /**
