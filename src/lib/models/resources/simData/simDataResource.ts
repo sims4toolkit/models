@@ -65,10 +65,13 @@ export default class SimDataResource extends Resource implements SimDataResource
   get instances() { return this._instances; }
 
   /** Shorthand for `instances[0]` */
-  get instance() { return this._instances[0]; }
+  get instance() { return this.instances[0]; }
 
   /** Shorthand for `instances[0].row` */
   get props() { return this.instance.row; }
+
+  /** Shorthand for `schemas[0]` */
+  get schema() { return this.schemas[0]; }
 
   protected constructor(
     public version: number,
