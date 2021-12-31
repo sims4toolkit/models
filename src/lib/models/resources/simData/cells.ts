@@ -143,6 +143,7 @@ abstract class MultiValueCell<T extends Cell = Cell> extends Cell {
    * @param value Value to set
    */
   setValue(index: number, value: T) {
+    while (index >= this.values.length) this.values.push(undefined);
     this.values[index] = value;
     this.uncache();
   }
@@ -481,6 +482,8 @@ export class ObjectCell extends MultiValueCell<Cell> {
 
   validate(): void {
     if (this.schema) {
+      if (this.schema.columns.length !== this.values.length)
+        throw new Error(`Length of schema does not match length of values: ${this.schema.columns.length} ≠ ${this.values.length}`);
       this.schema.columns.forEach((column, index) => {
         const cell = this.values[index];
         if (!cell)
@@ -493,6 +496,27 @@ export class ObjectCell extends MultiValueCell<Cell> {
     } else {
       throw new Error("Schema must be specified for object cell.");
     }
+  }
+
+  /**
+   * Gets a child value by the name of its column.
+   * 
+   * @param columnName Name of column to get value for
+   */
+  getValueByName(columnName: string): Cell {
+    const index = this._getColumnIndex(columnName);
+    return this.values[index];
+  }
+
+  /**
+   * Sets a child value by the name of its column.
+   * 
+   * @param columnName Name of column to set value for
+   * @param value Value to set
+   */
+  setValueByName(columnName: string, value: Cell) {
+    const index = this._getColumnIndex(columnName);
+    this.setValue(index, value);
   }
 
   clone(options?: CellCloneOptions): ObjectCell {
@@ -518,6 +542,10 @@ export class ObjectCell extends MultiValueCell<Cell> {
     }
 
     return { schema, values: this.values.map(cell => cell.clone()) };
+  }
+
+  private _getColumnIndex(columnName: string): number {
+    return this.schema.columns.findIndex(column => column.name === columnName);
   }
 }
 
