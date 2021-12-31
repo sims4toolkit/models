@@ -209,6 +209,13 @@ export class BooleanCell extends SingleValueCell<boolean> {
   static decode(decoder: BinaryDecoder): BooleanCell {
     return new BooleanCell(decoder.boolean());
   }
+
+  /**
+   * Creates the default cell for this type.
+   */
+  static getDefault(): BooleanCell {
+    return new BooleanCell(false);
+  }
 }
 
 /**
@@ -255,6 +262,15 @@ export class TextCell extends SingleValueCell<string> {
     }
 
     return new TextCell(dataType, getValue());
+  }
+
+  /**
+   * Creates the default cell for this type, given a data type.
+   * 
+   * @param dataType Type of TextCell to create
+   */
+  static getDefault(dataType: SimDataText): TextCell {
+    return new TextCell(dataType, "");
   }
 }
 
@@ -310,6 +326,15 @@ export class NumberCell extends SingleValueCell<number> {
 
     return new NumberCell(dataType, getValue());
   }
+
+  /**
+   * Creates the default cell for this type, given a data type.
+   * 
+   * @param dataType Type of NumberCell to create
+   */
+  static getDefault(dataType: SimDataNumber): NumberCell {
+    return new NumberCell(dataType, 0);
+  }
 }
 
 /**
@@ -354,6 +379,15 @@ export class BigIntCell extends SingleValueCell<bigint> {
 
     return new BigIntCell(dataType, getValue());
   }
+
+  /**
+   * Creates the default cell for this type, given a data type.
+   * 
+   * @param dataType Type of BigIntCell to create
+   */
+  static getDefault(dataType: SimDataBigInt): BigIntCell {
+    return new BigIntCell(dataType, 0n);
+  }
 }
 
 /**
@@ -391,6 +425,13 @@ export class ResourceKeyCell extends Cell {
     const group = decoder.uint32();
     return new ResourceKeyCell(type, group, instance);
   }
+
+  /**
+   * Creates the default cell for this type.
+   */
+  static getDefault(): ResourceKeyCell {
+    return new ResourceKeyCell(0, 0, 0n);
+  }
 }
 
 /**
@@ -414,6 +455,13 @@ export class Float2Cell extends FloatVectorCell {
    */
   static decode(decoder: BinaryDecoder): Float2Cell {
     return new Float2Cell(decoder.float(), decoder.float());
+  }
+
+  /**
+   * Creates the default cell for this type.
+   */
+  static getDefault(): Float2Cell {
+    return new Float2Cell(0, 0);
   }
 }
 
@@ -441,6 +489,13 @@ export class Float3Cell extends FloatVectorCell {
   static decode(decoder: BinaryDecoder): Float3Cell {
     return new Float3Cell(decoder.float(), decoder.float(), decoder.float());
   }
+
+  /**
+   * Creates the default cell for this type.
+   */
+  static getDefault(): Float3Cell {
+    return new Float3Cell(0, 0, 0);
+  }
 }
 
 /**
@@ -466,6 +521,13 @@ export class Float4Cell extends FloatVectorCell {
    */
   static decode(decoder: BinaryDecoder): Float4Cell {
     return new Float4Cell(decoder.float(), decoder.float(), decoder.float(), decoder.float());
+  }
+
+  /**
+   * Creates the default cell for this type.
+   */
+  static getDefault(): Float4Cell {
+    return new Float4Cell(0, 0, 0, 0);
   }
 }
 
@@ -547,6 +609,15 @@ export class ObjectCell extends MultiValueCell<Cell> {
   private _getColumnIndex(columnName: string): number {
     return this.schema.columns.findIndex(column => column.name === columnName);
   }
+
+  /**
+   * Creates the default cell for this type, given a schema to follow.
+   * 
+   * @param schema Schema for this ObjectCell to follow
+   */
+  static getDefault(schema: SimDataSchema): ObjectCell {
+    return new ObjectCell(schema, Array(schema.columns.length).fill(undefined));
+  }
 }
 
 /**
@@ -577,6 +648,15 @@ export class VectorCell<T extends Cell = Cell> extends MultiValueCell<T> {
     //@ts-expect-error Cells are guaranteed to be of type T
     return new VectorCell<T>(this.values.map(cell => cell.clone(options)));
   }
+
+  /**
+   * Creates the default cell for this type, given a schema to follow.
+   * 
+   * @param schema Schema for this ObjectCell to follow
+   */
+  static getDefault<U extends Cell = Cell>(): VectorCell<U> {
+    return new VectorCell<U>([]);
+  }
 }
 
 /**
@@ -600,6 +680,15 @@ export class VariantCell extends SingleValueCell<Cell> {
 
   clone(options: CellCloneOptions = {}): VariantCell {
     return new VariantCell(this.typeHash, this.value?.clone(options));
+  }
+
+  /**
+   * Creates the default cell for this type, given a schema to follow.
+   * 
+   * @param schema Schema for this ObjectCell to follow
+   */
+  static getDefault(): VariantCell {
+    return new VariantCell(0, undefined);
   }
 }
 
