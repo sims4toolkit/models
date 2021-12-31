@@ -478,8 +478,12 @@ function readData(buffer: Buffer): SimDataResourceDto {
   const instances: SimDataInstance[] = [];
   mTable.forEach(tableInfo => {
     if (tableInfo.name !== undefined) {
-      decoder.seek(tableInfo.startof_mnRowOffset + tableInfo.mnRowOffset); // row start
-      // TODO: read instance
+      decoder.seek(tableInfo.startof_mnRowOffset + tableInfo.mnRowOffset);
+
+      instances.push(SimDataInstance.fromObjectCell(
+        tableInfo.name,
+        readObjectCell(tableInfo)
+      ));
     }
   });
 
@@ -500,6 +504,7 @@ function readData(buffer: Buffer): SimDataResourceDto {
  */
 function writeData(model: SimDataResourceDto): Buffer {
   // TODO:
+  return undefined;
 }
 
 //#endregion Serialization
