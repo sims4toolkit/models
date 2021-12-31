@@ -38,6 +38,20 @@ export class SimDataSchema extends CacheableModel {
   }
 
   /**
+   * Creates a new SimDataSchema from the given arguments. This is a wrapper
+   * for the constructor, provided for consistency with the rest of the API.
+   * 
+   * @param arguments Arguments for the schema to create
+   */
+  static create({ name, hash, columns = [] }: {
+    name: string;
+    hash: number;
+    columns?: SimDataSchemaColumn[];
+  }): SimDataSchema {
+    return new SimDataSchema(name, hash, columns);
+  }
+
+  /**
    * Adds columns to this schema and uncaches it. The provided columns should
    * be new objects (i.e. columns that are not already part of another schema).
    * If you want to copy columns from another schema, use `addColumnClones()`
@@ -122,6 +136,21 @@ export class SimDataSchemaColumn extends CacheableModel {
   }
 
   /**
+   * Creates a new SimDataSchemaColumn from the given arguments. This is a
+   * wrapper for the constructor, provided for consistency with the rest of the
+   * API.
+   * 
+   * @param arguments Arguments for the column to create
+   */
+  static create({ name, type, flags = 0 }: {
+    name: string;
+    type: SimDataType;
+    flags?: number;
+  }): SimDataSchemaColumn {
+    return new SimDataSchemaColumn(name, type, flags);
+  }
+
+  /**
    * Removes this column from its owning SimDataSchema, if it has one.
    */
   delete(): void {
@@ -162,6 +191,20 @@ export class SimDataInstance extends ObjectCell {
   constructor(public name: string, schema: SimDataSchema, row: ObjectCellRow, owner?: SimDataResource) {
     super(schema, row, owner);
     this._watchProps('name');
+  }
+
+  /**
+   * Creates a new SimDataInstance from the given arguments. This is a wrapper
+   * for the constructor, provided for consistency with the rest of the API.
+   * 
+   * @param arguments Arguments for the instance to create
+   */
+  static create({ name, schema, row }: {
+    name: string;
+    schema: SimDataSchema;
+    row: ObjectCellRow;
+  }): SimDataInstance {
+    return new SimDataInstance(name, schema, row);
   }
 
   /**
