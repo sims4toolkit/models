@@ -4,6 +4,8 @@ import CacheableModel from "../../abstract/cacheableModel";
 import { SimDataType, SimDataTypeUtils } from "./simDataTypes";
 import { removeFromArray } from "../../../utils/helpers";
 import type { BinaryDecoder } from "../../../utils/encoding";
+import { XmlElementNode, XmlValueNode } from "../../xml/dom";
+import { formatAsHexString } from "../../../utils/formatting";
 
 type PrimitiveType = boolean | number | bigint | string;
 
@@ -13,6 +15,11 @@ export interface CellCloneOptions {
   cloneSchema?: boolean;
   newSchemas?: SimDataSchema[];
 };
+
+interface CellToXmlOptions {
+  nameAttr?: string;
+  typeAttr?: boolean;
+}
 
 //#region Abstract Cells
 
@@ -52,6 +59,20 @@ export abstract class Cell extends CacheableModel {
    * @param options Options for cloning
    */
   abstract clone(options?: CellCloneOptions): Cell;
+
+  /**
+   * Creates an XmlElementNode object that represents this cell as it would
+   * appear within an S4S-style XML SimData document.
+   */
+  abstract toXmlElement(options?: CellToXmlOptions): XmlElementNode;
+
+  protected _xmlAttributes({ nameAttr = undefined, typeAttr = false }: CellToXmlOptions = {}): { [key: string]: string; } {
+    const attributes: { [key: string]: any; } = {};
+    if (nameAttr !== undefined) attributes.name = nameAttr;
+    if (typeAttr)
+      attributes.type = SimDataTypeUtils.getSims4StudioName(this.dataType);
+    return attributes;
+  }
 }
 
 /**
@@ -63,6 +84,16 @@ abstract class PrimitiveValueCell<T extends PrimitiveType> extends Cell {
     super(dataType, owner);
     this._watchProps('value');
   }
+
+  toXmlElement(options: CellToXmlOptions = {}): XmlElementNode {
+    return new XmlElementNode({
+      tag: "T",
+      attributes: this._xmlAttributes(options),
+      children: [ this._getXmlValue() ]
+    });
+  }
+
+  protected abstract _getXmlValue(): XmlValueNode;
 }
 
 /**
@@ -85,6 +116,16 @@ abstract class FloatVectorCell extends Cell {
       }
     });
   }
+
+  toXmlElement(options: CellToXmlOptions = {}): XmlElementNode {
+    const floatsString = this._floats.map(f => f.toString()).join(',');
+
+    return new XmlElementNode({
+      tag: "T",
+      attributes: this._xmlAttributes(options),
+      children: [ new XmlValueNode(floatsString) ]
+    });
+  }
 }
 
 //#endregion Abstract Cells
@@ -102,6 +143,10 @@ export class BooleanCell extends PrimitiveValueCell<boolean> {
   }
 
   validate(): void { }
+
+  protected _getXmlValue(): XmlValueNode {
+    return new XmlValueNode(this.value ? 1 : 0);
+  }
 
   clone(): BooleanCell {
     return new BooleanCell(this.value);
@@ -136,6 +181,10 @@ export class TextCell extends PrimitiveValueCell<string> {
 
   validate(): void {
     if (!this.value) throw new Error("Text cell must be a non-empty string.");
+  }
+
+  protected _getXmlValue(): XmlValueNode {
+    return new XmlValueNode(this.value);
   }
 
   clone(): TextCell {
@@ -195,6 +244,16 @@ export class NumberCell extends PrimitiveValueCell<number> {
     if (!SimDataTypeUtils.isNumberInRange(this.value, this.dataType)) {
       throw new Error(`Value of ${this.value} is not within the range of ${this.dataType}.`);
     }
+  }
+
+  protected _getXmlValue(): XmlValueNode {
+    if (this.dataType === SimDataType.LocalizationKey) {
+      var value = formatAsHexString(this.value, 8, true);
+    } else {
+      var value = this.value.toString();
+    }
+
+    return new XmlValueNode(value);
   }
 
   clone(): NumberCell {
@@ -260,6 +319,10 @@ export class BigIntCell extends PrimitiveValueCell<bigint> {
     }
   }
 
+  protected _getXmlValue(): XmlValueNode {
+    return new XmlValueNode(this.value.toString());
+  }
+
   clone(): BigIntCell {
     return new BigIntCell(this.dataType, this.value);
   }
@@ -314,6 +377,20 @@ export class ResourceKeyCell extends Cell {
       throw new Error(`ResourceKeyCell's group is not a UInt32: ${this.group}`);
     if (!SimDataTypeUtils.isBigIntInRange(this.instance, SimDataType.TableSetReference))
       throw new Error(`ResourceKeyCell's instance is not a UInt64: ${this.instance}`);
+  }
+
+  toXmlElement(options: CellToXmlOptions = {}): XmlElementNode {
+    const type = formatAsHexString(this.type, 8, false);
+    const group = formatAsHexString(this.group, 8, false);
+    const instance = formatAsHexString(this.type, 16, false);
+
+    return new XmlElementNode({
+      tag: "T",
+      attributes: this._xmlAttributes(options),
+      children: [
+        new XmlValueNode(`${type}-${group}-${instance}`)
+      ]
+    });
   }
 
   clone(): ResourceKeyCell {
@@ -541,6 +618,20 @@ export class ObjectCell extends Cell {
     schema.columns.forEach(column => row[column.name] = undefined);
     return new ObjectCell(schema, row);
   }
+
+  toXmlElement(options: CellToXmlOptions = {}): XmlElementNode {
+    const attributes = this._xmlAttributes(options);
+    attributes.schema = this.schema.name;
+
+    return new XmlElementNode({
+      tag: "U",
+      attributes: attributes,
+      children: this.schema.columns.map(column => {
+        const cell = this.row[column.name];
+        return cell.toXmlElement({ nameAttr: column.name });
+      })
+    });
+  }
 }
 
 /**
@@ -576,6 +667,14 @@ export class VectorCell<T extends Cell = Cell> extends Cell {
   /** Shorthand for children.length */
   get length() {
     return this.children.length;
+  }
+
+  /**
+   * Shorthand for `children[0].dataType`. If there are no children, the
+   * returned value is undefined.
+   */
+  get childType() {
+    return this.children[0]?.dataType;
   }
 
   constructor(children: T[], owner?: CacheableModel) {
@@ -637,11 +736,9 @@ export class VectorCell<T extends Cell = Cell> extends Cell {
 
   validate({ ignoreCache = false } = {}): void {
     if (this.children.length > 0) {
-      const childType = this.children[0].dataType;
-
       this.children.forEach(child => {
-        if (child.dataType !== childType) {
-          throw new Error(`Not all vector children have the same type: ${childType} ≠ ${child.dataType}`);
+        if (child.dataType !== this.childType) {
+          throw new Error(`Not all vector children have the same type: ${this.childType} ≠ ${child.dataType}`);
         }
 
         if (!ignoreCache && child.owner !== this) {
@@ -665,6 +762,16 @@ export class VectorCell<T extends Cell = Cell> extends Cell {
    */
   static getDefault<U extends Cell = Cell>(): VectorCell<U> {
     return new VectorCell<U>([]);
+  }
+
+  toXmlElement(options: CellToXmlOptions = {}): XmlElementNode {
+    return new XmlElementNode({
+      tag: "L",
+      attributes: this._xmlAttributes(options),
+      children: this.children.map(child => {
+        return child.toXmlElement({ typeAttr: true })
+      })
+    });
   }
 }
 
@@ -699,6 +806,18 @@ export class VariantCell extends Cell {
    */
   static getDefault(): VariantCell {
     return new VariantCell(0, undefined);
+  }
+
+  toXmlElement(options: CellToXmlOptions = {}): XmlElementNode {
+    const attributes = this._xmlAttributes(options);
+    attributes.variant = formatAsHexString(this.typeHash, 8, true);
+    const children = [];
+    if (this.child) children.push(this.child.toXmlElement({ typeAttr: true }));
+    return new XmlElementNode({
+      tag: "L",
+      attributes,
+      children
+    });
   }
 }
 

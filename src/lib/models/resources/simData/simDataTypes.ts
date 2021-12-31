@@ -149,6 +149,21 @@ export namespace SimDataTypeUtils {
   }
 
   /**
+   * Gets the name to use for the given SimDataType in S4S-style XML.
+   * 
+   * @param dataType SimDataType to get the S4S name of
+   */
+  export function getSims4StudioName(dataType: SimDataType): string {
+    switch (dataType) {
+      case SimDataType.Character:
+        throw new Error(`Character values cannot be represented in S4S XML. If you are reading this error, please let me know about it ASAP (https://frankkmods.com).`);
+      case SimDataType.Float: return "Single";
+      default:
+        return SimDataType[dataType];
+    }
+  }
+
+  /**
    * Verifies that the given value is within the range for the give type.
    * 
    * @param value Value to verify

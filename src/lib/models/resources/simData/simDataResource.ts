@@ -6,6 +6,8 @@ import { SimDataInstance, SimDataSchema, SimDataSchemaColumn } from "./fragments
 import type { SimDataRecursiveType } from "./simDataTypes";
 import { SimDataType, SimDataTypeUtils } from "./simDataTypes";
 import * as cells from "./cells";
+import { XmlDocumentNode, XmlElementNode } from "../../xml/dom";
+import { formatAsHexString } from "../../../utils/formatting";
 
 interface SimDataResourceDto {
   version: number;
@@ -171,6 +173,30 @@ export default class SimDataResource extends Resource implements SimDataResource
    */
   removeInstances(...instances: SimDataInstance[]) {
     if (removeFromArray(instances, this.instances)) this.uncache();
+  }
+
+  /**
+   * Creates an XmlDocumentNode object that represents this SimData exactly as
+   * it would appear in Sims 4 Studio.
+   */
+  toXmlDocument(): XmlDocumentNode {
+    return new XmlDocumentNode(new XmlElementNode({
+      tag: 'SimData',
+      attributes: {
+        version: formatAsHexString(this.version, 8, true),
+        u: formatAsHexString(this.unused, 8, true)
+      },
+      children: [
+        new XmlElementNode({
+          tag: 'Instances',
+          children: this.instances.map(i => i.toXmlElement())
+        }),
+        new XmlElementNode({
+          tag: 'Schemas',
+          children: this.schemas.map(s => s.toXmlElement())
+        })
+      ]
+    }));
   }
 
   protected _serialize(): Buffer {

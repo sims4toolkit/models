@@ -1,9 +1,11 @@
 import type SimDataResource from "./simDataResource";
-import type { Cell, CellCloneOptions, ObjectCellRow } from "./cells";
+import type { CellCloneOptions, ObjectCellRow } from "./cells";
 import { ObjectCell } from "./cells";
 import CacheableModel from "../../abstract/cacheableModel";
-import { SimDataType } from "./simDataTypes";
+import { SimDataType, SimDataTypeUtils } from "./simDataTypes";
 import { removeFromArray } from "../../../utils/helpers";
+import { XmlElementNode } from "../../xml/dom";
+import { formatAsHexString } from "../../../utils/formatting";
 
 /**
  * A schema that objects in a SimData can follow.
@@ -86,6 +88,26 @@ export class SimDataSchema extends CacheableModel {
   clone(): SimDataSchema {
     return new SimDataSchema(this.name, this.hash, this.columns.map(column => column.clone()));
   }
+
+  /**
+   * Creates an XmlElementNode object that represents this schema as it would
+   * appear within an S4S-style XML SimData document.
+   */
+  toXmlElement(): XmlElementNode {
+    return new XmlElementNode({
+      tag: "Schema",
+      attributes: {
+        name: this.name,
+        schema_hash: formatAsHexString(this.hash, 8, true)
+      },
+      children: [
+        new XmlElementNode({
+          tag: "Columns",
+          children: this.columns.map(c => c.toXmlElement())
+        })
+      ]
+    });
+  }
 }
 
 /**
@@ -112,6 +134,21 @@ export class SimDataSchemaColumn extends CacheableModel {
    */
   clone(): SimDataSchemaColumn {
     return new SimDataSchemaColumn(this.name, this.type, this.flags);
+  }
+
+  /**
+   * Creates an XmlElementNode object that represents this column as it would
+   * appear within an S4S-style XML SimData document.
+   */
+  toXmlElement(): XmlElementNode {
+    return new XmlElementNode({
+      tag: "Column",
+      attributes: {
+        name: this.name,
+        type: SimDataTypeUtils.getSims4StudioName(this.type),
+        flags: formatAsHexString(this.flags, 8, true)
+      }
+    });
   }
 }
 
@@ -148,5 +185,23 @@ export class SimDataInstance extends ObjectCell {
   static fromObjectCell(name: string, source: ObjectCell): SimDataInstance {
     // FIXME: proxy of a proxy.. is this a concern anywhere else?
     return new SimDataInstance(name, source.schema, source.row);
+  }
+
+  /**
+   * Creates an XmlElementNode object that represents this instance as it would
+   * appear within an S4S-style XML SimData document.
+   */
+  toXmlElement(): XmlElementNode {
+    return new XmlElementNode({
+      tag: "I",
+      attributes: {
+        name: this.name,
+        schema: this.schema.name,
+        type: SimDataTypeUtils.getSims4StudioName(this.dataType)
+      },
+      children: this.schema.columns.map(column => {
+        return this.row[column.name].toXmlElement({ nameAttr: column.name });
+      })
+    });
   }
 }
