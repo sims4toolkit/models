@@ -130,6 +130,21 @@ export default class SimDataResource extends Resource implements SimDataResource
   }
 
   /**
+   * Creats a SimDataResource from S4S-style XML.
+   * 
+   * @param xml XML string or buffer to parse as a SimData
+   * @throws If the given XML could not be parsed as a SimData
+   */
+  static fromXml(xml: string | Buffer): SimDataResource {
+    const dom = XmlDocumentNode.from(xml).child;
+    const schemasNode = dom.children.find(node => node.tag === "Schemas");
+    schemasNode.children.map(schemaNode => {
+      //
+    });
+    const instancesNode = dom.children.find(node => node.tag === "Instances");
+  }
+
+  /**
    * Adds schemas to this SimData and uncaches the buffer.
    * 
    * @param schemas Schemas to add
@@ -189,11 +204,11 @@ export default class SimDataResource extends Resource implements SimDataResource
       children: [
         new XmlElementNode({
           tag: 'Instances',
-          children: this.instances.map(i => i.toXmlElement())
+          children: this.instances.map(i => i.toXmlNode())
         }),
         new XmlElementNode({
           tag: 'Schemas',
-          children: this.schemas.map(s => s.toXmlElement())
+          children: this.schemas.map(s => s.toXmlNode())
         })
       ]
     }));
