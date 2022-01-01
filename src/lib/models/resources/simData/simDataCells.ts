@@ -1,4 +1,4 @@
-import type { SimDataSchema } from "./fragments";
+import type { SimDataSchema } from "./simDataFragments";
 import type { SimDataNumber, SimDataBigInt, SimDataText, SimDataFloatVector } from "./simDataTypes";
 import type { BinaryDecoder } from "../../../utils/encoding";
 import CacheableModel from "../../abstract/cacheableModel";

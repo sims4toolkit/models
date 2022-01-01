@@ -1,9 +1,9 @@
 import { RELOFFSET_NULL, SimDataDto } from "../shared";
 import { BinaryDecoder } from "../../../../utils/encoding";
 import { makeList } from "../../../../utils/helpers";
-import { SimDataSchema, SimDataSchemaColumn, SimDataInstance } from "../fragments";
+import { SimDataSchema, SimDataSchemaColumn, SimDataInstance } from "../simDataFragments";
 import { SimDataType, SimDataRecursiveType } from "../simDataTypes";
-import * as cells from "../cells";
+import * as cells from "../simDataCells";
 
 /**
  * Reads a binary DATA file in a buffer as a SimData.

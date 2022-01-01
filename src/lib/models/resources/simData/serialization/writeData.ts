@@ -3,7 +3,7 @@ import { formatAsHexString } from "../../../../utils/formatting";
 import { fnv32 } from "../../../../utils/hashing";
 import { SimDataDto, HEADER_SIZE, TABLE_HEADER_OFFSET, RELOFFSET_NULL, NO_NAME_HASH, SUPPORTED_VERSION } from "../shared";
 import { SimDataType, SimDataTypeUtils } from "../simDataTypes";
-import * as cells from "../cells";
+import * as cells from "../simDataCells";
 
 // FIXME: there could potentially be an issue with padding when writing booleans,
 // for an example use the scenario role that chip sent

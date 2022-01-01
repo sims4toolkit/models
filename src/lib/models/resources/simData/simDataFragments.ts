@@ -1,6 +1,6 @@
 import type SimDataResource from "./simDataResource";
-import type { CellCloneOptions, ObjectCellRow } from "./cells";
-import { ObjectCell } from "./cells";
+import type { CellCloneOptions, ObjectCellRow } from "./simDataCells";
+import { ObjectCell } from "./simDataCells";
 import CacheableModel from "../../abstract/cacheableModel";
 import { SimDataType, SimDataTypeUtils } from "./simDataTypes";
 import { removeFromArray } from "../../../utils/helpers";

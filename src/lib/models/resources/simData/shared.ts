@@ -1,4 +1,4 @@
-import type{ SimDataInstance, SimDataSchema } from "./fragments";
+import type { SimDataInstance, SimDataSchema } from "./simDataFragments";
 
 /**
  * A transfer object for SimData models.

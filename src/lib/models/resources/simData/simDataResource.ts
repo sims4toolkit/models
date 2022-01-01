@@ -1,6 +1,6 @@
 import Resource from "../resource";
 import { removeFromArray } from "../../../utils/helpers";
-import { SimDataInstance, SimDataSchema } from "./fragments";
+import { SimDataInstance, SimDataSchema } from "./simDataFragments";
 import { XmlDocumentNode, XmlElementNode } from "../../xml/dom";
 import { formatAsHexString } from "../../../utils/formatting";
 import { SimDataDto, SUPPORTED_VERSION } from "./shared";
