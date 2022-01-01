@@ -4,7 +4,7 @@ import { ObjectCell } from "./cells";
 import CacheableModel from "../../abstract/cacheableModel";
 import { SimDataType, SimDataTypeUtils } from "./simDataTypes";
 import { removeFromArray } from "../../../utils/helpers";
-import { XmlElementNode } from "../../xml/dom";
+import { XmlElementNode, XmlNode } from "../../xml/dom";
 import { formatAsHexString } from "../../../utils/formatting";
 
 /**
@@ -107,7 +107,7 @@ export class SimDataSchema extends CacheableModel {
    * Creates an XmlElementNode object that represents this schema as it would
    * appear within an S4S-style XML SimData document.
    */
-  toXmlElement(): XmlElementNode {
+  toXmlNode(): XmlElementNode {
     return new XmlElementNode({
       tag: "Schema",
       attributes: {
@@ -117,10 +117,33 @@ export class SimDataSchema extends CacheableModel {
       children: [
         new XmlElementNode({
           tag: "Columns",
-          children: this.columns.map(c => c.toXmlElement())
+          children: this.columns.map(c => c.toXmlNode())
         })
       ]
     });
+  }
+
+  /**
+   * Parses an S4S-style XML node as a schema.
+   * 
+   * @param node Node to parse as a schema
+   */
+  static fromXmlNode(node: XmlNode): SimDataSchema {
+    if (node.tag !== "Schema")
+      throw new Error(`Expected a <Schema>, got a <${node.tag}>`);
+    if (!node.attributes.name)
+      throw new Error(`Expected <Schema> to have a 'name' attribute.`);
+    if (!node.attributes.schema_hash)
+      throw new Error(`Expected <Schema> to have a 'schema_hash' attribute.`);
+    const schemaHash = parseNodeAttrAsNumber(node, 'schema_hash');
+    const columnsNode = node.child;
+    if (columnsNode.tag !== "Columns")
+      throw new Error(`Expected <Schema> to contain a child node called <Columns>`);
+    return new SimDataSchema(
+      node.attributes.name,
+      schemaHash,
+      columnsNode.children.map(node => SimDataSchemaColumn.fromXmlNode(node))
+    );
   }
 }
 
@@ -169,7 +192,7 @@ export class SimDataSchemaColumn extends CacheableModel {
    * Creates an XmlElementNode object that represents this column as it would
    * appear within an S4S-style XML SimData document.
    */
-  toXmlElement(): XmlElementNode {
+  toXmlNode(): XmlElementNode {
     return new XmlElementNode({
       tag: "Column",
       attributes: {
@@ -178,6 +201,25 @@ export class SimDataSchemaColumn extends CacheableModel {
         flags: formatAsHexString(this.flags, 8, true)
       }
     });
+  }
+
+  /**
+   * Parses an S4S-style XML node as a column.
+   * 
+   * @param node Node to parse as a column
+   */
+  static fromXmlNode(node: XmlNode): SimDataSchemaColumn {
+    if (node.tag !== "Column")
+      throw new Error(`Expected a <Column>, got a <${node.tag}>`);
+    if (!node.attributes.name)
+      throw new Error(`Expected <Column> to have a 'name' attribute.`);
+    if (!node.attributes.type)
+      throw new Error(`Expected <Column> to have a 'type' attribute.`);
+    const type = parseNodeAttrAsNumber(node, 'type');
+    if (!node.attributes.flags)
+      throw new Error(`Expected <Column> to have a 'flags' attribute.`);
+    const flags = parseNodeAttrAsNumber(node, 'flags');
+    return new SimDataSchemaColumn(node.attributes.name, type, flags);
   }
 }
 
@@ -234,7 +276,7 @@ export class SimDataInstance extends ObjectCell {
    * Creates an XmlElementNode object that represents this instance as it would
    * appear within an S4S-style XML SimData document.
    */
-  toXmlElement(): XmlElementNode {
+  toXmlNode(): XmlElementNode {
     return new XmlElementNode({
       tag: "I",
       attributes: {
@@ -243,8 +285,47 @@ export class SimDataInstance extends ObjectCell {
         type: SimDataTypeUtils.getSims4StudioName(this.dataType)
       },
       children: this.schema.columns.map(column => {
-        return this.row[column.name].toXmlElement({ nameAttr: column.name });
+        return this.row[column.name].toXmlNode({ nameAttr: column.name });
       })
     });
   }
+
+  /**
+   * Parses an S4S-style XML node as an instance.
+   * 
+   * @param node Node to parse as a instance
+   */
+  static fromXmlNode(node: XmlNode): SimDataInstance {
+    if (node.tag !== "Column")
+      throw new Error(`Expected a <Column>, got a <${node.tag}>`);
+    if (!node.attributes.name)
+      throw new Error(`Expected <Column> to have a 'name' attribute.`);
+    if (!node.attributes.type)
+      throw new Error(`Expected <Column> to have a 'type' attribute.`);
+    const type = parseNodeAttrAsNumber(node, 'type');
+    if (!node.attributes.flags)
+      throw new Error(`Expected <Column> to have a 'flags' attribute.`);
+    const flags = parseNodeAttrAsNumber(node, 'flags');
+    return new SimDataSchemaColumn(node.attributes.name, type, flags);
+  }
 }
+
+//#region Helpers
+
+/**
+ * Parses and returns the numerical value of the given attribute on the given
+ * node, if it exists and is valid. If the value cannot be parsed as a number,
+ * an exception is thrown.
+ * 
+ * @param node Node to get attribute of
+ * @param attr Name of attribute to get value of
+ */
+function parseNodeAttrAsNumber(node: XmlNode, attr: string): number {
+  const raw = node.attributes[attr];
+  const value = parseInt(raw, 16);
+  if (value === NaN)
+    throw new Error(`Expected value of '${attr}' to be a number, got ${raw}`);
+  return value;
+}
+
+//#endregion Helpers
