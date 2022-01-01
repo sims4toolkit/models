@@ -164,6 +164,16 @@ export namespace SimDataTypeUtils {
   }
 
   /**
+   * Gets the data type associated with the given S4S XML type name.
+   * 
+   * @param name Name of data type as it appears in S4S XML
+   */
+  export function parseSims4StudioName(name: string): SimDataType {
+    if (name === "Single") return SimDataType.Float;
+    return SimDataType[name];
+  }
+
+  /**
    * Verifies that the given value is within the range for the give type.
    * 
    * @param value Value to verify
