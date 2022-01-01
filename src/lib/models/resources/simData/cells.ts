@@ -64,7 +64,7 @@ export abstract class Cell extends CacheableModel {
    * Creates an XmlElementNode object that represents this cell as it would
    * appear within an S4S-style XML SimData document.
    */
-  abstract toXmlElement(options?: CellToXmlOptions): XmlElementNode;
+  abstract toXmlNode(options?: CellToXmlOptions): XmlElementNode;
 
   protected _xmlAttributes({ nameAttr = undefined, typeAttr = false }: CellToXmlOptions = {}): { [key: string]: string; } {
     const attributes: { [key: string]: any; } = {};
@@ -85,7 +85,7 @@ abstract class PrimitiveValueCell<T extends PrimitiveType> extends Cell {
     this._watchProps('value');
   }
 
-  toXmlElement(options: CellToXmlOptions = {}): XmlElementNode {
+  toXmlNode(options: CellToXmlOptions = {}): XmlElementNode {
     return new XmlElementNode({
       tag: "T",
       attributes: this._xmlAttributes(options),
@@ -117,7 +117,7 @@ abstract class FloatVectorCell extends Cell {
     });
   }
 
-  toXmlElement(options: CellToXmlOptions = {}): XmlElementNode {
+  toXmlNode(options: CellToXmlOptions = {}): XmlElementNode {
     const floatsString = this._floats.map(f => f.toString()).join(',');
 
     return new XmlElementNode({
@@ -379,7 +379,7 @@ export class ResourceKeyCell extends Cell {
       throw new Error(`ResourceKeyCell's instance is not a UInt64: ${this.instance}`);
   }
 
-  toXmlElement(options: CellToXmlOptions = {}): XmlElementNode {
+  toXmlNode(options: CellToXmlOptions = {}): XmlElementNode {
     const type = formatAsHexString(this.type, 8, false);
     const group = formatAsHexString(this.group, 8, false);
     const instance = formatAsHexString(this.type, 16, false);
@@ -619,7 +619,7 @@ export class ObjectCell extends Cell {
     return new ObjectCell(schema, row);
   }
 
-  toXmlElement(options: CellToXmlOptions = {}): XmlElementNode {
+  toXmlNode(options: CellToXmlOptions = {}): XmlElementNode {
     const attributes = this._xmlAttributes(options);
     attributes.schema = this.schema.name;
 
@@ -628,7 +628,7 @@ export class ObjectCell extends Cell {
       attributes: attributes,
       children: this.schema.columns.map(column => {
         const cell = this.row[column.name];
-        return cell.toXmlElement({ nameAttr: column.name });
+        return cell.toXmlNode({ nameAttr: column.name });
       })
     });
   }
@@ -764,12 +764,12 @@ export class VectorCell<T extends Cell = Cell> extends Cell {
     return new VectorCell<U>([]);
   }
 
-  toXmlElement(options: CellToXmlOptions = {}): XmlElementNode {
+  toXmlNode(options: CellToXmlOptions = {}): XmlElementNode {
     return new XmlElementNode({
       tag: "L",
       attributes: this._xmlAttributes(options),
       children: this.children.map(child => {
-        return child.toXmlElement({ typeAttr: true })
+        return child.toXmlNode({ typeAttr: true })
       })
     });
   }
@@ -808,11 +808,11 @@ export class VariantCell extends Cell {
     return new VariantCell(0, undefined);
   }
 
-  toXmlElement(options: CellToXmlOptions = {}): XmlElementNode {
+  toXmlNode(options: CellToXmlOptions = {}): XmlElementNode {
     const attributes = this._xmlAttributes(options);
     attributes.variant = formatAsHexString(this.typeHash, 8, true);
     const children = [];
-    if (this.child) children.push(this.child.toXmlElement({ typeAttr: true }));
+    if (this.child) children.push(this.child.toXmlNode({ typeAttr: true }));
     return new XmlElementNode({
       tag: "L",
       attributes,
