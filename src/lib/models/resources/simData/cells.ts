@@ -4,7 +4,7 @@ import CacheableModel from "../../abstract/cacheableModel";
 import { SimDataType, SimDataTypeUtils } from "./simDataTypes";
 import { removeFromArray } from "../../../utils/helpers";
 import type { BinaryDecoder } from "../../../utils/encoding";
-import { XmlElementNode, XmlValueNode } from "../../xml/dom";
+import { XmlElementNode, XmlNode, XmlValueNode } from "../../xml/dom";
 import { formatAsHexString } from "../../../utils/formatting";
 
 type PrimitiveType = boolean | number | bigint | string;
@@ -126,6 +126,18 @@ abstract class FloatVectorCell extends Cell {
       children: [ new XmlValueNode(floatsString) ]
     });
   }
+
+  protected static _parseFloatsFromNode(node: XmlNode, count: number): number[] {
+    const floatStrings = (node.innerValue as string).split(",");
+    if (floatStrings.length !== count)
+      throw new Error(`Expected Float${count}Cell to contain ${count} floats separated by ',', but got ${node.innerValue}`);
+    return floatStrings.map(s => {
+      const float = parseFloat(s);
+      if (float === NaN)
+        throw new Error(`Expected Float${count}Cell value to be a float, but got ${s}.`);
+      return float;
+    });
+  }
 }
 
 //#endregion Abstract Cells
@@ -159,6 +171,15 @@ export class BooleanCell extends PrimitiveValueCell<boolean> {
    */
   static decode(decoder: BinaryDecoder): BooleanCell {
     return new BooleanCell(decoder.boolean());
+  }
+
+  /**
+   * Parses a BooleanCell from the given XML node.
+   * 
+   * @param node Node to parse as a BooleanCell
+   */
+  static fromXmlNode(node: XmlNode): BooleanCell {
+    return new BooleanCell(node.innerValue === "1");
   }
 
   /**
@@ -217,6 +238,16 @@ export class TextCell extends PrimitiveValueCell<string> {
     }
 
     return new TextCell(dataType, getValue());
+  }
+
+  /**
+   * Parses a TextCell from the given XML node.
+   * 
+   * @param dataType Type of TextCell to parse
+   * @param node Node to parse as a TextCell
+   */
+  static fromXmlNode(dataType: SimDataText, node: XmlNode): TextCell {
+    return new TextCell(dataType, node.innerValue as string);
   }
 
   /**
@@ -293,6 +324,20 @@ export class NumberCell extends PrimitiveValueCell<number> {
   }
 
   /**
+   * Parses a NumberCell from the given XML node.
+   * 
+   * @param dataType Type of NumberCell to parse
+   * @param node Node to parse as a NumberCell
+   */
+  static fromXmlNode(dataType: SimDataNumber, node: XmlNode): NumberCell {
+    const base = dataType === SimDataType.LocalizationKey ? 16 : 10;
+    const value = parseInt(node.innerValue as string, base);
+    if (value === NaN)
+      throw new Error(`Expected NumberCell to contain a number, but got ${node.innerValue}`);
+    return new NumberCell(dataType, value);
+  }
+
+  /**
    * Creates the default cell for this type, given a data type.
    * 
    * @param dataType Type of NumberCell to create
@@ -347,6 +392,21 @@ export class BigIntCell extends PrimitiveValueCell<bigint> {
     }
 
     return new BigIntCell(dataType, getValue());
+  }
+
+  /**
+   * Parses a BigIntCell from the given XML node.
+   * 
+   * @param dataType Type of BigIntCell to parse
+   * @param node Node to parse as a BigIntCell
+   */
+  static fromXmlNode(dataType: SimDataBigInt, node: XmlNode): BigIntCell {
+    try {
+      const value = BigInt(node.innerValue as string);
+      return new BigIntCell(dataType, value);
+    } catch (e) {
+      throw new Error(`Expected SimDataBigInt to contain a bigint, but got ${node.innerValue}`);
+    }
   }
 
   /**
@@ -410,6 +470,30 @@ export class ResourceKeyCell extends Cell {
   }
 
   /**
+   * Parses a ResourceKeyCell from the given XML node.
+   * 
+   * @param node Node to parse as a ResourceKeyCell
+   */
+  static fromXmlNode(node: XmlNode): ResourceKeyCell {
+    const numStrings = (node.innerValue as string).split("-");
+    if (numStrings.length !== 3)
+      throw new Error(`Expected ResourceKeyCell to contain type, group, and instance separated by '-', but got ${node.innerValue}`);
+    
+    try {
+      const type = parseInt(numStrings[0], 16);
+      if (type === NaN)
+        throw new Error(`Expected ResourceKeyCell's type to be a number, but got ${numStrings[0]}`);
+      const group = parseInt(numStrings[1], 16);
+      if (group === NaN)
+        throw new Error(`Expected ResourceKeyCell's group to be a number, but got ${numStrings[1]}`);
+      const instance = BigInt(numStrings[2]);
+      return new ResourceKeyCell(type, group, instance);
+    } catch (e) {
+      throw new Error(`Expected ResourceKeyCell's instance to be a bigint, but got ${numStrings[2]}`);
+    }
+  }
+
+  /**
    * Creates the default cell for this type.
    */
   static getDefault(): ResourceKeyCell {
@@ -438,6 +522,16 @@ export class Float2Cell extends FloatVectorCell {
    */
   static decode(decoder: BinaryDecoder): Float2Cell {
     return new Float2Cell(decoder.float(), decoder.float());
+  }
+
+  /**
+   * Parses a Float2Cell from the given XML node.
+   * 
+   * @param node Node to parse as a Float2Cell
+   */
+  static fromXmlNode(node: XmlNode): Float2Cell {
+    const floats = FloatVectorCell._parseFloatsFromNode(node, 2);
+    return new Float2Cell(floats[0], floats[1]);
   }
 
   /**
@@ -474,6 +568,16 @@ export class Float3Cell extends FloatVectorCell {
   }
 
   /**
+   * Parses a Float3Cell from the given XML node.
+   * 
+   * @param node Node to parse as a Float3Cell
+   */
+  static fromXmlNode(node: XmlNode): Float3Cell {
+    const floats = FloatVectorCell._parseFloatsFromNode(node, 3);
+    return new Float3Cell(floats[0], floats[1], floats[2]);
+  }
+
+  /**
    * Creates the default cell for this type.
    */
   static getDefault(): Float3Cell {
@@ -504,6 +608,16 @@ export class Float4Cell extends FloatVectorCell {
    */
   static decode(decoder: BinaryDecoder): Float4Cell {
     return new Float4Cell(decoder.float(), decoder.float(), decoder.float(), decoder.float());
+  }
+
+  /**
+   * Parses a Float4Cell from the given XML node.
+   * 
+   * @param node Node to parse as a Float4Cell
+   */
+  static fromXmlNode(node: XmlNode): Float4Cell {
+    const floats = FloatVectorCell._parseFloatsFromNode(node, 4);
+    return new Float4Cell(floats[0], floats[1], floats[2], floats[3]);
   }
 
   /**
