@@ -215,7 +215,7 @@ export class SimDataSchemaColumn extends CacheableModel {
       throw new Error(`Expected <Column> to have a 'name' attribute.`);
     if (!node.attributes.type)
       throw new Error(`Expected <Column> to have a 'type' attribute.`);
-    const type = parseNodeAttrAsNumber(node, 'type');
+    const type = SimDataTypeUtils.parseSims4StudioName(node.attributes.type);
     if (!node.attributes.flags)
       throw new Error(`Expected <Column> to have a 'flags' attribute.`);
     const flags = parseNodeAttrAsNumber(node, 'flags');

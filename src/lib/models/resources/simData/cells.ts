@@ -491,7 +491,7 @@ export class ResourceKeyCell extends Cell {
   toXmlNode(options: CellToXmlOptions = {}): XmlElementNode {
     const type = formatAsHexString(this.type, 8, false);
     const group = formatAsHexString(this.group, 8, false);
-    const instance = formatAsHexString(this.type, 16, false);
+    const instance = formatAsHexString(this.instance, 16, false);
 
     return new XmlElementNode({
       tag: "T",
@@ -527,15 +527,17 @@ export class ResourceKeyCell extends Cell {
     const numStrings = (node.innerValue as string).split("-");
     if (numStrings.length !== 3)
       throw new Error(`Expected ResourceKeyCell to contain type, group, and instance separated by '-', but got ${node.innerValue}`);
+
+    const type = parseInt(numStrings[0], 16);
+    if (type === NaN)
+      throw new Error(`Expected ResourceKeyCell's type to be a number, but got ${numStrings[0]}`);
+
+    const group = parseInt(numStrings[1], 16);
+    if (group === NaN)
+      throw new Error(`Expected ResourceKeyCell's group to be a number, but got ${numStrings[1]}`);
     
     try {
-      const type = parseInt(numStrings[0], 16);
-      if (type === NaN)
-        throw new Error(`Expected ResourceKeyCell's type to be a number, but got ${numStrings[0]}`);
-      const group = parseInt(numStrings[1], 16);
-      if (group === NaN)
-        throw new Error(`Expected ResourceKeyCell's group to be a number, but got ${numStrings[1]}`);
-      const instance = BigInt(numStrings[2]);
+      const instance = BigInt(`0x${numStrings[2]}`);
       return new ResourceKeyCell(type, group, instance);
     } catch (e) {
       throw new Error(`Expected ResourceKeyCell's instance to be a bigint, but got ${numStrings[2]}`);
@@ -695,14 +697,22 @@ export class ObjectCell extends Cell {
   private set row(row: ObjectCellRow) {
     for (const colName in row) row[colName].owner = this;
 
-    this._row = new Proxy(row, {
-      // FIXME: Does this count deleting?
-      set(target: ObjectCellRow, property: string, child: Cell) {
-        const ref = Reflect.set(target, property, child);
-        child.uncache();
-        return ref;
-      }
-    });
+    if (row._isProxy) {
+      this._row = row;
+    } else {
+      this._row = new Proxy(row, {
+        // FIXME: Does this count deleting?
+        set(target: ObjectCellRow, property: string, child: Cell) {
+          const ref = Reflect.set(target, property, child);
+          child.uncache();
+          return ref;
+        },
+        get(target: ObjectCellRow, property: string) {
+          if (property === "_isProxy") return true;
+          return target[property];
+        }
+      });
+    }
   }
 
   /** Shorthand for `this.schema.columns.length`. */
