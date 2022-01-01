@@ -8,6 +8,60 @@ import * as cells from "../simDataCells";
 // FIXME: there could potentially be an issue with padding when writing booleans,
 // for an example use the scenario role that chip sent
 
+//#region Interfaces
+
+/** A DTO for schemas when they're being serialized. */
+interface SerialSchema {
+  name: string; // what mnNameOffset points to
+  hash: number; // mnSchemaHash
+  size: number; // mnSchemaSize
+  columns: SerialColumn[]; // mColumn
+}
+
+/** A DTO for schema columns when they're being serialized. */
+interface SerialColumn {
+  name: string; // what mnNameOffset points to
+  dataType: SimDataType; // mnDataType
+  offset: number; // mnOffset
+}
+
+/** A table in a DATA file. Holds all cells of the same type/scema. */
+interface Table {
+  dataType: SimDataType;
+  schemaHash?: number; // iff dataType === Object
+  name?: string; // iff it's a table for an instance
+  rows: TableRow[];
+}
+
+/** A row in a Table that either contains a value or follows a schema. */
+interface TableRow {
+  cell: cells.Cell;
+  dataRef?: TableRowRef;
+}
+
+/** References a TableRow in a Table, specified by the type and schema. */
+interface TableRowRef {
+  dataType: SimDataType;
+  schemaHash?: number; // iff dataType === Object
+  index: number; // index of cell to get
+}
+
+//#endregion Interfaces
+
+//#region Helpers
+
+/**
+ * Gets the padding to use at the given index for the given alignment.
+ * 
+ * @param index Byte index of encoder
+ * @param alignmentMask Byte mask to use for alignment
+ */
+function getPaddingForAlignment(index: number, alignmentMask: number): number {
+  return -index & alignmentMask;
+}
+
+//#endregion Helpers
+
 /**
  * Writes a SimData model as a binary DATA file.
  * 
@@ -20,58 +74,26 @@ export default function writeData(model: SimDataDto): Buffer {
     throw new Error(`S4TK cannot write SimData version ${hexVersion}, only ${hexSupVersion} is supported at this time.`);
   }
 
-  //#region Interfaces
-
-  interface SerialSchema {
-    name: string; // what mnNameOffset points to
-    hash: number; // mnSchemaHash
-    size: number; // mnSchemaSize
-    columns: SerialColumn[]; // mColumn
-  }
-
-  interface SerialColumn {
-    name: string; // what mnNameOffset points to
-    dataType: SimDataType; // mnDataType
-    offset: number; // mnOffset
-  }
-
-  /** Holds all cells of the same type/schema combo. */
-  interface Table {
-    dataType: SimDataType;
-    schemaHash?: number; // iff dataType === Object
-    name?: string; // iff it's a table for an instance
-    rows: TableRow[];
-  }
-
-  /** A row in a Table that either contains a value or follows a schema. */
-  interface TableRow {
-    cell: cells.Cell;
-    dataRef?: TableRowRef;
-  }
-
-  /** References a TableRow in a Table, specified by the type and schema. */
-  interface TableRowRef {
-    dataType: SimDataType;
-    schemaHash?: number; // iff dataType === Object
-    index: number; // index of cell to get
-  }
+  //#region Variables
   
-  //#endregion Interfaces
-  
-  //#region Variables & Helpers
-
-  function getPaddingForAlignment(index: number, alignmentMask: number): number {
-    return -index & alignmentMask;
-  }
-
+  /** Maps strings to their 32-bit hashes. */
   const nameHashes: { [key: string]: number } = {};
+
+  /** Maps SimDataTypes to their tables. */
+  const rawTables: { [key: number]: Table; } = {};
+
+  /** Maps schema hashes to their Objects' tables. */
+  const objectTables: { [key: number]: Table; } = {};
+
+  //#endregion Variables
+  
+  //#region Helpers
+
   function hashName({ name }: { name: string }): number {
     if (!(name in nameHashes)) nameHashes[name] = fnv32(name);
     return nameHashes[name];
   }
 
-  const rawTables: { [key: number]: Table; } = {}; // key = data type
-  const objectTables: { [key: number]: Table; } = {}; // key = schema hash
   function getTable(dataType: SimDataType, schemaHash?: number): Table {
     if (dataType === SimDataType.Object) {
       if (!objectTables[schemaHash]) objectTables[schemaHash] = {
@@ -102,7 +124,7 @@ export default function writeData(model: SimDataDto): Buffer {
     }
   }
 
-  //#endregion Variables & Helpers
+  //#endregion Helpers
 
   //#region Prepare Schemas
 
