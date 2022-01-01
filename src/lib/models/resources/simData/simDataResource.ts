@@ -137,11 +137,29 @@ export default class SimDataResource extends Resource implements SimDataResource
    */
   static fromXml(xml: string | Buffer): SimDataResource {
     const dom = XmlDocumentNode.from(xml).child;
+
+    if (!dom || dom.tag !== "SimData")
+      throw new Error(`Expected <SimData>, but got <${dom.tag}>`);
+
+    const version = parseInt(dom.attributes.version, 16);
+    if (version !== SimDataResource.SUPPORTED_VERSION)
+      throw new Error(`Expected version to be ${SimDataResource.SUPPORTED_VERSION}, got ${version}`);
+    
+    const unused = parseInt(dom.attributes.u, 16);
+    if (unused === NaN)
+      throw new Error(`Expected unused to be a number, got ${dom.attributes.u}`);
+
     const schemasNode = dom.children.find(node => node.tag === "Schemas");
-    schemasNode.children.map(schemaNode => {
-      //
+    const schemas = schemasNode.children.map(schemaNode => {
+      return SimDataSchema.fromXmlNode(schemaNode);
     });
+
     const instancesNode = dom.children.find(node => node.tag === "Instances");
+    const instances = instancesNode.children.map(instanceNode => {
+      return SimDataInstance.fromXmlNode(schemas, instanceNode);
+    });
+
+    return new SimDataResource(version, unused, schemas, instances);
   }
 
   /**

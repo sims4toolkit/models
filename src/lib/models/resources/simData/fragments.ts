@@ -295,18 +295,14 @@ export class SimDataInstance extends ObjectCell {
    * 
    * @param node Node to parse as a instance
    */
-  static fromXmlNode(node: XmlNode): SimDataInstance {
-    if (node.tag !== "Column")
-      throw new Error(`Expected a <Column>, got a <${node.tag}>`);
+  static fromXmlNode(schemas: SimDataSchema[], node: XmlNode): SimDataInstance {
+    if (node.tag !== "I")
+      throw new Error(`Expected a <I>, got a <${node.tag}>`);
     if (!node.attributes.name)
-      throw new Error(`Expected <Column> to have a 'name' attribute.`);
-    if (!node.attributes.type)
-      throw new Error(`Expected <Column> to have a 'type' attribute.`);
-    const type = parseNodeAttrAsNumber(node, 'type');
-    if (!node.attributes.flags)
-      throw new Error(`Expected <Column> to have a 'flags' attribute.`);
-    const flags = parseNodeAttrAsNumber(node, 'flags');
-    return new SimDataSchemaColumn(node.attributes.name, type, flags);
+      throw new Error(`Expected <I> to have a 'name' attribute.`);
+    const { name } = node.attributes;
+    const { schema, row } = this._parseXmlNode(schemas, node);
+    return new SimDataInstance(name, schema, row);
   }
 }
 
