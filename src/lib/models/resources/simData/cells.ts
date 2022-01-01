@@ -1,9 +1,9 @@
 import type { SimDataSchema } from "./fragments";
 import type { SimDataNumber, SimDataBigInt, SimDataText, SimDataFloatVector } from "./simDataTypes";
+import type { BinaryDecoder } from "../../../utils/encoding";
 import CacheableModel from "../../abstract/cacheableModel";
 import { SimDataType, SimDataTypeUtils } from "./simDataTypes";
 import { removeFromArray } from "../../../utils/helpers";
-import type { BinaryDecoder } from "../../../utils/encoding";
 import { XmlElementNode, XmlNode, XmlValueNode } from "../../xml/dom";
 import { formatAsHexString } from "../../../utils/formatting";
 

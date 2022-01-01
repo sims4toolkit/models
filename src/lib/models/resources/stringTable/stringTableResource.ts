@@ -1,8 +1,11 @@
+import type { KeyStringPair, StringTableError } from "./shared";
+import type { SerializationOptions } from "../../shared";
 import Resource from "../resource";
-import { BinaryEncoder, BinaryDecoder } from "../../../utils/encoding";
 import { fnv32 } from "../../../utils/hashing";
 import { removeFromArray } from "../../../utils/helpers";
 import CacheableModel from "../../abstract/cacheableModel";
+import readStbl from "./serialization/readStbl";
+import writeStbl from "./serialization/writeStbl";
 
 /**
  * Model for binary string table resources.
@@ -65,7 +68,7 @@ export default class StringTableResource extends Resource {
    * @param buffer Buffer to read as a string table
    * @param options Options to configure for reading a STBL resource
    */
-  static from(buffer: Buffer, options?: ReadStringTableOptions): StringTableResource {
+  static from(buffer: Buffer, options?: SerializationOptions): StringTableResource {
     try {
       return new StringTableResource(readStbl(buffer, options), buffer);
     } catch (e) {
@@ -325,95 +328,3 @@ class StringEntry extends CacheableModel {
     this.owner.remove(this);
   }
 }
-
-//#region Interfaces & Types
-
-type StringTableError = 'Duplicate Keys' | 'Duplicate Strings' | 'Empty String';
-
-interface KeyStringPair {
-  key: number;
-  string: string;
-}
-
-interface ReadStringTableOptions {
-  ignoreErrors: boolean;
-  dontThrow: boolean;
-}
-
-//#endregion Interfaces & Types
-
-//#region Serialization
-
-/**
- * Reads STBL content from the given buffer.
- * 
- * @param buffer Buffer to read as a STBL
- * @param options Options to configure
- */
-function readStbl(buffer: Buffer, options?: ReadStringTableOptions): KeyStringPair[] {
-  const decoder = new BinaryDecoder(buffer);
-
-  if (options === undefined || !options.ignoreErrors) {
-    // mnFileIdentifier
-    if (decoder.charsUtf8(4) !== "STBL")
-      throw new Error("Not a string table.");
-
-    // mnVersion
-    if (decoder.uint16() !== 5)
-      throw new Error("Version must be 5.");
-  } else {
-    decoder.skip(6);
-  }
-  
-  decoder.skip(1); // mnCompressed (uint8; has no use, will never be set)
-  const mnNumEntries = decoder.uint64();
-  decoder.skip(6); // mReserved (2 bytes) + mnStringLength (uint32; 4 bytes)
-
-  const entries: KeyStringPair[] = [];
-  for (let id = 0; id < mnNumEntries; id++) {
-    const key = decoder.uint32();
-    decoder.skip(1); // mnFlags (uint8; has no use, will never be set)
-    const stringLength = decoder.uint16();
-    const string = stringLength > 0 ? decoder.charsUtf8(stringLength) : '';
-    entries.push({ key, string });
-  }
-
-  return entries;
-}
-
-/**
- * Writes STBL content to a buffer.
- * 
- * @param entries STBL entries to serialize
- */
-function writeStbl(entries: KeyStringPair[]): Buffer {
-  let totalBytes = 21; // num bytes in header
-  let totalStringLength = 0;
-  const stringLengths: number[] = [];
-  entries.forEach(entry => {
-    const stringLength = Buffer.byteLength(entry.string);
-    stringLengths.push(stringLength);
-    totalStringLength += stringLength + 1;
-    totalBytes += stringLength + 7;
-  });
-
-  const buffer = Buffer.alloc(totalBytes);
-  const encoder = new BinaryEncoder(buffer);
-
-  encoder.charsUtf8('STBL'); // mnFileIdentifier
-  encoder.uint16(5); // mnVersion
-  encoder.skip(1); // mnCompressed (should be null)
-  encoder.uint64(entries.length); // mnNumEntries
-  encoder.skip(2); // mReserved (should be null)
-  encoder.uint32(totalStringLength); // mnStringLength
-  entries.forEach((entry, index) => {
-    encoder.uint32(entry.key);
-    encoder.skip(1); // mnFlags (should be null)
-    encoder.uint16(stringLengths[index]);
-    encoder.charsUtf8(entry.string);
-  });
-
-  return buffer;
-}
-
-//#endregion Serialization

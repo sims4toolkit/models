@@ -8,7 +8,8 @@ export function formatStringKey(key: number): string {
 }
 
 /**
- * Formats a number or bigint as a hex string.
+ * Formats the given number or bigint as a hex string, padding the start with
+ * zeros to match the number of given digits.
  * 
  * @param value Values to format as hex
  * @param digits Digits to pad start of hex number with
