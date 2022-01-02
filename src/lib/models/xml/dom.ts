@@ -307,7 +307,7 @@ abstract class XmlNodeBase implements XmlNode {
     this._ensureChildren();
     this.sort(compareFn);
     this.children.forEach(child => {
-      if (child.children) child.deepSort();
+      if (child.children) child.deepSort(compareFn);
     });
   }
 
