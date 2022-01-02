@@ -1,16 +1,16 @@
 {
   "files.exclude": {
-    "node_modules": true,
-    "dst": true,
-    "tsconfig.json": true,
-    ".npmignore": true,
-    ".gitignore": true,
-    "package-lock.json": true,
-    ".vscode": true,
-    "src/lib/generators": true,
-    "src/lib/services": true,
-    "package.json": true,
-    "README.md": true
+    "node_modules": false,
+    "dst": false,
+    "tsconfig.json": false,
+    ".npmignore": false,
+    ".gitignore": false,
+    "package-lock.json": false,
+    ".vscode": false,
+    "src/lib/generators": false,
+    "src/lib/services": false,
+    "package.json": false,
+    "README.md": false
   },
-  "workspace.isHidden": true
+  "workspace.isHidden": false
 }
