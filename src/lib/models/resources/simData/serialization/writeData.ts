@@ -251,7 +251,7 @@ export default function writeData(model: SimDataDto): Buffer {
 
   //#region Writing Buffers
 
-  // use string itself (not encoded)
+  /** Maps unencoded strings in the string table to their offsets. */
   const stringTableOffsets: { [key: string]: number } = {};
   const stringTableBuffer: Buffer = ((): Buffer => {
     const strings = Object.keys(nameHashes);
@@ -270,10 +270,53 @@ export default function writeData(model: SimDataDto): Buffer {
     return buffer;
   })();
 
-  // use schema hash
+  /** Maps schema hashes to their offsets. */
   const schemaOffsets: { [key: number]: number } = {};
   const schemaBuffer: Buffer = ((): Buffer => {
-    // TODO:
+    let columnStart = 0;
+    let totalSize = 0;
+    serialSchemas.forEach((schema, i) => {
+      columnStart += 24;
+      totalSize += 24 + (20 * schema.columns.length);
+      schemaOffsets[schema.hash] = 24 * i;
+    });
+
+    const buffer = Buffer.alloc(totalSize);
+    const encoder = new BinaryEncoder(buffer);
+
+    const nameOffset = (name: string) => totalSize - encoder.tell() + stringTableOffsets[name];
+    
+    let filledColumns = 0;
+    serialSchemas.forEach(schema => {
+      encoder.int32(nameOffset(schema.name));
+      encoder.uint32(nameHashes[schema.name]);
+      encoder.uint32(schema.hash);
+      encoder.uint32(schema.size);
+      const columnOffsetPos = encoder.tell();
+      let firstColumnPos: number;
+      encoder.skip(4); // we'll come back to it
+      encoder.uint32(schema.columns.length);
+      encoder.savePos(() => {
+        // write all columns
+        encoder.seek(columnStart + filledColumns);
+        schema.columns.forEach((column, i) => {
+          if (i === 0) firstColumnPos = encoder.tell();
+          encoder.int32(nameOffset(column.name));
+          encoder.uint32(nameHashes[column.name]);
+          encoder.uint16(column.dataType);
+          encoder.uint16(0); // flags
+          encoder.uint32(column.offset);
+          encoder.int32(RELOFFSET_NULL); // FIXME: is this actually used?
+          filledColumns += 20;
+        });
+
+        // write column offset
+        encoder.seek(columnOffsetPos);
+        encoder.int32(firstColumnPos - encoder.tell());
+      });
+    });
+
+    return buffer;
   })();
 
   // 3 sections combined to make alignment easier
