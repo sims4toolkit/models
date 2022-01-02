@@ -87,32 +87,32 @@ export default function writeData(model: SimDataDto): Buffer {
   //#region Mappings & Getters
 
   /** Maps name strings to their 32-bit hashes. */
-  const _nameHashes: { [key: string]: number } = {};
+  const nameHashes: { [key: string]: number } = {};
   function hashName({ name }: { name: string }): number {
-    if (!(name in _nameHashes)) _nameHashes[name] = fnv32(name);
-    return _nameHashes[name];
+    if (!(name in nameHashes)) nameHashes[name] = fnv32(name);
+    return nameHashes[name];
   }
 
   /** Maps SimDataTypes to their tables. */
-  const _rawTables: { [key: number]: RawTable; } = {};
+  const rawTables: { [key: number]: RawTable; } = {};
   function getRawTable(dataType: SimDataType): RawTable {
-    if (!(dataType in _rawTables)) _rawTables[dataType] = {
+    if (!(dataType in rawTables)) rawTables[dataType] = {
       dataType,
       row: []
     };
 
-    return _rawTables[dataType];
+    return rawTables[dataType];
   }
 
   /** Maps schema hashes to their Objects' tables. */
-  const _objectTables: { [key: number]: ObjectTable; } = {};
+  const objectTables: { [key: number]: ObjectTable; } = {};
   function getObjectTable(schemaHash: number): ObjectTable {
-    if (!(schemaHash in _objectTables)) _objectTables[schemaHash] = {
+    if (!(schemaHash in objectTables)) objectTables[schemaHash] = {
       schemaHash,
       rows: []
     };
 
-    return _objectTables[schemaHash];
+    return objectTables[schemaHash];
   }
 
   //#endregion  Mappings & Getters
@@ -254,7 +254,20 @@ export default function writeData(model: SimDataDto): Buffer {
   // use string itself (not encoded)
   const stringTableOffsets: { [key: string]: number } = {};
   const stringTableBuffer: Buffer = ((): Buffer => {
-    // TODO:
+    const strings = Object.keys(nameHashes);
+
+    const buffer = Buffer.alloc(strings.reduce((prev, string) => {
+      return prev + Buffer.byteLength(string) + 1;
+    }, 0));
+  
+    let offset = 0;
+    strings.forEach(string => {
+      buffer.write(string, offset, 'utf-8');
+      stringTableOffsets[string] = offset;
+      offset += Buffer.byteLength(string) + 1;
+    });
+  
+    return buffer;
   })();
 
   // use schema hash
