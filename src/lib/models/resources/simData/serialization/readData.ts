@@ -1,4 +1,4 @@
-import { RELOFFSET_NULL, SimDataDto } from "../shared";
+import { ObjectCellRow, RELOFFSET_NULL, SimDataDto } from "../shared";
 import { BinaryDecoder } from "../../../../utils/encoding";
 import { makeList } from "../../../../utils/helpers";
 import { SimDataSchema, SimDataSchemaColumn, SimDataInstance } from "../simDataFragments";
@@ -211,7 +211,7 @@ export default function readData(buffer: Buffer): SimDataDto {
     const binarySchema = getBinarySchema(mSchema, tableInfo.startof_mnSchemaOffset + tableInfo.mnSchemaOffset);
     const schema = schemas.find(schema => schema.hash === binarySchema.mnSchemaHash);
 
-    const row: cells.ObjectCellRow = {};
+    const row: ObjectCellRow = {};
     binarySchema.mColumn.forEach(column => {
       decoder.savePos(() => {
         decoder.skip(column.mnOffset);

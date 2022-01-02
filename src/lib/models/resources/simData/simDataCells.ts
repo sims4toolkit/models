@@ -1,7 +1,7 @@
 import type { SimDataSchema } from "./simDataFragments";
 import type { SimDataNumber, SimDataBigInt, SimDataText, SimDataFloatVector } from "./simDataTypes";
 import type { BinaryDecoder, BinaryEncoder } from "../../../utils/encoding";
-import { CellCloneOptions, CellEncodingOptions, CellToXmlOptions, ObjectCellRow, RELOFFSET_NULL } from "./shared";
+import { CellCloneOptions, CellEncodingOptions, CellToXmlOptions, ObjectCellRow } from "./shared";
 import CacheableModel from "../../abstract/cacheableModel";
 import { SimDataType, SimDataTypeUtils } from "./simDataTypes";
 import { removeFromArray } from "../../../utils/helpers";
