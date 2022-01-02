@@ -70,6 +70,24 @@ function getPaddingForAlignment(index: number, alignmentMask: number): number {
   return -index & alignmentMask;
 }
 
+/**
+ * Returns whether or not the given cell is a reference type.
+ * 
+ * @param cell Cell to check
+ */
+function isReferenceType(cell: cells.Cell): boolean {
+  switch (cell.dataType) {
+    case SimDataType.String:
+    case SimDataType.HashedString:
+    case SimDataType.Object:
+    case SimDataType.Vector:
+    case SimDataType.Variant:
+      return true;
+    default:
+      return false;
+  }
+}
+
 //#endregion Helpers
 
 /**
@@ -234,7 +252,11 @@ export default function writeData(model: SimDataDto): Buffer {
 
     table.rows.push(obj.schema.columns.map(column => {
       const cell = obj.row[column.name];
-      return { cell, ref: addCell(cell) }
+      if (isReferenceType(cell)) {
+        return { cell, ref: addCell(cell) };
+      } else {
+        return { cell };
+      }
     }));
 
     return ref;
