@@ -455,6 +455,38 @@ describe('XmlDocumentNode', function() {
       expect(node.child.children[1].name).to.equal("b");
       expect(node.child.children[2].name).to.equal("c");
     });
+
+    it("should pass its function onto its children", function() {
+      const node = newNode(
+        new XmlElementNode({
+          tag: 'L',
+          attributes: { n: "list" },
+          children: [
+            new XmlElementNode({ tag: 'T', attributes: { x: "b" } }),
+            new XmlElementNode({ tag: 'T', attributes: { x: "a" } }),
+            new XmlElementNode({ tag: 'T', attributes: { x: "c" } })
+          ]
+        })
+      );
+
+      node.deepSort((a, b) => {
+        const aName = a.attributes.x;
+        const bName = b.attributes.x;
+        if (aName) {
+          if (bName) {
+            if (aName < bName) return -1;
+            if (aName > bName) return 1;
+            return 0;
+          }
+          return -1;
+        }
+        return bName ? 1 : 0;
+      });
+
+      expect(node.child.children[0].attributes.x).to.equal("a");
+      expect(node.child.children[1].attributes.x).to.equal("b");
+      expect(node.child.children[2].attributes.x).to.equal("c");
+    });
   });
 
   describe('#sort()', function() {
