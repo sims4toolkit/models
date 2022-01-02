@@ -1,25 +1,15 @@
 import type { SimDataSchema } from "./simDataFragments";
 import type { SimDataNumber, SimDataBigInt, SimDataText, SimDataFloatVector } from "./simDataTypes";
-import type { BinaryDecoder } from "../../../utils/encoding";
+import type { BinaryDecoder, BinaryEncoder } from "../../../utils/encoding";
+import { CellCloneOptions, CellEncodingOptions, CellToXmlOptions, ObjectCellRow, RELOFFSET_NULL } from "./shared";
 import CacheableModel from "../../abstract/cacheableModel";
 import { SimDataType, SimDataTypeUtils } from "./simDataTypes";
 import { removeFromArray } from "../../../utils/helpers";
 import { XmlElementNode, XmlNode, XmlValueNode } from "../../xml/dom";
 import { formatAsHexString } from "../../../utils/formatting";
+import { fnv32 } from "../../../utils/hashing";
 
 type PrimitiveType = boolean | number | bigint | string;
-
-export interface ObjectCellRow { [key: string]: Cell; };
-
-export interface CellCloneOptions {
-  cloneSchema?: boolean;
-  newSchemas?: SimDataSchema[];
-};
-
-interface CellToXmlOptions {
-  nameAttr?: string;
-  typeAttr?: boolean;
-}
 
 //#region Abstract Cells
 
@@ -59,6 +49,26 @@ export abstract class Cell extends CacheableModel {
    * @param options Options for cloning
    */
   abstract clone(options?: CellCloneOptions): Cell;
+
+  /**
+   * Writes this cell's value(s) into the given encoder. If this cell is
+   * recursive, then the `offset` option MUST be supplied, or an exception
+   * will be thrown.
+   * 
+   * Options
+   * - `offset`: Required if this cell is recursive. References another position
+   * in a binary SimData file.
+   * 
+   * @param encoder Encoder to write this cell into
+   * @param options Additional parameters need to encode this cell
+   */
+  abstract encode(encoder: BinaryEncoder, options?: CellEncodingOptions): void;
+
+  protected _getOffsetEncodingOption(options: CellEncodingOptions): number {
+    if (!options?.offset)
+      throw new Error(`DataType ${this.dataType} cannot be encoded without an offset.`);
+    return options.offset;
+  }
 
   /**
    * Creates an XmlElementNode object that represents this cell as it would
@@ -187,6 +197,10 @@ abstract class FloatVectorCell extends Cell {
       return float;
     });
   }
+
+  encode(encoder: BinaryEncoder, options?: CellEncodingOptions): void {
+    this._floats.forEach(float => encoder.float(float));
+  }
 }
 
 //#endregion Abstract Cells
@@ -237,6 +251,10 @@ export class BooleanCell extends PrimitiveValueCell<boolean> {
   static getDefault(): BooleanCell {
     return new BooleanCell(false);
   }
+
+  encode(encoder: BinaryEncoder, options?: CellEncodingOptions): void {
+    encoder.boolean(this.value);
+  }
 }
 
 /**
@@ -259,6 +277,21 @@ export class TextCell extends PrimitiveValueCell<string> {
 
   clone(): TextCell {
     return new TextCell(this.dataType, this.value);
+  }
+
+  encode(encoder: BinaryEncoder, options?: CellEncodingOptions): void {
+    switch (this.dataType) {
+      case SimDataType.Character:
+        encoder.charsUtf8(this.value); // FIXME: test this... should be base64?
+        break;
+      case SimDataType.String:
+        encoder.uint32(this._getOffsetEncodingOption(options));
+        break;
+      case SimDataType.HashedString:
+        encoder.uint32(this._getOffsetEncodingOption(options));
+        encoder.uint32(fnv32(this.value));
+        break;
+    }
   }
 
   /**
@@ -340,6 +373,34 @@ export class NumberCell extends PrimitiveValueCell<number> {
     return new NumberCell(this.dataType, this.value);
   }
 
+  encode(encoder: BinaryEncoder, options?: CellEncodingOptions): void {
+    switch (this.dataType) {
+      case SimDataType.Int8:
+        encoder.int8(this.value);
+        break;
+      case SimDataType.UInt8:
+        encoder.uint8(this.value);
+        break;
+      case SimDataType.Int16:
+        encoder.int16(this.value);
+        break;
+      case SimDataType.UInt16:
+        encoder.uint16(this.value);
+        break;
+      case SimDataType.Int32:
+        encoder.int32(this.value);
+        break;
+      case SimDataType.LocalizationKey:
+        // fallthrough
+      case SimDataType.UInt32:
+        encoder.uint32(this.value);
+        break;
+      case SimDataType.Float:
+        encoder.float(this.value);
+        break;
+    }
+  }
+
   /**
    * Creates a NumberCell by reading a value of the give data type from the
    * given decoder.
@@ -419,6 +480,19 @@ export class BigIntCell extends PrimitiveValueCell<bigint> {
 
   clone(): BigIntCell {
     return new BigIntCell(this.dataType, this.value);
+  }
+
+  encode(encoder: BinaryEncoder, options?: CellEncodingOptions): void {
+    switch (this.dataType) {
+      case SimDataType.Int64:
+        encoder.int64(this.value);
+        break;
+      case SimDataType.UInt64:
+        // fallthrough
+      case SimDataType.TableSetReference:
+        encoder.uint64(this.value);
+        break;
+    }
   }
 
   /**
@@ -504,6 +578,12 @@ export class ResourceKeyCell extends Cell {
 
   clone(): ResourceKeyCell {
     return new ResourceKeyCell(this.type, this.group, this.instance);
+  }
+
+  encode(encoder: BinaryEncoder, options?: CellEncodingOptions): void {
+    encoder.uint64(this.instance);
+    encoder.uint32(this.type);
+    encoder.uint32(this.group);
   }
 
   /**
@@ -842,6 +922,10 @@ export class ObjectCell extends Cell {
 
     return { schema, row };
   }
+
+  encode(encoder: BinaryEncoder, options?: CellEncodingOptions): void {
+    encoder.uint32(this._getOffsetEncodingOption(options));
+  }
 }
 
 /**
@@ -1011,6 +1095,11 @@ export class VectorCell<T extends Cell = Cell> extends Cell {
       return new VectorCell(children);
     }
   }
+
+  encode(encoder: BinaryEncoder, options?: CellEncodingOptions): void {
+    encoder.int32(this._getOffsetEncodingOption(options)); // FIXME: int32 or uint32?
+    encoder.uint32(this.children.length);
+  }
 }
 
 /**
@@ -1097,6 +1186,11 @@ export class VariantCell extends Cell {
         return new VariantCell(typeHash, undefined);
       }
     }
+  }
+
+  encode(encoder: BinaryEncoder, options?: CellEncodingOptions): void {
+    encoder.int32(this._getOffsetEncodingOption(options)); // intentionally signed
+    encoder.uint32(this.typeHash);
   }
 }
 

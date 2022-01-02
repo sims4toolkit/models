@@ -25,25 +25,33 @@ interface SerialColumn {
   offset: number; // mnOffset
 }
 
-/** A table in a DATA file. Holds all cells of the same type/scema. */
-interface Table {
+/** A table in a DATA file that contains plain values or reference types. */
+interface RawTable {
   dataType: SimDataType;
-  schemaHash?: number; // iff dataType === Object
+  row: TableRow;
+}
+
+/** A table in a DATA file that contains objects that follow a schema. */
+interface ObjectTable {
   name?: string; // iff it's a table for an instance
+  schemaHash: number;
   rows: TableRow[];
 }
 
-/** A row in a Table that either contains a value or follows a schema. */
-interface TableRow {
+/** A row in a table. */
+type TableRow = TableCell[];
+
+/** A cell in a row. */
+interface TableCell {
   cell: cells.Cell;
-  dataRef?: TableRowRef;
+  ref?: TableRef;
 }
 
-/** References a TableRow in a Table, specified by the type and schema. */
-interface TableRowRef {
+/** References a cell in a Table, specified by the type and schema. */
+interface TableRef {
   dataType: SimDataType;
   schemaHash?: number; // iff dataType === Object
-  index: number; // index of cell to get
+  index: number; // index of row to get
 }
 
 //#endregion Interfaces
@@ -73,58 +81,39 @@ export default function writeData(model: SimDataDto): Buffer {
     const hexSupVersion = formatAsHexString(SUPPORTED_VERSION, 0, true);
     throw new Error(`S4TK cannot write SimData version ${hexVersion}, only ${hexSupVersion} is supported at this time.`);
   }
-
-  //#region Variables
   
-  /** Maps strings to their 32-bit hashes. */
-  const nameHashes: { [key: string]: number } = {};
+  //#region Mappings & Getters
+
+  /** Maps name strings to their 32-bit hashes. */
+  const _nameHashes: { [key: string]: number } = {};
+  function hashName({ name }: { name: string }): number {
+    if (!(name in _nameHashes)) _nameHashes[name] = fnv32(name);
+    return _nameHashes[name];
+  }
 
   /** Maps SimDataTypes to their tables. */
-  const rawTables: { [key: number]: Table; } = {};
+  const _rawTables: { [key: number]: RawTable; } = {};
+  function getRawTable(dataType: SimDataType): RawTable {
+    if (!(dataType in _rawTables)) _rawTables[dataType] = {
+      dataType,
+      row: []
+    };
+
+    return _rawTables[dataType];
+  }
 
   /** Maps schema hashes to their Objects' tables. */
-  const objectTables: { [key: number]: Table; } = {};
+  const _objectTables: { [key: number]: ObjectTable; } = {};
+  function getObjectTable(schemaHash: number): ObjectTable {
+    if (!(schemaHash in _objectTables)) _objectTables[schemaHash] = {
+      schemaHash,
+      rows: []
+    };
 
-  //#endregion Variables
-  
-  //#region Helpers
-
-  function hashName({ name }: { name: string }): number {
-    if (!(name in nameHashes)) nameHashes[name] = fnv32(name);
-    return nameHashes[name];
+    return _objectTables[schemaHash];
   }
 
-  function getTable(dataType: SimDataType, schemaHash?: number): Table {
-    if (dataType === SimDataType.Object) {
-      if (!objectTables[schemaHash]) objectTables[schemaHash] = {
-        dataType,
-        schemaHash, 
-        rows: []
-      };
-
-      return objectTables[schemaHash];
-    } else {
-      if (!rawTables[dataType]) rawTables[dataType] = {
-        dataType,
-        rows: []
-      };
-
-      return rawTables[dataType];
-    }
-  }
-
-  function getTableForCell(cell: cells.Cell): Table {
-    return getTable(cell.dataType, (cell as cells.ObjectCell).schema?.hash);
-  }
-
-  function addToTable(cell: cells.Cell): TableRowRef {
-    const table = getTableForCell(cell);
-    if (cell.dataType === SimDataType.Object) {
-      // TODO:
-    }
-  }
-
-  //#endregion Helpers
+  //#endregion  Mappings & Getters
 
   //#region Prepare Schemas
 
@@ -166,7 +155,55 @@ export default function writeData(model: SimDataDto): Buffer {
 
   //#region Prepare Tables
 
-  // TODO:
+  function addCell(cell: cells.Cell): TableRef {
+    switch (cell.dataType) {
+      case SimDataType.String:
+        return {};
+      case SimDataType.HashedString:
+        return {};
+      case SimDataType.Object:
+        return addObjectCell(cell as cells.ObjectCell);
+      case SimDataType.Vector:
+        return addVectorCell(cell as cells.VectorCell);
+      case SimDataType.Variant:
+        return addVariantCell(cell as cells.VariantCell);
+      default:
+        // TODO: add to table
+        return { cell };
+    }
+  }
+
+  function addVectorCell(cell: cells.VectorCell): TableRef {
+
+  }
+
+  function addVariantCell(cell: cells.VariantCell): TableRef {
+
+  }
+
+  function addObjectCell(obj: cells.ObjectCell, table?: ObjectTable): TableRef {
+    table = table ?? getObjectTable(obj.schema.hash);
+
+    const ref: TableRef = {
+      dataType: obj.dataType,
+      schemaHash: obj.schema.hash,
+      index: table.rows.length,
+    };
+
+    table.rows.push(obj.schema.columns.map(column => {
+      const cell = obj.row[column.name];
+      return { cell, ref: addCell(cell) }
+    }));
+
+    return ref;
+  }
+
+  model.instances.forEach(instance => {
+    hashName(instance);
+    const table = getObjectTable(instance.schema.hash);
+    if (!table.name && instance.name) table.name = instance.name;
+    addObjectCell(instance, table);
+  });
 
   //#endregion Prepare Tables
 
@@ -259,39 +296,7 @@ export default function writeData(model: SimDataDto): Buffer {
 
     function writeValue(dataType: SimDataType, value: any) {
       switch (dataType) {
-        case SimDataType.Boolean:
-          encoder.boolean(value);
-          return;
-        case SimDataType.Character:
-          encoder.uint8(value); // intentionally uint8 since char is a byte
-          return;
-        case SimDataType.Int8:
-          encoder.int8(value);
-          return;
-        case SimDataType.UInt8:
-          encoder.uint8(value);
-          return;
-        case SimDataType.Int16:
-          encoder.int16(value);
-          return;
-        case SimDataType.UInt16:
-          encoder.uint16(value);
-          return;
-        case SimDataType.Int32:
-          encoder.int32(value);
-          return;
-        case SimDataType.UInt32:
-          encoder.uint32(value);
-          return;
-        case SimDataType.Int64:
-          encoder.int64(value);
-          return;
-        case SimDataType.UInt64:
-          encoder.uint64(value);
-          return;
-        case SimDataType.Float:
-          encoder.float(value);
-          return;
+
         case SimDataType.String:
           encoder.uint32(getRelativeStringOffset(value.stringIndex));
           return;
@@ -309,32 +314,6 @@ export default function writeData(model: SimDataDto): Buffer {
             encoder.uint32(getRelativeDataRefOffset(value.ref));
           }
           encoder.uint32(value.count);
-          return;
-        case SimDataType.Float2:
-          encoder.float(value[0]);
-          encoder.float(value[1]);
-          return;
-        case SimDataType.Float3:
-          encoder.float(value[0]);
-          encoder.float(value[1]);
-          encoder.float(value[2]);
-          return;
-        case SimDataType.Float4:
-          encoder.float(value[0]);
-          encoder.float(value[1]);
-          encoder.float(value[2]);
-          encoder.float(value[3]);
-          return;
-        case SimDataType.TableSetReference:
-          encoder.uint64(value);
-          return;
-        case SimDataType.ResourceKey:
-          encoder.uint64(value.instance);
-          encoder.uint32(value.type);
-          encoder.uint32(value.group);
-          return;
-        case SimDataType.LocalizationKey:
-          encoder.uint32(value);
           return;
         case SimDataType.Variant:
           if (value.ref === undefined) {

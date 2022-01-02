@@ -1,3 +1,4 @@
+import type { Cell } from "./simDataCells";
 import type { SimDataInstance, SimDataSchema } from "./simDataFragments";
 
 /**
@@ -8,6 +9,36 @@ export interface SimDataDto {
   unused: number;
   schemas: SimDataSchema[];
   instances: SimDataInstance[];
+}
+
+/**
+ * Additional options required for a cell to encode itself.
+ */
+export interface CellEncodingOptions {
+  offset?: number;
+}
+
+/**
+ * A row in an ObjectCell.
+ */
+export interface ObjectCellRow {
+  [key: string]: Cell;
+};
+
+/**
+ * Additional options required for a cell to clone itself.
+ */
+export interface CellCloneOptions {
+  cloneSchema?: boolean;
+  newSchemas?: SimDataSchema[];
+};
+
+/**
+ * Additional options for a cell to generate itself as XML.
+ */
+export interface CellToXmlOptions {
+  nameAttr?: string;
+  typeAttr?: boolean;
 }
 
 // Constants
