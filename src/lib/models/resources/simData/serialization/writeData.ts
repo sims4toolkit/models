@@ -49,10 +49,12 @@ interface TableCell {
 
 /** References a cell in a Table, specified by the type and schema. */
 interface TableRef {
-  dataType: SimDataType;
+  dataType?: SimDataType;
   schemaHash?: number; // iff dataType === Object
   index: number; // index of row to get
 }
+
+const TABLEREF_NULL: TableRef = { index: RELOFFSET_NULL };
 
 //#endregion Interfaces
 
@@ -155,30 +157,70 @@ export default function writeData(model: SimDataDto): Buffer {
 
   //#region Prepare Tables
 
+  /**
+   * The total length of the char table. This is stored in a variable for use
+   * with table refs, since strings and hashed strings are stored in the char
+   * table but will not actually be added until later.
+   */
+  let charTableLength: number = 0;
+  const stringsToAddToCharTable: string[] = [];
+
   function addCell(cell: cells.Cell): TableRef {
     switch (cell.dataType) {
-      case SimDataType.String:
-        return {};
-      case SimDataType.HashedString:
-        return {};
       case SimDataType.Object:
         return addObjectCell(cell as cells.ObjectCell);
       case SimDataType.Vector:
         return addVectorCell(cell as cells.VectorCell);
       case SimDataType.Variant:
         return addVariantCell(cell as cells.VariantCell);
+      case SimDataType.Character:
+      case SimDataType.String:
+      case SimDataType.HashedString:
+        return addTextCell(cell as cells.TextCell);
       default:
-        // TODO: add to table
-        return { cell };
+        return addPrimitiveCell(cell);
     }
   }
 
-  function addVectorCell(cell: cells.VectorCell): TableRef {
+  function addPrimitiveCell(cell: cells.Cell): TableRef {
+    const table = getRawTable(cell.dataType);
+        
+    const ref: TableRef = {
+      dataType: cell.dataType,
+      index: table.row.length
+    };
 
+    table.row.push({ cell });
+
+    return ref;
+  }
+
+  function addTextCell(cell: cells.TextCell): TableRef {
+    const ref: TableRef = {
+      dataType: SimDataType.Character,
+      index: charTableLength
+    };
+
+    charTableLength += Buffer.byteLength(cell.value) + 1; // +1 for null
+    stringsToAddToCharTable.push(cell.value);
+
+    return ref;
+  }
+
+  function addVectorCell(cell: cells.VectorCell): TableRef {
+    if (cell.childType === undefined) return TABLEREF_NULL;
+
+    let firstChildRef: TableRef;
+    cell.children.forEach(child => {
+      const ref = addCell(child);
+      if (!firstChildRef) firstChildRef = ref;
+    });
+
+    return firstChildRef;
   }
 
   function addVariantCell(cell: cells.VariantCell): TableRef {
-
+    return cell.child ? addCell(cell.child) : TABLEREF_NULL;
   }
 
   function addObjectCell(obj: cells.ObjectCell, table?: ObjectTable): TableRef {
