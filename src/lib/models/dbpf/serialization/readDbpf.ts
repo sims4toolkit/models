@@ -1,97 +1,15 @@
-import * as zlib from 'zlib';
-import { BinaryDecoder, BinaryEncoder } from '../utils/encoding';
-import { makeList } from '../utils/helpers';
-import { BinaryResourceType, TuningResourceType } from '../enums/resourceType';
-import Resource from './resources/resource';
-import SimData from './resources/simData/simDataResource';
-import StringTable from './resources/stringTable/stringTableResource';
-import Tuning from './resources/tuning/tuningResource';
-import RawResource from './resources/generic/rawResource';
-import WritableModel from "./abstract/writableModel";
-
-/** The (ideally) unique identifier for a resource. */
-interface ResourceKey {
-  type: number;
-  group: number;
-  instance: number | bigint;
-}
-
-/**
- * Model for a Sims 4 package file (also called a "Database Packed File", or
- * DBPF for short). Sims 4 Toolkit uses "DBPF" instead of "package" to avoid
- * confusion with npm packages and the reserved `package` keyword.
- */
-export default class Dbpf extends WritableModel {
-  private _nextId: number;
-  private _entries: ResourceEntry[];
-
-  protected constructor(entries: ResourceEntry[] = [], buffer?: Buffer) {
-    super({ buffer });
-    this._entries = entries;
-    this._nextId = entries.length;
-  }
-
-  /**
-   * Creates and returns a new, empty DBPF.
-   */
-  static create(): Dbpf {
-    return new Dbpf([]);
-  }
-
-  /**
-   * Creates a new DBPF from a buffer that contains binary data.
-   */
-  static from(buffer: Buffer, options?: DbpfOptions): Dbpf {
-    return new Dbpf(readDbpf(buffer, options), buffer);
-  }
-
-  /**
-   * TODO:
-   * 
-   * @param predicate TODO:
-   * @returns TODO:
-   */
-  numEntries(predicate?: ResourceEntryPredicate): number {
-    return this.getEntries(predicate).length;
-  }
-
-  /**
-   * TODO:
-   * 
-   * @param predicate TODO:
-   * @returns TODO:
-   */
-  getEntries(predicate?: ResourceEntryPredicate): ResourceEntry[] {
-    if (predicate === undefined) return this._entries;
-    return this._entries.filter(predicate);
-  }
-
-  protected _serialize(): Buffer {
-    return writeDbpf(this);
-  }
-}
+import * as zlib from "zlib";
+import { BinaryResourceType, TuningResourceType } from "../../../enums/resourceType";
+import { BinaryDecoder } from "../../../utils/encoding";
+import { makeList } from "../../../utils/helpers";
+import RawResource from "../../resources/generic/rawResource";
+import Resource from "../../resources/resource";
+import SimDataResource from "../../resources/simData/simDataResource";
+import StringTableResource from "../../resources/stringTable/stringTableResource";
+import TuningResource from "../../resources/tuning/tuningResource";
+import { DbpfOptions, ResourceEntry } from "../shared";
 
 //#region Types & Interfaces
-
-type ResourceEntryPredicate = (entry: ResourceEntry) => boolean;
-
-/**
- * Options to configure when creating a new DBPF.
- */
- interface DbpfOptions {
-  ignoreErrors: boolean;
-  loadRaw: boolean;
-}
-
-/**
- * A wrapper for a resource to track its metadata within a DBPF.
- */
-interface ResourceEntry {
-  readonly id: number;
-  key: ResourceKey;
-  resource: Resource;
-  cachedBuffer?: Buffer;
-}
 
 /**
  * An entry that appears in the index of a binary DBPF.
@@ -132,11 +50,11 @@ function getResourceModel(entry: IndexEntry, rawBuffer: Buffer): Resource {
   }
 
   if (entry.type === BinaryResourceType.StringTable) {
-    return StringTable.from(buffer);
+    return StringTableResource.from(buffer);
   } else if (entry.type === BinaryResourceType.SimData) {
-    return SimData.from(buffer);
+    return SimDataResource.from(buffer);
   } else if (entry.type in TuningResourceType || isXML(buffer)) {
-    return Tuning.from(buffer);
+    return TuningResource.from(buffer);
   } else {
     return RawResource.from(buffer, `Unrecognized non-XML type: ${entry.type}`);
   }
@@ -154,7 +72,6 @@ function isXML(buffer: Buffer): boolean {
 
 //#endregion Functions
 
-//#region Serialization
 
 /**
  * Reads the given buffer as a DBPF and returns its resource entries.
@@ -162,7 +79,7 @@ function isXML(buffer: Buffer): boolean {
  * @param buffer Buffer to read as a DBPF
  * @param ignoreErrors Whether or not non-fatal errors should be ignored
  */
-function readDbpf(buffer: Buffer, options?: DbpfOptions): ResourceEntry[] {
+export default function readDbpf(buffer: Buffer, options?: DbpfOptions): ResourceEntry[] {
   const decoder = new BinaryDecoder(buffer);
 
   const validateErrors = options === undefined ? true : !options.ignoreErrors;
@@ -249,68 +166,3 @@ function readDbpf(buffer: Buffer, options?: DbpfOptions): ResourceEntry[] {
 
   //#endregion Entries
 }
-
-/**
- * Writes the given DBPF into a buffer.
- * 
- * @param dbpf DBPF model to serialize into a buffer
- */
-function writeDbpf(dbpf: Dbpf): Buffer {
-  const recordsBuffer: Buffer = (() => {
-    const buffer = Buffer.alloc(0); // FIXME: find size
-    const encoder = new BinaryEncoder(buffer);
-
-    // TODO:
-
-    return buffer;
-  })();
-
-  const indexBuffer: Buffer = (() => {
-    // each entry is 32 bytes, and flags are 4
-    const buffer = Buffer.alloc(dbpf.numEntries() * 32 + 4);
-    const encoder = new BinaryEncoder(buffer);
-
-    encoder.uint32(0); // flags will always be null
-
-    dbpf.getEntries().forEach(entry => {
-      encoder.uint32(entry.key.type);
-      encoder.uint32(entry.key.group);
-      // TODO: instance ex
-      // TODO: instance
-      // TODO: position
-      // TODO: size & compressed flag (size | 0x80000000)
-      // TODO: size decompressed
-      encoder.uint16(23106); // ZLIB compression
-      encoder.uint32(1); // committed FIXME: is this always 1?
-    });
-
-    return buffer;
-  })();
-
-  const headerBuffer: Buffer = (() => {
-    const buffer = Buffer.alloc(96);
-    const encoder = new BinaryEncoder(buffer);
-
-    encoder.charsUtf8("DBPF");
-    encoder.uint32(2); // version major
-    encoder.uint32(1); // version minor
-    encoder.skip(24); // mnUserVersion through unused2
-    encoder.uint32(dbpf.numEntries());
-    encoder.uint32(0); // FIXME: what is the low pos?
-    encoder.uint32(indexBuffer.length); // index size
-    encoder.skip(12); // unused3
-    encoder.uint32(3); // unused4
-    encoder.uint64(recordsBuffer.length + 96); // index position
-    // intentionally ignoring unused5
-
-    return buffer;
-  })();
-
-  return Buffer.concat([
-    headerBuffer,
-    recordsBuffer,
-    indexBuffer
-  ]);
-}
-
-//#endregion Serialization
