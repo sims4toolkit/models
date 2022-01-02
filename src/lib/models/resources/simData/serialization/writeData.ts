@@ -8,6 +8,10 @@ import * as cells from "../simDataCells";
 // FIXME: there could potentially be an issue with padding when writing booleans,
 // for an example use the scenario role that chip sent
 
+// FIXME: order of columns gets messed up
+
+// FIXME: strings are left out, string table is never created
+
 //#region Interfaces
 
 /** A DTO for schemas when they're being serialized. */
@@ -111,26 +115,28 @@ export default function writeData(model: SimDataDto): Buffer {
     return nameHashes[name];
   }
 
-  /** Maps SimDataTypes to their tables. */
-  const rawTables: { [key: number]: RawTable; } = {};
+  const rawTables: RawTable[] = [];
   function getRawTable(dataType: SimDataType): RawTable {
-    if (!(dataType in rawTables)) rawTables[dataType] = {
-      dataType,
-      row: []
-    };
+    let table = rawTables.find(table => table.dataType === dataType);
 
-    return rawTables[dataType];
+    if (!table) {
+      table = { dataType, row: [] };
+      rawTables.push(table);
+    }
+
+    return table;
   }
 
-  /** Maps schema hashes to their Objects' tables. */
-  const objectTables: { [key: number]: ObjectTable; } = {};
+  const objectTables: ObjectTable[] = [];
   function getObjectTable(schemaHash: number): ObjectTable {
-    if (!(schemaHash in objectTables)) objectTables[schemaHash] = {
-      schema: serialSchemaMap[schemaHash],
-      rows: []
-    };
+    let table = objectTables.find(table => table.schema.hash === schemaHash);
 
-    return objectTables[schemaHash];
+    if (!table) {
+      table = { schema: serialSchemaMap[schemaHash], rows: [] };
+      objectTables.push(table);
+    }
+
+    return table;
   }
 
   //#endregion  Mappings & Getters
@@ -222,6 +228,11 @@ export default function writeData(model: SimDataDto): Buffer {
     charTableLength += Buffer.byteLength(cell.value, 'utf-8') + 1; // +1 for null
     stringsToAddToCharTable.push(cell.value);
 
+    if (cell.dataType !== SimDataType.Character) {
+      const table = getRawTable(cell.dataType);
+      table.row.push({ cell, ref });
+    }
+
     return ref;
   }
 
@@ -250,7 +261,7 @@ export default function writeData(model: SimDataDto): Buffer {
       index: table.rows.length,
     };
 
-    table.rows.push(obj.schema.columns.map(column => {
+    table.rows.push(table.schema.columns.map(column => {
       const cell = obj.row[column.name];
       if (isReferenceType(cell)) {
         return { cell, ref: addCell(cell) };
@@ -350,23 +361,21 @@ export default function writeData(model: SimDataDto): Buffer {
 
     /** Maps schema hash to position of object table. */
     const objectTablePositions: { [key: number]: number; } = {};
-    for (const schemaHash in objectTables) {
-      const table = objectTables[schemaHash];
+    objectTables.forEach(table => { // FIXME: should this be the items in the obj?
       totalSize += getPaddingForAlignment(totalSize, 15);
       totalSize += getPaddingForAlignment(totalSize, table.schema.size - 1);
       objectTablePositions[table.schema.hash] = totalSize;
       totalSize += table.schema.size * table.rows.length; // FIXME: is rows the same as objects in old code?
-    }
+    });
 
     /** Maps data type to position of raw table. */
     const rawTablePositions: { [key: number]: number; } = {};
-    for (const dataType in rawTables) {
-      const table = rawTables[dataType];
+    rawTables.forEach(table => {
       totalSize += getPaddingForAlignment(totalSize, 15);
       totalSize += getPaddingForAlignment(totalSize, SimDataTypeUtils.getAlignment(table.dataType) - 1);
       rawTablePositions[table.dataType] = totalSize;
       totalSize += SimDataTypeUtils.getBytes(table.dataType) * table.row.length; // FIXME: is row the same as values in old code?
-    }
+    });
 
     if (hasCharTable) {
       totalSize += getPaddingForAlignment(totalSize, 15);
@@ -416,9 +425,7 @@ export default function writeData(model: SimDataDto): Buffer {
       tableCell.cell.encode(encoder, options);
     }
 
-    for (const schemaHash in objectTables) {
-      const table = objectTables[schemaHash];
-
+    objectTables.forEach(table => {
       // header
       if (table.name === undefined) {
         encoder.int32(RELOFFSET_NULL);
@@ -438,14 +445,18 @@ export default function writeData(model: SimDataDto): Buffer {
       encoder.savePos(() => {
         encoder.seek(tablePos);
         table.rows.forEach(row => {
-          row.forEach(writeCell);
+          // FIXME: is order correct?
+          table.schema.columns.forEach((column, i) => {
+            encoder.savePos(() => {
+              encoder.skip(column.offset);
+              writeCell(row[i]);
+            });
+          });
         });
       });
-    }
+    });
 
-    for (const dataType in rawTables) {
-      const table = rawTables[dataType];
-
+    rawTables.forEach(table => {
       // header
       encoder.int32(RELOFFSET_NULL);
       encoder.uint32(NO_NAME_HASH);
@@ -461,7 +472,7 @@ export default function writeData(model: SimDataDto): Buffer {
         encoder.seek(tableOffset);
         table.row.forEach(writeCell);
       });
-    }
+    });
 
     if (hasCharTable) {
       // header

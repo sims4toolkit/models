@@ -285,10 +285,10 @@ export class TextCell extends PrimitiveValueCell<string> {
         encoder.charsUtf8(this.value); // FIXME: test this... should be base64?
         break;
       case SimDataType.String:
-        encoder.uint32(this._getOffsetEncodingOption(options));
+        encoder.int32(this._getOffsetEncodingOption(options)); // FIXME: signed or unsigned?
         break;
       case SimDataType.HashedString:
-        encoder.uint32(this._getOffsetEncodingOption(options));
+        encoder.int32(this._getOffsetEncodingOption(options)); // FIXME: signed or unsigned?
         encoder.uint32(fnv32(this.value));
         break;
     }
@@ -924,7 +924,7 @@ export class ObjectCell extends Cell {
   }
 
   encode(encoder: BinaryEncoder, options?: CellEncodingOptions): void {
-    encoder.uint32(this._getOffsetEncodingOption(options));
+    encoder.int32(this._getOffsetEncodingOption(options)); // FIXME: signed or unsigned?
   }
 }
 
