@@ -10,7 +10,9 @@
     "src/lib/generators": false,
     "src/lib/services": false,
     "package.json": false,
-    "README.md": false
+    "README.md": false,
+    "pocs": false,
+    "out": false
   },
   "workspace.isHidden": false
 }
