@@ -1,6 +1,8 @@
-const { expect } = require("chai");
-const cells = require("../../../../dst/api").simDataCells;
-const { BinaryEncoder } = require("../../../../src/lib/utils/encoding");
+import { expect } from "chai";
+import { simDataCells } from "../../../../dst/api";
+import { BinaryEncoder } from "../../../../dst/lib/utils/encoding";
+
+const cells = simDataCells;
 
 describe("Cell", function() {
   describe("static#parseXmlNode()", function() {

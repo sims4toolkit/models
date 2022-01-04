@@ -1,7 +1,7 @@
-const fs = require('fs');
-const path = require('path');
-const expect = require('chai').expect;
-const { StringTableResource, hashing } = require('../../../../dst/api');
+import * as fs from "fs";
+import * as path from "path";
+import { expect } from "chai";
+import { StringTableResource, hashing } from "../../../../dst/api";
 
 //#region Helpers
 
@@ -684,10 +684,10 @@ describe('StringTableResource', function() {
       expect(stbl.entries[1].key).to.equal(123);
     });
 
-    it('should not be assignable', function() {
+    it('should throw upon assignment', function() {
       const stbl = getSTBL('SmallSTBL');
-      stbl.entries = [];
-      expect(stbl.entries).to.not.be.empty;
+      //@ts-expect-error The whole point is that it's an error
+      expect(() => stbl.entries = undefined).to.throw();
     });
   });
 
@@ -1310,12 +1310,10 @@ describe('StringTableResource', function() {
   });
 
   describe('#buffer', function() {
-    it('should not be assignable', function() {
+    it('should throw upon assignment', function() {
       const stbl = StringTableResource.create();
-      const buffer = stbl.buffer;
-      stbl.buffer = undefined;
-      expect(stbl.buffer).to.equal(buffer);
-      expect(stbl.buffer).to.not.be.undefined;
+      //@ts-expect-error The whole point is that it's an error
+      expect(() => stbl.buffer = undefined).to.throw();
     });
 
     context('fresh string table', function() {
