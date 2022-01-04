@@ -860,7 +860,7 @@ describe("NumberCell", function() {
 
     it("should parse a negative integer", () => {
       const node = getPlainNode(-15);
-      const cell = cells.NumberCell.fromXmlNode(SimDataType.UInt32, node);
+      const cell = cells.NumberCell.fromXmlNode(SimDataType.Int32, node);
       expect(cell.value).to.equal(-15);
     });
 
@@ -872,7 +872,7 @@ describe("NumberCell", function() {
 
     it("should parse a negative integer from a string", () => {
       const node = getPlainNode("-15");
-      const cell = cells.NumberCell.fromXmlNode(SimDataType.UInt32, node);
+      const cell = cells.NumberCell.fromXmlNode(SimDataType.Int32, node);
       expect(cell.value).to.equal(-15);
     });
 
