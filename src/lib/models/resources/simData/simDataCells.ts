@@ -22,21 +22,6 @@ export abstract class Cell extends CacheableModel {
   }
 
   /**
-   * Verifies that this cell's content is valid, and if it isn't, an exception
-   * is thrown with the reason why it is invalid.
-   * 
-   * Options
-   * - `ignoreCache`: Whether or not cache should be validated. Feel free to
-   *   set this to `true` if you're just reading or generating SimDatas, the
-   *   only time cache really matters is when you're editing SimDatas. Default
-   *   value is `false`.
-   * 
-   * @param options Options for validation
-   * @throws If this cell is not in a valid state
-   */
-  abstract validate(options?: { ignoreCache?: boolean; }): void;
-
-  /**
    * Creates a deep copy of this cell, retaining all information except for
    * the owner. Everything contained and owned by this cell will also be
    * cloned, except for the schema of any objects. If you need to clone the
@@ -64,6 +49,34 @@ export abstract class Cell extends CacheableModel {
    */
   abstract encode(encoder: BinaryEncoder, options?: CellEncodingOptions): void;
 
+  /**
+   * Creates an XmlElementNode object that represents this cell as it would
+   * appear within an S4S-style XML SimData document.
+   */
+  abstract toXmlNode(options?: CellToXmlOptions): XmlElementNode;
+
+  /**
+   * Verifies that this cell's content is valid, and if it isn't, an exception
+   * is thrown with the reason why it is invalid.
+   * 
+   * Options
+   * - `ignoreCache`: Whether or not cache should be validated. Feel free to
+   *   set this to `true` if you're just reading or generating SimDatas, the
+   *   only time cache really matters is when you're editing SimDatas. Default
+   *   value is `false`.
+   * 
+   * @param options Options for validation
+   * @throws If this cell is not in a valid state
+   */
+  abstract validate(options?: { ignoreCache?: boolean; }): void;
+
+  //#region Protected Methods
+
+  /**
+   * Returns the `offset` option, or throws an exception if it's not set.
+   * 
+   * @param options Options for encoding
+   */
   protected _getOffsetEncodingOption(options: CellEncodingOptions): number {
     if (!options?.offset)
       throw new Error(`DataType ${this.dataType} cannot be encoded without an offset.`);
@@ -71,11 +84,10 @@ export abstract class Cell extends CacheableModel {
   }
 
   /**
-   * Creates an XmlElementNode object that represents this cell as it would
-   * appear within an S4S-style XML SimData document.
+   * Gets the attributes to use when serializing this cell as XML.
+   * 
+   * @param args Arguments to get XML attributes
    */
-  abstract toXmlNode(options?: CellToXmlOptions): XmlElementNode;
-
   protected _xmlAttributes({ nameAttr = undefined, typeAttr = false }: CellToXmlOptions = {}): { [key: string]: string; } {
     const attributes: { [key: string]: any; } = {};
     if (nameAttr !== undefined) attributes.name = nameAttr;
@@ -83,6 +95,10 @@ export abstract class Cell extends CacheableModel {
       attributes.type = SimDataTypeUtils.getSims4StudioName(this.dataType);
     return attributes;
   }
+
+  //#endregion Protected Methods
+
+  //#region Static Methods
 
   /**
    * Parses a cell of the given type from the given node, using the list of
@@ -132,6 +148,8 @@ export abstract class Cell extends CacheableModel {
         throw new Error(`Cannot parse a "${dataType}" node as a cell.`);
     }
   }
+
+  //#endregion Static Methods
 }
 
 /**
@@ -152,6 +170,9 @@ abstract class PrimitiveValueCell<T extends PrimitiveType> extends Cell {
     });
   }
 
+  /**
+   * Gets the value to nest within the XML node for this cell.
+   */
   protected abstract _getXmlValue(): XmlValueNode;
 }
 
@@ -168,14 +189,10 @@ abstract class FloatVectorCell extends Cell {
     this._watchProps('x', 'y');
   }
 
-  validate(): void {
-    this._floats.forEach(float => {
-      if (!SimDataTypeUtils.isNumberInRange(float, SimDataType.Float)) {
-        throw new Error(`Float vector contains a value that is not a 4-byte float: ${float}`);
-      }
-    });
+  encode(encoder: BinaryEncoder, options?: CellEncodingOptions): void {
+    this._floats.forEach(float => encoder.float(float));
   }
-
+  
   toXmlNode(options: CellToXmlOptions = {}): XmlElementNode {
     const floatsString = this._floats.map(f => f.toString()).join(',');
 
@@ -183,6 +200,14 @@ abstract class FloatVectorCell extends Cell {
       tag: "T",
       attributes: this._xmlAttributes(options),
       children: [ new XmlValueNode(floatsString) ]
+    });
+  }
+
+  validate(): void {
+    this._floats.forEach(float => {
+      if (!SimDataTypeUtils.isNumberInRange(float, SimDataType.Float)) {
+        throw new Error(`Float vector contains a value that is not a 4-byte float: ${float}`);
+      }
     });
   }
 
@@ -196,10 +221,6 @@ abstract class FloatVectorCell extends Cell {
         throw new Error(`Expected Float${count}Cell value to be a float, but got ${s}.`);
       return float;
     });
-  }
-
-  encode(encoder: BinaryEncoder, options?: CellEncodingOptions): void {
-    this._floats.forEach(float => encoder.float(float));
   }
 }
 
@@ -217,15 +238,21 @@ export class BooleanCell extends PrimitiveValueCell<boolean> {
     super(SimDataType.Boolean, value, owner);
   }
 
+  clone(): BooleanCell {
+    return new BooleanCell(this.value);
+  }
+
+  encode(encoder: BinaryEncoder, options?: CellEncodingOptions): void {
+    encoder.boolean(this.value);
+  }
+
   validate(): void { }
 
   protected _getXmlValue(): XmlValueNode {
     return new XmlValueNode(this.value ? 1 : 0);
   }
 
-  clone(): BooleanCell {
-    return new BooleanCell(this.value);
-  }
+  //#region Static Methods
 
   /**
    * Creates a BooleanCell by reading a boolean value from the decoder.
@@ -252,9 +279,7 @@ export class BooleanCell extends PrimitiveValueCell<boolean> {
     return new BooleanCell(false);
   }
 
-  encode(encoder: BinaryEncoder, options?: CellEncodingOptions): void {
-    encoder.boolean(this.value);
-  }
+  //#endregion Static Methods
 }
 
 /**
@@ -265,14 +290,6 @@ export class TextCell extends PrimitiveValueCell<string> {
 
   constructor(dataType: SimDataText, value: string, owner?: CacheableModel) {
     super(dataType, value, owner);
-  }
-
-  validate(): void {
-    if (!this.value) throw new Error("Text cell must be a non-empty string.");
-  }
-
-  protected _getXmlValue(): XmlValueNode {
-    return new XmlValueNode(this.value);
   }
 
   clone(): TextCell {
@@ -293,6 +310,16 @@ export class TextCell extends PrimitiveValueCell<string> {
         break;
     }
   }
+
+  validate(): void {
+    if (!this.value) throw new Error("Text cell must be a non-empty string.");
+  }
+
+  protected _getXmlValue(): XmlValueNode {
+    return new XmlValueNode(this.value);
+  }
+
+  //#region Static Methods
 
   /**
    * Creates a TextCell by reading a value of the give data type from the
@@ -340,6 +367,8 @@ export class TextCell extends PrimitiveValueCell<string> {
   static getDefault(dataType: SimDataText): TextCell {
     return new TextCell(dataType, "");
   }
+
+  //#endregion Static Methods
 }
 
 /**
@@ -352,23 +381,7 @@ export class NumberCell extends PrimitiveValueCell<number> {
   constructor(dataType: SimDataNumber, value: number, owner?: CacheableModel) {
     super(dataType, value, owner);
   }
-
-  validate(): void {
-    if (!SimDataTypeUtils.isNumberInRange(this.value, this.dataType)) {
-      throw new Error(`Value of ${this.value} is not within the range of ${this.dataType}.`);
-    }
-  }
-
-  protected _getXmlValue(): XmlValueNode {
-    if (this.dataType === SimDataType.LocalizationKey) {
-      var value = formatAsHexString(this.value, 8, true);
-    } else {
-      var value = this.value.toString();
-    }
-
-    return new XmlValueNode(value);
-  }
-
+  
   clone(): NumberCell {
     return new NumberCell(this.dataType, this.value);
   }
@@ -400,6 +413,24 @@ export class NumberCell extends PrimitiveValueCell<number> {
         break;
     }
   }
+
+  validate(): void {
+    if (!SimDataTypeUtils.isNumberInRange(this.value, this.dataType)) {
+      throw new Error(`Value of ${this.value} is not within the range of ${this.dataType}.`);
+    }
+  }
+
+  protected _getXmlValue(): XmlValueNode {
+    if (this.dataType === SimDataType.LocalizationKey) {
+      var value = formatAsHexString(this.value, 8, true);
+    } else {
+      var value = this.value.toString();
+    }
+
+    return new XmlValueNode(value);
+  }
+
+  //#region Static Methods
 
   /**
    * Creates a NumberCell by reading a value of the give data type from the
@@ -455,6 +486,8 @@ export class NumberCell extends PrimitiveValueCell<number> {
   static getDefault(dataType: SimDataNumber): NumberCell {
     return new NumberCell(dataType, 0);
   }
+
+  //#endregion Static Methods
 }
 
 /**
@@ -466,16 +499,6 @@ export class BigIntCell extends PrimitiveValueCell<bigint> {
 
   constructor(dataType: SimDataBigInt, value: bigint, owner?: CacheableModel) {
     super(dataType, value, owner);
-  }
-
-  validate(): void {
-    if (!SimDataTypeUtils.isBigIntInRange(this.value, this.dataType)) {
-      throw new Error(`Value of ${this.value} is not within the range of ${this.dataType}.`);
-    }
-  }
-
-  protected _getXmlValue(): XmlValueNode {
-    return new XmlValueNode(this.value.toString());
   }
 
   clone(): BigIntCell {
@@ -494,6 +517,18 @@ export class BigIntCell extends PrimitiveValueCell<bigint> {
         break;
     }
   }
+
+  validate(): void {
+    if (!SimDataTypeUtils.isBigIntInRange(this.value, this.dataType)) {
+      throw new Error(`Value of ${this.value} is not within the range of ${this.dataType}.`);
+    }
+  }
+
+  protected _getXmlValue(): XmlValueNode {
+    return new XmlValueNode(this.value.toString());
+  }
+
+  //#region Static Methods
 
   /**
    * Creates a BigIntCell by reading a value of the give data type from the
@@ -540,6 +575,8 @@ export class BigIntCell extends PrimitiveValueCell<bigint> {
   static getDefault(dataType: SimDataBigInt): BigIntCell {
     return new BigIntCell(dataType, 0n);
   }
+
+  //#endregion Static Methods
 }
 
 /**
@@ -553,13 +590,14 @@ export class ResourceKeyCell extends Cell {
     this._watchProps('type', 'group', 'instance');
   }
 
-  validate(): void {
-    if (!SimDataTypeUtils.isNumberInRange(this.type, SimDataType.UInt32))
-      throw new Error(`ResourceKeyCell's type is not a UInt32: ${this.type}`);
-    if (!SimDataTypeUtils.isNumberInRange(this.group, SimDataType.UInt32))
-      throw new Error(`ResourceKeyCell's group is not a UInt32: ${this.group}`);
-    if (!SimDataTypeUtils.isBigIntInRange(this.instance, SimDataType.TableSetReference))
-      throw new Error(`ResourceKeyCell's instance is not a UInt64: ${this.instance}`);
+  clone(): ResourceKeyCell {
+    return new ResourceKeyCell(this.type, this.group, this.instance);
+  }
+
+  encode(encoder: BinaryEncoder, options?: CellEncodingOptions): void {
+    encoder.uint64(this.instance);
+    encoder.uint32(this.type);
+    encoder.uint32(this.group);
   }
 
   toXmlNode(options: CellToXmlOptions = {}): XmlElementNode {
@@ -576,15 +614,16 @@ export class ResourceKeyCell extends Cell {
     });
   }
 
-  clone(): ResourceKeyCell {
-    return new ResourceKeyCell(this.type, this.group, this.instance);
+  validate(): void {
+    if (!SimDataTypeUtils.isNumberInRange(this.type, SimDataType.UInt32))
+      throw new Error(`ResourceKeyCell's type is not a UInt32: ${this.type}`);
+    if (!SimDataTypeUtils.isNumberInRange(this.group, SimDataType.UInt32))
+      throw new Error(`ResourceKeyCell's group is not a UInt32: ${this.group}`);
+    if (!SimDataTypeUtils.isBigIntInRange(this.instance, SimDataType.TableSetReference))
+      throw new Error(`ResourceKeyCell's instance is not a UInt64: ${this.instance}`);
   }
 
-  encode(encoder: BinaryEncoder, options?: CellEncodingOptions): void {
-    encoder.uint64(this.instance);
-    encoder.uint32(this.type);
-    encoder.uint32(this.group);
-  }
+  //#region Static Methods
 
   /**
    * Creates a ResourceKeyCell by reading its values from the decoder.
@@ -630,6 +669,8 @@ export class ResourceKeyCell extends Cell {
   static getDefault(): ResourceKeyCell {
     return new ResourceKeyCell(0, 0, 0n);
   }
+
+  //#endregion Static Methods
 }
 
 /**
@@ -645,6 +686,8 @@ export class Float2Cell extends FloatVectorCell {
   clone(): Float2Cell {
     return new Float2Cell(this.x, this.y);
   }
+
+  //#region Static Methods
 
   /**
    * Creates a Float2Cell by reading its values from the decoder.
@@ -671,6 +714,8 @@ export class Float2Cell extends FloatVectorCell {
   static getDefault(): Float2Cell {
     return new Float2Cell(0, 0);
   }
+
+  //#endregion Static Methods
 }
 
 /**
@@ -688,6 +733,8 @@ export class Float3Cell extends FloatVectorCell {
   clone(): Float3Cell {
     return new Float3Cell(this.x, this.y, this.z);
   }
+
+  //#region Static Methods
 
   /**
    * Creates a Float3Cell by reading its values from the decoder.
@@ -714,6 +761,8 @@ export class Float3Cell extends FloatVectorCell {
   static getDefault(): Float3Cell {
     return new Float3Cell(0, 0, 0);
   }
+
+  //#endregion Static Methods
 }
 
 /**
@@ -731,6 +780,8 @@ export class Float4Cell extends FloatVectorCell {
   clone(): Float4Cell {
     return new Float4Cell(this.x, this.y, this.z, this.w);
   }
+
+  //#region Static Methods
 
   /**
    * Creates a Float4Cell by reading its values from the decoder.
@@ -757,6 +808,8 @@ export class Float4Cell extends FloatVectorCell {
   static getDefault(): Float4Cell {
     return new Float4Cell(0, 0, 0, 0);
   }
+
+  //#endregion Static Methods
 }
 
 /**
@@ -769,11 +822,10 @@ export class ObjectCell extends Cell {
   /**
    * An object that maps column names to the cells that belong to those columns.
    * Mutating children of this object is safe, as is mutating the object itself.
-   * For example, `row.column_name.value = 5` and `row.column_name = new Cell(..)`
+   * For example, `row.col_name.value = 5` and `row.col_name = new Cell(..)`
    * are both safe in terms of cacheing.
    */
   get row() { return this._row; }
-
   private set row(row: ObjectCellRow) {
     for (const colName in row) row[colName].owner = this;
 
@@ -795,16 +847,39 @@ export class ObjectCell extends Cell {
     }
   }
 
-  /** Shorthand for `this.schema.columns.length`. */
-  get schemaLength() { return this.schema.columns.length; }
-
   /** Shorthand for `Object.keys(this.row).length`. */
   get rowLength() { return Object.keys(this.row).length; }
+
+  /** Shorthand for `this.schema.columns.length`. */
+  get schemaLength() { return this.schema.columns.length; }
 
   constructor(public schema: SimDataSchema, row: ObjectCellRow, owner?: CacheableModel) {
     super(SimDataType.Object, owner);
     this.row = row;
     this._watchProps('schema');
+  }
+
+  clone(options?: CellCloneOptions): ObjectCell {
+    const { schema, row } = this._internalClone(options);
+    return new ObjectCell(schema, row);
+  }
+
+  encode(encoder: BinaryEncoder, options?: CellEncodingOptions): void {
+    encoder.int32(this._getOffsetEncodingOption(options)); // FIXME: signed or unsigned?
+  }
+
+  toXmlNode(options: CellToXmlOptions = {}): XmlElementNode {
+    const attributes = this._xmlAttributes(options);
+    attributes.schema = this.schema.name;
+
+    return new XmlElementNode({
+      tag: "U",
+      attributes: attributes,
+      children: this.schema.columns.map(column => {
+        const cell = this.row[column.name];
+        return cell.toXmlNode({ nameAttr: column.name });
+      })
+    });
   }
 
   validate({ ignoreCache = false } = {}): void {
@@ -831,10 +906,7 @@ export class ObjectCell extends Cell {
     }
   }
 
-  clone(options?: CellCloneOptions): ObjectCell {
-    const { schema, row } = this._internalClone(options);
-    return new ObjectCell(schema, row);
-  }
+  //#region Protected Methods
 
   /**
    * Returns the schema and row for a clone.
@@ -861,6 +933,10 @@ export class ObjectCell extends Cell {
     return { schema, row };
   }
 
+  //#endregion Protected Methods
+
+  //#region Static Methods
+
   /**
    * Creates the default cell for this type, given a schema to follow.
    * 
@@ -870,20 +946,6 @@ export class ObjectCell extends Cell {
     const row: ObjectCellRow = {};
     schema.columns.forEach(column => row[column.name] = undefined);
     return new ObjectCell(schema, row);
-  }
-
-  toXmlNode(options: CellToXmlOptions = {}): XmlElementNode {
-    const attributes = this._xmlAttributes(options);
-    attributes.schema = this.schema.name;
-
-    return new XmlElementNode({
-      tag: "U",
-      attributes: attributes,
-      children: this.schema.columns.map(column => {
-        const cell = this.row[column.name];
-        return cell.toXmlNode({ nameAttr: column.name });
-      })
-    });
   }
 
   /**
@@ -923,9 +985,7 @@ export class ObjectCell extends Cell {
     return { schema, row };
   }
 
-  encode(encoder: BinaryEncoder, options?: CellEncodingOptions): void {
-    encoder.int32(this._getOffsetEncodingOption(options)); // FIXME: signed or unsigned?
-  }
+  //#endregion Static Methods
 }
 
 /**
@@ -959,22 +1019,60 @@ export class VectorCell<T extends Cell = Cell> extends Cell {
   }
 
   /** Shorthand for children.length */
-  get length() {
-    return this.children.length;
-  }
+  get length() { return this.children.length; }
 
   /**
    * Shorthand for `children[0].dataType`. If there are no children, the
    * returned value is undefined.
    */
-  get childType() {
-    return this.children[0]?.dataType;
-  }
+  get childType() { return this.children[0]?.dataType; }
 
   constructor(children: T[], owner?: CacheableModel) {
     super(SimDataType.Vector, owner);
     this.children = children;
   }
+
+  //#region Overriden Methods
+
+  clone(options: CellCloneOptions = {}): VectorCell<T> {
+    //@ts-expect-error Cells are guaranteed to be of type T
+    return new VectorCell<T>(this.children.map(child => child.clone(options)));
+  }
+
+  encode(encoder: BinaryEncoder, options?: CellEncodingOptions): void {
+    encoder.int32(this._getOffsetEncodingOption(options)); // FIXME: int32 or uint32?
+    encoder.uint32(this.children.length);
+  }
+
+  toXmlNode(options: CellToXmlOptions = {}): XmlElementNode {
+    return new XmlElementNode({
+      tag: "L",
+      attributes: this._xmlAttributes(options),
+      children: this.children.map(child => {
+        return child.toXmlNode({ typeAttr: true })
+      })
+    });
+  }
+
+  validate({ ignoreCache = false } = {}): void {
+    if (this.children.length > 0) {
+      this.children.forEach(child => {
+        if (child.dataType !== this.childType) {
+          throw new Error(`Not all vector children have the same type: ${this.childType} ≠ ${child.dataType}`);
+        }
+
+        if (!ignoreCache && child.owner !== this) {
+          throw new Error("Cache Problem: Child cell has another owner.");
+        }
+  
+        child.validate({ ignoreCache });
+      });
+    }
+  }
+
+  //#endregion Overriden Methods
+
+  //#region Public Methods
 
   /**
    * Child cells to add. Make sure that the cells being added do not already
@@ -1028,45 +1126,9 @@ export class VectorCell<T extends Cell = Cell> extends Cell {
     this.uncache();
   }
 
-  validate({ ignoreCache = false } = {}): void {
-    if (this.children.length > 0) {
-      this.children.forEach(child => {
-        if (child.dataType !== this.childType) {
-          throw new Error(`Not all vector children have the same type: ${this.childType} ≠ ${child.dataType}`);
-        }
+  //#endregion Public Methods
 
-        if (!ignoreCache && child.owner !== this) {
-          throw new Error("Cache Problem: Child cell has another owner.");
-        }
-  
-        child.validate({ ignoreCache });
-      });
-    }
-  }
-
-  clone(options: CellCloneOptions = {}): VectorCell<T> {
-    //@ts-expect-error Cells are guaranteed to be of type T
-    return new VectorCell<T>(this.children.map(child => child.clone(options)));
-  }
-
-  /**
-   * Creates the default cell for this type, given a schema to follow.
-   * 
-   * @param schema Schema for this ObjectCell to follow
-   */
-  static getDefault<U extends Cell = Cell>(): VectorCell<U> {
-    return new VectorCell<U>([]);
-  }
-
-  toXmlNode(options: CellToXmlOptions = {}): XmlElementNode {
-    return new XmlElementNode({
-      tag: "L",
-      attributes: this._xmlAttributes(options),
-      children: this.children.map(child => {
-        return child.toXmlNode({ typeAttr: true })
-      })
-    });
-  }
+  //#region Static Methods
 
   /**
    * Parses a VectorCell from the given XML node, using the given schemas to
@@ -1096,10 +1158,16 @@ export class VectorCell<T extends Cell = Cell> extends Cell {
     }
   }
 
-  encode(encoder: BinaryEncoder, options?: CellEncodingOptions): void {
-    encoder.int32(this._getOffsetEncodingOption(options)); // FIXME: int32 or uint32?
-    encoder.uint32(this.children.length);
+  /**
+   * Creates the default cell for this type, given a schema to follow.
+   * 
+   * @param schema Schema for this ObjectCell to follow
+   */
+  static getDefault<U extends Cell = Cell>(): VectorCell<U> {
+    return new VectorCell<U>([]);
   }
+
+  //#endregion Static Methods
 }
 
 /**
@@ -1114,25 +1182,13 @@ export class VariantCell extends Cell {
     this._watchProps('typeHash', 'child');
   }
 
-  validate({ ignoreCache = false } = {}): void {
-    if (!ignoreCache && this.child.owner !== this) {
-      throw new Error("Cache Problem: Child cell has another owner.");
-    }
-
-    this.child?.validate({ ignoreCache });
-  }
-
   clone(options: CellCloneOptions = {}): VariantCell {
     return new VariantCell(this.typeHash, this.child?.clone(options));
   }
 
-  /**
-   * Creates the default cell for this type, given a schema to follow.
-   * 
-   * @param schema Schema for this ObjectCell to follow
-   */
-  static getDefault(): VariantCell {
-    return new VariantCell(0, undefined);
+  encode(encoder: BinaryEncoder, options?: CellEncodingOptions): void {
+    encoder.int32(this._getOffsetEncodingOption(options)); // intentionally signed
+    encoder.uint32(this.typeHash);
   }
 
   toXmlNode(options: CellToXmlOptions = {}): XmlElementNode {
@@ -1159,6 +1215,16 @@ export class VariantCell extends Cell {
       children
     });
   }
+
+  validate({ ignoreCache = false } = {}): void {
+    if (!ignoreCache && this.child.owner !== this) {
+      throw new Error("Cache Problem: Child cell has another owner.");
+    }
+
+    this.child?.validate({ ignoreCache });
+  }
+
+  //#region Static Methods
 
   /**
    * Parses a VariantCell from the given XML node, using the given schemas to
@@ -1188,10 +1254,16 @@ export class VariantCell extends Cell {
     }
   }
 
-  encode(encoder: BinaryEncoder, options?: CellEncodingOptions): void {
-    encoder.int32(this._getOffsetEncodingOption(options)); // intentionally signed
-    encoder.uint32(this.typeHash);
+  /**
+   * Creates the default cell for this type, given a schema to follow.
+   * 
+   * @param schema Schema for this ObjectCell to follow
+   */
+  static getDefault(): VariantCell {
+    return new VariantCell(0, undefined);
   }
+
+  //#endregion Static Methods
 }
 
 //#endregion Cells
