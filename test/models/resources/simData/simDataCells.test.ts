@@ -579,6 +579,16 @@ describe("NumberCell", function() {
       expect(cell.dataType).to.equal(SimDataType.UInt32);
       expect(cell.value).to.equal(100);
     });
+
+    it("should have value of 0 if given undefined", () => {
+      const cell = new cells.NumberCell(SimDataType.UInt32, undefined);
+      expect(cell.value).to.equal(0);
+    });
+
+    it("should have value of 0 if given null", () => {
+      const cell = new cells.NumberCell(SimDataType.UInt32, null);
+      expect(cell.value).to.equal(0);
+    });
   });
 
   describe("#clone()", () => {
@@ -685,6 +695,20 @@ describe("NumberCell", function() {
 
     it("should throw if an unsigned integer is negative", () => {
       const cell = new cells.NumberCell(SimDataType.UInt32, -10);
+      const encoder = new BinaryEncoder(Buffer.alloc(4));
+      expect(() => cell.encode(encoder)).to.throw();
+    });
+
+    it("should throw if contains undefined", () => {
+      const cell = cells.NumberCell.getDefault(SimDataType.UInt32);
+      cell.value = undefined;
+      const encoder = new BinaryEncoder(Buffer.alloc(4));
+      expect(() => cell.encode(encoder)).to.throw();
+    });
+
+    it("should throw if contains null", () => {
+      const cell = cells.NumberCell.getDefault(SimDataType.UInt32);
+      cell.value = null;
       const encoder = new BinaryEncoder(Buffer.alloc(4));
       expect(() => cell.encode(encoder)).to.throw();
     });

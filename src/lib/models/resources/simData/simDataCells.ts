@@ -410,7 +410,7 @@ export class NumberCell extends PrimitiveValueCell<number> {
   readonly dataType: SimDataNumber;
 
   constructor(dataType: SimDataNumber, value: number, owner?: CacheableModel) {
-    super(dataType, value, owner);
+    super(dataType, value ?? 0, owner);
   }
   
   clone(): NumberCell {

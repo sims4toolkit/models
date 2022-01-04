@@ -180,6 +180,8 @@ export namespace SimDataTypeUtils {
    * @param dataType Data type to determine range for
    */
   export function isNumberInRange(value: number, dataType: SimDataNumber): boolean {
+    if (value == undefined) return false;
+
     switch (dataType) {
       case SimDataType.Int8:
         return value >= -0x80 && value <= 0x7F;
@@ -209,6 +211,8 @@ export namespace SimDataTypeUtils {
    * @param dataType Data type to determine range for
    */
   export function isBigIntInRange(value: bigint, dataType: SimDataBigInt): boolean {
+    if (value == undefined) return false;
+    
     switch (dataType) {
       case SimDataType.Int64:
         return value >= -0x8000000000000000n && value <= 0x7FFFFFFFFFFFFFFFn;
