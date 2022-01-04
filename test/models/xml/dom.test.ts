@@ -1,5 +1,6 @@
-const { expect } = require("chai");
-const { xmlDom } = require("../../../dst/api");
+import type { XmlNode } from "../../../dst/lib/models/xml/dom";
+import { expect } from "chai";
+import { xmlDom } from "../../../dst/api";
 
 const {
   XmlDocumentNode,
@@ -9,7 +10,7 @@ const {
 } = xmlDom;
 
 describe('XmlDocumentNode', function() {
-  const newNode = (root) => new XmlDocumentNode(root);
+  const newNode = (root?: XmlNode) => new XmlDocumentNode(root);
 
   describe('#constructor', function() {
     it('should not throw when no children are given', function () {
@@ -128,8 +129,8 @@ describe('XmlDocumentNode', function() {
   describe('#attributes', function() {
     it('should not be assignable', function () {
       const node = newNode();
-      node.attributes = { n: "name" };
-      expect(node.attributes).to.be.undefined;
+      //@ts-expect-error
+      expect(() => node.attributes = { n: "name" }).to.throw();
     });
 
     it('should be undefined', function () {
@@ -167,8 +168,8 @@ describe('XmlDocumentNode', function() {
   describe('#children', function() {
     it('should not be assignable', function () {
       const node = newNode();
-      node.children = [new XmlCommentNode("hi")];
-      expect(node.children).to.be.empty;
+      //@ts-expect-error
+      expect(() => node.children = [new XmlCommentNode("hi")]).to.throw();
     });
 
     it('should be an empty array if there are no children', function () {
@@ -192,12 +193,12 @@ describe('XmlDocumentNode', function() {
   describe('#hasChildren', function() {
     it('should not be assignable', function () {
       const node = newNode();
-      node.hasChildren = false;
-      expect(node.hasChildren).to.be.true;
+      //@ts-expect-error
+      expect(() => node.hasChildren = false).to.throw();
     });
 
     it('should return true when it has children', function () {
-      const node = newNode(newNode(), newNode());
+      const node = newNode(newNode());
       expect(node.hasChildren).to.be.true;
     });
 
@@ -278,8 +279,8 @@ describe('XmlDocumentNode', function() {
   describe('#numChildren', function() {
     it('should not be assignable', function () {
       const node = newNode();
-      node.numChildren = 5
-      expect(node.numChildren).to.equal(0);
+      //@ts-expect-error
+      expect(() => node.numChildren = 5).to.throw();
     });
 
     it('should return 0 when there are no children', function () {
@@ -526,7 +527,7 @@ describe('XmlDocumentNode', function() {
         })
       );
 
-      node.sort((a, b) => a.innerValue - b.innerValue);
+      node.sort((a, b) => (a.innerValue as number) - (b.innerValue as number));
       expect(node.children[0].name).to.equal('one');
       expect(node.children[1].name).to.equal('five');
       expect(node.children[2].name).to.equal('ten');
@@ -617,6 +618,7 @@ describe('XmlElementNode', function() {
 
   describe('#constructor', function() {
     it('should throw when no tag is given', function () {
+      //@ts-expect-error
       expect(() => new XmlElementNode()).to.throw();
     });
 
@@ -645,8 +647,8 @@ describe('XmlElementNode', function() {
   describe('#attributes', function() {
     it('should not be assignable', function () {
       const node = newNode();
-      node.attributes = { n: "name" };
-      expect(node.attributes.n).to.be.undefined;
+      //@ts-expect-error
+      expect(() => node.attributes = { n: "name" }).to.throw();
     });
 
     it('should not be undefined when there are no attributes', function () {
@@ -698,8 +700,8 @@ describe('XmlElementNode', function() {
   describe('#children', function() {
     it('should throw when trying to set', function () {
       const node = newNode();
-      node.children = [newNode()];
-      expect(node.children)
+      //@ts-expect-error
+      expect(() => node.children = [newNode()]).to.throw();
     });
 
     it('should be an empty array if there are no children', function () {
@@ -719,12 +721,13 @@ describe('XmlElementNode', function() {
   describe('#hasChildren', function() {
     it('should not be assignable', function () {
       const node = newNode();
-      node.children = [newNode()];
-      expect(node.children).to.be.empty;
+      //@ts-expect-error
+      expect(() => node.children = [newNode()]).to.throw();
     });
 
     it('should return true when it has children', function () {
-      const node = newNode(newNode(), newNode());
+      const node = newNode();
+      node.addChildren(newNode());
       expect(node.hasChildren).to.be.true;
     });
 
@@ -1086,7 +1089,7 @@ describe('XmlElementNode', function() {
         ]
       });
 
-      node.sort((a, b) => a.innerValue - b.innerValue);
+      node.sort((a, b) => (a.innerValue as number) - (b.innerValue as number));
       expect(node.children[0].name).to.equal('one');
       expect(node.children[1].name).to.equal('five');
       expect(node.children[2].name).to.equal('ten');
@@ -1253,7 +1256,7 @@ describe('XmlElementNode', function() {
 });
 
 describe('XmlValueNode', function() {
-  const newNode = (value = "test") => new XmlValueNode(value);
+  const newNode = (value: any = "test") => new XmlValueNode(value);
 
   describe('#constructor', function() {
     it('should have undefined content when no value is given', function () {
@@ -1272,8 +1275,8 @@ describe('XmlValueNode', function() {
   describe('#attributes', function() {
     it('should not be assignable', function () {
       const node = newNode();
-      node.attributes = {};
-      expect(node.attributes).to.be.undefined;
+      //@ts-expect-error
+      expect(() => node.attributes = {}).to.throw();
     });
 
     it('should be undefined', function () {
@@ -1297,8 +1300,8 @@ describe('XmlValueNode', function() {
   describe('#children', function() {
     it('should not be assignable', function () {
       const node = newNode();
-      node.children = [];
-      expect(node.children).to.be.undefined;
+      //@ts-expect-error
+      expect(() => node.children = []).to.throw();
     });
 
     it('should be undefined', function () {
@@ -1515,8 +1518,8 @@ describe('XmlCommentNode', function() {
   describe('#attributes', function() {
     it('should not be assignable', function () {
       const node = newNode();
-      node.attributes = {};
-      expect(node.attributes).to.be.undefined;
+      //@ts-expect-error
+      expect(() => node.attributes = {}).to.throw();
     });
 
     it('should be undefined', function () {
@@ -1540,8 +1543,8 @@ describe('XmlCommentNode', function() {
   describe('#children', function() {
     it('should not be assignable', function () {
       const node = newNode();
-      node.children = [];
-      expect(node.children).to.be.undefined;
+      //@ts-expect-error
+      expect(() => node.children = []).to.throw();
     });
 
     it('should be undefined', function () {

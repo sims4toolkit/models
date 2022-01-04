@@ -474,7 +474,7 @@ export class XmlElementNode extends XmlNodeBase {
 
 /** A node that contains a single value. */
 export class XmlValueNode extends XmlNodeBase {
-  constructor(value: XmlValue) {
+  constructor(value?: XmlValue) {
     super({ value });
   }
 
@@ -494,7 +494,7 @@ export class XmlValueNode extends XmlNodeBase {
 
 /** A node that contains a comment. */
 export class XmlCommentNode extends XmlNodeBase {
-  constructor(value: string) {
+  constructor(value?: string) {
     super({ value })
   }
 
