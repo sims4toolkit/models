@@ -735,6 +735,12 @@ describe("NumberCell", function() {
       expect(node.toXml()).to.equal(`<T type="UInt32">25</T>`);
     });
 
+    it("should use \"Single\" instead of \"Float\" for floats", () => {
+      const cell = new cells.NumberCell(SimDataType.Float, 25);
+      const node = cell.toXmlNode({ typeAttr: true });
+      expect(node.toXml()).to.equal(`<T type="Single">25</T>`);
+    });
+
     it("should use the name attribute when given", () => {
       const cell = new cells.NumberCell(SimDataType.UInt32, 25);
       const node = cell.toXmlNode({ nameAttr: "number" });
@@ -1242,13 +1248,23 @@ describe("ResourceKeyCell", function() {
   });
 
   describe("#constructor()", () => {
-    // TODO:
+    it("should use the given type, group, and instance", () => {
+      // TODO:
+    });
+
+    it("should have an undefined owner if none is given", () => {
+      // TODO:
+    });
+
+    it("should use the given owner", () => {
+      // TODO:
+    });
   });
 
   describe("#clone()", () => {
     it("should copy the type, group, and instance", () => {
       // TODO:
-      // const cell = new cells.TextCell(SimDataType.String, "Something");
+      // const cell = new cells.ResourceKeyCell(SimDataType.String, "Something");
       // const clone = cell.clone();
       // expect(clone.dataType).to.equal(SimDataType.String);
       // expect(clone.value).to.equal("Something");
@@ -1257,14 +1273,14 @@ describe("ResourceKeyCell", function() {
     it("should not copy the owner", () => {
       // TODO:
       // const owner = new MockOwner();
-      // const cell = new cells.TextCell(SimDataType.String, "Something", owner);
+      // const cell = new cells.ResourceKeyCell(SimDataType.String, "Something", owner);
       // const clone = cell.clone();
       // expect(clone.owner).to.be.undefined;
     });
 
     it("should not mutate the original", () => {
       // TODO:
-      // const cell = new cells.TextCell(SimDataType.String, "Something");
+      // const cell = new cells.ResourceKeyCell(SimDataType.String, "Something");
       // const clone = cell.clone();
       // clone.value = "Something else";
       // expect(cell.value).to.equal("Something");
@@ -1272,27 +1288,98 @@ describe("ResourceKeyCell", function() {
   });
 
   describe("#encode()", () => {
-    // TODO:
+    it("should write the values in the order of instance, type, group", () => {
+      // TODO:
+    });
+
+    it("should throw if validation fails", () => {
+      // TODO:
+    });
   });
 
   describe("#toXmlNode()", () => {
-    // TODO:
+    it("should create a node with the TGI in a hyphen-separated string", () => {
+      // TODO:
+    });
+
+    it("should include a name when one is given", () => {
+      // TODO:
+    });
+
+    it("should include the type when told to", () => {
+      // TODO:
+    });
   });
 
   describe("#validate()", () => {
-    // TODO:
+    it("should not throw if type and group are <= 32 bit and instance is <= 64 bit", () => {
+      // TODO:
+    });
+
+    it("should throw if type is negative", () => {
+      // TODO:
+    });
+
+    it("should throw if group is negative", () => {
+      // TODO:
+    });
+
+    it("should throw if instance is negative", () => {
+      // TODO:
+    });
+
+    it("should throw if type is > 32 bit", () => {
+      // TODO:
+    });
+
+    it("should throw if group is > 32 bit", () => {
+      // TODO:
+    });
+
+    it("should throw if instance is > 64 bit", () => {
+      // TODO:
+    });
   });
 
   describe("static#decode()", () => {
-    // TODO:
+    it("should read instance, type, then group", () => {
+      // TODO:
+    });
   });
 
   describe("static#fromXmlNode()", () => {
-    // TODO:
+    it("should read type/group/instance as hex separated by hyphens", () => {
+      // TODO:
+    });
+
+    it("should throw if there are less than 3 numbers separated by hyphen", () => {
+      // TODO:
+    });
+
+    it("should throw if there are more than 3 numbers separated by hyphen", () => {
+      // TODO:
+    });
+
+    it("should throw if type is not a number", () => {
+      // TODO:
+    });
+
+    it("should throw if group is not a number", () => {
+      // TODO:
+    });
+
+    it("should throw if instance is not a bigint", () => {
+      // TODO:
+    });
   });
 
   describe("static#getDefault()", () => {
-    // TODO:
+    it("should return a cell with 0 for all values", () => {
+      const cell = cells.ResourceKeyCell.getDefault();
+      expect(cell.type).to.equal(0);
+      expect(cell.group).to.equal(0);
+      expect(cell.instance).to.equal(0n);
+    });
   });
 });
 
