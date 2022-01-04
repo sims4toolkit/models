@@ -333,41 +333,110 @@ describe("NumberCell", function() {
 
   describe("#clone()", () => {
     it("should copy the data type and value", () => {
-      // TODO:
-      // const cell = new cells.TextCell(SimDataType.String, "Something");
-      // const clone = cell.clone();
-      // expect(clone.dataType).to.equal(SimDataType.String);
-      // expect(clone.value).to.equal("Something");
+      const cell = new cells.NumberCell(SimDataType.Int8, 100);
+      const clone = cell.clone();
+      expect(clone.dataType).to.equal(SimDataType.Int8);
+      expect(clone.value).to.equal(100);
     });
 
     it("should not copy the owner", () => {
-      // TODO:
-      // const owner = new MockOwner();
-      // const cell = new cells.TextCell(SimDataType.String, "Something", owner);
-      // const clone = cell.clone();
-      // expect(clone.owner).to.be.undefined;
+      const owner = new MockOwner();
+      const cell = new cells.NumberCell(SimDataType.Int8, 100, owner);
+      const clone = cell.clone();
+      expect(clone.owner).to.be.undefined;
     });
 
     it("should not mutate the original", () => {
-      // TODO:
-      // const cell = new cells.TextCell(SimDataType.String, "Something");
-      // const clone = cell.clone();
-      // clone.value = "Something else";
-      // expect(cell.value).to.equal("Something");
+      const cell = new cells.NumberCell(SimDataType.Int8, 100);
+      const clone = cell.clone();
+      clone.value = 50;
+      expect(cell.value).to.equal(100);
     });
   });
 
   describe("#encode()", () => {
-    context("data type === 8 bits", () => {
-      // TODO:
+    it("should write Int8 in 1 byte", () => {
+      const cell = new cells.NumberCell(SimDataType.Int8, -5);
+      const buffer = Buffer.alloc(1);
+      const encoder = new BinaryEncoder(buffer);
+      expect(() => cell.encode(encoder)).to.not.throw();
+      const decoder = new BinaryDecoder(buffer);
+      expect(decoder.int8()).to.equal(-5);
     });
 
-    context("data type === 16 bits", () => {
-      // TODO:
+    it("should write UInt8 in 1 byte", () => {
+      const cell = new cells.NumberCell(SimDataType.UInt8, 5);
+      const buffer = Buffer.alloc(1);
+      const encoder = new BinaryEncoder(buffer);
+      expect(() => cell.encode(encoder)).to.not.throw();
+      const decoder = new BinaryDecoder(buffer);
+      expect(decoder.uint8()).to.equal(5);
     });
 
-    context("data type === 36 bits", () => {
-      // TODO:
+    it("should write Int16 in 2 bytes", () => {
+      const cell = new cells.NumberCell(SimDataType.Int16, -5);
+      const buffer = Buffer.alloc(2);
+      const encoder = new BinaryEncoder(buffer);
+      expect(() => cell.encode(encoder)).to.not.throw();
+      const decoder = new BinaryDecoder(buffer);
+      expect(decoder.int16()).to.equal(-5);
+    });
+
+    it("should write UInt16 in 2 bytes", () => {
+      const cell = new cells.NumberCell(SimDataType.UInt16, 5);
+      const buffer = Buffer.alloc(2);
+      const encoder = new BinaryEncoder(buffer);
+      expect(() => cell.encode(encoder)).to.not.throw();
+      const decoder = new BinaryDecoder(buffer);
+      expect(decoder.uint16()).to.equal(5);
+    });
+
+    it("should write Int32 in 4 bytes", () => {
+      const cell = new cells.NumberCell(SimDataType.Int32, -5);
+      const buffer = Buffer.alloc(4);
+      const encoder = new BinaryEncoder(buffer);
+      expect(() => cell.encode(encoder)).to.not.throw();
+      const decoder = new BinaryDecoder(buffer);
+      expect(decoder.int32()).to.equal(-5);
+    });
+
+    it("should write UInt32 in 4 bytes", () => {
+      const cell = new cells.NumberCell(SimDataType.UInt32, 5);
+      const buffer = Buffer.alloc(4);
+      const encoder = new BinaryEncoder(buffer);
+      expect(() => cell.encode(encoder)).to.not.throw();
+      const decoder = new BinaryDecoder(buffer);
+      expect(decoder.uint32()).to.equal(5);
+    });
+
+    it("should write LocalizationKey in 4 bytes", () => {
+      const cell = new cells.NumberCell(SimDataType.LocalizationKey, 0x12345678);
+      const buffer = Buffer.alloc(4);
+      const encoder = new BinaryEncoder(buffer);
+      expect(() => cell.encode(encoder)).to.not.throw();
+      const decoder = new BinaryDecoder(buffer);
+      expect(decoder.uint32()).to.equal(0x12345678);
+    });
+
+    it("should write Float in 4 bytes", () => {
+      const cell = new cells.NumberCell(SimDataType.Float, 1.75);
+      const buffer = Buffer.alloc(4);
+      const encoder = new BinaryEncoder(buffer);
+      expect(() => cell.encode(encoder)).to.not.throw();
+      const decoder = new BinaryDecoder(buffer);
+      expect(decoder.float()).to.equal(1.75);
+    });
+
+    it("should throw if value is out of bounds", () => {
+      const cell = new cells.NumberCell(SimDataType.UInt8, 500);
+      const encoder = new BinaryEncoder(Buffer.alloc(1));
+      expect(() => cell.encode(encoder)).to.throw();
+    });
+
+    it("should throw if an unsigned integer is negative", () => {
+      const cell = new cells.NumberCell(SimDataType.UInt32, -10);
+      const encoder = new BinaryEncoder(Buffer.alloc(4));
+      expect(() => cell.encode(encoder)).to.throw();
     });
   });
 
@@ -415,12 +484,20 @@ describe("NumberCell", function() {
 describe("BigIntCell", function() {
   describe("#value", () => {
     it("should uncache the owner when set", () => {
-      // TODO:
+      const owner = new MockOwner();
+      const cell = new cells.BigIntCell(SimDataType.UInt64, 50n, owner);
+      expect(owner.cached).to.be.true;
+      cell.value = 25n;
+      expect(owner.cached).to.be.false;
     });
   });
 
   describe("#constructor()", () => {
-    // TODO:
+    it("should use the given data type and value", () => {
+      const cell = new cells.BigIntCell(SimDataType.UInt64, 50n);
+      expect(cell.dataType).to.equal(SimDataType.UInt64);
+      expect(cell.value).to.equal(50n);
+    });
   });
 
   describe("#clone()", () => {
