@@ -100,6 +100,18 @@ export abstract class Cell extends CacheableModel {
 
   //#region Static Methods
 
+  /*
+    TODO: These static methods should be included here, but TS does not support
+    abstract static methods. This feature request is tracked here:
+
+    https://github.com/microsoft/TypeScript/issues/34516
+
+    If it is added to TS, these methods should be included on this class:
+    - abstract static decode(decoder: BinaryDecoder): Cell;
+    - abstract static fromXmlNode(node: XmlNode): Cell;
+    - abstract static getDefault(): Cell;
+  */
+
   /**
    * Parses a cell of the given type from the given node, using the list of
    * schemas to read any objects that it may contain.
