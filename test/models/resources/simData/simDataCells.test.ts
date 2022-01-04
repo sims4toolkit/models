@@ -253,3 +253,125 @@ describe("BigIntCell", function() {
     // TODO:
   });
 });
+
+describe("ResourceKeyCell", function() {
+  describe("#clone()", () => {
+    // TODO:
+  });
+
+  describe("#encode()", () => {
+    // TODO:
+  });
+
+  describe("#toXmlNode()", () => {
+    // TODO:
+  });
+
+  describe("#validate()", () => {
+    // TODO:
+  });
+
+  describe("static#decode()", () => {
+    // TODO:
+  });
+
+  describe("static#fromXmlNode()", () => {
+    // TODO:
+  });
+
+  describe("static#getDefault()", () => {
+    // TODO:
+  });
+});
+
+describe("Float2Cell", function() {
+  describe("#clone()", () => {
+    // TODO:
+  });
+
+  describe("#encode()", () => {
+    // TODO:
+  });
+
+  describe("#toXmlNode()", () => {
+    // TODO:
+  });
+
+  describe("#validate()", () => {
+    // TODO:
+  });
+
+  describe("static#decode()", () => {
+    // TODO:
+  });
+
+  describe("static#fromXmlNode()", () => {
+    // TODO:
+  });
+
+  describe("static#getDefault()", () => {
+    // TODO:
+  });
+});
+
+describe("Float3Cell", function() {
+  describe("#clone()", () => {
+    // TODO:
+  });
+
+  describe("#encode()", () => {
+    // TODO:
+  });
+
+  describe("#toXmlNode()", () => {
+    // TODO:
+  });
+
+  describe("#validate()", () => {
+    // TODO:
+  });
+
+  describe("static#decode()", () => {
+    // TODO:
+  });
+
+  describe("static#fromXmlNode()", () => {
+    // TODO:
+  });
+
+  describe("static#getDefault()", () => {
+    // TODO:
+  });
+});
+
+describe("Float4Cell", function() {
+  describe("#clone()", () => {
+    // TODO:
+  });
+
+  describe("#encode()", () => {
+    // TODO:
+  });
+
+  describe("#toXmlNode()", () => {
+    // TODO:
+  });
+
+  describe("#validate()", () => {
+    // TODO:
+  });
+
+  describe("static#decode()", () => {
+    // TODO:
+  });
+
+  describe("static#fromXmlNode()", () => {
+    // TODO:
+  });
+
+  describe("static#getDefault()", () => {
+    // TODO:
+  });
+});
+
+// TODO: ObjectCell, VectorCell, VariantCell
