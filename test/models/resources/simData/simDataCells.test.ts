@@ -552,7 +552,11 @@ describe("NumberCell", function() {
   });
 
   describe("static#getDefault()", () => {
-    // TODO:
+    it("should return a cell with a value of 0", () => {
+      const cell = cells.NumberCell.getDefault(SimDataType.UInt32);
+      expect(cell.dataType).to.equal(SimDataType.UInt32);
+      expect(cell.value).to.equal(0);
+    });
   });
 });
 
