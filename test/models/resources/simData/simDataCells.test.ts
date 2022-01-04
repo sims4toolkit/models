@@ -1021,7 +1021,50 @@ describe("BigIntCell", function() {
   });
 
   describe("#validate()", () => {
-    // TODO:
+    it("should do nothing when int64 is positive and in range", () => {
+      const cell = new cells.BigIntCell(SimDataType.Int64, 10n);
+      expect(() => cell.validate()).to.not.throw();
+    });
+
+    it("should do nothing when int64 is negative and in range", () => {
+      const cell = new cells.BigIntCell(SimDataType.Int64, -10n);
+      expect(() => cell.validate()).to.not.throw();
+    });
+
+    it("should throw when int64 is negative and out of range", () => {
+      const cell = new cells.BigIntCell(SimDataType.Int64, -1234567890987654321234567890n);
+      expect(() => cell.validate()).to.throw();
+    });
+
+    it("should throw when int64 is positive and out of range", () => {
+      const cell = new cells.BigIntCell(SimDataType.Int64, 1234567890987654321234567890n);
+      expect(() => cell.validate()).to.throw();
+    });
+
+    it("should do nothing when uint64 is in range", () => {
+      const cell = new cells.BigIntCell(SimDataType.UInt64, 10n);
+      expect(() => cell.validate()).to.not.throw();
+    });
+
+    it("should throw when uint64 is negative", () => {
+      const cell = new cells.BigIntCell(SimDataType.UInt64, -10n);
+      expect(() => cell.validate()).to.throw();
+    });
+
+    it("should throw when uint64 is positive and out of range", () => {
+      const cell = new cells.BigIntCell(SimDataType.UInt64, 1234567890987654321234567890n);
+      expect(() => cell.validate()).to.throw();
+    });
+
+    it("should throw when value is undefined", () => {
+      const cell = new cells.BigIntCell(SimDataType.UInt64, undefined);
+      expect(() => cell.validate()).to.throw();
+    });
+
+    it("should throw when value is null", () => {
+      const cell = new cells.BigIntCell(SimDataType.UInt64, null);
+      expect(() => cell.validate()).to.throw();
+    });
   });
 
   describe("static#decode()", () => {
@@ -1087,7 +1130,11 @@ describe("BigIntCell", function() {
   });
 
   describe("static#getDefault()", () => {
-    // TODO:
+    it("should return a cell with the given data type and a value of 0", () => {
+      const cell = cells.BigIntCell.getDefault(SimDataType.UInt64);
+      expect(cell.dataType).to.equal(SimDataType.UInt64);
+      expect(cell.value).to.equal(0n);
+    });
   });
 });
 
