@@ -597,10 +597,13 @@ export class BigIntCell extends PrimitiveValueCell<bigint> {
    */
   static fromXmlNode(dataType: SimDataBigInt, node: XmlNode): BigIntCell {
     try {
-      const value = BigInt(node.innerValue as string);
-      return new BigIntCell(dataType, value);
+      if (node.innerValue == undefined) {
+        return BigIntCell.getDefault(dataType);
+      } else {
+        return new BigIntCell(dataType, BigInt(node.innerValue));
+      }
     } catch (e) {
-      throw new Error(`Expected SimDataBigInt to contain a bigint, but got ${node.innerValue}`);
+      throw new Error(`Expected BigIntCell to contain a bigint, but got "${node.innerValue}"`);
     }
   }
 

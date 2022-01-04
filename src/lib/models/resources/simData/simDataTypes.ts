@@ -231,12 +231,12 @@ export namespace SimDataTypeUtils {
    * is just used to determine the base system to use, and whether it is parsing
    * an integer or float.
    * 
-   * If the value is `undefined` or `null`, a value of 0 is returned.
+   * If the value is `undefined` or `null`, a value of `0` is returned.
    * 
    * If no number can be parsed, `NaN` is returned.
    * 
    * @param value Value to parse as a number
-   * @param dataType Data type to parse number as
+   * @param dataType Data type to parse value as
    */
   export function parseNumber(value: any, dataType: SimDataNumber): number {
     value = value ?? 0;
@@ -244,12 +244,7 @@ export namespace SimDataTypeUtils {
     if (typeof value === 'number') {
       return value; // includes NaN
     } else if (typeof value === 'string') {
-      if (dataType === SimDataType.Float) {
-        return parseFloat(value);
-      } else {
-        const base = dataType === SimDataType.LocalizationKey ? 16 : 10;
-        return parseInt(value, base);
-      }
+      return dataType === SimDataType.Float ? parseFloat(value) : parseInt(value);
     } else {
       return NaN;
     }

@@ -1029,7 +1029,61 @@ describe("BigIntCell", function() {
   });
 
   describe("static#fromXmlNode()", () => {
-    // TODO:
+    it("should parse a positive number", () => {
+      const node = getPlainNode(123456789087654321n);
+      const cell = cells.BigIntCell.fromXmlNode(SimDataType.UInt64, node);
+      expect(cell.value).to.equal(123456789087654321n);
+    });
+
+    it("should parse a negative number", () => {
+      const node = getPlainNode(-123456789087654321n);
+      const cell = cells.BigIntCell.fromXmlNode(SimDataType.Int64, node);
+      expect(cell.value).to.equal(-123456789087654321n);
+    });
+
+    it("should parse a positive number string", () => {
+      const node = getPlainNode("123456789087654321");
+      const cell = cells.BigIntCell.fromXmlNode(SimDataType.UInt64, node);
+      expect(cell.value).to.equal(123456789087654321n);
+    });
+
+    it("should parse a negative number string", () => {
+      const node = getPlainNode("-123456789087654321");
+      const cell = cells.BigIntCell.fromXmlNode(SimDataType.Int64, node);
+      expect(cell.value).to.equal(-123456789087654321n);
+    });
+
+    it("should parse a positive hex string", () => {
+      const node = getPlainNode("0x1234567890ABCDEF");
+      const cell = cells.BigIntCell.fromXmlNode(SimDataType.TableSetReference, node);
+      expect(cell.value).to.equal(0x1234567890ABCDEFn);
+    });
+
+    it("should use a value of 0 if it's undefined", () => {
+      const node = getPlainNode(undefined);
+      const cell = cells.BigIntCell.fromXmlNode(SimDataType.UInt64, node);
+      expect(cell.value).to.equal(0n);
+    });
+
+    it("should use a value of 0 if it's null", () => {
+      const node = getPlainNode(null);
+      const cell = cells.BigIntCell.fromXmlNode(SimDataType.UInt64, node);
+      expect(cell.value).to.equal(0n);
+    });
+
+    it("should throw if the inner value is NaN", () => {
+      const node = getPlainNode(NaN);
+      expect(() => {
+        cells.BigIntCell.fromXmlNode(SimDataType.UInt64, node);
+      }).to.throw();
+    });
+
+    it("should throw if the inner value cannot be parsed as a bigint", () => {
+      const node = getPlainNode("hello");
+      expect(() => {
+        cells.BigIntCell.fromXmlNode(SimDataType.UInt64, node);
+      }).to.throw();
+    });
   });
 
   describe("static#getDefault()", () => {
