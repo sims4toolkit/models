@@ -1,11 +1,11 @@
 import { expect } from "chai";
-import { simDataCells } from "../../../../dst/api";
-import { SimDataType } from "../../../../dst/lib/models/resources/simData/simDataTypes";
+import { simDataCells, hashing, simDataTypes } from "../../../../dst/api";
 import { BinaryDecoder, BinaryEncoder } from "../../../../dst/lib/utils/encoding";
-import { fnv32 } from "../../../../dst/lib/utils/hashing";
 import MockOwner from "../../mocks/mockOwner";
 
 const cells = simDataCells;
+const { fnv32 } = hashing;
+const { SimDataType } = simDataTypes;
 
 describe("Cell", function() {
   describe("static#parseXmlNode()", function() {
