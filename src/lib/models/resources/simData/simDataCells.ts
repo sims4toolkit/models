@@ -405,6 +405,8 @@ export class NumberCell extends PrimitiveValueCell<number> {
   }
 
   encode(encoder: BinaryEncoder, options?: CellEncodingOptions): void {
+    this.validate();
+
     switch (this.dataType) {
       case SimDataType.Int8:
         encoder.int8(this.value);
@@ -524,6 +526,8 @@ export class BigIntCell extends PrimitiveValueCell<bigint> {
   }
 
   encode(encoder: BinaryEncoder, options?: CellEncodingOptions): void {
+    this.validate();
+    
     switch (this.dataType) {
       case SimDataType.Int64:
         encoder.int64(this.value);

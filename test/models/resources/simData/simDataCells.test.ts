@@ -445,16 +445,34 @@ describe("NumberCell", function() {
   });
 
   describe("#validate()", () => {
-    context("data type === 8 bits", () => {
-      // TODO:
+    it("should throw when unsigned integer is larger than its limit", () => {
+      const cell = new cells.NumberCell(SimDataType.UInt8, 256);
+      expect(() => cell.validate()).to.throw();
     });
 
-    context("data type === 16 bits", () => {
-      // TODO:
+    it("should throw when unsigned integer is negative", () => {
+      const cell = new cells.NumberCell(SimDataType.UInt8, -1);
+      expect(() => cell.validate()).to.throw();
     });
 
-    context("data type === 36 bits", () => {
-      // TODO:
+    it("should not throw when unsigned integer is within range", () => {
+      const cell = new cells.NumberCell(SimDataType.UInt8, 255);
+      expect(() => cell.validate()).to.not.throw();
+    });
+
+    it("should throw when signed integer is larger than its limit", () => {
+      const cell = new cells.NumberCell(SimDataType.Int8, 128);
+      expect(() => cell.validate()).to.throw();
+    });
+
+    it("should throw when signed integer is lower than its limit", () => {
+      const cell = new cells.NumberCell(SimDataType.Int8, -129);
+      expect(() => cell.validate()).to.throw();
+    });
+
+    it("should not throw when signed integer is negative and in range", () => {
+      const cell = new cells.NumberCell(SimDataType.Int8, -1);
+      expect(() => cell.validate()).to.not.throw();
     });
   });
 
