@@ -477,16 +477,73 @@ describe("NumberCell", function() {
   });
 
   describe("static#decode()", () => {
+    function getDecoder(numBytes: number, type: string, value: number) {
+      const buffer = Buffer.alloc(numBytes);
+      const encoder = new BinaryEncoder(buffer);
+      encoder[type](value);
+      return new BinaryDecoder(buffer);
+    }
+
     context("data type === 8 bits", () => {
-      // TODO:
+      it("should read a signed integer", () => {
+        const decoder = getDecoder(1, 'int8', -5);
+        const cell = cells.NumberCell.decode(SimDataType.Int8, decoder);
+        expect(cell.dataType).to.equal(SimDataType.Int8);
+        expect(cell.value).to.equal(-5);
+      });
+
+      it("should read an unsigned integer", () => {
+        const decoder = getDecoder(1, 'uint8', 5);
+        const cell = cells.NumberCell.decode(SimDataType.UInt8, decoder);
+        expect(cell.dataType).to.equal(SimDataType.UInt8);
+        expect(cell.value).to.equal(5);
+      });
     });
 
     context("data type === 16 bits", () => {
-      // TODO:
+      it("should read a signed integer", () => {
+        const decoder = getDecoder(2, 'int16', -5);
+        const cell = cells.NumberCell.decode(SimDataType.Int16, decoder);
+        expect(cell.dataType).to.equal(SimDataType.Int16);
+        expect(cell.value).to.equal(-5);
+      });
+
+      it("should read an unsigned integer", () => {
+        const decoder = getDecoder(2, 'uint16', 5);
+        const cell = cells.NumberCell.decode(SimDataType.UInt16, decoder);
+        expect(cell.dataType).to.equal(SimDataType.UInt16);
+        expect(cell.value).to.equal(5);
+      });
     });
 
     context("data type === 36 bits", () => {
-      // TODO:
+      it("should read a signed integer", () => {
+        const decoder = getDecoder(4, 'int32', -5);
+        const cell = cells.NumberCell.decode(SimDataType.Int32, decoder);
+        expect(cell.dataType).to.equal(SimDataType.Int32);
+        expect(cell.value).to.equal(-5);
+      });
+
+      it("should read an unsigned integer", () => {
+        const decoder = getDecoder(4, 'uint32', 5);
+        const cell = cells.NumberCell.decode(SimDataType.UInt32, decoder);
+        expect(cell.dataType).to.equal(SimDataType.UInt32);
+        expect(cell.value).to.equal(5);
+      });
+
+      it("should read a float", () => {
+        const decoder = getDecoder(4, 'float', 1.5);
+        const cell = cells.NumberCell.decode(SimDataType.Float, decoder);
+        expect(cell.dataType).to.equal(SimDataType.Float);
+        expect(cell.value).to.equal(1.5);
+      });
+
+      it("should read a localization key", () => {
+        const decoder = getDecoder(4, 'uint32', 0x12345678);
+        const cell = cells.NumberCell.decode(SimDataType.LocalizationKey, decoder);
+        expect(cell.dataType).to.equal(SimDataType.LocalizationKey);
+        expect(cell.value).to.equal(0x12345678);
+      });
     });
   });
 
