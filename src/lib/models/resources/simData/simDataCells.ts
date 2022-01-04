@@ -635,6 +635,8 @@ export class ResourceKeyCell extends Cell {
   }
 
   encode(encoder: BinaryEncoder, options?: CellEncodingOptions): void {
+    this.validate();
+
     encoder.uint64(this.instance);
     encoder.uint32(this.type);
     encoder.uint32(this.group);
@@ -688,11 +690,11 @@ export class ResourceKeyCell extends Cell {
       throw new Error(`Expected ResourceKeyCell to contain type, group, and instance separated by '-', but got ${node.innerValue}`);
 
     const type = parseInt(numStrings[0], 16);
-    if (type === NaN)
+    if (Number.isNaN(type))
       throw new Error(`Expected ResourceKeyCell's type to be a number, but got ${numStrings[0]}`);
 
     const group = parseInt(numStrings[1], 16);
-    if (group === NaN)
+    if (Number.isNaN(group))
       throw new Error(`Expected ResourceKeyCell's group to be a number, but got ${numStrings[1]}`);
     
     try {

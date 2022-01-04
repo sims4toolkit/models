@@ -1397,27 +1397,36 @@ describe("ResourceKeyCell", function() {
 
   describe("static#fromXmlNode()", () => {
     it("should read type/group/instance as hex separated by hyphens", () => {
-      // TODO:
+      const node = getPlainNode("220557DA-80000000-0012B12A0D85486E");
+      const cell = cells.ResourceKeyCell.fromXmlNode(node);
+      expect(cell.type).to.equal(0x220557DA);
+      expect(cell.group).to.equal(0x80000000);
+      expect(cell.instance).to.equal(0x0012B12A0D85486En);
     });
 
     it("should throw if there are less than 3 numbers separated by hyphen", () => {
-      // TODO:
+      const node = getPlainNode("220557DA-0012B12A0D85486E");
+      expect(() => cells.ResourceKeyCell.fromXmlNode(node)).to.throw();
     });
 
     it("should throw if there are more than 3 numbers separated by hyphen", () => {
-      // TODO:
+      const node = getPlainNode("220557DA-80000000-220557DA-0012B12A0D85486E");
+      expect(() => cells.ResourceKeyCell.fromXmlNode(node)).to.throw();
     });
 
     it("should throw if type is not a number", () => {
-      // TODO:
+      const node = getPlainNode("HELLOLOL-80000000-0012B12A0D85486E");
+      expect(() => cells.ResourceKeyCell.fromXmlNode(node)).to.throw();
     });
 
     it("should throw if group is not a number", () => {
-      // TODO:
+      const node = getPlainNode("220557DA-HELLOLOL-0012B12A0D85486E");
+      expect(() => cells.ResourceKeyCell.fromXmlNode(node)).to.throw();
     });
 
     it("should throw if instance is not a bigint", () => {
-      // TODO:
+      const node = getPlainNode("220557DA-80000000-THISISNOTANUMBER");
+      expect(() => cells.ResourceKeyCell.fromXmlNode(node)).to.throw();
     });
   });
 
