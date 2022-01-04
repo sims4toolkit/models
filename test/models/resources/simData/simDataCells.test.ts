@@ -11,7 +11,7 @@ describe("Cell", function() {
 });
 
 describe("BooleanCell", function() {
-  describe("#constructor", () => {
+  describe("#constructor()", () => {
     it("should use the value that is given", () => {
       const cell = new cells.BooleanCell(true);
       expect(cell.value).to.be.true;
@@ -115,6 +115,10 @@ describe("BooleanCell", function() {
 });
 
 describe("TextCell", function() {
+  describe("#constructor()", () => {
+    // TODO:
+  });
+
   describe("#clone()", () => {
     it("should copy the data type and value", () => {
       // TODO:
@@ -231,6 +235,10 @@ describe("TextCell", function() {
 });
 
 describe("NumberCell", function() {
+  describe("#constructor()", () => {
+    // TODO:
+  });
+
   describe("#clone()", () => {
     // TODO:
   });
@@ -291,6 +299,10 @@ describe("NumberCell", function() {
 });
 
 describe("BigIntCell", function() {
+  describe("#constructor()", () => {
+    // TODO:
+  });
+
   describe("#clone()", () => {
     // TODO:
   });
@@ -321,6 +333,10 @@ describe("BigIntCell", function() {
 });
 
 describe("ResourceKeyCell", function() {
+  describe("#constructor()", () => {
+    // TODO:
+  });
+
   describe("#clone()", () => {
     // TODO:
   });
@@ -351,6 +367,10 @@ describe("ResourceKeyCell", function() {
 });
 
 describe("Float2Cell", function() {
+  describe("#constructor()", () => {
+    // TODO:
+  });
+
   describe("#clone()", () => {
     // TODO:
   });
@@ -381,6 +401,10 @@ describe("Float2Cell", function() {
 });
 
 describe("Float3Cell", function() {
+  describe("#constructor()", () => {
+    // TODO:
+  });
+
   describe("#clone()", () => {
     // TODO:
   });
@@ -411,6 +435,10 @@ describe("Float3Cell", function() {
 });
 
 describe("Float4Cell", function() {
+  describe("#constructor()", () => {
+    // TODO:
+  });
+  
   describe("#clone()", () => {
     // TODO:
   });
