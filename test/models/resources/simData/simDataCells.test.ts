@@ -305,7 +305,9 @@ describe("TextCell", function() {
 
   describe("static#getDefault()", () => {
     it("should return a cell with the given data type and an empty string", () => {
-      // TODO:
+      const cell = cells.TextCell.getDefault(SimDataType.String);
+      expect(cell.dataType).to.equal(SimDataType.String);
+      expect(cell.value).to.equal("");
     });
   });
 });
