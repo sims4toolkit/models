@@ -116,20 +116,56 @@ describe("BooleanCell", function() {
 
 describe("TextCell", function() {
   describe("#clone()", () => {
-    // TODO:
+    it("should copy the data type and value", () => {
+      // TODO:
+    });
+
+    it("should not copy the owner", () => {
+      // TODO:
+    });
+
+    it("should not mutate the original", () => {
+      // TODO:
+    });
   });
 
   describe("#encode()", () => {
     context("data type === character", () => {
-      // TODO:
+      it("should write 1 byte", () => {
+        // TODO:
+      });
+
+      it("should write the character that is contained", () => {
+        // TODO:
+      });
+
+      it("should throw if the byte length is > 1", () => {
+        // TODO:
+      });
     });
 
     context("data type === string", () => {
-      // TODO:
+      it("should write the offset that is provided", () => {
+        // TODO:
+      });
+
+      it("should throw if no offset is provided", () => {
+        // TODO:
+      });
     });
 
     context("data type === hashed string", () => {
-      // TODO:
+      it("should write the offset that is provided", () => {
+        // TODO:
+      });
+
+      it("should write the 32-bit hash of the string", () => {
+        // TODO:
+      });
+
+      it("should throw if no offset is provided", () => {
+        // TODO:
+      });
     });
   });
 
@@ -138,20 +174,48 @@ describe("TextCell", function() {
   });
 
   describe("#validate()", () => {
-    // TODO:
+    context("data type === character", () => {
+      it("should throw if the byte length is > 1", () => {
+        // TODO:
+      });
+
+      it("should throw if the byte length is < 1", () => {
+        // TODO:
+      });
+
+      it("should not throw if the byte length is = 1", () => {
+        // TODO:
+      });
+    });
+
+    context("data type === string/hashed string", () => {
+      it("should throw if the byte length is < 1", () => {
+        // TODO: is this actually the desired behavior? can't it just write a null offset?
+      });
+
+      it("should not throw if the byte length is >= 1", () => {
+        // TODO:
+      });
+    });
   });
 
   describe("static#decode()", () => {
     context("data type === character", () => {
-      // TODO:
+      it("should return a cell with a single character", () => {
+        // TODO:
+      });
     });
 
     context("data type === string", () => {
-      // TODO:
+      it("should read an offset and the string at that offset", () => {
+        // TODO:
+      });
     });
 
     context("data type === hashed string", () => {
-      // TODO:
+      it("should skip the hash, read an offset, and then read the string at that offset", () => {
+        // TODO:
+      });
     });
   });
 
@@ -160,7 +224,9 @@ describe("TextCell", function() {
   });
 
   describe("static#getDefault()", () => {
-    // TODO:
+    it("should return a cell with the given data type and an empty string", () => {
+      // TODO:
+    });
   });
 });
 
