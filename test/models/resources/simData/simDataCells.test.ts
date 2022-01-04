@@ -207,13 +207,22 @@ describe("TextCell", function() {
     });
 
     context("data type === string", () => {
-      it("should write the offset that is provided", () => {
+      it("should write the (positive) offset that is provided", () => {
         const cell = new cells.TextCell(SimDataType.String, "hi");
         const buffer = Buffer.alloc(4);
         const encoder = new BinaryEncoder(buffer)
         cell.encode(encoder, { offset: 32 });
         const decoder = new BinaryDecoder(buffer);
-        expect(decoder.uint32()).to.equal(32);
+        expect(decoder.int32()).to.equal(32);
+      });
+
+      it("should write the (negative) offset that is provided", () => {
+        const cell = new cells.TextCell(SimDataType.String, "hi");
+        const buffer = Buffer.alloc(4);
+        const encoder = new BinaryEncoder(buffer)
+        cell.encode(encoder, { offset: -32 });
+        const decoder = new BinaryDecoder(buffer);
+        expect(decoder.int32()).to.equal(-32);
       });
 
       it("should throw if no offset is provided", () => {
@@ -225,13 +234,23 @@ describe("TextCell", function() {
     });
 
     context("data type === hashed string", () => {
-      it("should write the offset that is provided and the 32-bit hash of the string", () => {
+      it("should write the (positive) offset that is provided and the 32-bit hash of the string", () => {
         const cell = new cells.TextCell(SimDataType.HashedString, "hi");
         const buffer = Buffer.alloc(8);
         const encoder = new BinaryEncoder(buffer)
         cell.encode(encoder, { offset: 32 });
         const decoder = new BinaryDecoder(buffer);
-        expect(decoder.uint32()).to.equal(32);
+        expect(decoder.int32()).to.equal(32);
+        expect(decoder.uint32()).to.equal(fnv32("hi"));
+      });
+
+      it("should write the (negative) offset that is provided and the 32-bit hash of the string", () => {
+        const cell = new cells.TextCell(SimDataType.HashedString, "hi");
+        const buffer = Buffer.alloc(8);
+        const encoder = new BinaryEncoder(buffer)
+        cell.encode(encoder, { offset: -32 });
+        const decoder = new BinaryDecoder(buffer);
+        expect(decoder.int32()).to.equal(-32);
         expect(decoder.uint32()).to.equal(fnv32("hi"));
       });
 
