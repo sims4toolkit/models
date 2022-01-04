@@ -283,7 +283,7 @@ export class BooleanCell extends PrimitiveValueCell<boolean> {
    */
   static fromXmlNode(node: XmlNode): BooleanCell {
     // type coercion is intentional; strings, number, bigints should be false
-    return new BooleanCell(node.innerValue != 0);
+    return new BooleanCell(node.innerValue != undefined && node.innerValue != 0);
   }
 
   /**

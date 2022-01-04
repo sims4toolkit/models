@@ -194,6 +194,16 @@ describe("BooleanCell", function() {
       const cell = cells.BooleanCell.fromXmlNode(getPlainNode(0n));
       expect(cell.value).to.be.false;
     });
+
+    it("should have a value of false when the node value is undefined", () => {
+      const cell = cells.BooleanCell.fromXmlNode(getPlainNode(undefined));
+      expect(cell.value).to.be.false;
+    });
+
+    it("should have a value of false when the node value is null", () => {
+      const cell = cells.BooleanCell.fromXmlNode(getPlainNode(null));
+      expect(cell.value).to.be.false;
+    });
   });
 
   describe("static#getDefault()", () => {
