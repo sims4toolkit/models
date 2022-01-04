@@ -504,11 +504,26 @@ export class NumberCell extends PrimitiveValueCell<number> {
    * @param node Node to parse as a NumberCell
    */
   static fromXmlNode(dataType: SimDataNumber, node: XmlNode): NumberCell {
-    const base = dataType === SimDataType.LocalizationKey ? 16 : 10;
-    const value = parseInt(node.innerValue as string, base);
-    if (value === NaN)
-      throw new Error(`Expected NumberCell to contain a number, but got ${node.innerValue}`);
-    return new NumberCell(dataType, value);
+    const innerValue = Number.isNaN(node.innerValue) ? 0 : node.innerValue ?? 0;
+
+    if (typeof innerValue === 'number') {
+      return new NumberCell(dataType, innerValue);
+    } else if (typeof innerValue === 'string') {
+      if (dataType === SimDataType.Float) {
+        const value = parseFloat(innerValue);
+        if (Number.isNaN(value))
+          throw new Error(`Expected NumberCell to contain a float, but got ${node.innerValue}`);
+        return new NumberCell(dataType, value);
+      } else {
+        const base = dataType === SimDataType.LocalizationKey ? 16 : 10;
+        const value = parseInt(innerValue, base);
+        if (Number.isNaN(value))
+          throw new Error(`Expected NumberCell to contain an integer, but got ${node.innerValue}`);
+        return new NumberCell(dataType, value);
+      }
+    } else {
+      return NumberCell.getDefault(dataType);
+    }
   }
 
   /**

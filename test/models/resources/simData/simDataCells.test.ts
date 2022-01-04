@@ -712,6 +712,14 @@ describe("NumberCell", function() {
       const encoder = new BinaryEncoder(Buffer.alloc(4));
       expect(() => cell.encode(encoder)).to.throw();
     });
+
+    it("should throw if value is not a number", () => {
+      const cell = cells.NumberCell.getDefault(SimDataType.UInt32);
+      //@ts-expect-error error is entire point of test
+      cell.value = "hi";
+      const encoder = new BinaryEncoder(Buffer.alloc(4));
+      expect(() => cell.encode(encoder)).to.throw();
+    });
   });
 
   describe("#toXmlNode()", () => {
@@ -844,7 +852,90 @@ describe("NumberCell", function() {
   });
 
   describe("static#fromXmlNode()", () => {
-    // TODO:
+    it("should parse a positive integer", () => {
+      const node = getPlainNode(15);
+      const cell = cells.NumberCell.fromXmlNode(SimDataType.UInt32, node);
+      expect(cell.value).to.equal(15);
+    });
+
+    it("should parse a negative integer", () => {
+      const node = getPlainNode(-15);
+      const cell = cells.NumberCell.fromXmlNode(SimDataType.UInt32, node);
+      expect(cell.value).to.equal(-15);
+    });
+
+    it("should parse a positive integer from a string", () => {
+      const node = getPlainNode("15");
+      const cell = cells.NumberCell.fromXmlNode(SimDataType.UInt32, node);
+      expect(cell.value).to.equal(15);
+    });
+
+    it("should parse a negative integer from a string", () => {
+      const node = getPlainNode("-15");
+      const cell = cells.NumberCell.fromXmlNode(SimDataType.UInt32, node);
+      expect(cell.value).to.equal(-15);
+    });
+
+    it("should parse a positive float", () => {
+      const node = getPlainNode(1.5);
+      const cell = cells.NumberCell.fromXmlNode(SimDataType.Float, node);
+      expect(cell.value).to.equal(1.5);
+    });
+
+    it("should parse a negative float", () => {
+      const node = getPlainNode(-1.5);
+      const cell = cells.NumberCell.fromXmlNode(SimDataType.Float, node);
+      expect(cell.value).to.equal(-1.5);
+    });
+
+    it("should parse a positive float from a string", () => {
+      const node = getPlainNode("1.5");
+      const cell = cells.NumberCell.fromXmlNode(SimDataType.Float, node);
+      expect(cell.value).to.equal(1.5);
+    });
+
+    it("should parse a negative float from a string", () => {
+      const node = getPlainNode("-1.5");
+      const cell = cells.NumberCell.fromXmlNode(SimDataType.Float, node);
+      expect(cell.value).to.equal(-1.5);
+    });
+
+    it("should parse an integer for a loc key", () => {
+      const node = getPlainNode(0x12345678);
+      const cell = cells.NumberCell.fromXmlNode(SimDataType.LocalizationKey, node);
+      expect(cell.value).to.equal(0x12345678);
+    });
+
+    it("should parse a string for a loc key", () => {
+      const node = getPlainNode("0x12345678");
+      const cell = cells.NumberCell.fromXmlNode(SimDataType.LocalizationKey, node);
+      expect(cell.value).to.equal(0x12345678);
+    });
+
+    it("should use a value of 0 if it's undefined", () => {
+      const node = getPlainNode(undefined);
+      const cell = cells.NumberCell.fromXmlNode(SimDataType.UInt32, node);
+      expect(cell.value).to.equal(0);
+    });
+
+    it("should use a value of 0 if it's null", () => {
+      const node = getPlainNode(null);
+      const cell = cells.NumberCell.fromXmlNode(SimDataType.UInt32, node);
+      expect(cell.value).to.equal(0);
+    });
+
+    it("should use a value of 0 if it's NaN", () => {
+      const node = getPlainNode(NaN);
+      const cell = cells.NumberCell.fromXmlNode(SimDataType.UInt32, node);
+      expect(cell.value).to.equal(0);
+    });
+
+    it("should throw if the inner value cannot be parsed as a number", () => {
+      const node = getPlainNode("hi");
+      expect(() => {
+        const cell = cells.NumberCell.fromXmlNode(SimDataType.UInt32, node);
+      }).to.throw();
+    });
   });
 
   describe("static#getDefault()", () => {
