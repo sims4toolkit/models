@@ -183,15 +183,25 @@ describe("TextCell", function() {
   describe("#encode()", () => {
     context("data type === character", () => {
       it("should write 1 byte", () => {
-        // TODO:
+        const cell = new cells.TextCell(SimDataType.Character, "a");
+        const encoder = new BinaryEncoder(Buffer.alloc(1));
+        cell.encode(encoder);
+        expect(encoder.tell()).to.equal(1);
       });
 
       it("should write the character that is contained", () => {
-        // TODO:
+        const cell = new cells.TextCell(SimDataType.Character, "x");
+        const buffer = Buffer.alloc(1);
+        const encoder = new BinaryEncoder(buffer);
+        cell.encode(encoder);
+        const decoder = new BinaryDecoder(buffer);
+        expect(decoder.charsUtf8(1)).to.equal("x");
       });
 
       it("should throw if the byte length is > 1", () => {
-        // TODO:
+        const cell = new cells.TextCell(SimDataType.Character, "hello");
+        const encoder = new BinaryEncoder(Buffer.alloc(5));
+        expect(() => cell.encode(encoder)).to.throw();
       });
     });
 

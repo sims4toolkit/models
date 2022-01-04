@@ -309,6 +309,8 @@ export class TextCell extends PrimitiveValueCell<string> {
   }
 
   encode(encoder: BinaryEncoder, options?: CellEncodingOptions): void {
+    this.validate();
+
     switch (this.dataType) {
       case SimDataType.Character:
         encoder.charsUtf8(this.value); // FIXME: test this... should be base64?
@@ -324,7 +326,11 @@ export class TextCell extends PrimitiveValueCell<string> {
   }
 
   validate(): void {
-    if (!this.value) throw new Error("Text cell must be a non-empty string.");
+    if (this.dataType === SimDataType.Character) {
+      if (Buffer.byteLength(this.value) !== 1) {
+        throw new Error(`Character cell may only occupy one byte, but contains "${this.value}"`);
+      }
+    }
   }
 
   protected _getXmlValue(): XmlValueNode {
