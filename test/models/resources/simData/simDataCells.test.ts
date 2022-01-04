@@ -2,6 +2,7 @@ import { expect } from "chai";
 import { simDataCells } from "../../../../dst/api";
 import { SimDataType } from "../../../../dst/lib/models/resources/simData/simDataTypes";
 import { BinaryDecoder, BinaryEncoder } from "../../../../dst/lib/utils/encoding";
+import { fnv32 } from "../../../../dst/lib/utils/hashing";
 import MockOwner from "../../mocks/mockOwner";
 
 const cells = simDataCells;
@@ -207,25 +208,38 @@ describe("TextCell", function() {
 
     context("data type === string", () => {
       it("should write the offset that is provided", () => {
-        // TODO:
+        const cell = new cells.TextCell(SimDataType.String, "hi");
+        const buffer = Buffer.alloc(4);
+        const encoder = new BinaryEncoder(buffer)
+        cell.encode(encoder, { offset: 32 });
+        const decoder = new BinaryDecoder(buffer);
+        expect(decoder.uint32()).to.equal(32);
       });
 
       it("should throw if no offset is provided", () => {
-        // TODO:
+        const cell = new cells.TextCell(SimDataType.String, "hi");
+        const buffer = Buffer.alloc(4);
+        const encoder = new BinaryEncoder(buffer)
+        expect(() => cell.encode(encoder)).to.throw();
       });
     });
 
     context("data type === hashed string", () => {
-      it("should write the offset that is provided", () => {
-        // TODO:
-      });
-
-      it("should write the 32-bit hash of the string", () => {
-        // TODO:
+      it("should write the offset that is provided and the 32-bit hash of the string", () => {
+        const cell = new cells.TextCell(SimDataType.HashedString, "hi");
+        const buffer = Buffer.alloc(8);
+        const encoder = new BinaryEncoder(buffer)
+        cell.encode(encoder, { offset: 32 });
+        const decoder = new BinaryDecoder(buffer);
+        expect(decoder.uint32()).to.equal(32);
+        expect(decoder.uint32()).to.equal(fnv32("hi"));
       });
 
       it("should throw if no offset is provided", () => {
-        // TODO:
+        const cell = new cells.TextCell(SimDataType.HashedString, "hi");
+        const buffer = Buffer.alloc(8);
+        const encoder = new BinaryEncoder(buffer)
+        expect(() => cell.encode(encoder)).to.throw();
       });
     });
   });
