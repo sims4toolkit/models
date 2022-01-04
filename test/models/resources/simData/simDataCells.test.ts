@@ -11,6 +11,12 @@ describe("Cell", function() {
 });
 
 describe("BooleanCell", function() {
+  describe("#value", () => {
+    it("should uncache the owner when set", () => {
+      // TODO:
+    });
+  });
+
   describe("#constructor()", () => {
     it("should use the value that is given", () => {
       const cell = new cells.BooleanCell(true);
@@ -115,6 +121,12 @@ describe("BooleanCell", function() {
 });
 
 describe("TextCell", function() {
+  describe("#value", () => {
+    it("should uncache the owner when set", () => {
+      // TODO:
+    });
+  });
+
   describe("#constructor()", () => {
     // TODO:
   });
@@ -235,6 +247,12 @@ describe("TextCell", function() {
 });
 
 describe("NumberCell", function() {
+  describe("#value", () => {
+    it("should uncache the owner when set", () => {
+      // TODO:
+    });
+  });
+
   describe("#constructor()", () => {
     // TODO:
   });
@@ -299,6 +317,12 @@ describe("NumberCell", function() {
 });
 
 describe("BigIntCell", function() {
+  describe("#value", () => {
+    it("should uncache the owner when set", () => {
+      // TODO:
+    });
+  });
+
   describe("#constructor()", () => {
     // TODO:
   });
@@ -333,6 +357,24 @@ describe("BigIntCell", function() {
 });
 
 describe("ResourceKeyCell", function() {
+  describe("#type", () => {
+    it("should uncache the owner when set", () => {
+      // TODO:
+    });
+  });
+
+  describe("#group", () => {
+    it("should uncache the owner when set", () => {
+      // TODO:
+    });
+  });
+
+  describe("#instance", () => {
+    it("should uncache the owner when set", () => {
+      // TODO:
+    });
+  });
+
   describe("#constructor()", () => {
     // TODO:
   });
@@ -367,6 +409,18 @@ describe("ResourceKeyCell", function() {
 });
 
 describe("Float2Cell", function() {
+  describe("#x", () => {
+    it("should uncache the owner when set", () => {
+      // TODO:
+    });
+  });
+
+  describe("#y", () => {
+    it("should uncache the owner when set", () => {
+      // TODO:
+    });
+  });
+
   describe("#constructor()", () => {
     // TODO:
   });
@@ -401,6 +455,24 @@ describe("Float2Cell", function() {
 });
 
 describe("Float3Cell", function() {
+  describe("#x", () => {
+    it("should uncache the owner when set", () => {
+      // TODO:
+    });
+  });
+
+  describe("#y", () => {
+    it("should uncache the owner when set", () => {
+      // TODO:
+    });
+  });
+
+  describe("#z", () => {
+    it("should uncache the owner when set", () => {
+      // TODO:
+    });
+  });
+
   describe("#constructor()", () => {
     // TODO:
   });
@@ -435,10 +507,34 @@ describe("Float3Cell", function() {
 });
 
 describe("Float4Cell", function() {
+  describe("#x", () => {
+    it("should uncache the owner when set", () => {
+      // TODO:
+    });
+  });
+
+  describe("#y", () => {
+    it("should uncache the owner when set", () => {
+      // TODO:
+    });
+  });
+
+  describe("#z", () => {
+    it("should uncache the owner when set", () => {
+      // TODO:
+    });
+  });
+
+  describe("#w", () => {
+    it("should uncache the owner when set", () => {
+      // TODO:
+    });
+  });
+
   describe("#constructor()", () => {
     // TODO:
   });
-  
+
   describe("#clone()", () => {
     // TODO:
   });
