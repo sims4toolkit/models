@@ -224,4 +224,34 @@ export namespace SimDataTypeUtils {
         throw new Error(`Type ${dataType} is not a SimDataBigInt.`);
     }
   }
+
+  /**
+   * Parses a number from the given value using the given type. The parsed
+   * number is NOT guaranteed to fit within the bounds of the given type; it
+   * is just used to determine the base system to use, and whether it is parsing
+   * an integer or float.
+   * 
+   * If the value is `undefined` or `null`, a value of 0 is returned.
+   * 
+   * If no number can be parsed, `NaN` is returned.
+   * 
+   * @param value Value to parse as a number
+   * @param dataType Data type to parse number as
+   */
+  export function parseNumber(value: any, dataType: SimDataNumber): number {
+    value = value ?? 0;
+
+    if (typeof value === 'number') {
+      return value; // includes NaN
+    } else if (typeof value === 'string') {
+      if (dataType === SimDataType.Float) {
+        return parseFloat(value);
+      } else {
+        const base = dataType === SimDataType.LocalizationKey ? 16 : 10;
+        return parseInt(value, base);
+      }
+    } else {
+      return NaN;
+    }
+  }
 }

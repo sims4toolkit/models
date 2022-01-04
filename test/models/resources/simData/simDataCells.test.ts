@@ -924,16 +924,17 @@ describe("NumberCell", function() {
       expect(cell.value).to.equal(0);
     });
 
-    it("should use a value of 0 if it's NaN", () => {
+    it("should throw if the inner value is NaN", () => {
       const node = getPlainNode(NaN);
-      const cell = cells.NumberCell.fromXmlNode(SimDataType.UInt32, node);
-      expect(cell.value).to.equal(0);
+      expect(() => {
+        cells.NumberCell.fromXmlNode(SimDataType.UInt32, node);
+      }).to.throw();
     });
 
     it("should throw if the inner value cannot be parsed as a number", () => {
       const node = getPlainNode("hi");
       expect(() => {
-        const cell = cells.NumberCell.fromXmlNode(SimDataType.UInt32, node);
+        cells.NumberCell.fromXmlNode(SimDataType.UInt32, node);
       }).to.throw();
     });
   });
