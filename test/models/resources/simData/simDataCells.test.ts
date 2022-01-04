@@ -1,12 +1,26 @@
 import { expect } from "chai";
-import { simDataCells, hashing, simDataTypes } from "../../../../dst/api";
-import { XmlElementNode, XmlValueNode } from "../../../../dst/lib/models/xml/dom";
+import { simDataCells, hashing, simDataTypes, xmlDom } from "../../../../dst/api";
 import { BinaryDecoder, BinaryEncoder } from "../../../../dst/lib/utils/encoding";
 import MockOwner from "../../mocks/mockOwner";
 
 const cells = simDataCells;
 const { fnv32 } = hashing;
 const { SimDataType } = simDataTypes;
+
+//#region Helpers
+
+function getPlainNode(value: any): xmlDom.XmlElementNode {
+  return new xmlDom.XmlElementNode({
+    tag: "T",
+    children: [
+      new xmlDom.XmlValueNode(value)
+    ]
+  });
+}
+
+//#endregion Helpers
+
+//#region Tests
 
 describe("Cell", function() {
   describe("static#parseXmlNode()", function() {
@@ -151,42 +165,33 @@ describe("BooleanCell", function() {
   });
 
   describe("static#fromXmlNode()", () => {
-    function getNode(value: any) {
-      return new XmlElementNode({
-        tag: "T",
-        children: [
-          new XmlValueNode(value)
-        ]
-      });
-    }
-
     it("should have a value of true when the node value is 1", () => {
-      const cell = cells.BooleanCell.fromXmlNode(getNode(1));
+      const cell = cells.BooleanCell.fromXmlNode(getPlainNode(1));
       expect(cell.value).to.be.true;
     });
 
     it("should have a value of true when the node value is \"1\"", () => {
-      const cell = cells.BooleanCell.fromXmlNode(getNode("1"));
+      const cell = cells.BooleanCell.fromXmlNode(getPlainNode("1"));
       expect(cell.value).to.be.true;
     });
 
     it("should have a value of true when the node value is 1n", () => {
-      const cell = cells.BooleanCell.fromXmlNode(getNode(1n));
+      const cell = cells.BooleanCell.fromXmlNode(getPlainNode(1n));
       expect(cell.value).to.be.true;
     });
 
     it("should have a value of false when the node value is 0", () => {
-      const cell = cells.BooleanCell.fromXmlNode(getNode(0));
+      const cell = cells.BooleanCell.fromXmlNode(getPlainNode(0));
       expect(cell.value).to.be.false;
     });
 
     it("should have a value of false when the node value is \"0\"", () => {
-      const cell = cells.BooleanCell.fromXmlNode(getNode("0"));
+      const cell = cells.BooleanCell.fromXmlNode(getPlainNode("0"));
       expect(cell.value).to.be.false;
     });
 
     it("should have a value of false when the node value is 0n", () => {
-      const cell = cells.BooleanCell.fromXmlNode(getNode(0n));
+      const cell = cells.BooleanCell.fromXmlNode(getPlainNode(0n));
       expect(cell.value).to.be.false;
     });
   });
@@ -1110,3 +1115,5 @@ describe("Float4Cell", function() {
 });
 
 // TODO: ObjectCell, VectorCell, VariantCell
+
+//#endregion Tests
