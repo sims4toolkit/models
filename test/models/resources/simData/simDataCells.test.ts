@@ -991,7 +991,62 @@ describe("BigIntCell", function() {
   });
 
   describe("#encode()", () => {
-    // TODO:
+    it("should write uint64 in 8 bytes", () => {
+      const buffer = Buffer.alloc(8);
+      const encoder = new BinaryEncoder(buffer);
+      const cell = new cells.BigIntCell(SimDataType.UInt64, 0x1234567812345678n);
+      cell.encode(encoder);
+      expect(encoder.tell()).to.equal(8);
+      const decoder = new BinaryDecoder(buffer);
+      expect(decoder.uint64()).to.equal(0x1234567812345678n);
+    });
+
+    it("should write positive int64 in 8 bytes", () => {
+      const buffer = Buffer.alloc(8);
+      const encoder = new BinaryEncoder(buffer);
+      const cell = new cells.BigIntCell(SimDataType.Int64, 0x12345678n);
+      cell.encode(encoder);
+      expect(encoder.tell()).to.equal(8);
+      const decoder = new BinaryDecoder(buffer);
+      expect(decoder.int64()).to.equal(0x12345678n);
+    });
+
+    it("should write negative int64 in 8 bytes", () => {
+      const buffer = Buffer.alloc(8);
+      const encoder = new BinaryEncoder(buffer);
+      const cell = new cells.BigIntCell(SimDataType.Int64, -0x12345678n);
+      cell.encode(encoder);
+      expect(encoder.tell()).to.equal(8);
+      const decoder = new BinaryDecoder(buffer);
+      expect(decoder.int64()).to.equal(-0x12345678n);
+    });
+
+    it("should throw if uint64 is negative", () => {
+      const buffer = Buffer.alloc(8);
+      const encoder = new BinaryEncoder(buffer);
+      const cell = new cells.BigIntCell(SimDataType.UInt64, -0x12345678n);
+      expect(() => {
+        cell.encode(encoder);
+      }).to.throw();
+    });
+
+    it("should throw if table set ref is negative", () => {
+      const buffer = Buffer.alloc(8);
+      const encoder = new BinaryEncoder(buffer);
+      const cell = new cells.BigIntCell(SimDataType.TableSetReference, -0x12345678n);
+      expect(() => {
+        cell.encode(encoder);
+      }).to.throw();
+    });
+
+    it("should throw if value is out of bounds", () => {
+      const buffer = Buffer.alloc(8);
+      const encoder = new BinaryEncoder(buffer);
+      const cell = new cells.BigIntCell(SimDataType.Int64, 0xFFFF_FFFF_FFFF_FFFFn);
+      expect(() => {
+        cell.encode(encoder);
+      }).to.throw();
+    });
   });
 
   describe("#toXmlNode()", () => {
