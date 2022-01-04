@@ -1,5 +1,5 @@
-const expect = require('chai').expect;
-const { hashing } = require('../../dst/api');
+import { expect } from "chai";
+import { hashing } from "../../dst/api";
 
 function getTestFuncs(hashFn) {
   return {
