@@ -1231,59 +1231,75 @@ describe("BigIntCell", function() {
 describe("ResourceKeyCell", function() {
   describe("#type", () => {
     it("should uncache the owner when set", () => {
-      // TODO:
+      const owner = new MockOwner();
+      const cell = new cells.ResourceKeyCell(1, 2, 3n, owner);
+      expect(owner.cached).to.be.true;
+      cell.type = 4;
+      expect(owner.cached).to.be.false;
     });
   });
 
   describe("#group", () => {
     it("should uncache the owner when set", () => {
-      // TODO:
+      const owner = new MockOwner();
+      const cell = new cells.ResourceKeyCell(1, 2, 3n, owner);
+      expect(owner.cached).to.be.true;
+      cell.group = 4;
+      expect(owner.cached).to.be.false;
     });
   });
 
   describe("#instance", () => {
     it("should uncache the owner when set", () => {
-      // TODO:
+      const owner = new MockOwner();
+      const cell = new cells.ResourceKeyCell(1, 2, 3n, owner);
+      expect(owner.cached).to.be.true;
+      cell.instance = 4n;
+      expect(owner.cached).to.be.false;
     });
   });
 
   describe("#constructor()", () => {
     it("should use the given type, group, and instance", () => {
-      // TODO:
+      const cell = new cells.ResourceKeyCell(1, 2, 3n);
+      expect(cell.type).to.equal(1);
+      expect(cell.group).to.equal(2);
+      expect(cell.instance).to.equal(3n);
     });
 
     it("should have an undefined owner if none is given", () => {
-      // TODO:
+      const cell = new cells.ResourceKeyCell(1, 2, 3n);
+      expect(cell.owner).to.be.undefined;
     });
 
     it("should use the given owner", () => {
-      // TODO:
+      const owner = new MockOwner();
+      const cell = new cells.ResourceKeyCell(1, 2, 3n, owner);
+      expect(cell.owner).to.equal(owner);
     });
   });
 
   describe("#clone()", () => {
     it("should copy the type, group, and instance", () => {
-      // TODO:
-      // const cell = new cells.ResourceKeyCell(SimDataType.String, "Something");
-      // const clone = cell.clone();
-      // expect(clone.dataType).to.equal(SimDataType.String);
-      // expect(clone.value).to.equal("Something");
+      const cell = new cells.ResourceKeyCell(1, 2, 3n);
+      const clone = cell.clone();
+      expect(clone.type).to.equal(1);
+      expect(clone.group).to.equal(2);
+      expect(clone.instance).to.equal(3n);
     });
 
     it("should not copy the owner", () => {
-      // TODO:
-      // const owner = new MockOwner();
-      // const cell = new cells.ResourceKeyCell(SimDataType.String, "Something", owner);
-      // const clone = cell.clone();
-      // expect(clone.owner).to.be.undefined;
+      const owner = new MockOwner();
+      const cell = new cells.ResourceKeyCell(1, 2, 3n, owner);
+      const clone = cell.clone();
+      expect(clone.owner).to.be.undefined;
     });
 
     it("should not mutate the original", () => {
-      // TODO:
-      // const cell = new cells.ResourceKeyCell(SimDataType.String, "Something");
-      // const clone = cell.clone();
-      // clone.value = "Something else";
-      // expect(cell.value).to.equal("Something");
+      const cell = new cells.ResourceKeyCell(1, 2, 3n);
+      const clone = cell.clone();
+      clone.type = 4;
+      expect(cell.type).to.equal(1);
     });
   });
 
