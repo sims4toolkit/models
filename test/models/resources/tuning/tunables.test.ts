@@ -1,5 +1,5 @@
-const { expect } = require("chai");
-const { StringTableResource, hashing, tunables, formatting } = require("../../../../dst/api");
+import { expect } from "chai";
+import { StringTableResource, hashing, tunables, formatting } from "../../../../dst/api";
 const { formatStringKey } = formatting;
 const { fnv32 } = hashing;
 const { I, M, T, E, L, U, V, C, Comment, LocString, getLocStringFn } = tunables;
@@ -371,6 +371,7 @@ describe("#C()", function() {
   });
 
   it("should throw if no name is given", function() {
+    //@ts-expect-error Whole point is that there's an error
     expect(() => C()).to.throw();
   });
 

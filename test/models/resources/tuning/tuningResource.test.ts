@@ -1,7 +1,7 @@
-const fs = require('fs');
-const path = require('path');
-const expect = require('chai').expect;
-const { TuningResource, xmlDom, tunables } = require('../../../../dst/api');
+import * as fs from "fs";
+import * as path from "path";
+import { expect } from "chai";
+import { TuningResource, xmlDom, tunables } from '../../../../dst/api';
 const { XmlDocumentNode } = xmlDom;
 
 const XML_DECLARATION = '<?xml version="1.0" encoding="utf-8"?>';
@@ -219,11 +219,11 @@ describe('TuningResource', function() {
     });
 
     context('setting', function() {
-      it("should not do anything", function() {
+      it("should throw", function() {
         const tun = TuningResource.create({ content: "<I/>" });
         expect(tun.hasChanged).to.be.true;
-        tun.hasChanged = false;
-        expect(tun.hasChanged).to.be.true;
+        //@ts-expect-error Error is entire point of test
+        expect(() => tun.hasChanged = false).to.throw();
       });
     });
   });
@@ -256,8 +256,8 @@ describe('TuningResource', function() {
     context('setting', function() {
       it("should not do anything", function() {
         const tun = TuningResource.from(Buffer.from("<I/>"));
-        tun.buffer = Buffer.from("hi");
-        expect(tun.buffer.toString()).to.equal("<I/>");
+        //@ts-expect-error Error is entire point of test
+        expect(() => tun.buffer = Buffer.from("hi")).to.throw();
       });
     });
   });
