@@ -581,27 +581,24 @@ describe("BigIntCell", function() {
 
   describe("#clone()", () => {
     it("should copy the data type and value", () => {
-      // TODO:
-      // const cell = new cells.TextCell(SimDataType.String, "Something");
-      // const clone = cell.clone();
-      // expect(clone.dataType).to.equal(SimDataType.String);
-      // expect(clone.value).to.equal("Something");
+      const cell = new cells.BigIntCell(SimDataType.UInt64, 50n);
+      const clone = cell.clone();
+      expect(clone.dataType).to.equal(SimDataType.UInt64);
+      expect(clone.value).to.equal(50n);
     });
 
     it("should not copy the owner", () => {
-      // TODO:
-      // const owner = new MockOwner();
-      // const cell = new cells.TextCell(SimDataType.String, "Something", owner);
-      // const clone = cell.clone();
-      // expect(clone.owner).to.be.undefined;
+      const owner = new MockOwner();
+      const cell = new cells.BigIntCell(SimDataType.UInt64, 50n, owner);
+      const clone = cell.clone();
+      expect(clone.owner).to.be.undefined;
     });
 
     it("should not mutate the original", () => {
-      // TODO:
-      // const cell = new cells.TextCell(SimDataType.String, "Something");
-      // const clone = cell.clone();
-      // clone.value = "Something else";
-      // expect(cell.value).to.equal("Something");
+      const cell = new cells.BigIntCell(SimDataType.UInt64, 50n);
+      const clone = cell.clone();
+      clone.value = 100n;
+      expect(cell.value).to.equal(50n);
     });
   });
 
