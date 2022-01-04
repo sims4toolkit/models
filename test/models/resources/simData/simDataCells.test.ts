@@ -251,25 +251,30 @@ describe("TextCell", function() {
   describe("#validate()", () => {
     context("data type === character", () => {
       it("should throw if the byte length is > 1", () => {
-        // TODO:
+        const cell = new cells.TextCell(SimDataType.Character, "hello");
+        expect(() => cell.validate()).to.throw();
       });
 
       it("should throw if the byte length is < 1", () => {
-        // TODO:
+        const cell = new cells.TextCell(SimDataType.Character, "");
+        expect(() => cell.validate()).to.throw();
       });
 
       it("should not throw if the byte length is = 1", () => {
-        // TODO:
+        const cell = new cells.TextCell(SimDataType.Character, "x");
+        expect(() => cell.validate()).to.not.throw();
       });
     });
 
     context("data type === string/hashed string", () => {
-      it("should throw if the byte length is < 1", () => {
-        // TODO: is this actually the desired behavior? can't it just write a null offset?
+      it("should not throw if string is non-empty", () => {
+        const cell = new cells.TextCell(SimDataType.String, "Hi");
+        expect(() => cell.validate()).to.not.throw();
       });
 
-      it("should not throw if the byte length is >= 1", () => {
-        // TODO:
+      it("should not throw if string is empty", () => {
+        const cell = new cells.TextCell(SimDataType.String, "");
+        expect(() => cell.validate()).to.not.throw();
       });
     });
   });
