@@ -315,16 +315,46 @@ describe("TextCell", function() {
 describe("NumberCell", function() {
   describe("#value", () => {
     it("should uncache the owner when set", () => {
-      // TODO:
+      const owner = new MockOwner();
+      const cell = new cells.NumberCell(SimDataType.UInt32, 100, owner);
+      expect(owner.cached).to.be.true;
+      cell.value = 50;
+      expect(owner.cached).to.be.false;
     });
   });
 
   describe("#constructor()", () => {
-    // TODO:
+    it("should have the given type and value", () => {
+      const cell = new cells.NumberCell(SimDataType.UInt32, 100);
+      expect(cell.dataType).to.equal(SimDataType.UInt32);
+      expect(cell.value).to.equal(100);
+    });
   });
 
   describe("#clone()", () => {
-    // TODO:
+    it("should copy the data type and value", () => {
+      // TODO:
+      // const cell = new cells.TextCell(SimDataType.String, "Something");
+      // const clone = cell.clone();
+      // expect(clone.dataType).to.equal(SimDataType.String);
+      // expect(clone.value).to.equal("Something");
+    });
+
+    it("should not copy the owner", () => {
+      // TODO:
+      // const owner = new MockOwner();
+      // const cell = new cells.TextCell(SimDataType.String, "Something", owner);
+      // const clone = cell.clone();
+      // expect(clone.owner).to.be.undefined;
+    });
+
+    it("should not mutate the original", () => {
+      // TODO:
+      // const cell = new cells.TextCell(SimDataType.String, "Something");
+      // const clone = cell.clone();
+      // clone.value = "Something else";
+      // expect(cell.value).to.equal("Something");
+    });
   });
 
   describe("#encode()", () => {
@@ -394,7 +424,29 @@ describe("BigIntCell", function() {
   });
 
   describe("#clone()", () => {
-    // TODO:
+    it("should copy the data type and value", () => {
+      // TODO:
+      // const cell = new cells.TextCell(SimDataType.String, "Something");
+      // const clone = cell.clone();
+      // expect(clone.dataType).to.equal(SimDataType.String);
+      // expect(clone.value).to.equal("Something");
+    });
+
+    it("should not copy the owner", () => {
+      // TODO:
+      // const owner = new MockOwner();
+      // const cell = new cells.TextCell(SimDataType.String, "Something", owner);
+      // const clone = cell.clone();
+      // expect(clone.owner).to.be.undefined;
+    });
+
+    it("should not mutate the original", () => {
+      // TODO:
+      // const cell = new cells.TextCell(SimDataType.String, "Something");
+      // const clone = cell.clone();
+      // clone.value = "Something else";
+      // expect(cell.value).to.equal("Something");
+    });
   });
 
   describe("#encode()", () => {
@@ -446,7 +498,29 @@ describe("ResourceKeyCell", function() {
   });
 
   describe("#clone()", () => {
-    // TODO:
+    it("should copy the type, group, and instance", () => {
+      // TODO:
+      // const cell = new cells.TextCell(SimDataType.String, "Something");
+      // const clone = cell.clone();
+      // expect(clone.dataType).to.equal(SimDataType.String);
+      // expect(clone.value).to.equal("Something");
+    });
+
+    it("should not copy the owner", () => {
+      // TODO:
+      // const owner = new MockOwner();
+      // const cell = new cells.TextCell(SimDataType.String, "Something", owner);
+      // const clone = cell.clone();
+      // expect(clone.owner).to.be.undefined;
+    });
+
+    it("should not mutate the original", () => {
+      // TODO:
+      // const cell = new cells.TextCell(SimDataType.String, "Something");
+      // const clone = cell.clone();
+      // clone.value = "Something else";
+      // expect(cell.value).to.equal("Something");
+    });
   });
 
   describe("#encode()", () => {
@@ -492,7 +566,29 @@ describe("Float2Cell", function() {
   });
 
   describe("#clone()", () => {
-    // TODO:
+    it("should copy the float values", () => {
+      // TODO:
+      // const cell = new cells.TextCell(SimDataType.String, "Something");
+      // const clone = cell.clone();
+      // expect(clone.dataType).to.equal(SimDataType.String);
+      // expect(clone.value).to.equal("Something");
+    });
+
+    it("should not copy the owner", () => {
+      // TODO:
+      // const owner = new MockOwner();
+      // const cell = new cells.TextCell(SimDataType.String, "Something", owner);
+      // const clone = cell.clone();
+      // expect(clone.owner).to.be.undefined;
+    });
+
+    it("should not mutate the original", () => {
+      // TODO:
+      // const cell = new cells.TextCell(SimDataType.String, "Something");
+      // const clone = cell.clone();
+      // clone.value = "Something else";
+      // expect(cell.value).to.equal("Something");
+    });
   });
 
   describe("#encode()", () => {
@@ -544,7 +640,29 @@ describe("Float3Cell", function() {
   });
 
   describe("#clone()", () => {
-    // TODO:
+    it("should copy the float values", () => {
+      // TODO:
+      // const cell = new cells.TextCell(SimDataType.String, "Something");
+      // const clone = cell.clone();
+      // expect(clone.dataType).to.equal(SimDataType.String);
+      // expect(clone.value).to.equal("Something");
+    });
+
+    it("should not copy the owner", () => {
+      // TODO:
+      // const owner = new MockOwner();
+      // const cell = new cells.TextCell(SimDataType.String, "Something", owner);
+      // const clone = cell.clone();
+      // expect(clone.owner).to.be.undefined;
+    });
+
+    it("should not mutate the original", () => {
+      // TODO:
+      // const cell = new cells.TextCell(SimDataType.String, "Something");
+      // const clone = cell.clone();
+      // clone.value = "Something else";
+      // expect(cell.value).to.equal("Something");
+    });
   });
 
   describe("#encode()", () => {
@@ -602,7 +720,29 @@ describe("Float4Cell", function() {
   });
 
   describe("#clone()", () => {
-    // TODO:
+    it("should copy the float values", () => {
+      // TODO:
+      // const cell = new cells.TextCell(SimDataType.String, "Something");
+      // const clone = cell.clone();
+      // expect(clone.dataType).to.equal(SimDataType.String);
+      // expect(clone.value).to.equal("Something");
+    });
+
+    it("should not copy the owner", () => {
+      // TODO:
+      // const owner = new MockOwner();
+      // const cell = new cells.TextCell(SimDataType.String, "Something", owner);
+      // const clone = cell.clone();
+      // expect(clone.owner).to.be.undefined;
+    });
+
+    it("should not mutate the original", () => {
+      // TODO:
+      // const cell = new cells.TextCell(SimDataType.String, "Something");
+      // const clone = cell.clone();
+      // clone.value = "Something else";
+      // expect(cell.value).to.equal("Something");
+    });
   });
 
   describe("#encode()", () => {
