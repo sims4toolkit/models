@@ -248,7 +248,7 @@ export class BooleanCell extends PrimitiveValueCell<boolean> {
   readonly dataType: SimDataType.Boolean;
 
   constructor(value: boolean, owner?: CacheableModel) {
-    super(SimDataType.Boolean, value, owner);
+    super(SimDataType.Boolean, value ?? false, owner);
   }
 
   clone(): BooleanCell {
@@ -256,10 +256,15 @@ export class BooleanCell extends PrimitiveValueCell<boolean> {
   }
 
   encode(encoder: BinaryEncoder, options?: CellEncodingOptions): void {
+    this.validate();
     encoder.boolean(this.value);
   }
 
-  validate(): void { }
+  validate(): void {
+    if (this.value == undefined) {
+      throw new Error(`Boolean cell value cannot be undefined or null.`);
+    }
+  }
 
   protected _getXmlValue(): XmlValueNode {
     return new XmlValueNode(this.value ? 1 : 0);
@@ -303,7 +308,7 @@ export class TextCell extends PrimitiveValueCell<string> {
   readonly dataType: SimDataText;
 
   constructor(dataType: SimDataText, value: string, owner?: CacheableModel) {
-    super(dataType, value, owner);
+    super(dataType, value ?? "", owner);
   }
 
   clone(): TextCell {
@@ -330,6 +335,10 @@ export class TextCell extends PrimitiveValueCell<string> {
     if (this.dataType === SimDataType.Character) {
       if (Buffer.byteLength(this.value) !== 1) {
         throw new Error(`Character cell may only occupy one byte, but contains "${this.value}"`);
+      }
+    } else {
+      if (this.value == undefined) {
+        throw new Error(`String cell cannot contain undefined or null.`);
       }
     }
   }
@@ -377,7 +386,8 @@ export class TextCell extends PrimitiveValueCell<string> {
    * @param node Node to parse as a TextCell
    */
   static fromXmlNode(dataType: SimDataText, node: XmlNode): TextCell {
-    return new TextCell(dataType, node.innerValue as string);
+    const value: string = (node.innerValue ?? "") as string;
+    return new TextCell(dataType, value);
   }
 
   /**

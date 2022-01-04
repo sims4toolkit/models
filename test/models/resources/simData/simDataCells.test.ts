@@ -51,6 +51,16 @@ describe("BooleanCell", function() {
       expect(cell.value).to.be.true;
     });
 
+    it("should be false if given undefined", () => {
+      const cell = new cells.BooleanCell(undefined);
+      expect(cell.value).to.be.false;
+    });
+
+    it("should be false if given null", () => {
+      const cell = new cells.BooleanCell(null);
+      expect(cell.value).to.be.false;
+    });
+
     it("should have an undefined owner is none is given", () => {
       const cell = new cells.BooleanCell(true);
       expect(cell.owner).to.be.undefined;
@@ -105,6 +115,13 @@ describe("BooleanCell", function() {
       cell.encode(encoder);
       expect(buffer.readUInt8(0)).to.equal(1);
     });
+
+    it("should throw if the value is undefined or null", () => {
+      const cell = cells.BooleanCell.getDefault();
+      cell.value = undefined;
+      const encoder = new BinaryEncoder(Buffer.alloc(4));
+      expect(() => cell.encode(encoder)).to.throw();
+    });
   });
 
   describe("#toXmlNode()", () => {
@@ -140,9 +157,21 @@ describe("BooleanCell", function() {
   });
 
   describe("#validate()", () => {
-    it("should not throw", () => {
+    it("should not throw when value is boolean", () => {
       const cell = new cells.BooleanCell(true);
       expect(() => cell.validate()).to.not.throw();
+    });
+
+    it("should throw when value is undefined", () => {
+      const cell = new cells.BooleanCell(false);
+      cell.value = undefined;
+      expect(() => cell.validate()).to.throw();
+    });
+
+    it("should throw when value is null", () => {
+      const cell = new cells.BooleanCell(false);
+      cell.value = undefined;
+      expect(() => cell.validate()).to.throw();
     });
   });
 
@@ -237,6 +266,16 @@ describe("TextCell", function() {
       expect(cell.dataType).to.equal(SimDataType.String);
       expect(cell.value).to.equal("Something");
     });
+
+    it("should be an empty string if given undefined", () => {
+      const cell = new cells.TextCell(SimDataType.String, undefined);
+      expect(cell.value).to.equal("");
+    });
+
+    it("should be an empty string if given null", () => {
+      const cell = new cells.TextCell(SimDataType.String, null);
+      expect(cell.value).to.equal("");
+    });
   });
 
   describe("#clone()", () => {
@@ -312,6 +351,13 @@ describe("TextCell", function() {
         const encoder = new BinaryEncoder(buffer)
         expect(() => cell.encode(encoder)).to.throw();
       });
+
+      it("should throw if the value is undefined or null", () => {
+        const cell = cells.TextCell.getDefault(SimDataType.String);
+        cell.value = undefined;
+        const encoder = new BinaryEncoder(Buffer.alloc(4));
+        expect(() => cell.encode(encoder)).to.throw();
+      });
     });
 
     context("data type === hashed string", () => {
@@ -345,7 +391,40 @@ describe("TextCell", function() {
   });
 
   describe("#toXmlNode()", () => {
-    // TODO:
+    it("should throw when writing a character with its type", () => {
+      const cell = new cells.TextCell(SimDataType.Character, "x");
+      expect(() => cell.toXmlNode({ typeAttr: true })).to.throw();
+    });
+
+    it("should write the value of a string", () => {
+      const cell = new cells.TextCell(SimDataType.String, "b__Head__");
+      const node = cell.toXmlNode();
+      expect(node.toXml()).to.equal(`<T>b__Head__</T>`);
+    });
+
+    it("should write the value of a hashed string", () => {
+      const cell = new cells.TextCell(SimDataType.HashedString, "b__Head__");
+      const node = cell.toXmlNode();
+      expect(node.toXml()).to.equal(`<T>b__Head__</T>`);
+    });
+
+    it("should write the type of a string", () => {
+      const cell = new cells.TextCell(SimDataType.String, "b__Head__");
+      const node = cell.toXmlNode({ typeAttr: true });
+      expect(node.toXml()).to.equal(`<T type="String">b__Head__</T>`);
+    });
+
+    it("should write the type of a hashed string", () => {
+      const cell = new cells.TextCell(SimDataType.HashedString, "b__Head__");
+      const node = cell.toXmlNode({ typeAttr: true });
+      expect(node.toXml()).to.equal(`<T type="HashedString">b__Head__</T>`);
+    });
+
+    it("should write the given name", () => {
+      const cell = new cells.TextCell(SimDataType.String, "b__Head__");
+      const node = cell.toXmlNode({ nameAttr: "str" });
+      expect(node.toXml()).to.equal(`<T name="str">b__Head__</T>`);
+    });
   });
 
   describe("#validate()", () => {
@@ -457,7 +536,21 @@ describe("TextCell", function() {
   });
 
   describe("static#fromXmlNode()", () => {
-    // TODO:
+    it("should create a cell with the given type and value", () => {
+      const node = getPlainNode("hi");
+      const cell = cells.TextCell.fromXmlNode(SimDataType.String, node);
+      expect(cell.dataType).to.equal(SimDataType.String);
+      expect(cell.value).to.equal("hi");
+      const hashedCell = cells.TextCell.fromXmlNode(SimDataType.HashedString, node);
+      expect(hashedCell.dataType).to.equal(SimDataType.HashedString);
+      expect(hashedCell.value).to.equal("hi");
+    });
+
+    it("should create a cell with an empty string if the node contains undefined", () => {
+      const node = getPlainNode(undefined);
+      const cell = cells.TextCell.fromXmlNode(SimDataType.String, node);
+      expect(cell.value).to.equal("");
+    });
   });
 
   describe("static#getDefault()", () => {
