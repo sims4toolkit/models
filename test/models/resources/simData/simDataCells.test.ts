@@ -1,5 +1,6 @@
 import { expect } from "chai";
 import { simDataCells, hashing, simDataTypes } from "../../../../dst/api";
+import { XmlElementNode, XmlValueNode } from "../../../../dst/lib/models/xml/dom";
 import { BinaryDecoder, BinaryEncoder } from "../../../../dst/lib/utils/encoding";
 import MockOwner from "../../mocks/mockOwner";
 
@@ -150,7 +151,44 @@ describe("BooleanCell", function() {
   });
 
   describe("static#fromXmlNode()", () => {
-    // TODO:
+    function getNode(value: any) {
+      return new XmlElementNode({
+        tag: "T",
+        children: [
+          new XmlValueNode(value)
+        ]
+      });
+    }
+
+    it("should have a value of true when the node value is 1", () => {
+      const cell = cells.BooleanCell.fromXmlNode(getNode(1));
+      expect(cell.value).to.be.true;
+    });
+
+    it("should have a value of true when the node value is \"1\"", () => {
+      const cell = cells.BooleanCell.fromXmlNode(getNode("1"));
+      expect(cell.value).to.be.true;
+    });
+
+    it("should have a value of true when the node value is 1n", () => {
+      const cell = cells.BooleanCell.fromXmlNode(getNode(1n));
+      expect(cell.value).to.be.true;
+    });
+
+    it("should have a value of false when the node value is 0", () => {
+      const cell = cells.BooleanCell.fromXmlNode(getNode(0));
+      expect(cell.value).to.be.false;
+    });
+
+    it("should have a value of false when the node value is \"0\"", () => {
+      const cell = cells.BooleanCell.fromXmlNode(getNode("0"));
+      expect(cell.value).to.be.false;
+    });
+
+    it("should have a value of false when the node value is 0n", () => {
+      const cell = cells.BooleanCell.fromXmlNode(getNode(0n));
+      expect(cell.value).to.be.false;
+    });
   });
 
   describe("static#getDefault()", () => {

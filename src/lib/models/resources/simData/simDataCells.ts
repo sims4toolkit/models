@@ -282,7 +282,8 @@ export class BooleanCell extends PrimitiveValueCell<boolean> {
    * @param node Node to parse as a BooleanCell
    */
   static fromXmlNode(node: XmlNode): BooleanCell {
-    return new BooleanCell(node.innerValue === "1");
+    // type coercion is intentional; strings, number, bigints should be false
+    return new BooleanCell(node.innerValue != 0);
   }
 
   /**
