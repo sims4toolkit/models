@@ -1305,25 +1305,41 @@ describe("ResourceKeyCell", function() {
 
   describe("#encode()", () => {
     it("should write the values in the order of instance, type, group", () => {
-      // TODO:
+      const buffer = Buffer.alloc(16);
+      const encoder = new BinaryEncoder(buffer);
+      const cell = new cells.ResourceKeyCell(0x220557DA, 0x80000000, 0x0012B12A0D85486En);
+      cell.encode(encoder);
+      const decoder = new BinaryDecoder(buffer);
+      expect(decoder.uint64()).to.equal(0x0012B12A0D85486En);
+      expect(decoder.uint32()).to.equal(0x220557DA);
+      expect(decoder.uint32()).to.equal(0x80000000);
     });
 
     it("should throw if validation fails", () => {
-      // TODO:
+      const buffer = Buffer.alloc(16);
+      const encoder = new BinaryEncoder(buffer);
+      const cell = new cells.ResourceKeyCell(10, -10, 10n);
+      expect(() => cell.encode(encoder)).to.throw();
     });
   });
 
   describe("#toXmlNode()", () => {
     it("should create a node with the TGI in a hyphen-separated string", () => {
-      // TODO:
+      const cell = new cells.ResourceKeyCell(0x220557DA, 0x80000000, 0x0012B12A0D85486En);
+      const node = cell.toXmlNode();
+      expect(node.toXml()).to.equal(`<T>220557DA-80000000-0012B12A0D85486E</T>`);
     });
 
     it("should include a name when one is given", () => {
-      // TODO:
+      const cell = new cells.ResourceKeyCell(0x220557DA, 0x80000000, 0x0012B12A0D85486En);
+      const node = cell.toXmlNode({ nameAttr: "reskey" });
+      expect(node.toXml()).to.equal(`<T name="reskey">220557DA-80000000-0012B12A0D85486E</T>`);
     });
 
     it("should include the type when told to", () => {
-      // TODO:
+      const cell = new cells.ResourceKeyCell(0x220557DA, 0x80000000, 0x0012B12A0D85486En);
+      const node = cell.toXmlNode({ typeAttr: true });
+      expect(node.toXml()).to.equal(`<T type="ResourceKey">220557DA-80000000-0012B12A0D85486E</T>`);
     });
   });
 
@@ -1359,7 +1375,16 @@ describe("ResourceKeyCell", function() {
 
   describe("static#decode()", () => {
     it("should read instance, type, then group", () => {
-      // TODO:
+      const buffer = Buffer.alloc(16);
+      const encoder = new BinaryEncoder(buffer);
+      encoder.uint64(0x1234n);
+      encoder.uint32(0x12345678);
+      encoder.uint32(0x80000000);
+      const decoder = new BinaryDecoder(buffer);
+      const cell = cells.ResourceKeyCell.decode(decoder);
+      expect(cell.type).to.equal(0x12345678);
+      expect(cell.group).to.equal(0x80000000);
+      expect(cell.instance).to.equal(0x1234n);
     });
   });
 
