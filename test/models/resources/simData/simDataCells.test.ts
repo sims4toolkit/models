@@ -304,7 +304,7 @@ describe("TextCell", function() {
         const decoder = new BinaryDecoder(buffer);
         const cell = cells.TextCell.decode(SimDataType.String, decoder);
         expect(cell.dataType).to.equal(SimDataType.String);
-        expect(cell.value).to.equal("hello");
+        expect(cell.value).to.equal(string);
       });
 
       it("should read a (negative) offset and then read the string at the offset", () => {
@@ -319,7 +319,7 @@ describe("TextCell", function() {
         decoder.seek(stringSize);
         const cell = cells.TextCell.decode(SimDataType.String, decoder);
         expect(cell.dataType).to.equal(SimDataType.String);
-        expect(cell.value).to.equal("hello");
+        expect(cell.value).to.equal(string);
       });
     });
 

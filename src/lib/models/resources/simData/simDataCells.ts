@@ -36,9 +36,10 @@ export abstract class Cell extends CacheableModel {
   abstract clone(options?: CellCloneOptions): Cell;
 
   /**
-   * Writes this cell's value(s) into the given encoder. If this cell is
-   * recursive, then the `offset` option MUST be supplied, or an exception
-   * will be thrown.
+   * Writes this cell's value(s) into the given encoder at the current position.
+   * If this cell is recursive, then the `offset` option MUST be supplied, or an
+   * exception will be thrown. Note that contained cells will NOT be encoded,
+   * just the offset to the contained cell.
    * 
    * Options
    * - `offset`: Required if this cell is recursive. References another position
@@ -311,17 +312,16 @@ export class TextCell extends PrimitiveValueCell<string> {
   encode(encoder: BinaryEncoder, options?: CellEncodingOptions): void {
     this.validate();
 
-    switch (this.dataType) {
-      case SimDataType.Character:
-        encoder.charsUtf8(this.value); // FIXME: test this... should be base64?
-        break;
-      case SimDataType.String:
-        encoder.int32(this._getOffsetEncodingOption(options)); // FIXME: signed or unsigned?
-        break;
-      case SimDataType.HashedString:
-        encoder.int32(this._getOffsetEncodingOption(options)); // FIXME: signed or unsigned?
+    if (this.dataType === SimDataType.Character) {
+      encoder.charsUtf8(this.value);
+    } else {
+      // BT uses unsigned, but I'm intentionally signing it here because it can
+      // be negative and JS number don't wrap
+      encoder.int32(this._getOffsetEncodingOption(options));
+
+      if (this.dataType === SimDataType.HashedString) {
         encoder.uint32(fnv32(this.value));
-        break;
+      }
     }
   }
 
@@ -340,8 +340,10 @@ export class TextCell extends PrimitiveValueCell<string> {
   //#region Static Methods
 
   /**
-   * Creates a TextCell by reading a value of the give data type from the
-   * given decoder.
+   * Creates a TextCell by reading the appropriate content at the current
+   * position in the given decoder. String and HashedString content at the
+   * given position will be read, but the decoder's final position will be left
+   * at the end of the cell itself.
    * 
    * @param dataType Type of text cell to create
    * @param decoder Decoder from which to read the corresponding value
@@ -527,7 +529,7 @@ export class BigIntCell extends PrimitiveValueCell<bigint> {
 
   encode(encoder: BinaryEncoder, options?: CellEncodingOptions): void {
     this.validate();
-    
+
     switch (this.dataType) {
       case SimDataType.Int64:
         encoder.int64(this.value);
