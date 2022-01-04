@@ -21,6 +21,12 @@ describe("BooleanCell", function() {
       cell.value = false;
       expect(owner.cached).to.be.false;
     });
+
+    it("should change the value when set", () => {
+      const cell = new cells.BooleanCell(true);
+      cell.value = false;
+      expect(cell.value).to.be.false;
+    });
   });
 
   describe("#constructor()", () => {
@@ -135,23 +141,42 @@ describe("TextCell", function() {
       cell.value = "bye";
       expect(owner.cached).to.be.false;
     });
+
+    it("should change the value when set", () => {
+      const cell = new cells.TextCell(SimDataType.String, "hi");
+      cell.value = "bye";
+      expect(cell.value).to.equal("bye");
+    });
   });
 
   describe("#constructor()", () => {
-    // TODO:
+    it("should use the provided data type and value", () => {
+      const cell = new cells.TextCell(SimDataType.String, "Something");
+      expect(cell.dataType).to.equal(SimDataType.String);
+      expect(cell.value).to.equal("Something");
+    });
   });
 
   describe("#clone()", () => {
     it("should copy the data type and value", () => {
-      // TODO:
+      const cell = new cells.TextCell(SimDataType.String, "Something");
+      const clone = cell.clone();
+      expect(clone.dataType).to.equal(SimDataType.String);
+      expect(clone.value).to.equal("Something");
     });
 
     it("should not copy the owner", () => {
-      // TODO:
+      const owner = new MockOwner();
+      const cell = new cells.TextCell(SimDataType.String, "Something", owner);
+      const clone = cell.clone();
+      expect(clone.owner).to.be.undefined;
     });
 
     it("should not mutate the original", () => {
-      // TODO:
+      const cell = new cells.TextCell(SimDataType.String, "Something");
+      const clone = cell.clone();
+      clone.value = "Something else";
+      expect(cell.value).to.equal("Something");
     });
   });
 
