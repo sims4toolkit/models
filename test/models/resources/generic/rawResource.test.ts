@@ -1,5 +1,5 @@
-const expect = require('chai').expect;
-const { RawResource, StringTableResource } = require('../../../../dst/api');
+import { expect } from "chai";
+import { RawResource, StringTableResource } from '../../../../dst/api';
 
 function getRAW(content = "default content") {
   return RawResource.from(Buffer.from(content));
@@ -26,17 +26,16 @@ describe('RawResource', function() {
 
     it('should not be assignable', function() {
       const raw = RawResource.from(Buffer.from("hello"), "Just because!");
-      raw.reason = "Nothing";
-      expect(raw.reason).to.equal("Just because!");
+      //@ts-expect-error The whole point is that it's an error
+      expect(() => raw.reason = "Nothing").to.throw();
     });
   });
 
   describe('#hasChanged', function() {
     it('should not be assignable', function() {
       const raw = getRAW();
-      expect(raw.hasChanged).to.be.false;
-      raw.hasChanged = true;
-      expect(raw.hasChanged).to.be.false;
+      //@ts-expect-error The whole point is that it's an error
+      expect(() => raw.hasChanged = true).to.throw();
     });
 
     it('should return false', function() {
@@ -48,9 +47,8 @@ describe('RawResource', function() {
   describe('#buffer', function() {
     it('should not be assignable', function() {
       const raw = getRAW();
-      const buffer = raw.buffer;
-      raw.buffer = Buffer.from("hi");
-      expect(raw.buffer).to.equal(buffer);
+      //@ts-expect-error The whole point is that it's an error
+      expect(() => raw.buffer = Buffer.from("hi")).to.throw();
     });
 
     it('should return the original buffer', function() {
@@ -62,8 +60,8 @@ describe('RawResource', function() {
   describe('#plainText', function() {
     it('should not be assignable', function() {
       const raw = getRAW();
-      raw.plainText = "hello";
-      expect(raw.plainText).to.equal("default content");
+      //@ts-expect-error The whole point is that it's an error
+      expect(() => raw.plainText = "hello").to.throw();
     });
 
     it('should return the plain text for a text resource', function() {
