@@ -1,6 +1,8 @@
 import { expect } from "chai";
 import { simDataCells } from "../../../../dst/api";
+import { SimDataType } from "../../../../dst/lib/models/resources/simData/simDataTypes";
 import { BinaryDecoder, BinaryEncoder } from "../../../../dst/lib/utils/encoding";
+import MockOwner from "../../mocks/mockOwner";
 
 const cells = simDataCells;
 
@@ -13,7 +15,11 @@ describe("Cell", function() {
 describe("BooleanCell", function() {
   describe("#value", () => {
     it("should uncache the owner when set", () => {
-      // TODO:
+      const owner = new MockOwner();
+      const cell = new cells.BooleanCell(true, owner);
+      expect(owner.cached).to.be.true;
+      cell.value = false;
+      expect(owner.cached).to.be.false;
     });
   });
 
@@ -123,7 +129,11 @@ describe("BooleanCell", function() {
 describe("TextCell", function() {
   describe("#value", () => {
     it("should uncache the owner when set", () => {
-      // TODO:
+      const owner = new MockOwner();
+      const cell = new cells.TextCell(SimDataType.String, "hi", owner);
+      expect(owner.cached).to.be.true;
+      cell.value = "bye";
+      expect(owner.cached).to.be.false;
     });
   });
 
