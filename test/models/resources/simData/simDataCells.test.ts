@@ -1345,31 +1345,38 @@ describe("ResourceKeyCell", function() {
 
   describe("#validate()", () => {
     it("should not throw if type and group are <= 32 bit and instance is <= 64 bit", () => {
-      // TODO:
+      const cell = new cells.ResourceKeyCell(0x220557DA, 0x80000000, 0x0012B12A0D85486En);
+      expect(() => cell.validate()).to.not.throw();
     });
 
     it("should throw if type is negative", () => {
-      // TODO:
+      const cell = new cells.ResourceKeyCell(-0x220557DA, 0x80000000, 0x0012B12A0D85486En);
+      expect(() => cell.validate()).to.throw();
     });
 
     it("should throw if group is negative", () => {
-      // TODO:
+      const cell = new cells.ResourceKeyCell(0x220557DA, -0x80000000, 0x0012B12A0D85486En);
+      expect(() => cell.validate()).to.throw();
     });
 
     it("should throw if instance is negative", () => {
-      // TODO:
+      const cell = new cells.ResourceKeyCell(0x220557DA, 0x80000000, -0x0012B12A0D85486En);
+      expect(() => cell.validate()).to.throw();
     });
 
     it("should throw if type is > 32 bit", () => {
-      // TODO:
+      const cell = new cells.ResourceKeyCell(0x0012B12A0D85, 0x80000000, 0x0012B12A0D85486En);
+      expect(() => cell.validate()).to.throw();
     });
 
     it("should throw if group is > 32 bit", () => {
-      // TODO:
+      const cell = new cells.ResourceKeyCell(0x80000000, 0x0012B12A0D85, 0x0012B12A0D85486En);
+      expect(() => cell.validate()).to.throw();
     });
 
     it("should throw if instance is > 64 bit", () => {
-      // TODO:
+      const cell = new cells.ResourceKeyCell(0x80000000, 0x0012B12A0D85, 0x0012B12A0D85486EFFn);
+      expect(() => cell.validate()).to.throw();
     });
   });
 
