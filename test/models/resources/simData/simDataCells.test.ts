@@ -93,7 +93,35 @@ describe("BooleanCell", function() {
   });
 
   describe("#toXmlNode()", () => {
-    // TODO:
+    it("should write 1 for true", () => {
+      const cell = new cells.BooleanCell(true);
+      const node = cell.toXmlNode();
+      expect(node.toXml()).to.equal(`<T>1</T>`);
+    });
+
+    it("should write 0 for false", () => {
+      const cell = new cells.BooleanCell(false);
+      const node = cell.toXmlNode();
+      expect(node.toXml()).to.equal(`<T>0</T>`);
+    });
+
+    it("should have a type attribute when option is true", () => {
+      const cell = new cells.BooleanCell(true);
+      const node = cell.toXmlNode({ typeAttr: true });
+      expect(node.toXml()).to.equal(`<T type="Boolean">1</T>`);
+    });
+
+    it("should use the name attribute when given", () => {
+      const cell = new cells.BooleanCell(true);
+      const node = cell.toXmlNode({ nameAttr: "bool" });
+      expect(node.toXml()).to.equal(`<T name="bool">1</T>`);
+    });
+
+    it("should use both attributes when given", () => {
+      const cell = new cells.BooleanCell(false);
+      const node = cell.toXmlNode({ nameAttr: "bool", typeAttr: true });
+      expect(node.toXml()).to.equal(`<T name="bool" type="Boolean">0</T>`);
+    });
   });
 
   describe("#validate()", () => {
@@ -517,7 +545,29 @@ describe("NumberCell", function() {
   });
 
   describe("#toXmlNode()", () => {
-    // TODO:
+    it("should create a node that contains the value", () => {
+      const cell = new cells.NumberCell(SimDataType.UInt32, 25);
+      const node = cell.toXmlNode();
+      expect(node.toXml()).to.equal(`<T>25</T>`);
+    });
+
+    it("should have a type attribute when option is true", () => {
+      const cell = new cells.NumberCell(SimDataType.UInt32, 25);
+      const node = cell.toXmlNode({ typeAttr: true });
+      expect(node.toXml()).to.equal(`<T type="UInt32">25</T>`);
+    });
+
+    it("should use the name attribute when given", () => {
+      const cell = new cells.NumberCell(SimDataType.UInt32, 25);
+      const node = cell.toXmlNode({ nameAttr: "number" });
+      expect(node.toXml()).to.equal(`<T name="number">25</T>`);
+    });
+
+    it("should use both attributes when given", () => {
+      const cell = new cells.NumberCell(SimDataType.UInt32, 25);
+      const node = cell.toXmlNode({ nameAttr: "number", typeAttr: true });
+      expect(node.toXml()).to.equal(`<T name="number" type="UInt32">25</T>`);
+    });
   });
 
   describe("#validate()", () => {
@@ -683,7 +733,29 @@ describe("BigIntCell", function() {
   });
 
   describe("#toXmlNode()", () => {
-    // TODO:
+    it("should create a node that contains the value", () => {
+      const cell = new cells.BigIntCell(SimDataType.UInt64, 25n);
+      const node = cell.toXmlNode();
+      expect(node.toXml()).to.equal(`<T>25</T>`);
+    });
+
+    it("should have a type attribute when option is true", () => {
+      const cell = new cells.BigIntCell(SimDataType.UInt64, 25n);
+      const node = cell.toXmlNode({ typeAttr: true });
+      expect(node.toXml()).to.equal(`<T type="UInt64">25</T>`);
+    });
+
+    it("should use the name attribute when given", () => {
+      const cell = new cells.BigIntCell(SimDataType.UInt64, 25n);
+      const node = cell.toXmlNode({ nameAttr: "bigint" });
+      expect(node.toXml()).to.equal(`<T name="bigint">25</T>`);
+    });
+
+    it("should use both attributes when given", () => {
+      const cell = new cells.BigIntCell(SimDataType.TableSetReference, 12345n);
+      const node = cell.toXmlNode({ nameAttr: "bigint", typeAttr: true });
+      expect(node.toXml()).to.equal(`<T name="bigint" type="TableSetReference">12345</T>`);
+    });
   });
 
   describe("#validate()", () => {
