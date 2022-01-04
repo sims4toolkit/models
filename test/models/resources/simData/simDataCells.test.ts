@@ -282,19 +282,76 @@ describe("TextCell", function() {
   describe("static#decode()", () => {
     context("data type === character", () => {
       it("should return a cell with a single character", () => {
-        // TODO:
+        const char = "x";
+        const buffer = Buffer.alloc(1);
+        const encoder = new BinaryEncoder(buffer);
+        encoder.charsUtf8(char);
+        const decoder = new BinaryDecoder(buffer);
+        const cell = cells.TextCell.decode(SimDataType.Character, decoder);
+        expect(cell.dataType).to.equal(SimDataType.Character);
+        expect(cell.value).to.equal("x");
       });
     });
 
     context("data type === string", () => {
-      it("should read an offset and the string at that offset", () => {
-        // TODO:
+      it("should read a (positive) offset and then read the string at the offset", () => {
+        const string = "hello";
+        const buffer = Buffer.alloc(6 + Buffer.byteLength(string) + 1);
+        const encoder = new BinaryEncoder(buffer);
+        encoder.int32(6);
+        encoder.skip(2);
+        encoder.charsUtf8(string);
+        const decoder = new BinaryDecoder(buffer);
+        const cell = cells.TextCell.decode(SimDataType.String, decoder);
+        expect(cell.dataType).to.equal(SimDataType.String);
+        expect(cell.value).to.equal("hello");
+      });
+
+      it("should read a (negative) offset and then read the string at the offset", () => {
+        const string = "hello";
+        const stringSize = Buffer.byteLength(string) + 1;
+        const buffer = Buffer.alloc(4 + stringSize);
+        const encoder = new BinaryEncoder(buffer);
+        encoder.charsUtf8(string);
+        encoder.skip(1);
+        encoder.int32(-stringSize);
+        const decoder = new BinaryDecoder(buffer);
+        decoder.seek(stringSize);
+        const cell = cells.TextCell.decode(SimDataType.String, decoder);
+        expect(cell.dataType).to.equal(SimDataType.String);
+        expect(cell.value).to.equal("hello");
       });
     });
 
     context("data type === hashed string", () => {
-      it("should skip the hash, read an offset, and then read the string at that offset", () => {
-        // TODO:
+      it("should read a (positive) offset, skip the hash, and then read the string at the offset", () => {
+        const string = "hello";
+        const buffer = Buffer.alloc(10 + Buffer.byteLength(string) + 1);
+        const encoder = new BinaryEncoder(buffer);
+        encoder.int32(10);
+        encoder.uint32(fnv32(string));
+        encoder.skip(2);
+        encoder.charsUtf8(string);
+        const decoder = new BinaryDecoder(buffer);
+        const cell = cells.TextCell.decode(SimDataType.HashedString, decoder);
+        expect(cell.dataType).to.equal(SimDataType.HashedString);
+        expect(cell.value).to.equal("hello");
+      });
+
+      it("should read a (negative) offset, skip the hash, and then read the string at the offset", () => {
+        const string = "hello";
+        const stringSize = Buffer.byteLength(string) + 1;
+        const buffer = Buffer.alloc(8 + stringSize);
+        const encoder = new BinaryEncoder(buffer);
+        encoder.charsUtf8(string);
+        encoder.skip(1);
+        encoder.int32(-stringSize);
+        encoder.uint32(fnv32(string));
+        const decoder = new BinaryDecoder(buffer);
+        decoder.seek(stringSize);
+        const cell = cells.TextCell.decode(SimDataType.HashedString, decoder);
+        expect(cell.dataType).to.equal(SimDataType.HashedString);
+        expect(cell.value).to.equal("hello");
       });
     });
   });
