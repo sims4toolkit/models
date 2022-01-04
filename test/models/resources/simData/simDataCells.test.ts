@@ -820,7 +820,7 @@ describe("NumberCell", function() {
       });
     });
 
-    context("data type === 36 bits", () => {
+    context("data type === 32 bits", () => {
       it("should read a signed integer", () => {
         const decoder = getDecoder(4, 'int32', -5);
         const cell = cells.NumberCell.decode(SimDataType.Int32, decoder);
@@ -1123,7 +1123,36 @@ describe("BigIntCell", function() {
   });
 
   describe("static#decode()", () => {
-    // TODO:
+    function getDecoder(type: string, value: bigint) {
+      const buffer = Buffer.alloc(8);
+      const encoder = new BinaryEncoder(buffer);
+      encoder[type](value);
+      return new BinaryDecoder(buffer);
+    }
+
+    it("should read a negative int64", () => {
+      const decoder = getDecoder('int64', -0x12345678n);
+      const cell = cells.BigIntCell.decode(SimDataType.Int64, decoder);
+      expect(cell.value).to.equal(-0x12345678n);
+    });
+
+    it("should read a positive int64", () => {
+      const decoder = getDecoder('int64', 0x12345678n);
+      const cell = cells.BigIntCell.decode(SimDataType.Int64, decoder);
+      expect(cell.value).to.equal(0x12345678n);
+    });
+
+    it("should read a uint64", () => {
+      const decoder = getDecoder('uint64', 0x1234567812345678n);
+      const cell = cells.BigIntCell.decode(SimDataType.UInt64, decoder);
+      expect(cell.value).to.equal(0x1234567812345678n);
+    });
+
+    it("should read a table set ref", () => {
+      const decoder = getDecoder('uint64', 0xFFFF_FFFF_FFFF_FFFFn);
+      const cell = cells.BigIntCell.decode(SimDataType.TableSetReference, decoder);
+      expect(cell.value).to.equal(0xFFFF_FFFF_FFFF_FFFFn);
+    });
   });
 
   describe("static#fromXmlNode()", () => {
