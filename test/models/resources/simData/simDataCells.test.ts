@@ -1,5 +1,6 @@
 const { expect } = require("chai");
 const cells = require("../../../../dst/api").simDataCells;
+const { BinaryEncoder } = require("../../../../src/lib/utils/encoding");
 
 describe("Cell", function() {
   describe("static#parseXmlNode()", function() {
@@ -29,7 +30,29 @@ describe("BooleanCell", function() {
   });
 
   describe("#encode()", () => {
-    // TODO:
+    it("should write one byte", () => {
+      const encoder = new BinaryEncoder(Buffer.alloc(1));
+      const cell = new cells.BooleanCell(true);
+      expect(encoder.tell()).to.equal(0);
+      cell.encode(encoder);
+      expect(encoder.tell()).to.equal(1);
+    });
+
+    it("should write 0 for false", () => {
+      const buffer = Buffer.alloc(1);
+      const encoder = new BinaryEncoder(buffer);
+      const cell = new cells.BooleanCell(false);
+      cell.encode(encoder);
+      expect(buffer.readUInt8(0)).to.equal(0);
+    });
+
+    it("should write one byte", () => {
+      const buffer = Buffer.alloc(1);
+      const encoder = new BinaryEncoder(buffer);
+      const cell = new cells.BooleanCell(true);
+      cell.encode(encoder);
+      expect(buffer.readUInt8(0)).to.equal(1);
+    });
   });
 
   describe("#toXmlNode()", () => {
@@ -37,7 +60,10 @@ describe("BooleanCell", function() {
   });
 
   describe("#validate()", () => {
-    // TODO:
+    it("should not throw", () => {
+      const cell = new cells.BooleanCell(true);
+      expect(() => cell.validate()).to.not.throw();
+    });
   });
 
   describe("static#decode()", () => {
