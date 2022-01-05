@@ -1632,74 +1632,209 @@ describe("Float2Cell", function() {
 describe("Float3Cell", function() {
   describe("#x", () => {
     it("should uncache the owner when set", () => {
-      // TODO:
+      const owner = new MockOwner();
+      const cell = new cells.Float3Cell(1, 2, 3, owner);
+      expect(owner.cached).to.be.true;
+      cell.x = 5;
+      expect(owner.cached).to.be.false;
     });
   });
 
   describe("#y", () => {
     it("should uncache the owner when set", () => {
-      // TODO:
+      const owner = new MockOwner();
+      const cell = new cells.Float3Cell(1, 2, 3, owner);
+      expect(owner.cached).to.be.true;
+      cell.y = 5;
+      expect(owner.cached).to.be.false;
     });
   });
 
   describe("#z", () => {
     it("should uncache the owner when set", () => {
-      // TODO:
+      const owner = new MockOwner();
+      const cell = new cells.Float3Cell(1, 2, 3, owner);
+      expect(owner.cached).to.be.true;
+      cell.z = 5;
+      expect(owner.cached).to.be.false;
     });
   });
 
   describe("#constructor()", () => {
-    // TODO:
+    it("should create a cell with the given values", () => {
+      const cell = new cells.Float3Cell(1, 2, 3);
+      expect(cell.x).to.equal(1);
+      expect(cell.y).to.equal(2);
+      expect(cell.z).to.equal(3);
+    });
+
+    it("should set undefined/null values to 0", () => {
+      const cell = new cells.Float3Cell(undefined, null, undefined);
+      expect(cell.x).to.equal(0);
+      expect(cell.y).to.equal(0);
+      expect(cell.z).to.equal(0);
+    });
   });
 
   describe("#clone()", () => {
     it("should copy the float values", () => {
-      // TODO:
-      // const cell = new cells.TextCell(SimDataType.String, "Something");
-      // const clone = cell.clone();
-      // expect(clone.dataType).to.equal(SimDataType.String);
-      // expect(clone.value).to.equal("Something");
+      const cell = new cells.Float3Cell(1, 2, 3);
+      const clone = cell.clone();
+      expect(clone.x).to.equal(1);
+      expect(clone.y).to.equal(2);
+      expect(clone.z).to.equal(3);
     });
 
     it("should not copy the owner", () => {
-      // TODO:
-      // const owner = new MockOwner();
-      // const cell = new cells.TextCell(SimDataType.String, "Something", owner);
-      // const clone = cell.clone();
-      // expect(clone.owner).to.be.undefined;
+      const owner = new MockOwner();
+      const cell = new cells.Float3Cell(1, 2, 3, owner);
+      const clone = cell.clone();
+      expect(clone.owner).to.be.undefined;
     });
 
     it("should not mutate the original", () => {
-      // TODO:
-      // const cell = new cells.TextCell(SimDataType.String, "Something");
-      // const clone = cell.clone();
-      // clone.value = "Something else";
-      // expect(cell.value).to.equal("Something");
+      const cell = new cells.Float3Cell(1, 2, 3);
+      const clone = cell.clone();
+      clone.z = 4;
+      expect(cell.z).to.equal(3);
     });
   });
 
   describe("#encode()", () => {
-    // TODO:
+    it("should write the floats in order", () => {
+      const buffer = Buffer.alloc(12);
+      const encoder = new BinaryEncoder(buffer);
+      const cell = new cells.Float3Cell(1.1, 2.2, 3.3);
+      cell.encode(encoder);
+      const decoder = new BinaryDecoder(buffer);
+      expect(decoder.float()).to.be.approximately(1.1, 0.001);
+      expect(decoder.float()).to.be.approximately(2.2, 0.001);
+      expect(decoder.float()).to.be.approximately(3.3, 0.001);
+    });
+
+    it("should write the correct floats after one is updated", () => {
+      const buffer = Buffer.alloc(12);
+      const encoder = new BinaryEncoder(buffer);
+      const cell = new cells.Float3Cell(1.1, 2.2, 3.3);
+      cell.x = 3.3;
+      cell.encode(encoder);
+      const decoder = new BinaryDecoder(buffer);
+      expect(decoder.float()).to.be.approximately(3.3, 0.001);
+      expect(decoder.float()).to.be.approximately(2.2, 0.001);
+      expect(decoder.float()).to.be.approximately(3.3, 0.001);
+    });
+
+    it("should throw when an argument is undefined", () => {
+      const buffer = Buffer.alloc(8);
+      const encoder = new BinaryEncoder(buffer);
+      const cell = new cells.Float3Cell(1.1, 2.2, 3.3);
+      cell.z = undefined;
+      expect(() => cell.encode(encoder)).to.throw();
+    });
+
+    it("should throw when an argument is null", () => {
+      const buffer = Buffer.alloc(8);
+      const encoder = new BinaryEncoder(buffer);
+      const cell = new cells.Float3Cell(1.1, 2.2, 3.3);
+      cell.z = null;
+      expect(() => cell.encode(encoder)).to.throw();
+    });
   });
 
   describe("#toXmlNode()", () => {
-    // TODO:
+    it("should create a node with the floats separated by commas", () => {
+      const cell = new cells.Float3Cell(1.1, 2.2, 3.3);
+      const node = cell.toXmlNode();
+      expect(node.toXml()).to.equal(`<T>1.1,2.2,3.3</T>`);
+    });
+
+    it("should include the name attribute that is given", () => {
+      const cell = new cells.Float3Cell(1.1, 2.2, 3.3);
+      const node = cell.toXmlNode({ nameAttr: "float3" });
+      expect(node.toXml()).to.equal(`<T name="float3">1.1,2.2,3.3</T>`);
+    });
+
+    it("should include the type attribute if told to", () => {
+      const cell = new cells.Float3Cell(1.1, 2.2, 3.3);
+      const node = cell.toXmlNode({ typeAttr: true });
+      expect(node.toXml()).to.equal(`<T type="Float3">1.1,2.2,3.3</T>`);
+    });
   });
 
   describe("#validate()", () => {
-    // TODO:
+    it("should not throw when arguments are all floats", () => {
+      const cell = new cells.Float3Cell(2.3, 1.1, 4.5);
+      expect(() => cell.validate()).to.not.throw();
+    });
+
+    it("should throw when any argument is undefined", () => {
+      const cell = new cells.Float3Cell(2.3, 1.1, 4.5);
+      cell.z = undefined;
+      expect(() => cell.validate()).to.throw();
+    });
+
+    it("should throw when any argument is null", () => {
+      const cell = new cells.Float3Cell(2.3, 1.1, 4.5);
+      cell.z = null;
+      expect(() => cell.validate()).to.throw();
+    });
   });
 
   describe("static#decode()", () => {
-    // TODO:
+    it("should read consecutive floats", () => {
+      const buffer = Buffer.alloc(12);
+      const encoder = new BinaryEncoder(buffer);
+      encoder.float(1.5);
+      encoder.float(-1.5);
+      encoder.float(2.3);
+      const decoder = new BinaryDecoder(buffer);
+      const cell = cells.Float3Cell.decode(decoder);
+      expect(cell.x).to.be.approximately(1.5, 0.001);
+      expect(cell.y).to.be.approximately(-1.5, 0.001);
+      expect(cell.z).to.be.approximately(2.3, 0.001);
+    });
   });
 
   describe("static#fromXmlNode()", () => {
-    // TODO:
+    it("should read three consecutive floats separated by commas", () => {
+      const node = getPlainNode("1.1,2.2,3.3");
+      const cell = cells.Float3Cell.fromXmlNode(node);
+      expect(cell.x).to.be.approximately(1.1, 0.001);
+      expect(cell.y).to.be.approximately(2.2, 0.001);
+      expect(cell.z).to.be.approximately(3.3, 0.001);
+    });
+
+    it("should read negative floats", () => {
+      const node = getPlainNode("-1.1,2.2,-3.3");
+      const cell = cells.Float3Cell.fromXmlNode(node);
+      expect(cell.x).to.be.approximately(-1.1, 0.001);
+      expect(cell.y).to.be.approximately(2.2, 0.001);
+      expect(cell.z).to.be.approximately(-3.3, 0.001);
+    });
+
+    it("should throw if there are more than three floats", () => {
+      const node = getPlainNode("1.1,2.2,3.3,4.4");
+      expect(() => cells.Float3Cell.fromXmlNode(node)).to.throw();
+    });
+
+    it("should throw if there are less than three floats", () => {
+      const node = getPlainNode("1.1");
+      expect(() => cells.Float3Cell.fromXmlNode(node)).to.throw();
+    });
+
+    it("should throw if any float cannot be parsed as a number", () => {
+      const node = getPlainNode("a,1.1,b");
+      expect(() => cells.Float3Cell.fromXmlNode(node)).to.throw();
+    });
   });
 
   describe("static#getDefault()", () => {
-    // TODO:
+    it("should create a cell with floats of 0", () => {
+      const cell = cells.Float3Cell.getDefault();
+      expect(cell.x).to.equal(0);
+      expect(cell.y).to.equal(0);
+      expect(cell.z).to.equal(0);
+    });
   });
 });
 
