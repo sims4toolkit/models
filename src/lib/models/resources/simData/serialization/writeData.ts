@@ -75,17 +75,34 @@ function getPaddingForAlignment(index: number, alignmentMask: number): number {
 }
 
 /**
- * Returns whether or not the given cell is a reference type.
+ * Returns whether or not the given cell is a reference type. That is, whether
+ * its value is stored in an object directly or needs to be stored in another
+ * table and be referenced.
  * 
  * @param cell Cell to check
  */
 function isReferenceType(cell: cells.Cell): boolean {
   switch (cell.dataType) {
-    case SimDataType.String:
-    case SimDataType.HashedString:
     case SimDataType.Object:
     case SimDataType.Vector:
     case SimDataType.Variant:
+      return true;
+    default:
+      return false;
+  }
+}
+
+/**
+ * Returns whether or not the given cell is a string type. That is, whether
+ * it needs to point to a string table or not.
+ * 
+ * @param cell Cell to check
+ */
+function isStringType(cell: cells.Cell): boolean {
+  switch (cell.dataType) {
+    // FIXME: is character a string type?
+    case SimDataType.String:
+    case SimDataType.HashedString:
       return true;
     default:
       return false;
@@ -219,7 +236,7 @@ export default function writeData(model: SimDataDto): Buffer {
     return ref;
   }
 
-  function addTextCell(cell: cells.TextCell): TableRef {
+  function addTextCell(cell: cells.TextCell, getCharRef = false): TableRef {
     const charRef: TableRef = {
       dataType: SimDataType.Character,
       index: charTableLength
@@ -228,12 +245,12 @@ export default function writeData(model: SimDataDto): Buffer {
     charTableLength += Buffer.byteLength(cell.value, 'utf-8') + 1; // +1 for null
     stringsToAddToCharTable.push(cell.value);
 
-    if (cell.dataType === SimDataType.Character) {
+    if ((cell.dataType === SimDataType.Character) || getCharRef) {
       return charRef;
     } else {
       const table = getRawTable(cell.dataType);
       table.row.push({ cell, ref: charRef });
-      
+
       return {
         dataType: cell.dataType,
         index: table.row.length - 1
@@ -270,6 +287,8 @@ export default function writeData(model: SimDataDto): Buffer {
       const cell = obj.row[column.name];
       if (isReferenceType(cell)) {
         return { cell, ref: addCell(cell) };
+      } else if (isStringType(cell)) {
+        return { cell, ref: addTextCell(cell as cells.TextCell, true) };
       } else {
         return { cell };
       }
@@ -444,17 +463,17 @@ export default function writeData(model: SimDataDto): Buffer {
       encoder.uint32(table.schema.size);
       const tablePos = objectTablePositions[table.schema.hash];
       encoder.int32(tablePos - encoder.tell());
-      encoder.uint32(table.rows.length); // FIXME: rows == objects?
+      encoder.uint32(table.rows.length);
 
       // data
       encoder.savePos(() => {
         encoder.seek(tablePos);
-        table.rows.forEach(row => {
-          // FIXME: is order correct?
-          table.schema.columns.forEach((column, i) => {
+        table.rows.forEach((row, i) => {
+          encoder.skip(table.schema.size * i);
+          table.schema.columns.forEach((column, j) => {
             encoder.savePos(() => {
               encoder.skip(column.offset);
-              writeCell(row[i]);
+              writeCell(row[j]);
             });
           });
         });
@@ -470,7 +489,7 @@ export default function writeData(model: SimDataDto): Buffer {
       encoder.uint32(SimDataTypeUtils.getBytes(table.dataType));
       const tableOffset = rawTablePositions[table.dataType];
       encoder.int32(tableOffset - encoder.tell());
-      encoder.uint32(table.row.length); // FIXME: row == values?
+      encoder.uint32(table.row.length);
 
       // data
       encoder.savePos(() => {
