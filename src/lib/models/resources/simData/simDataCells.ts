@@ -195,14 +195,19 @@ abstract class PrimitiveValueCell<T extends PrimitiveType> extends Cell {
 abstract class FloatVectorCell extends Cell {
   readonly dataType: SimDataFloatVector;
   protected _floatNames: string[];
+  public x: number;
+  public y: number;
 
-  constructor(dataType: SimDataFloatVector, public x: number, public y: number, owner?: CacheableModel) {
+  constructor(dataType: SimDataFloatVector, x: number, y: number, owner?: CacheableModel) {
     super(dataType, owner);
+    this.x = x ?? 0;
+    this.y = y ?? 0;
     this._floatNames = ['x', 'y'];
     this._watchProps('x', 'y');
   }
 
   encode(encoder: BinaryEncoder, options?: CellEncodingOptions): void {
+    this.validate();
     this._floatNames.forEach(floatName => encoder.float(this[floatName]));
   }
   
@@ -765,9 +770,11 @@ export class Float2Cell extends FloatVectorCell {
  */
 export class Float3Cell extends FloatVectorCell {
   readonly dataType: SimDataType.Float3;
+  public z: number;
 
-  constructor(x: number, y: number, public z: number, owner?: CacheableModel) {
+  constructor(x: number, y: number, z: number, owner?: CacheableModel) {
     super(SimDataType.Float3, x, y, owner);
+    this.z = z ?? 0;
     this._floatNames.push('z');
     this._watchProps('z');
   }
@@ -812,9 +819,13 @@ export class Float3Cell extends FloatVectorCell {
  */
 export class Float4Cell extends FloatVectorCell {
   readonly dataType: SimDataType.Float4;
+  public z: number;
+  public w: number;
 
-  constructor(x: number, y: number, public z: number, public w: number, owner?: CacheableModel) {
+  constructor(x: number, y: number, z: number, w: number, owner?: CacheableModel) {
     super(SimDataType.Float4, x, y, owner);
+    this.z = z ?? 0;
+    this.w = w ?? 0;
     this._floatNames.push('z', 'w');
     this._watchProps('z', 'w');
   }

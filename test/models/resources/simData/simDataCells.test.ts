@@ -1462,9 +1462,17 @@ describe("Float2Cell", function() {
   });
 
   describe("#constructor()", () => {
-    const cell = new cells.Float2Cell(1, 2);
-    expect(cell.x).to.equal(1);
-    expect(cell.y).to.equal(2);
+    it("should create a cell with the given values", () => {
+      const cell = new cells.Float2Cell(1, 2);
+      expect(cell.x).to.equal(1);
+      expect(cell.y).to.equal(2);
+    });
+
+    it("should set undefined/null values to 0", () => {
+      const cell = new cells.Float2Cell(undefined, null);
+      expect(cell.x).to.equal(0);
+      expect(cell.y).to.equal(0);
+    });
   });
 
   describe("#clone()", () => {
@@ -1486,25 +1494,46 @@ describe("Float2Cell", function() {
       const cell = new cells.Float2Cell(1, 2);
       const clone = cell.clone();
       clone.x = 4;
-      expect(clone.x).to.equal(1);
+      expect(cell.x).to.equal(1);
     });
   });
 
   describe("#encode()", () => {
     it("should write the floats in order", () => {
-      // TODO:
+      const buffer = Buffer.alloc(8);
+      const encoder = new BinaryEncoder(buffer);
+      const cell = new cells.Float2Cell(1.1, 2.2);
+      cell.encode(encoder);
+      const decoder = new BinaryDecoder(buffer);
+      expect(decoder.float()).to.be.approximately(1.1, 0.001);
+      expect(decoder.float()).to.be.approximately(2.2, 0.001);
     });
 
     it("should write the correct floats after one is updated", () => {
-      // TODO:
+      const buffer = Buffer.alloc(8);
+      const encoder = new BinaryEncoder(buffer);
+      const cell = new cells.Float2Cell(1.1, 2.2);
+      cell.x = 3.3;
+      cell.encode(encoder);
+      const decoder = new BinaryDecoder(buffer);
+      expect(decoder.float()).to.be.approximately(3.3, 0.001);
+      expect(decoder.float()).to.be.approximately(2.2, 0.001);
     });
 
     it("should throw when an argument is undefined", () => {
-      // TODO:
+      const buffer = Buffer.alloc(8);
+      const encoder = new BinaryEncoder(buffer);
+      const cell = new cells.Float2Cell(1.1, 2.2);
+      cell.x = undefined;
+      expect(() => cell.encode(encoder)).to.throw();
     });
 
     it("should throw when an argument is null", () => {
-      // TODO:
+      const buffer = Buffer.alloc(8);
+      const encoder = new BinaryEncoder(buffer);
+      const cell = new cells.Float2Cell(1.1, 2.2);
+      cell.x = null;
+      expect(() => cell.encode(encoder)).to.throw();
     });
   });
 
@@ -1537,15 +1566,42 @@ describe("Float2Cell", function() {
   });
 
   describe("static#decode()", () => {
-    // TODO:
+    it("should read consecutive floats", () => {
+      const buffer = Buffer.alloc(8);
+      const encoder = new BinaryEncoder(buffer);
+      encoder.float(1.5);
+      encoder.float(-1.5);
+      const decoder = new BinaryDecoder(buffer);
+      const cell = cells.Float2Cell.decode(decoder);
+      expect(cell.x).to.equal(1.5);
+      expect(cell.y).to.equal(-1.5);
+    });
   });
 
   describe("static#fromXmlNode()", () => {
-    // TODO:
+    it("should read two consecutive floats separated by commas", () => {
+      // TODO:
+    });
+
+    it("should throw if there are more than two floats", () => {
+      // TODO:
+    });
+
+    it("should throw if there are less than two floats", () => {
+      // TODO:
+    });
+
+    it("should throw if any float cannot be parsed as a number", () => {
+      // TODO:
+    });
   });
 
   describe("static#getDefault()", () => {
-    // TODO:
+    it("should create a cell with floats of 0", () => {
+      const cell = cells.Float2Cell.getDefault();
+      expect(cell.x).to.equal(0);
+      expect(cell.y).to.equal(0);
+    });
   });
 });
 
