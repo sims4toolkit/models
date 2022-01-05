@@ -194,20 +194,20 @@ abstract class PrimitiveValueCell<T extends PrimitiveType> extends Cell {
  */
 abstract class FloatVectorCell extends Cell {
   readonly dataType: SimDataFloatVector;
-  protected _floats: number[];
+  protected _floatNames: string[];
 
   constructor(dataType: SimDataFloatVector, public x: number, public y: number, owner?: CacheableModel) {
     super(dataType, owner);
-    this._floats = [x, y];
+    this._floatNames = ['x', 'y'];
     this._watchProps('x', 'y');
   }
 
   encode(encoder: BinaryEncoder, options?: CellEncodingOptions): void {
-    this._floats.forEach(float => encoder.float(float));
+    this._floatNames.forEach(floatName => encoder.float(this[floatName]));
   }
   
   toXmlNode(options: CellToXmlOptions = {}): XmlElementNode {
-    const floatsString = this._floats.map(f => f.toString()).join(',');
+    const floatsString = this._floatNames.map(f => this[f].toString()).join(',');
 
     return new XmlElementNode({
       tag: "T",
@@ -217,9 +217,9 @@ abstract class FloatVectorCell extends Cell {
   }
 
   validate(): void {
-    this._floats.forEach(float => {
-      if (!SimDataTypeUtils.isNumberInRange(float, SimDataType.Float)) {
-        throw new Error(`Float vector contains a value that is not a 4-byte float: ${float}`);
+    this._floatNames.forEach(floatName => {
+      if (!SimDataTypeUtils.isNumberInRange(this[floatName], SimDataType.Float)) {
+        throw new Error(`Float vector contains a value that is not a 4-byte float: ${this[floatName]}`);
       }
     });
   }
@@ -768,7 +768,7 @@ export class Float3Cell extends FloatVectorCell {
 
   constructor(x: number, y: number, public z: number, owner?: CacheableModel) {
     super(SimDataType.Float3, x, y, owner);
-    this._floats.push(z);
+    this._floatNames.push('z');
     this._watchProps('z');
   }
 
@@ -815,7 +815,7 @@ export class Float4Cell extends FloatVectorCell {
 
   constructor(x: number, y: number, public z: number, public w: number, owner?: CacheableModel) {
     super(SimDataType.Float4, x, y, owner);
-    this._floats.push(z, w);
+    this._floatNames.push('z', 'w');
     this._watchProps('z', 'w');
   }
 

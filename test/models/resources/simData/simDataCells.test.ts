@@ -1443,56 +1443,97 @@ describe("ResourceKeyCell", function() {
 describe("Float2Cell", function() {
   describe("#x", () => {
     it("should uncache the owner when set", () => {
-      // TODO:
+      const owner = new MockOwner();
+      const cell = new cells.Float2Cell(1, 2, owner);
+      expect(owner.cached).to.be.true;
+      cell.x = 5;
+      expect(owner.cached).to.be.false;
     });
   });
 
   describe("#y", () => {
     it("should uncache the owner when set", () => {
-      // TODO:
+      const owner = new MockOwner();
+      const cell = new cells.Float2Cell(1, 2, owner);
+      expect(owner.cached).to.be.true;
+      cell.y = 5;
+      expect(owner.cached).to.be.false;
     });
   });
 
   describe("#constructor()", () => {
-    // TODO:
+    const cell = new cells.Float2Cell(1, 2);
+    expect(cell.x).to.equal(1);
+    expect(cell.y).to.equal(2);
   });
 
   describe("#clone()", () => {
     it("should copy the float values", () => {
-      // TODO:
-      // const cell = new cells.TextCell(SimDataType.String, "Something");
-      // const clone = cell.clone();
-      // expect(clone.dataType).to.equal(SimDataType.String);
-      // expect(clone.value).to.equal("Something");
+      const cell = new cells.Float2Cell(1, 2);
+      const clone = cell.clone();
+      expect(clone.x).to.equal(1);
+      expect(clone.y).to.equal(2);
     });
 
     it("should not copy the owner", () => {
-      // TODO:
-      // const owner = new MockOwner();
-      // const cell = new cells.TextCell(SimDataType.String, "Something", owner);
-      // const clone = cell.clone();
-      // expect(clone.owner).to.be.undefined;
+      const owner = new MockOwner();
+      const cell = new cells.Float2Cell(1, 2, owner);
+      const clone = cell.clone();
+      expect(clone.owner).to.be.undefined;
     });
 
     it("should not mutate the original", () => {
-      // TODO:
-      // const cell = new cells.TextCell(SimDataType.String, "Something");
-      // const clone = cell.clone();
-      // clone.value = "Something else";
-      // expect(cell.value).to.equal("Something");
+      const cell = new cells.Float2Cell(1, 2);
+      const clone = cell.clone();
+      clone.x = 4;
+      expect(clone.x).to.equal(1);
     });
   });
 
   describe("#encode()", () => {
-    // TODO:
+    it("should write the floats in order", () => {
+      // TODO:
+    });
+
+    it("should write the correct floats after one is updated", () => {
+      // TODO:
+    });
+
+    it("should throw when an argument is undefined", () => {
+      // TODO:
+    });
+
+    it("should throw when an argument is null", () => {
+      // TODO:
+    });
   });
 
   describe("#toXmlNode()", () => {
-    // TODO:
+    it("should create a node with the floats separated by commas", () => {
+      // TODO:
+    });
+
+    it("should include the name attribute that is given", () => {
+      // TODO:
+    });
+
+    it("should include the type attribute if told to", () => {
+      // TODO:
+    });
   });
 
   describe("#validate()", () => {
-    // TODO:
+    it("should not throw when arguments are all floats", () => {
+      // TODO:
+    });
+
+    it("should throw when any argument is undefined", () => {
+      // TODO:
+    });
+
+    it("should throw when any argument is null", () => {
+      // TODO:
+    });
   });
 
   describe("static#decode()", () => {
