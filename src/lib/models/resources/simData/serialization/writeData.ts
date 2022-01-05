@@ -8,10 +8,6 @@ import * as cells from "../simDataCells";
 // FIXME: there could potentially be an issue with padding when writing booleans,
 // for an example use the scenario role that chip sent
 
-// FIXME: order of columns gets messed up
-
-// FIXME: strings are left out, string table is never created
-
 //#region Interfaces
 
 /** A DTO for schemas when they're being serialized. */
@@ -385,11 +381,11 @@ export default function writeData(model: SimDataDto): Buffer {
 
     /** Maps schema hash to position of object table. */
     const objectTablePositions: { [key: number]: number; } = {};
-    objectTables.forEach(table => { // FIXME: should this be the items in the obj?
+    objectTables.forEach(table => { 
       totalSize += getPaddingForAlignment(totalSize, 15);
       totalSize += getPaddingForAlignment(totalSize, table.schema.size - 1);
       objectTablePositions[table.schema.hash] = totalSize;
-      totalSize += table.schema.size * table.rows.length; // FIXME: is rows the same as objects in old code?
+      totalSize += table.schema.size * table.rows.length;
     });
 
     /** Maps data type to position of raw table. */
@@ -398,7 +394,7 @@ export default function writeData(model: SimDataDto): Buffer {
       totalSize += getPaddingForAlignment(totalSize, 15);
       totalSize += getPaddingForAlignment(totalSize, SimDataTypeUtils.getAlignment(table.dataType) - 1);
       rawTablePositions[table.dataType] = totalSize;
-      totalSize += SimDataTypeUtils.getBytes(table.dataType) * table.row.length; // FIXME: is row the same as values in old code?
+      totalSize += SimDataTypeUtils.getBytes(table.dataType) * table.row.length;
     });
 
     if (hasCharTable) {
