@@ -220,7 +220,7 @@ export default function writeData(model: SimDataDto): Buffer {
   }
 
   function addTextCell(cell: cells.TextCell): TableRef {
-    const ref: TableRef = {
+    const charRef: TableRef = {
       dataType: SimDataType.Character,
       index: charTableLength
     };
@@ -228,12 +228,17 @@ export default function writeData(model: SimDataDto): Buffer {
     charTableLength += Buffer.byteLength(cell.value, 'utf-8') + 1; // +1 for null
     stringsToAddToCharTable.push(cell.value);
 
-    if (cell.dataType !== SimDataType.Character) {
+    if (cell.dataType === SimDataType.Character) {
+      return charRef;
+    } else {
       const table = getRawTable(cell.dataType);
-      table.row.push({ cell, ref });
+      table.row.push({ cell, ref: charRef });
+      
+      return {
+        dataType: cell.dataType,
+        index: table.row.length - 1
+      };
     }
-
-    return ref;
   }
 
   function addVectorCell(cell: cells.VectorCell): TableRef {
