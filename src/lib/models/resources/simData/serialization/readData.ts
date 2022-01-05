@@ -76,13 +76,17 @@ function getBinarySchema(mSchema: BinarySchema[], offset: number): BinarySchema 
  * @param position Position of table to find
  */
 function getTableInfo(mTable: BinaryTableInfo[], position: number): BinaryTableInfo {
+  if (position === RELOFFSET_NULL) return undefined;
+
   const tableInfo = mTable.find(tableInfo => {
     const start = tableInfo.startof_mnRowOffset + tableInfo.mnRowOffset;
     const end = start + (tableInfo.mnRowSize * tableInfo.mnRowCount) - 1;
     return position >= start && position <= end;
   });
 
-  if (tableInfo === undefined) console.warn(`Position ${position} is not located in a TableData.`);
+  if (tableInfo === undefined)
+    throw new Error(`Position ${position} is not located in a TableData.`);
+  
   return tableInfo;
 }
 
@@ -229,7 +233,7 @@ export default function readData(buffer: Buffer): SimDataDto {
     // it's a newer data type, introduced in 0x101)
     const startPos = decoder.tell();
     const dataOffset = decoder.int32();
-    const dataPos = startPos + dataOffset;
+    const dataPos = dataOffset === RELOFFSET_NULL ? dataOffset : startPos + dataOffset;
     const tableInfo = getTableInfo(mTable, dataPos);
 
     switch (dataType) {
