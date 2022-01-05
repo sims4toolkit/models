@@ -1539,29 +1539,40 @@ describe("Float2Cell", function() {
 
   describe("#toXmlNode()", () => {
     it("should create a node with the floats separated by commas", () => {
-      // TODO:
+      const cell = new cells.Float2Cell(1.1, 2.2);
+      const node = cell.toXmlNode();
+      expect(node.toXml()).to.equal(`<T>1.1,2.2</T>`);
     });
 
     it("should include the name attribute that is given", () => {
-      // TODO:
+      const cell = new cells.Float2Cell(1.1, 2.2);
+      const node = cell.toXmlNode({ nameAttr: "float2" });
+      expect(node.toXml()).to.equal(`<T name="float2">1.1,2.2</T>`);
     });
 
     it("should include the type attribute if told to", () => {
-      // TODO:
+      const cell = new cells.Float2Cell(1.1, 2.2);
+      const node = cell.toXmlNode({ typeAttr: true });
+      expect(node.toXml()).to.equal(`<T type="Float2">1.1,2.2</T>`);
     });
   });
 
   describe("#validate()", () => {
     it("should not throw when arguments are all floats", () => {
-      // TODO:
+      const cell = new cells.Float2Cell(2.3, 1.1);
+      expect(() => cell.validate()).to.not.throw();
     });
 
     it("should throw when any argument is undefined", () => {
-      // TODO:
+      const cell = new cells.Float2Cell(2.3, 1.1);
+      cell.x = undefined;
+      expect(() => cell.validate()).to.throw();
     });
 
     it("should throw when any argument is null", () => {
-      // TODO:
+      const cell = new cells.Float2Cell(2.3, 1.1);
+      cell.x = null;
+      expect(() => cell.validate()).to.throw();
     });
   });
 
@@ -1580,19 +1591,32 @@ describe("Float2Cell", function() {
 
   describe("static#fromXmlNode()", () => {
     it("should read two consecutive floats separated by commas", () => {
-      // TODO:
+      const node = getPlainNode("1.1,2.2");
+      const cell = cells.Float2Cell.fromXmlNode(node);
+      expect(cell.x).to.be.approximately(1.1, 0.001);
+      expect(cell.y).to.be.approximately(2.2, 0.001);
+    });
+
+    it("should read two negative floats", () => {
+      const node = getPlainNode("-1.1,2.2");
+      const cell = cells.Float2Cell.fromXmlNode(node);
+      expect(cell.x).to.be.approximately(-1.1, 0.001);
+      expect(cell.y).to.be.approximately(2.2, 0.001);
     });
 
     it("should throw if there are more than two floats", () => {
-      // TODO:
+      const node = getPlainNode("1.1,2.2,3.3");
+      expect(() => cells.Float2Cell.fromXmlNode(node)).to.throw();
     });
 
     it("should throw if there are less than two floats", () => {
-      // TODO:
+      const node = getPlainNode("1.1");
+      expect(() => cells.Float2Cell.fromXmlNode(node)).to.throw();
     });
 
     it("should throw if any float cannot be parsed as a number", () => {
-      // TODO:
+      const node = getPlainNode("a,1.1");
+      expect(() => cells.Float2Cell.fromXmlNode(node)).to.throw();
     });
   });
 

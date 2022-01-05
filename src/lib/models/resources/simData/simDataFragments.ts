@@ -319,7 +319,7 @@ export class SimDataInstance extends ObjectCell {
 function parseNodeAttrAsNumber(node: XmlNode, attr: string): number {
   const raw = node.attributes[attr];
   const value = parseInt(raw, 16);
-  if (value === NaN)
+  if (Number.isNaN(value))
     throw new Error(`Expected value of '${attr}' to be a number, got ${raw}`);
   return value;
 }

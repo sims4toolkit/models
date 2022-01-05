@@ -135,7 +135,7 @@ export default class SimDataResource extends Resource implements SimDataDto {
       throw new Error(`Expected version to be ${SUPPORTED_VERSION}, got ${version}`);
     
     const unused = parseInt(dom.attributes.u, 16);
-    if (unused === NaN)
+    if (Number.isNaN(unused))
       throw new Error(`Expected unused to be a number, got ${dom.attributes.u}`);
 
     const schemasNode = dom.children.find(node => node.tag === "Schemas");

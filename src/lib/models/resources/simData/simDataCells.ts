@@ -235,7 +235,7 @@ abstract class FloatVectorCell extends Cell {
       throw new Error(`Expected Float${count}Cell to contain ${count} floats separated by ',', but got ${node.innerValue}`);
     return floatStrings.map(s => {
       const float = parseFloat(s);
-      if (float === NaN)
+      if (Number.isNaN(float))
         throw new Error(`Expected Float${count}Cell value to be a float, but got ${s}.`);
       return float;
     });
@@ -1288,7 +1288,7 @@ export class VariantCell extends Cell {
    */
   static fromXmlNode(schemas: SimDataSchema[], node: XmlNode): VariantCell {
     const typeHash = parseInt(node.attributes.variant, 16);
-    if (typeHash === NaN)
+    if (Number.isNaN(typeHash))
       throw new Error(`Expected variant to have a numerical 'variant' attribute, but found '${node.attributes.variant}'.`);
 
     if (node.attributes.schema) {
