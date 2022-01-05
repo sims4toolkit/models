@@ -18,6 +18,8 @@ export default class SimDataResource extends Resource implements SimDataDto {
   private _schemas: SimDataSchema[];
   private _instances: SimDataInstance[];
 
+  // TODO: cache dom
+
   /**
    * The schemas in this SimData. Individual schemas can be mutated and cacheing
    * will be handled (e.g. `schemas[0].name = "Schema"` is perfectly safe),
@@ -220,7 +222,7 @@ export default class SimDataResource extends Resource implements SimDataDto {
       ]
     }));
 
-    if (sort) doc.deepSort((a, b) => {
+    if (sort) doc.child.child.deepSort((a, b) => {
       const aName = a.attributes.name;
       const bName = b.attributes.name;
       if (aName) {
