@@ -201,8 +201,8 @@ export default class SimDataResource extends Resource implements SimDataDto {
    * Creates an XmlDocumentNode object that represents this SimData exactly as
    * it would appear in Sims 4 Studio.
    */
-  toXmlDocument(): XmlDocumentNode {
-    return new XmlDocumentNode(new XmlElementNode({
+  toXmlDocument({ sort = false }: { sort?: boolean; } = {}): XmlDocumentNode {
+    const doc = new XmlDocumentNode(new XmlElementNode({
       tag: 'SimData',
       attributes: {
         version: formatAsHexString(this.version, 8, true),
@@ -219,6 +219,22 @@ export default class SimDataResource extends Resource implements SimDataDto {
         })
       ]
     }));
+
+    if (sort) doc.deepSort((a, b) => {
+      const aName = a.attributes.name;
+      const bName = b.attributes.name;
+      if (aName) {
+        if (bName) {
+          if (aName < bName) return -1;
+          if (aName > bName) return 1;
+          return 0;
+        }
+        return -1;
+      }
+      return bName ? 1 : 0;
+    });
+
+    return doc;
   }
 
   protected _serialize(): Buffer {
