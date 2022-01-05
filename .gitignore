@@ -3,3 +3,4 @@ node_modules/
 localTests/
 out/
 pocs/
+.VSCodeCounter/

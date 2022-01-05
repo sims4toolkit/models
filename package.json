@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "The DBPF interface used by Sims 4 Toolkit.",
   "main": "dst/api.js",
+  "files": [
+    "dst/"
+  ],
   "types": "dst/api.d.js",
   "scripts": {
     "clear": "rm -rf ./dst/**",
