@@ -1048,6 +1048,8 @@ export class VectorCell<T extends Cell = Cell> extends Cell {
   readonly dataType: SimDataType.Vector;
   private _children: T[];
 
+  // TODO: listen for changes to children
+
   /**
    * The children of this cell. Individual child cells can be mutated and
    * cacheing will be handled (e.g. `children[0].value = 5` is perfectly safe),
@@ -1228,6 +1230,11 @@ export class VectorCell<T extends Cell = Cell> extends Cell {
  */
 export class VariantCell extends Cell {
   readonly dataType: SimDataType.Variant;
+
+  // TODO: set owner of child?
+
+  /** TODO: */
+  get childType(): SimDataType { return this.child?.dataType; }
 
   constructor(public typeHash: number, public child: Cell, owner?: CacheableModel) {
     super(SimDataType.Variant, owner);
