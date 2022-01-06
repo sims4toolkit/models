@@ -1048,8 +1048,6 @@ export class VectorCell<T extends Cell = Cell> extends Cell {
   readonly dataType: SimDataType.Vector;
   private _children: T[];
 
-  // TODO: listen for changes to children
-
   /**
    * The children of this cell. Individual child cells can be mutated and
    * cacheing will be handled (e.g. `children[0].value = 5` is perfectly safe),
@@ -1177,8 +1175,23 @@ export class VectorCell<T extends Cell = Cell> extends Cell {
   setChild(index: number, child: T) {
     if (index < 0) return;
     while (index >= this.children.length) this.children.push(undefined);
+    child.owner = this;
     this.children[index] = child;
     this.uncache();
+  }
+
+  /**
+   * Clones and sets the child at the given index. If the index is negative,
+   * nothing happens. If the index is out of bounds, the array will be padded
+   * with undefined values up to the specified index.
+   * 
+   * @param index Index of child to set
+   * @param child Child to clone and set
+   */
+  setChildClone(index: number, child: T) {
+    //@ts-expect-error If given child is not the right type, then that is the 
+    // user's fault, and validation will fail when it is time to serialize.
+    this.setChild(index, child.clone());
   }
 
   //#endregion Public Methods
@@ -1230,15 +1243,21 @@ export class VectorCell<T extends Cell = Cell> extends Cell {
  */
 export class VariantCell extends Cell {
   readonly dataType: SimDataType.Variant;
+  private _child?: Cell;
 
-  // TODO: set owner of child?
+  /** The cell that this variant contains, if any. */
+  get child() { return this._child; }
+  set child(child: Cell) {
+    this._child = child;
+    child.owner = this;
+  }
 
-  /** TODO: */
+  /** Gets the data type of this cell's child, if it has one. */
   get childType(): SimDataType { return this.child?.dataType; }
 
-  constructor(public typeHash: number, public child: Cell, owner?: CacheableModel) {
+  constructor(public typeHash: number, child: Cell, owner?: CacheableModel) {
     super(SimDataType.Variant, owner);
-    if (child) child.owner = this;
+    this.child = child;
     this._watchProps('typeHash', 'child');
   }
 

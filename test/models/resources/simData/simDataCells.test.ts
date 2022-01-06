@@ -2159,6 +2159,10 @@ describe("VectorCell", () => {
     // TODO:
   });
 
+  describe("#setChildClone()", () => {
+    // TODO:
+  });
+
   describe("#encode()", () => {
     // TODO:
   });
