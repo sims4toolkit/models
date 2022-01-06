@@ -1,4 +1,4 @@
-import CacheableModel from "../../../dst/lib/models/abstract/cacheableModel";
+import CacheableModel from "../../dst/lib/models/abstract/cacheableModel";
 
 export default class MockOwner extends CacheableModel {
   private _cached: boolean;

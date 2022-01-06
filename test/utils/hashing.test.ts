@@ -1,7 +1,7 @@
 // This is just in this directory because mocha gets pissy when it's not
 
 import { expect } from "chai";
-import { hashing } from "../../../dst/api";
+import { hashing } from "../../dst/api";
 
 function getTestFuncs(hashFn) {
   return {

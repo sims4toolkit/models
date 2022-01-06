@@ -1,7 +1,7 @@
 import { expect } from "chai";
 import { simDataCells, hashing, simDataTypes, xmlDom } from "../../../../dst/api";
 import { BinaryDecoder, BinaryEncoder } from "../../../../dst/lib/utils/encoding";
-import MockOwner from "../../mocks/mockOwner";
+import MockOwner from "../../../mocks/mockOwner";
 
 const cells = simDataCells;
 const { fnv32 } = hashing;
