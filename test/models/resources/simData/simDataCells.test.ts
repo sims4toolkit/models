@@ -71,6 +71,11 @@ describe("BooleanCell", function() {
       const cell = new cells.BooleanCell(true, owner);
       expect(cell.owner).to.equal(owner);
     });
+
+    it("should have a data type of Boolean", () => {
+      const cell = new cells.BooleanCell(true);
+      expect(cell.dataType).to.equal(SimDataType.Boolean);
+    });
   });
 
   describe("#clone()", () => {
@@ -1277,6 +1282,11 @@ describe("ResourceKeyCell", function() {
       const cell = new cells.ResourceKeyCell(1, 2, 3n, owner);
       expect(cell.owner).to.equal(owner);
     });
+
+    it("should have a data type of ResourceKey", () => {
+      const cell = new cells.ResourceKeyCell(1, 2, 3n);
+      expect(cell.dataType).to.equal(SimDataType.ResourceKey);
+    });
   });
 
   describe("#clone()", () => {
@@ -1472,6 +1482,11 @@ describe("Float2Cell", function() {
       const cell = new cells.Float2Cell(undefined, null);
       expect(cell.x).to.equal(0);
       expect(cell.y).to.equal(0);
+    });
+
+    it("should have a data type of Float2", () => {
+      const cell = new cells.Float2Cell(1, 2);
+      expect(cell.dataType).to.equal(SimDataType.Float2);
     });
   });
 
@@ -1673,6 +1688,11 @@ describe("Float3Cell", function() {
       expect(cell.x).to.equal(0);
       expect(cell.y).to.equal(0);
       expect(cell.z).to.equal(0);
+    });
+
+    it("should have a data type of Float3", () => {
+      const cell = new cells.Float3Cell(1, 2, 3);
+      expect(cell.dataType).to.equal(SimDataType.Float3);
     });
   });
 
@@ -1895,6 +1915,11 @@ describe("Float4Cell", function() {
       expect(cell.z).to.equal(0);
       expect(cell.w).to.equal(0);
     });
+
+    it("should have a data type of Float4", () => {
+      const cell = new cells.Float4Cell(1, 2, 3, 4);
+      expect(cell.dataType).to.equal(SimDataType.Float4);
+    });
   });
 
   describe("#clone()", () => {
@@ -2067,6 +2092,16 @@ describe("Float4Cell", function() {
   });
 });
 
-// TODO: ObjectCell, VectorCell, VariantCell
+describe("ObjectCell", () => {
+  // TODO:
+});
+
+describe("VectorCell", () => {
+  // TODO:
+});
+
+describe("VariantCell", () => {
+  // TODO:
+});
 
 //#endregion Tests
