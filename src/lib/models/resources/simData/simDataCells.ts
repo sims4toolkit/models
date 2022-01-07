@@ -904,7 +904,8 @@ export class ObjectCell extends Cell {
   }
 
   encode(encoder: BinaryEncoder, options?: CellEncodingOptions): void {
-    encoder.int32(this._getOffsetEncodingOption(options)); // FIXME: signed or unsigned?
+    this.validate({ ignoreCache: true });
+    encoder.int32(this._getOffsetEncodingOption(options));
   }
 
   toXmlNode(options: CellToXmlOptions = {}): XmlElementNode {
@@ -1072,6 +1073,7 @@ export class VectorCell<T extends Cell = Cell> extends Cell {
   }
 
   encode(encoder: BinaryEncoder, options?: CellEncodingOptions): void {
+    this.validate({ ignoreCache: true });
     encoder.int32(this._getOffsetEncodingOption(options)); // FIXME: int32 or uint32?
     encoder.uint32(this.children.length);
   }
@@ -1245,6 +1247,7 @@ export class VariantCell extends Cell {
   }
 
   encode(encoder: BinaryEncoder, options?: CellEncodingOptions): void {
+    this.validate({ ignoreCache: true });
     encoder.int32(this._getOffsetEncodingOption(options)); // intentionally signed
     encoder.uint32(this.typeHash);
   }

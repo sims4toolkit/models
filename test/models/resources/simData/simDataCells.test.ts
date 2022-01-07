@@ -2160,15 +2160,101 @@ describe("ObjectCell", () => {
   });
 
   describe("#clone()", () => {
-    // TODO:
+    it("should create a new cell with cloned child cells", () => {
+      // TODO:
+    });
+
+    it("should not mutate the original", () => {
+      // TODO:
+    });
+
+    it("should not mutate the original children", () => {
+      // TODO:
+    });
+
+    it("should not clone the owner", () => {
+      // TODO:
+    });
+
+    it("should be the owner of its new children", () => {
+      // TODO:
+    });
+
+    it("should not create a new schema object if not told to", () => {
+      // TODO:
+    });
+
+    it("should not create a new schema object for its children if not told to", () => {
+      // TODO:
+    });
+
+    it("should create a new schema object if told to", () => {
+      // TODO:
+    });
+
+    it("should create a new schema object for its children if told to", () => {
+      // TODO:
+    });
   });
 
   describe("#encode()", () => {
-    // TODO:
+    it("should write the given (negative) offset", () => {
+      // TODO:
+    });
+
+    it("should write the given (positive) offset", () => {
+      // TODO:
+    });
+
+    it("should throw if no offset is provided", () => {
+      // TODO:
+    });
+
+    it("should throw if the object cell is invalid", () => {
+      // TODO:
+    });
+
+    it("should not throw if there is just an issue with cache validation", () => {
+      // TODO:
+    });
   });
 
   describe("#toXmlNode()", () => {
-    // TODO:
+    it("should write the name of the schema in an attribute", () => {
+      // TODO:
+    });
+
+    it("should use a U tag", () => {
+      // TODO:
+    });
+
+    it("should write a primitive child correctly", () => {
+      // TODO:
+    });
+
+    it("should write another object child correctly", () => {
+      // TODO:
+    });
+
+    it("should write a vector child correctly", () => {
+      // TODO:
+    });
+
+    it("should write a variant child correctly", () => {
+      // TODO:
+    });
+
+    it("should give all children a name for their column", () => {
+      // TODO:
+    });
+
+    it("should write the Object type if told to", () => {
+      // TODO:
+    });
+
+    it("should write the provided name if given one", () => {
+      // TODO:
+    });
   });
 
   describe("#validate()", () => {
@@ -2246,32 +2332,52 @@ describe("VectorCell", () => {
   });
 
   describe("#length", () => {
-    // TODO:
+    it("should return 0 when there are no children", () => {
+      // TODO:
+    });
+
+    it("should return the number of children in the array", () => {
+      // TODO:
+    });
+
+    it("should return the correct number after adding a child", () => {
+      // TODO:
+    });
+
+    it("should return the correct number after deleting a child", () => {
+      // TODO:
+    });
   });
 
   describe("#childType", () => {
+    it("should return the data type of the first child", () => {
+      // TODO:
+    });
+
+    it("should return undefined when there are no children", () => {
+      // TODO:
+    });
+  });
+
+  describe("#addChildren()", () => {
     // TODO:
   });
 
-  // describe("#addChildren()", () => {
-  //   // TODO:
-  // });
+  describe("#addChildClones()", () => {
+    // TODO:
+  });
 
-  // describe("#addChildClones()", () => {
-  //   // TODO:
-  // });
+  describe("#removeChildren()", () => {
+    // TODO:
+  });
 
-  // describe("#removeChildren()", () => {
-  //   // TODO:
-  // });
+  describe("#setChild()", () => {
+    // TODO:
+  });
 
-  // describe("#setChild()", () => {
-  //   // TODO:
-  // });
-
-  // describe("#setChildClone()", () => {
-  //   // TODO:
-  // });
+  describe("#setChildClone()", () => {
+    // TODO:
+  });
 
   describe("#encode()", () => {
     // TODO:
