@@ -30,18 +30,26 @@ export function removeFromArray<T>(toRemove: T[], removeFrom: T[]) {
 }
 
 /**
- * Returns a proxy that will listen for any changes to the given array.
+ * Returns a proxy that will listen for any changes to the given object and call
+ * a function when it notices one.
  * 
- * @param arr Array to get proxy for
- * @param fn Function to call when the array is mutated
- * @returns Proxy for given array
+ * @param obj Object to get proxy for
+ * @param fn Function to call when the obj is mutated
+ * @returns Proxy for given obj
  */
-export function getArrayProxy<T>(arr: T[], fn: (target: T[], property: string | symbol, value: any) => void): T[] {
-  return new Proxy(arr, {
+export function getProxy<T extends object>(obj: T, fn: (target: T, property: string | symbol, value: any) => void): T {
+  //@ts-ignore _isProxy is returned from the getter, TS doesn't know about it
+  if (obj._isProxy) return obj;
+
+  return new Proxy(obj, {
     set: function(target, property, value) {
       const ref = Reflect.set(target, property, value);
       fn(target, property, value);
       return ref;
+    },
+    get: function(target, property) {
+      if (property === "_isProxy") return true;
+      return target[property];
     }
   });
 }

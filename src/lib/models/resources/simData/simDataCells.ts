@@ -4,7 +4,7 @@ import type { BinaryDecoder, BinaryEncoder } from "../../../utils/encoding";
 import { CellCloneOptions, CellEncodingOptions, CellToXmlOptions, ObjectCellRow } from "./shared";
 import CacheableModel from "../../abstract/cacheableModel";
 import { SimDataType, SimDataTypeUtils } from "./simDataTypes";
-import { removeFromArray } from "../../../utils/helpers";
+import { getProxy, removeFromArray } from "../../../utils/helpers";
 import { XmlElementNode, XmlNode, XmlValueNode } from "../../xml/dom";
 import { formatAsHexString } from "../../../utils/formatting";
 import { fnv32 } from "../../../utils/hashing";
@@ -874,30 +874,16 @@ export class ObjectCell extends Cell {
 
   /**
    * An object that maps column names to the cells that belong to those columns.
-   * Mutating children of this object is safe, as is mutating the object itself.
-   * For example, `row.col_name.value = 5` and `row.col_name = new Cell(..)`
-   * are both safe in terms of cacheing.
+   * Mutating this object and its children is safe for cacheing purposes.
    */
   get row() { return this._row; }
   private set row(row: ObjectCellRow) {
-    for (const colName in row) row[colName].owner = this;
-
-    if (row._isProxy) {
-      this._row = row;
-    } else {
-      this._row = new Proxy(row, {
-        // FIXME: Does this count deleting?
-        set(target: ObjectCellRow, property: string, child: Cell) {
-          const ref = Reflect.set(target, property, child);
-          child.uncache();
-          return ref;
-        },
-        get(target: ObjectCellRow, property: string) {
-          if (property === "_isProxy") return true;
-          return target[property];
-        }
-      });
-    }
+    const owner = this;
+    for (const colName in row) row[colName].owner = owner;
+    this._row = getProxy(row, (t, p, child: Cell) => {
+      if (child) child.owner = owner;
+      owner.uncache();
+    });
   }
 
   /** Shorthand for `Object.keys(this.row).length`. */
@@ -1049,26 +1035,19 @@ export class VectorCell<T extends Cell = Cell> extends Cell {
   private _children: T[];
 
   /**
-   * The children of this cell. Individual child cells can be mutated and
-   * cacheing will be handled (e.g. `children[0].value = 5` is perfectly safe),
-   * however, mutating the array itself by adding, removing, or setting children
-   * should be avoided whenever possible, because doing so is a surefire way to
-   * mess up the cache. 
-   * 
-   * To add, remove, or set children, use the `addChildren()`,
-   * `addChildClones()`, `removeChildren()`, and `setChild()` methods.
-   * 
-   * If you insist on removing or setting children manually, you can, as long as
-   * you remember to call `uncache()` when you are done. If you insist on adding
-   * children manually, it's your funeral.
+   * An array that contains all of the child cells of this vector. Mutating this
+   * array and its children is safe in terms of cacheing.
    */
-  get children() {
-    return this._children;
-  }
-
+  get children() { return this._children; }
   private set children(children: T[]) {
-    this._children = children;
+    const owner = this;
     children.forEach(child => child.owner = this);
+    this._children = getProxy(children, (t, p, child: Cell) => {
+      if (child) {
+        child.owner = owner;
+        child.uncache();
+      }
+    });
   }
 
   /** Shorthand for children.length */
@@ -1249,7 +1228,7 @@ export class VariantCell extends Cell {
   get child() { return this._child; }
   set child(child: Cell) {
     this._child = child;
-    child.owner = this;
+    if (child) child.owner = this;
   }
 
   /** Gets the data type of this cell's child, if it has one. */
