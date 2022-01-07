@@ -2292,7 +2292,25 @@ describe("ObjectCell", () => {
   });
 
   describe("static#getDefault()", () => {
-    // TODO:
+    it("should create a cell with the given schema", () => {
+      // TODO:
+    });
+
+    it("should use the exact schema that is given", () => {
+      // TODO:
+    });
+
+    it("should have no children", () => {
+      // TODO:
+    });
+
+    it("should not have an owner", () => {
+      // TODO:
+    });
+
+    it("should have the object data type", () => {
+      // TODO:
+    });
   });
 
   describe("static#fromXmlNode()", () => {
