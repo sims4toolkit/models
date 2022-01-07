@@ -2094,15 +2094,69 @@ describe("Float4Cell", function() {
 
 describe("ObjectCell", () => {
   describe("#row", () => {
-    // TODO:
+    it("should uncache the owner when a child is added", () => {
+      // TODO:
+    });
+
+    it("should set the owner of a child that is added", () => {
+      // TODO:
+    });
+
+    it("should uncache the owner when a child is deleted", () => {
+      // TODO:
+    });
+
+    it("should uncache the owner when a child is mutated", () => {
+      // TODO:
+    });
+
+    it("should uncache the owner when a child is set", () => {
+      // TODO:
+    });
+
+    it("should uncache the owner when a child is set to undefined", () => {
+      // TODO:
+    });
+
+    it("should uncache the owner when a child is set to null", () => {
+      // TODO:
+    });
+
+    it("should set the owner of a child that is set", () => {
+      // TODO:
+    });
+
+    it("should not uncache the owner when a child is retrieved", () => {
+      // TODO:
+    });
   });
 
   describe("#rowLength", () => {
-    // TODO:
+    it("should return the number of children in this object", () => {
+      // TODO:
+    });
+
+    it("should return the correct number after adding a child", () => {
+      // TODO:
+    });
+
+    it("should return the correct number after deleting a child", () => {
+      // TODO:
+    });
   });
 
   describe("#schemaLength", () => {
-    // TODO:
+    it("should return the number of columns in this object's schema", () => {
+      // TODO:
+    });
+
+    it("should return the correct number after adding to the schema", () => {
+      // TODO:
+    });
+
+    it("should return the correct number after removing from the schema", () => {
+      // TODO:
+    });
   });
 
   describe("#clone()", () => {
@@ -2118,7 +2172,37 @@ describe("ObjectCell", () => {
   });
 
   describe("#validate()", () => {
-    // TODO:
+    it("should throw if there is no schema", () => {
+      // TODO:
+    });
+
+    it("should throw if this object has less columns than its schema", () => {
+      // TODO:
+    });
+
+    it("should throw if this object has more columns than its schema", () => {
+      // TODO:
+    });
+
+    it("should throw if this object has the right number of columns, but a type is different", () => {
+      // TODO:
+    });
+
+    it("should throw if this object is valid, but one of its children aren't", () => {
+      // TODO:
+    });
+
+    it("should not throw if this object and all of its children are valid", () => {
+      // TODO:
+    });
+
+    it("should throw if one of this object's children has a different owner and ignoreCache is false", () => {
+      // TODO:
+    });
+
+    it("should not throw if one of this object's children has a different owner and ignoreCache is true", () => {
+      // TODO:
+    });
   });
 
   describe("static#getDefault()", () => {
@@ -2132,7 +2216,33 @@ describe("ObjectCell", () => {
 
 describe("VectorCell", () => {
   describe("#children", () => {
-    // TODO:
+    it("should uncache the owner when pushed", () => {
+      // TODO:
+    });
+
+    it("should set the owner of a child that is pushed", () => {
+      // TODO:
+    });
+
+    it("should uncache the owner when spliced", () => {
+      // TODO:
+    });
+
+    it("should uncache the owner when a child is mutated", () => {
+      // TODO:
+    });
+
+    it("should uncache the owner when a child is set", () => {
+      // TODO:
+    });
+
+    it("should set the owner of a child that is set", () => {
+      // TODO:
+    });
+
+    it("should not uncache the owner when a child is retrieved", () => {
+      // TODO:
+    });
   });
 
   describe("#length", () => {
@@ -2143,25 +2253,25 @@ describe("VectorCell", () => {
     // TODO:
   });
 
-  describe("#addChildren()", () => {
-    // TODO:
-  });
+  // describe("#addChildren()", () => {
+  //   // TODO:
+  // });
 
-  describe("#addChildClones()", () => {
-    // TODO:
-  });
+  // describe("#addChildClones()", () => {
+  //   // TODO:
+  // });
 
-  describe("#removeChildren()", () => {
-    // TODO:
-  });
+  // describe("#removeChildren()", () => {
+  //   // TODO:
+  // });
 
-  describe("#setChild()", () => {
-    // TODO:
-  });
+  // describe("#setChild()", () => {
+  //   // TODO:
+  // });
 
-  describe("#setChildClone()", () => {
-    // TODO:
-  });
+  // describe("#setChildClone()", () => {
+  //   // TODO:
+  // });
 
   describe("#encode()", () => {
     // TODO:
@@ -2186,7 +2296,21 @@ describe("VectorCell", () => {
 
 describe("VariantCell", () => {
   describe("#child", () => {
-    // TODO:
+    it("should change the value when set", () => {
+      // TODO:
+    });
+
+    it("should uncache the owner when set", () => {
+      // TODO:
+    });
+
+    it("should uncache the owner when mutated", () => {
+      // TODO:
+    });
+
+    it("should uncache the owner when removed", () => {
+      // TODO:
+    });
   });
 
   describe("#childType", () => {
