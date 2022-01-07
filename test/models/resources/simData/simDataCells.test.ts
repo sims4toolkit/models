@@ -2159,6 +2159,18 @@ describe("ObjectCell", () => {
     });
   });
 
+  describe("#constructor", () => {
+    it("should create a new object with the exact given schema", () => {
+      // TODO:
+    });
+
+    it("should create a new object with the exact given schema", () => {
+      // TODO:
+    });
+
+    // TODO: more tests
+  });
+
   describe("#clone()", () => {
     it("should create a new cell with cloned child cells", () => {
       // TODO:
