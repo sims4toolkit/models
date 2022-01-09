@@ -1671,7 +1671,37 @@ describe("VariantCell", () => {
     });
 
     it("should read vector child correctly", () => {
-      // TODO:
+      const node = new XmlElementNode({
+        tag: "V",
+        attributes: {
+          variant: "0x12345678"
+        },
+        children: [
+          new XmlElementNode({
+            tag: "L",
+            attributes: {
+              type: "Vector"
+            },
+            children: [
+              new XmlElementNode({
+                tag: "T",
+                attributes: {
+                  type: "Boolean"
+                },
+                children: [
+                  new XmlValueNode(true)
+                ]
+              })
+            ]
+          })
+        ]
+      });
+
+      const cell = cells.VariantCell.fromXmlNode<simDataCells.VectorCell<simDataCells.BooleanCell>>(node);
+      expect(cell.typeHash).to.equal(0x12345678);
+      expect(cell.child.length).to.equal(1);
+      expect(cell.child.children[0].dataType).to.equal(SimDataType.Boolean);
+      expect(cell.child.children[0].value).to.be.true;
     });
 
     it("should read variant child correctly", () => {
@@ -1695,11 +1725,89 @@ describe("VariantCell", () => {
     });
 
     it("should read object child correctly, if its schema is provided", () => {
-      // TODO:
+      const node = new XmlElementNode({
+        tag: "V",
+        attributes: {
+          variant: "0x12345678",
+          schema: "TestSchema"
+        },
+        children: [
+          new XmlElementNode({
+            tag: "T",
+            attributes: {
+              name: "boolean"
+            },
+            children: [
+              new XmlValueNode(true)
+            ]
+          }),
+          new XmlElementNode({
+            tag: "T",
+            attributes: {
+              name: "uint32"
+            },
+            children: [
+              new XmlValueNode(15)
+            ]
+          }),
+          new XmlElementNode({
+            tag: "T",
+            attributes: {
+              name: "string"
+            },
+            children: [
+              new XmlValueNode("hi")
+            ]
+          })
+        ]
+      });
+
+      const cell = cells.VariantCell.fromXmlNode<simDataCells.ObjectCell>(node, [testSchema]);
+      expect(cell.child.rowLength).to.equal(3);
+      expect(cell.child.row.boolean.asAny.value).to.equal(true);
+      expect(cell.child.row.uint32.asAny.value).to.equal(15);
+      expect(cell.child.row.string.asAny.value).to.equal("hi");
     });
 
     it("should throw if child is an object but its schema wasn't provided", () => {
-      // TODO:  
+      const node = new XmlElementNode({
+        tag: "V",
+        attributes: {
+          variant: "0x12345678",
+          schema: "TestSchema"
+        },
+        children: [
+          new XmlElementNode({
+            tag: "T",
+            attributes: {
+              name: "boolean"
+            },
+            children: [
+              new XmlValueNode(true)
+            ]
+          }),
+          new XmlElementNode({
+            tag: "T",
+            attributes: {
+              name: "uint32"
+            },
+            children: [
+              new XmlValueNode(15)
+            ]
+          }),
+          new XmlElementNode({
+            tag: "T",
+            attributes: {
+              name: "string"
+            },
+            children: [
+              new XmlValueNode("hi")
+            ]
+          })
+        ]
+      });
+
+      expect(() => cells.VariantCell.fromXmlNode(node)).to.throw();
     });
 
     it("should not have an owner", () => {
