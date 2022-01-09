@@ -1,11 +1,9 @@
 import { expect } from "chai";
-import { simDataCells, simDataFragments, hashing, simDataTypes, xmlDom } from "../../../../dst/api";
-import { XmlElementNode, XmlValueNode } from "../../../../dst/lib/models/xml/dom";
+import { simDataCells, hashing, simDataTypes, xmlDom } from "../../../../dst/api";
 import { BinaryDecoder, BinaryEncoder } from "../../../../dst/lib/utils/encoding";
 import MockOwner from "../../../mocks/mockOwner";
 
 const cells = simDataCells;
-const { SimDataSchema, SimDataSchemaColumn } = simDataFragments;
 const { fnv32 } = hashing;
 const { SimDataType } = simDataTypes;
 
@@ -17,24 +15,6 @@ function getPlainNode(value: any): xmlDom.XmlElementNode {
     children: [
       new xmlDom.XmlValueNode(value)
     ]
-  });
-}
-
-const testSchema = new SimDataSchema("TestSchema", 0x1234, [
-  new SimDataSchemaColumn("boolean", SimDataType.Boolean, 0),
-  new SimDataSchemaColumn("uint32", SimDataType.UInt32, 0),
-  new SimDataSchemaColumn("string", SimDataType.String, 0)
-]);
-
-const nestedObjectSchema = new SimDataSchema("NestedObject", 0x12, [
-  new SimDataSchemaColumn("obj", SimDataType.Object, 0)
-]);
-
-function newValidObjectCell(): simDataCells.ObjectCell {
-  return new cells.ObjectCell(testSchema, {
-    boolean: new cells.BooleanCell(true),
-    uint32: new cells.NumberCell(SimDataType.UInt32, 15),
-    string: new cells.TextCell(SimDataType.String, "Hi")
   });
 }
 

@@ -1,24 +1,14 @@
 import { expect } from "chai";
-import { simDataCells, simDataFragments, hashing, simDataTypes, xmlDom } from "../../../../dst/api";
+import { simDataCells, simDataFragments, simDataTypes } from "../../../../dst/api";
 import { XmlElementNode, XmlValueNode } from "../../../../dst/lib/models/xml/dom";
 import { BinaryDecoder, BinaryEncoder } from "../../../../dst/lib/utils/encoding";
 import MockOwner from "../../../mocks/mockOwner";
 
 const cells = simDataCells;
 const { SimDataSchema, SimDataSchemaColumn } = simDataFragments;
-const { fnv32 } = hashing;
 const { SimDataType } = simDataTypes;
 
 //#region Helpers
-
-function getPlainNode(value: any): xmlDom.XmlElementNode {
-  return new xmlDom.XmlElementNode({
-    tag: "T",
-    children: [
-      new xmlDom.XmlValueNode(value)
-    ]
-  });
-}
 
 const testSchema = new SimDataSchema("TestSchema", 0x1234, [
   new SimDataSchemaColumn("boolean", SimDataType.Boolean, 0),
