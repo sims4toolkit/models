@@ -1395,6 +1395,15 @@ describe("VariantCell", () => {
       expect(owner.cached).to.be.false;
     });
 
+    it("should set the owner of the child that is set", () => {
+      const owner = new MockOwner();
+      const cell = new cells.VariantCell(0, cells.BooleanCell.getDefault(), owner);
+      const newChild = cell.child.clone();
+      expect(newChild.owner).to.be.undefined;
+      cell.child = newChild;
+      expect(newChild.owner).to.equal(owner);
+    });
+
     it("should uncache the owner when mutated", () => {
       const owner = new MockOwner();
       const cell = new cells.VariantCell(0, cells.BooleanCell.getDefault(), owner);
@@ -1434,7 +1443,11 @@ describe("VariantCell", () => {
 
   describe("#owner", () => {
     it("should update the owner of the child when set", () => {
-      // TODO:
+      const owner = new MockOwner();
+      const cell = new cells.VariantCell(0, cells.BooleanCell.getDefault(), owner);
+      const newOwner = new MockOwner();
+      cell.owner = newOwner;
+      expect(cell.child.owner).to.equal(newOwner);
     });
   });
 
