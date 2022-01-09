@@ -64,6 +64,20 @@ abstract class BinaryEncodingBase {
 	isEOF(): boolean {
 		return this.offset === this.buffer.length;
 	}
+
+	/**
+	 * Returns a new BinaryEncoder using this object's buffer.
+	 */
+	getEncoder(): BinaryEncoder {
+		return new BinaryEncoder(this.buffer);
+	}
+
+	/**
+	 * Returns a new BinaryDecoder using this object's buffer.
+	 */
+	getDecoder(): BinaryDecoder {
+		return new BinaryDecoder(this.buffer);
+	}
 }
 
 /**

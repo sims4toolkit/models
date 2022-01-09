@@ -982,7 +982,70 @@ describe("VectorCell", () => {
   });
 
   describe("#encode()", () => {
-    // TODO:
+    it("should throw if no offset is provided", () => {
+      const buffer = Buffer.alloc(8);
+      const encoder = new BinaryEncoder(buffer);
+      const cell = new cells.VectorCell([]);
+      expect(() => cell.encode(encoder)).to.throw();
+    });
+
+    it("should throw if the vector is invalid", () => {
+      const buffer = Buffer.alloc(8);
+      const encoder = new BinaryEncoder(buffer);
+      const cell = new cells.VectorCell([
+        cells.BooleanCell.getDefault(),
+        cells.NumberCell.getDefault(SimDataType.UInt32)
+      ]);
+      expect(() => cell.encode(encoder, { offset: 4 })).to.throw();
+    });
+
+    it("should write the offset and correct number of children (0) if given and valid", () => {
+      const buffer = Buffer.alloc(8);
+      const encoder = new BinaryEncoder(buffer);
+      const cell = new cells.VectorCell([]);
+      cell.encode(encoder, { offset: 10 });
+      const decoder = encoder.getDecoder();
+      expect(decoder.int32()).to.equal(10);
+      expect(decoder.uint32()).to.equal(0);
+    });
+
+    it("should write the offset and correct number of children (1) if given and valid", () => {
+      const buffer = Buffer.alloc(8);
+      const encoder = new BinaryEncoder(buffer);
+      const cell = new cells.VectorCell([
+        cells.BooleanCell.getDefault()
+      ]);
+      cell.encode(encoder, { offset: 10 });
+      const decoder = encoder.getDecoder();
+      expect(decoder.int32()).to.equal(10);
+      expect(decoder.uint32()).to.equal(1);
+    });
+
+    it("should write the offset and correct number of children (2+) if given and valid", () => {
+      const buffer = Buffer.alloc(8);
+      const encoder = new BinaryEncoder(buffer);
+      const cell = new cells.VectorCell([
+        cells.BooleanCell.getDefault(),
+        cells.BooleanCell.getDefault()
+      ]);
+      cell.encode(encoder, { offset: 10 });
+      const decoder = encoder.getDecoder();
+      expect(decoder.int32()).to.equal(10);
+      expect(decoder.uint32()).to.equal(2);
+    });
+
+    it("should write a negative offset", () => {
+      const buffer = Buffer.alloc(8);
+      const encoder = new BinaryEncoder(buffer);
+      const cell = new cells.VectorCell([
+        cells.BooleanCell.getDefault(),
+        cells.BooleanCell.getDefault()
+      ]);
+      cell.encode(encoder, { offset: -10 });
+      const decoder = encoder.getDecoder();
+      expect(decoder.int32()).to.equal(-10);
+      expect(decoder.uint32()).to.equal(2);
+    });
   });
 
   describe("#toXmlNode()", () => {
