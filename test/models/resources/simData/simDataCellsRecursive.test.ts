@@ -990,11 +990,57 @@ describe("VectorCell", () => {
   });
 
   describe("#validate()", () => {
-    // TODO:
+    it("should throw if there are two children with different types", () => {
+      const cell = new cells.VectorCell([
+        new cells.BooleanCell(true),
+        new cells.NumberCell(SimDataType.UInt32, 15)
+      ]);
+
+      expect(() => cell.validate()).to.throw();
+    });
+
+    it("should throw if this vector is valid, but one of its children isn't", () => {
+      const cell = new cells.VectorCell([
+        new cells.NumberCell(SimDataType.UInt32, 15),
+        new cells.NumberCell(SimDataType.UInt32, -15)
+      ]);
+
+      expect(() => cell.validate()).to.throw();
+    });
+
+    it("should not throw if this vector and all of its children are valid", () => {
+      const cell = new cells.VectorCell([
+        new cells.NumberCell(SimDataType.UInt32, 15),
+        new cells.NumberCell(SimDataType.UInt32, 15)
+      ]);
+
+      expect(() => cell.validate()).to.not.throw();
+    });
+
+    it("should throw if one of this vector's children has a different owner and ignoreCache is false", () => {
+      // TODO:
+    });
+
+    it("should not throw if one of this vector's children has a different owner and ignoreCache is true", () => {
+      // TODO:
+    });
   });
 
   describe("static#getDefault()", () => {
-    // TODO:
+    it("should have a type of Vector", () => {
+      const cell = cells.VectorCell.getDefault();
+      expect(cell.dataType).to.equal(SimDataType.Vector);
+    });
+
+    it("should not have an owner", () => {
+      const cell = cells.VectorCell.getDefault();
+      expect(cell.owner).to.be.undefined;
+    });
+
+    it("should have an empty array of children", () => {
+      const cell = cells.VectorCell.getDefault();
+      expect(cell.children).to.be.an('Array').that.is.empty;
+    });
   });
 
   describe("static#fromXmlNode()", () => {
