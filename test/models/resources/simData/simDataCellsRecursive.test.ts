@@ -1501,27 +1501,54 @@ describe("VariantCell", () => {
 
   describe("#clone()", () => {
     it("should not mutate the original", () => {
-      // TODO:
+      const owner = new MockOwner();
+      const child = cells.BooleanCell.getDefault();
+      const cell = new cells.VariantCell(0, child, owner);
+      const clone = cell.clone();
+      clone.typeHash = 0x1234;
+      expect(cell.typeHash).to.equal(0);
     });
 
     it("should not mutate the child of the original", () => {
-      // TODO:
+      const owner = new MockOwner();
+      const child = cells.BooleanCell.getDefault();
+      const cell = new cells.VariantCell(0, child, owner);
+      const clone = cell.clone();
+      clone.child.asAny.value = false;
+      expect(child.value).to.be.false;
     });
 
     it("should copy the type hash", () => {
-      // TODO:
+      const owner = new MockOwner();
+      const child = cells.BooleanCell.getDefault();
+      const cell = new cells.VariantCell(0x12, child, owner);
+      const clone = cell.clone();
+      expect(clone.typeHash).to.equal(0x12);
     });
 
     it("should copy the child", () => {
-      // TODO:
+      const owner = new MockOwner();
+      const child = cells.BooleanCell.getDefault();
+      const cell = new cells.VariantCell(0x12, child, owner);
+      const clone = cell.clone();
+      expect(clone.child.dataType).to.equal(SimDataType.Boolean);
+      expect(clone.child.asAny.value).to.be.false;
     });
 
     it("should not copy the owner", () => {
-      // TODO:
+      const owner = new MockOwner();
+      const child = cells.BooleanCell.getDefault();
+      const cell = new cells.VariantCell(0x12, child, owner);
+      const clone = cell.clone();
+      expect(clone.owner).to.be.undefined;
     });
 
     it("should not copy the owner of the child", () => {
-      // TODO:
+      const owner = new MockOwner();
+      const child = cells.BooleanCell.getDefault();
+      const cell = new cells.VariantCell(0x12, child, owner);
+      const clone = cell.clone();
+      expect(clone.child.owner).to.be.undefined;
     });
   });
 
