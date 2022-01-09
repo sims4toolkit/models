@@ -1552,19 +1552,13 @@ describe("VariantCell", () => {
     });
 
     it("should contain its child and write its type", () => {
-      // TODO:
-//       const cell = new cells.VectorCell([
-//         new cells.BooleanCell(true),
-//         new cells.BooleanCell(false),
-//       ]);
-//       const node = cell.toXmlNode();
-//       expect(node.children).to.have.lengthOf(2);
-//       expect(node.children[0].attributes.type).to.equal("Boolean");
-//       expect(node.children[1].attributes.type).to.equal("Boolean");
-//       expect(node.toXml()).to.equal(`<L>
-//   <T type="Boolean">1</T>
-//   <T type="Boolean">0</T>
-// </L>`);
+      const cell = new cells.VariantCell(0x1234, new cells.BooleanCell(true));
+      const node = cell.toXmlNode();
+      expect(node.children).to.have.lengthOf(1);
+      expect(node.child.attributes.type).to.equal("Boolean");
+      expect(node.toXml()).to.equal(`<V variant="0x00001234">
+  <T type="Boolean">1</T>
+</V>`);
     });
   });
 
