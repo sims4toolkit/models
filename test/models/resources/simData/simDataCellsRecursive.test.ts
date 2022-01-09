@@ -1,7 +1,7 @@
 import { expect } from "chai";
 import { simDataCells, simDataFragments, simDataTypes } from "../../../../dst/api";
 import { XmlElementNode, XmlValueNode } from "../../../../dst/lib/models/xml/dom";
-import { BinaryDecoder, BinaryEncoder } from "../../../../dst/lib/utils/encoding";
+import { BinaryEncoder } from "../../../../dst/lib/utils/encoding";
 import MockOwner from "../../../mocks/mockOwner";
 
 const cells = simDataCells;
@@ -322,7 +322,7 @@ describe("ObjectCell", () => {
         uint32: new cells.NumberCell(SimDataType.UInt32, 15)
       });
       cell.encode(encoder, { offset: -5 });
-      const decoder = new BinaryDecoder(buffer);
+      const decoder = encoder.getDecoder();
       expect(decoder.int32()).to.equal(-5);
     });
 
@@ -335,7 +335,7 @@ describe("ObjectCell", () => {
         uint32: new cells.NumberCell(SimDataType.UInt32, 15)
       });
       cell.encode(encoder, { offset: 5 });
-      const decoder = new BinaryDecoder(buffer);
+      const decoder = encoder.getDecoder();
       expect(decoder.int32()).to.equal(5);
     });
 
