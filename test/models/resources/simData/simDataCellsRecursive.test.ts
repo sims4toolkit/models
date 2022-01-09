@@ -1274,11 +1274,101 @@ describe("VectorCell", () => {
     });
 
     it("should read object children correctly, if its schema is provided", () => {
-      // TODO:
+      const node = new XmlElementNode({
+        tag: "L",
+        children: [
+          new XmlElementNode({
+            tag: "U",
+            attributes: {
+              type: "Object",
+              schema: "TestSchema"
+            },
+            children: [
+              new XmlElementNode({
+                tag: "T",
+                attributes: {
+                  name: "boolean"
+                },
+                children: [
+                  new XmlValueNode(true)
+                ]
+              }),
+              new XmlElementNode({
+                tag: "T",
+                attributes: {
+                  name: "uint32"
+                },
+                children: [
+                  new XmlValueNode(15)
+                ]
+              }),
+              new XmlElementNode({
+                tag: "T",
+                attributes: {
+                  name: "string"
+                },
+                children: [
+                  new XmlValueNode("hi")
+                ]
+              })
+            ]
+          })
+        ]
+      });
+
+      const cell = cells.VectorCell.fromXmlNode<simDataCells.ObjectCell>(node, [testSchema]);
+      expect(cell.length).to.equal(1);
+      const obj = cell.children[0];
+      expect(obj.rowLength).to.equal(3);
+      expect(obj.row.boolean.asAny.value).to.equal(true);
+      expect(obj.row.uint32.asAny.value).to.equal(15);
+      expect(obj.row.string.asAny.value).to.equal("hi");
     });
 
     it("should throw if children are objects but their schema wasn't provided", () => {
-      // TODO:
+      const node = new XmlElementNode({
+        tag: "L",
+        children: [
+          new XmlElementNode({
+            tag: "U",
+            attributes: {
+              type: "Object",
+              schema: "TestSchema"
+            },
+            children: [
+              new XmlElementNode({
+                tag: "T",
+                attributes: {
+                  name: "boolean"
+                },
+                children: [
+                  new XmlValueNode(true)
+                ]
+              }),
+              new XmlElementNode({
+                tag: "T",
+                attributes: {
+                  name: "uint32"
+                },
+                children: [
+                  new XmlValueNode(15)
+                ]
+              }),
+              new XmlElementNode({
+                tag: "T",
+                attributes: {
+                  name: "string"
+                },
+                children: [
+                  new XmlValueNode("hi")
+                ]
+              })
+            ]
+          })
+        ]
+      });
+
+      expect(() => cells.VectorCell.fromXmlNode(node)).to.throw();
     });
 
     it("should not have an owner", () => {
