@@ -1018,11 +1018,19 @@ describe("VectorCell", () => {
     });
 
     it("should throw if one of this vector's children has a different owner and ignoreCache is false", () => {
-      // TODO:
+      const child = cells.BooleanCell.getDefault();
+      const owner = new MockOwner();
+      const cell = new cells.VectorCell([ child ], owner);
+      child.owner = new MockOwner();
+      expect(() => cell.validate({ ignoreCache: false })).to.throw();
     });
 
     it("should not throw if one of this vector's children has a different owner and ignoreCache is true", () => {
-      // TODO:
+      const child = cells.BooleanCell.getDefault();
+      const owner = new MockOwner();
+      const cell = new cells.VectorCell([ child ], owner);
+      child.owner = new MockOwner();
+      expect(() => cell.validate({ ignoreCache: true })).to.not.throw();
     });
   });
 
