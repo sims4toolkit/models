@@ -88,8 +88,8 @@ describe("BooleanCell", function() {
     });
 
     it("should not copy the owner", () => {
-      const cell = new cells.BooleanCell(true);
-      const owner = new cells.VariantCell(0, cell);
+      const owner = new MockOwner();
+      const cell = new cells.BooleanCell(true, owner);
       const clone = cell.clone();
       expect(cell.owner).to.equal(owner);
       expect(clone.owner).to.be.undefined;
