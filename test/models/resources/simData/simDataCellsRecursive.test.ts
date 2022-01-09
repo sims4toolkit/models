@@ -754,6 +754,17 @@ describe("VectorCell", () => {
       const child = cell.children[0];
       expect(owner.cached).to.be.true;
     });
+
+    it("should uncache the owner when sorted", () => {
+      const owner = new MockOwner();
+      const cell = new cells.VectorCell<simDataCells.NumberCell>([
+        new cells.NumberCell(SimDataType.UInt32, 2),
+        new cells.NumberCell(SimDataType.UInt32, 1)
+      ], owner);
+      expect(owner.cached).to.be.true;
+      cell.children.sort((a, b) => a.value - b.value);
+      expect(owner.cached).to.be.false;
+    });
   });
 
   describe("#childType", () => {
