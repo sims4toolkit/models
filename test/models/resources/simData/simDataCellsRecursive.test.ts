@@ -1476,44 +1476,37 @@ describe("VariantCell", () => {
 
   describe("#encode()", () => {
     it("should throw if no offset is provided", () => {
-      // const buffer = Buffer.alloc(8);
-      // const encoder = new BinaryEncoder(buffer);
-      // const cell = new cells.VectorCell([]);
-      // expect(() => cell.encode(encoder)).to.throw();
-      // TODO:
+      const buffer = Buffer.alloc(8);
+      const encoder = new BinaryEncoder(buffer);
+      const cell = cells.VariantCell.getDefault();
+      expect(() => cell.encode(encoder)).to.throw();
     });
 
     it("should throw if the variant is invalid", () => {
-      // const buffer = Buffer.alloc(8);
-      // const encoder = new BinaryEncoder(buffer);
-      // const cell = new cells.VectorCell([
-      //   cells.BooleanCell.getDefault(),
-      //   cells.NumberCell.getDefault(SimDataType.UInt32)
-      // ]);
-      // expect(() => cell.encode(encoder, { offset: 4 })).to.throw();
-      // TODO:
+      const buffer = Buffer.alloc(8);
+      const encoder = new BinaryEncoder(buffer);
+      const cell = new cells.VariantCell(-0x1234, undefined);
+      expect(() => cell.encode(encoder, { offset: 4 })).to.throw();
     });
 
     it("should write the (positive) offset and type hash", () => {
-      // const buffer = Buffer.alloc(8);
-      // const encoder = new BinaryEncoder(buffer);
-      // const cell = new cells.VectorCell([]);
-      // cell.encode(encoder, { offset: 10 });
-      // const decoder = encoder.getDecoder();
-      // expect(decoder.int32()).to.equal(10);
-      // expect(decoder.uint32()).to.equal(0);
-      // TODO:
+      const buffer = Buffer.alloc(8);
+      const encoder = new BinaryEncoder(buffer);
+      const cell = new cells.VariantCell(0x1234, undefined);
+      cell.encode(encoder, { offset: 10 });
+      const decoder = encoder.getDecoder();
+      expect(decoder.int32()).to.equal(10);
+      expect(decoder.uint32()).to.equal(0x1234);
     });
 
     it("should write the (negative) offset and type hash", () => {
-      // const buffer = Buffer.alloc(8);
-      // const encoder = new BinaryEncoder(buffer);
-      // const cell = new cells.VectorCell([]);
-      // cell.encode(encoder, { offset: 10 });
-      // const decoder = encoder.getDecoder();
-      // expect(decoder.int32()).to.equal(10);
-      // expect(decoder.uint32()).to.equal(0);
-      // TODO:
+      const buffer = Buffer.alloc(8);
+      const encoder = new BinaryEncoder(buffer);
+      const cell = new cells.VariantCell(0x1234, undefined);
+      cell.encode(encoder, { offset: -10 });
+      const decoder = encoder.getDecoder();
+      expect(decoder.int32()).to.equal(-10);
+      expect(decoder.uint32()).to.equal(0x1234);
     });
   });
 
@@ -1591,11 +1584,11 @@ describe("VariantCell", () => {
       // TODO:
     });
 
-    it("should throw if this variant's type hash is null", () => {
+    it("should throw if this variant's type hash is negative", () => {
       // TODO:
     });
 
-    it("should throw if this variant's type hash is NaN", () => {
+    it("should throw if this variant's type hash is larger than 32 bit", () => {
       // TODO:
     });
 
