@@ -25,6 +25,18 @@ const testSchema = new SimDataSchema("TestSchema", 0x1234, [
   new SimDataSchemaColumn("string", SimDataType.String, 0)
 ]);
 
+const nestedObjectSchema = new SimDataSchema("NestedObject", 0x12, [
+  new SimDataSchemaColumn("obj", SimDataType.Object, 0)
+]);
+
+function newValidObjectCell(): simDataCells.ObjectCell {
+  return new cells.ObjectCell(testSchema, {
+    boolean: new cells.BooleanCell(true),
+    uint32: new cells.NumberCell(SimDataType.UInt32, 15),
+    string: new cells.TextCell(SimDataType.String, "Hi")
+  });
+}
+
 //#endregion Helpers
 
 //#region Tests
@@ -2354,11 +2366,7 @@ describe("ObjectCell", () => {
     });
 
     it("should not create a new schema object for its children if not told to", () => {
-      const outerSchema = new SimDataSchema("NestedObject", 0x12, [
-        new SimDataSchemaColumn("obj", SimDataType.Object, 0)
-      ]);
-
-      const cell = new cells.ObjectCell(outerSchema, {
+      const cell = new cells.ObjectCell(nestedObjectSchema, {
         obj: new cells.ObjectCell(testSchema, {
           boolean: new cells.BooleanCell(true)
         })
@@ -2378,11 +2386,7 @@ describe("ObjectCell", () => {
     });
 
     it("should create a new schema object for its children if told to", () => {
-      const outerSchema = new SimDataSchema("NestedObject", 0x12, [
-        new SimDataSchemaColumn("obj", SimDataType.Object, 0)
-      ]);
-
-      const cell = new cells.ObjectCell(outerSchema, {
+      const cell = new cells.ObjectCell(nestedObjectSchema, {
         obj: new cells.ObjectCell(testSchema, {
           boolean: new cells.BooleanCell(true)
         })
@@ -2451,39 +2455,85 @@ describe("ObjectCell", () => {
 
   describe("#toXmlNode()", () => {
     it("should write the name of the schema in an attribute", () => {
-      // TODO:
+      const cell = newValidObjectCell();
+      const node = cell.toXmlNode();
+      expect(node.attributes.schema).to.equal("TestSchema");
     });
 
     it("should use a U tag", () => {
-      // TODO:
+      const cell = newValidObjectCell();
+      const node = cell.toXmlNode();
+      expect(node.tag).to.equal("U");
     });
 
-    it("should write a primitive child correctly", () => {
-      // TODO:
+    it("should write primitive children correctly", () => {
+      const cell = newValidObjectCell();
+      const node = cell.toXmlNode();
+      expect(node.toXml()).to.equal(`<U schema="TestSchema">
+  <T name="boolean">1</T>
+  <T name="uint32">15</T>
+  <T name="string">Hi</T>
+</U>`);
     });
 
     it("should write another object child correctly", () => {
-      // TODO:
+      const cell = new cells.ObjectCell(nestedObjectSchema, {
+        obj: newValidObjectCell()
+      });
+      const node = cell.toXmlNode();
+      expect(node.toXml()).to.equal(`<U schema="NestedObject">
+  <U name="obj" schema="TestSchema">
+    <T name="boolean">1</T>
+    <T name="uint32">15</T>
+    <T name="string">Hi</T>
+  </U>
+</U>`)
     });
 
     it("should write a vector child correctly", () => {
-      // TODO:
+      const vectorSchema = new SimDataSchema("VectorSchema", 0x12, [
+        new SimDataSchemaColumn("vector", SimDataType.Vector, 0)
+      ]);
+
+      const cell = new cells.ObjectCell(vectorSchema, {
+        vector: new cells.VectorCell([new cells.BooleanCell(true)])
+      });
+
+      const node = cell.toXmlNode();
+      expect(node.toXml()).to.equal(`<U schema="VectorSchema">
+  <L name="vector">
+    <T type="Boolean">1</T>
+  </L>
+</U>`);
     });
 
     it("should write a variant child correctly", () => {
-      // TODO:
-    });
+      const variantSchema = new SimDataSchema("VariantSchema", 0x12, [
+        new SimDataSchemaColumn("variant", SimDataType.Variant, 0)
+      ]);
 
-    it("should give all children a name for their column", () => {
-      // TODO:
+      const cell = new cells.ObjectCell(variantSchema, {
+        variant: new cells.VariantCell(0x1234, new cells.BooleanCell(true))
+      });
+
+      const node = cell.toXmlNode();
+      expect(node.toXml()).to.equal(`<U schema="VariantSchema">
+  <V name="variant" variant="0x00001234">
+    <T type="Boolean">1</T>
+  </V>
+</U>`);
     });
 
     it("should write the Object type if told to", () => {
-      // TODO:
+      const cell = newValidObjectCell();
+      const node = cell.toXmlNode({ typeAttr: true });
+      expect(node.attributes.type).to.equal("Object");
     });
 
     it("should write the provided name if given one", () => {
-      // TODO:
+      const cell = newValidObjectCell();
+      const node = cell.toXmlNode({ nameAttr: "something" });
+      expect(node.attributes.name).to.equal("something");
     });
   });
 
