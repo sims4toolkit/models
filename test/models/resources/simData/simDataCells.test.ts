@@ -2100,6 +2100,22 @@ describe("Float4Cell", function() {
 });
 
 describe("ObjectCell", () => {
+  describe("#owner", () => {
+    it("should update the owner of all children when set", () => {
+      const firstOwner = new MockOwner();
+      const boolean = new cells.BooleanCell(true);
+      const string = new cells.TextCell(SimDataType.String, "Hi");
+      const cell = new cells.ObjectCell(testSchema, {
+        boolean,
+        string
+      }, firstOwner);
+      const secondOwner = new MockOwner();
+      cell.owner = secondOwner;
+      expect(boolean.owner).to.equal(secondOwner);
+      expect(string.owner).to.equal(secondOwner);
+    });
+  });
+
   describe("#row", () => {
     it("should uncache the owner when a child is added", () => {
       const owner = new MockOwner();
@@ -2202,51 +2218,74 @@ describe("ObjectCell", () => {
 
   describe("#rowLength", () => {
     it("should return the number of children in this object", () => {
-      // TODO:
+      const cell = new cells.ObjectCell(testSchema, {
+        boolean: new cells.BooleanCell(true)
+      });
+      expect(cell.rowLength).to.equal(1);
     });
 
     it("should return the correct number after adding a child", () => {
-      // TODO:
+      const cell = new cells.ObjectCell(testSchema, {
+        boolean: new cells.BooleanCell(true)
+      });
+      cell.row.string = new cells.TextCell(SimDataType.String, "Hi");
+      expect(cell.rowLength).to.equal(2);
     });
 
     it("should return the correct number after deleting a child", () => {
-      // TODO:
+      const cell = new cells.ObjectCell(testSchema, {
+        boolean: new cells.BooleanCell(true)
+      });
+      delete cell.row.boolean;
+      expect(cell.rowLength).to.equal(0);
     });
   });
 
   describe("#schemaLength", () => {
     it("should return the number of columns in this object's schema", () => {
-      // TODO:
-    });
-
-    it("should return the correct number after adding to the schema", () => {
-      // TODO:
-    });
-
-    it("should return the correct number after removing from the schema", () => {
-      // TODO:
+      const cell = new cells.ObjectCell(testSchema, {});
+      expect(cell.schemaLength).to.equal(3);
     });
   });
 
   describe("#constructor", () => {
     it("should create a new object with the exact given schema", () => {
-      // TODO:
+      const cell = new cells.ObjectCell(testSchema, {});
+      expect(cell.schema).to.equal(testSchema);
     });
 
     it("should set the owner of all given children", () => {
-      // TODO:
+      const owner = new MockOwner()
+      const boolean = new cells.BooleanCell(true);
+      const string = new cells.TextCell(SimDataType.String, "Hi");
+      const cell = new cells.ObjectCell(testSchema, {
+        boolean,
+        string
+      }, owner);
+      expect(boolean.owner).to.equal(owner);
+      expect(string.owner).to.equal(owner);
     });
 
     it("should contain the given children", () => {
-      // TODO:
+      const boolean = new cells.BooleanCell(true);
+      const string = new cells.TextCell(SimDataType.String, "Hi");
+      const cell = new cells.ObjectCell(testSchema, {
+        boolean,
+        string
+      });
+      expect(cell.row.boolean).to.equal(boolean);
+      expect(cell.row.string).to.equal(string);
     });
 
     it("should use the owner that is given", () => {
-      // TODO:
+      const owner = new MockOwner();
+      const cell = new cells.ObjectCell(testSchema, {}, owner);
+      expect(cell.owner).to.equal(owner);
     });
 
     it("should not have an owner if one isn't given", () => {
-      // TODO:
+      const cell = new cells.ObjectCell(testSchema, {});
+      expect(cell.owner).to.be.undefined;
     });
   });
 
@@ -2478,6 +2517,16 @@ describe("VectorCell", () => {
     });
   });
 
+  describe("#childType", () => {
+    it("should return the data type of the first child", () => {
+      // TODO:
+    });
+
+    it("should return undefined when there are no children", () => {
+      // TODO:
+    });
+  });
+
   describe("#length", () => {
     it("should return 0 when there are no children", () => {
       // TODO:
@@ -2496,12 +2545,8 @@ describe("VectorCell", () => {
     });
   });
 
-  describe("#childType", () => {
-    it("should return the data type of the first child", () => {
-      // TODO:
-    });
-
-    it("should return undefined when there are no children", () => {
+  describe("#owner", () => {
+    it("should update the owner of all children when set", () => {
       // TODO:
     });
   });
@@ -2586,6 +2631,12 @@ describe("VariantCell", () => {
 
   describe("#childType", () => {
     // TODO:
+  });
+
+  describe("#owner", () => {
+    it("should update the owner of all children when set", () => {
+      // TODO:
+    });
   });
 
   describe("#typeHash", () => {
