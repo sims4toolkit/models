@@ -1155,7 +1155,143 @@ describe("VectorCell", () => {
   });
 
   describe("static#fromXmlNode()", () => {
-    // TODO:
+    const validNode = new XmlElementNode({
+      tag: "L",
+      children: [
+        new XmlElementNode({
+          tag: "T",
+          attributes: {
+            type: "Boolean"
+          },
+          children: [
+            new XmlValueNode(true)
+          ]
+        }),
+        new XmlElementNode({
+          tag: "T",
+          attributes: {
+            type: "Boolean"
+          },
+          children: [
+            new XmlValueNode(false)
+          ]
+        })
+      ]
+    });
+
+    it("should throw if first child doesn't specify its type", () => {
+      const node = validNode.clone();
+      delete node.children[0].attributes.type;
+      expect(() => cells.VectorCell.fromXmlNode(node)).to.throw();
+    });
+
+    it("should throw if other child doesn't specify its type", () => {
+      const node = validNode.clone();
+      delete node.children[1].attributes.type;
+      expect(() => cells.VectorCell.fromXmlNode(node)).to.throw();
+    });
+
+    it("should throw if two children have mismatched types", () => {
+      const node = validNode.clone();
+      node.children[1].attributes.type = "Single";
+      node.children[1].innerValue = 1.5;
+      expect(() => cells.VectorCell.fromXmlNode(node)).to.throw();
+    });
+
+    it("should read children correctly", () => {
+      const cell = cells.VectorCell.fromXmlNode<simDataCells.BooleanCell>(validNode);
+      expect(cell.children).to.have.lengthOf(2);
+      const [ child1, child2 ] = cell.children;
+      expect(child1.dataType).to.equal(SimDataType.Boolean);
+      expect(child1.value).to.be.true;
+      expect(child2.dataType).to.equal(SimDataType.Boolean);
+      expect(child2.value).to.be.false;
+    });
+
+    it("should read vector children correctly", () => {
+      const node = new XmlElementNode({
+        tag: "L",
+        children: [
+          new XmlElementNode({
+            tag: "L",
+            attributes: {
+              type: "Vector"
+            },
+            children: [
+              new XmlElementNode({
+                tag: "T",
+                attributes: {
+                  type: "Single"
+                },
+                children: [
+                  new XmlValueNode(1.5)
+                ]
+              })
+            ]
+          })
+        ]
+      });
+
+      const cell = cells.VectorCell.fromXmlNode<simDataCells.VectorCell<simDataCells.NumberCell>>(node);
+      expect(cell.childType).to.equal(SimDataType.Vector);
+      expect(cell.length).to.equal(1);
+      const single = cell.children[0].children[0];
+      expect(single.dataType).to.equal(SimDataType.Float);
+      expect(single.value).to.be.approximately(1.5, 0.001);
+    });
+
+    it("should read variant children correctly", () => {
+      const node = new XmlElementNode({
+        tag: "L",
+        children: [
+          new XmlElementNode({
+            tag: "V",
+            attributes: {
+              type: "Variant",
+              variant: "0x12345678"
+            },
+            children: [
+              new XmlElementNode({
+                tag: "T",
+                attributes: {
+                  type: "Single"
+                },
+                children: [
+                  new XmlValueNode(1.5)
+                ]
+              })
+            ]
+          })
+        ]
+      });
+
+      const cell = cells.VectorCell.fromXmlNode<simDataCells.VariantCell<simDataCells.NumberCell>>(node);
+      expect(cell.childType).to.equal(SimDataType.Variant);
+      expect(cell.length).to.equal(1);
+      const single = cell.children[0].child;
+      expect(single.dataType).to.equal(SimDataType.Float);
+      expect(single.value).to.be.approximately(1.5, 0.001);
+    });
+
+    it("should read object children correctly, if its schema is provided", () => {
+      // TODO:
+    });
+
+    it("should throw if children are objects but their schema wasn't provided", () => {
+      // TODO:
+    });
+
+    it("should not have an owner", () => {
+      const cell = cells.VectorCell.fromXmlNode(validNode);
+      expect(cell.owner).to.be.undefined;
+    });
+
+    it("should not set the owner of its children", () => {
+      const cell = cells.VectorCell.fromXmlNode(validNode);
+      cell.children.forEach(child => {
+        expect(child.owner).to.be.undefined;
+      });
+    });
   });
 });
 

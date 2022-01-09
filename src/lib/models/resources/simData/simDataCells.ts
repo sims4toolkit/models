@@ -1154,7 +1154,7 @@ export class VectorCell<T extends Cell = Cell> extends Cell {
    * @param schemas Schemas that this vectors children may follow
    * @param node Node to parse as a VectorCell
    */
-  static fromXmlNode(node: XmlNode, schemas: SimDataSchema[]): VectorCell {
+  static fromXmlNode<U extends Cell = Cell>(node: XmlNode, schemas: SimDataSchema[] = []): VectorCell<U> {
     if (node.numChildren === 0) {
       return VectorCell.getDefault();
     } else {
@@ -1171,7 +1171,10 @@ export class VectorCell<T extends Cell = Cell> extends Cell {
         return Cell.parseXmlNode(childType, childNode, schemas);
       });
 
-      return new VectorCell(children);
+      // @ts-expect-error If it's made it to this point, children are guaranteed
+      // to be of the same type. Not necessarily the given U, but there's no
+      // way to enforce that.
+      return new VectorCell<U>(children);
     }
   }
 
@@ -1190,13 +1193,13 @@ export class VectorCell<T extends Cell = Cell> extends Cell {
 /**
  * A cell that may contain another cell.
  */
-export class VariantCell extends Cell {
+export class VariantCell<T extends Cell = Cell> extends Cell {
   readonly dataType: SimDataType.Variant;
-  private _child?: Cell;
+  private _child?: T;
 
   /** The cell that this variant contains, if any. */
   get child() { return this._child; }
-  set child(child: Cell) {
+  set child(child: T) {
     this._child = child;
     if (child instanceof Cell) child.owner = this.owner;
   }
@@ -1204,7 +1207,7 @@ export class VariantCell extends Cell {
   /** Gets the data type of this cell's child, if it has one. */
   get childType(): SimDataType { return this.child?.dataType; }
 
-  constructor(public typeHash: number, child: Cell, owner?: CacheableModel) {
+  constructor(public typeHash: number, child: T, owner?: CacheableModel) {
     super(SimDataType.Variant, owner);
     this.child = child;
     this._watchProps('typeHash', 'child');
@@ -1227,7 +1230,7 @@ export class VariantCell extends Cell {
     const children: XmlNode[] = [];
     if (this.child) {
       if (this.child.dataType === SimDataType.Object) {
-        const objChild = this.child as ObjectCell;
+        const objChild = this.child as unknown as ObjectCell;
         attributes.schema = objChild.schema.name;
         objChild.schema.columns.forEach(column => {
           const child = objChild.row[column.name]
@@ -1267,7 +1270,7 @@ export class VariantCell extends Cell {
    * @param schemas Schemas that this variant's child may follow
    * @param node Node to parse as a VariantCell
    */
-  static fromXmlNode(node: XmlNode, schemas: SimDataSchema[]): VariantCell {
+  static fromXmlNode(node: XmlNode, schemas: SimDataSchema[] = []): VariantCell {
     const typeHash = parseInt(node.attributes.variant, 16);
     if (Number.isNaN(typeHash))
       throw new Error(`Expected variant to have a numerical 'variant' attribute, but found '${node.attributes.variant}'.`);
