@@ -1555,7 +1555,19 @@ describe("VariantCell", () => {
     });
 
     it("should write object child without a U tag", () => {
-      // TODO:
+      const child = new cells.ObjectCell(testSchema, {
+        boolean: cells.BooleanCell.getDefault(),
+        uint32: cells.NumberCell.getDefault(SimDataType.UInt32),
+        string: cells.TextCell.getDefault(SimDataType.String)
+      });
+
+      const cell = new cells.VariantCell(0x1234, child);
+      const node = cell.toXmlNode();
+      expect(node.toXml()).to.equal(`<V variant="0x00001234" schema="TestSchema">
+  <T name="boolean">0</T>
+  <T name="uint32">0</T>
+  <T name="string"></T>
+</V>`);
     });
   });
 
@@ -1663,18 +1675,22 @@ describe("VariantCell", () => {
     });
 
     it("should read variant child correctly", () => {
+      const child = validNode.clone();
+      child.attributes.type = "Variant";
       const node = new XmlElementNode({
         tag: "V",
         attributes: {
           variant: "0x00001234"
         },
         children: [
-          validNode
+          child
         ]
       });
 
       const cell = cells.VariantCell.fromXmlNode<simDataCells.VariantCell<simDataCells.BooleanCell>>(node);
-      expect(cell.child.typeHash).to.equal(0x1234);
+      expect(cell.typeHash).to.equal(0x00001234);
+      expect(cell.child.typeHash).to.equal(0x12345678);
+      expect(cell.child.child.dataType).to.equal(SimDataType.Boolean);
       expect(cell.child.child.value).to.equal(true);
     });
 
