@@ -1557,43 +1557,47 @@ describe("VariantCell", () => {
 
   describe("#validate()", () => {
     it("should throw if this variant is valid, but its child isn't", () => {
-      // const cell = new cells.VectorCell([
-      //   new cells.NumberCell(SimDataType.UInt32, 15),
-      //   new cells.NumberCell(SimDataType.UInt32, -15)
-      // ]);
-
-      // expect(() => cell.validate()).to.throw();
-      // TODO:
+      const cell = new cells.VariantCell(0, new cells.NumberCell(SimDataType.UInt32, -15));
+      expect(() => cell.validate()).to.throw();
     });
 
     it("should not throw if this variant and its child are valid", () => {
-      // const cell = new cells.VectorCell([
-      //   new cells.NumberCell(SimDataType.UInt32, 15),
-      //   new cells.NumberCell(SimDataType.UInt32, 15)
-      // ]);
-
-      // expect(() => cell.validate()).to.not.throw();
-      // TODO:
-    });
-
-    it("should throw if the child's owner is different and ignoreCache is false", () => {
-      // TODO:
+      const cell = new cells.VariantCell(0, new cells.NumberCell(SimDataType.UInt32, 15));
+      expect(() => cell.validate()).to.not.throw();
     });
 
     it("should throw if this variant's type hash is undefined", () => {
-      // TODO:
+      const cell = new cells.VariantCell(undefined, undefined);
+      expect(() => cell.validate()).to.throw();
     });
 
     it("should throw if this variant's type hash is negative", () => {
-      // TODO:
+      const cell = new cells.VariantCell(-1, undefined);
+      expect(() => cell.validate()).to.throw();
     });
 
     it("should throw if this variant's type hash is larger than 32 bit", () => {
-      // TODO:
+      const cell = new cells.VariantCell(0xFFFF_FFFF_F, undefined);
+      expect(() => cell.validate()).to.throw();
+    });
+
+    it("should not throw if this variant's child is undefined", () => {
+      const cell = new cells.VariantCell(0x1234, undefined);
+      expect(() => cell.validate()).to.not.throw();
+    });
+
+    it("should throw if the child's owner is different and ignoreCache is false", () => {
+      const owner = new MockOwner();
+      const cell = new cells.VariantCell(0, new cells.NumberCell(SimDataType.UInt32, 15), owner);
+      cell.child.owner = new MockOwner();
+      expect(() => cell.validate({ ignoreCache: false })).to.throw();
     });
 
     it("should not throw if the child's owner is different and ignoreCache is true", () => {
-      // TODO:
+      const owner = new MockOwner();
+      const cell = new cells.VariantCell(0, new cells.NumberCell(SimDataType.UInt32, 15), owner);
+      cell.child.owner = new MockOwner();
+      expect(() => cell.validate({ ignoreCache: true })).to.not.throw();
     });
   });
 

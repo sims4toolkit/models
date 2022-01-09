@@ -1249,11 +1249,14 @@ export class VariantCell<T extends Cell = Cell> extends Cell {
   }
 
   validate({ ignoreCache = false } = {}): void {
-    if (!ignoreCache && this.child.owner !== this.owner) {
-      throw new Error("Cache Problem: Child cell has another owner.");
-    }
+    if (!SimDataTypeUtils.isNumberInRange(this.typeHash, SimDataType.UInt32))
+      throw new Error(`Expected variant's type hash to be a UInt32, but got ${this.typeHash}`);
 
-    this.child?.validate({ ignoreCache });
+    if (this.child) {      
+      if (!ignoreCache && this.child.owner !== this.owner)
+        throw new Error("Cache Problem: Child cell has another owner.");
+      this.child.validate({ ignoreCache });
+    }
   }
 
   protected _onOwnerChange(previousOwner: CacheableModel): void {
