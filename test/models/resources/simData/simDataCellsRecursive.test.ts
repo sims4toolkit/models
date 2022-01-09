@@ -899,7 +899,86 @@ describe("VectorCell", () => {
   });
 
   describe("#removeChildren()", () => {
-    // TODO:
+    it("should remove the one child that is given", () => {
+      const childToRemove = cells.BooleanCell.getDefault();
+      const cell = new cells.VectorCell([
+        childToRemove
+      ]);
+      cell.removeChildren(childToRemove);
+      expect(cell.children).to.be.empty;
+    });
+
+    it("should remove the children that are given", () => {
+      const childToRemove1 = new cells.BooleanCell(true);
+      const childToRemove2 = new cells.BooleanCell(false);
+      const cell = new cells.VectorCell([
+        childToRemove1,
+        childToRemove2
+      ]);
+      cell.removeChildren(childToRemove1, childToRemove2);
+      expect(cell.children).to.be.empty;
+    });
+
+    it("should do nothing if a child that doesn't belong to this vector is given", () => {
+      const childToRemove = new cells.BooleanCell(true);
+      const cell = new cells.VectorCell([
+        new cells.BooleanCell(false)
+      ]);
+      cell.removeChildren(childToRemove);
+      expect(cell.length).to.equal(1);
+    });
+
+    it("should only remove the first child if this vector contains two of the same object", () => {
+      const childToRemove = new cells.BooleanCell(true);
+      const cell = new cells.VectorCell([
+        childToRemove,
+        childToRemove
+      ]);
+      cell.removeChildren(childToRemove);
+      expect(cell.length).to.equal(1);
+    });
+
+    it("should not remove any children that are not given", () => {
+      const childToRemove2 = new cells.BooleanCell(false);
+      const cell = new cells.VectorCell([
+        new cells.BooleanCell(true),
+        childToRemove2
+      ]);
+      cell.removeChildren(childToRemove2);
+      expect(cell.length).to.equal(1);
+      expect(cell.children[0].value).to.be.true;
+    });
+
+    it("should not remove an identical, but different, cell that it contains", () => {
+      const childToRemove = new cells.BooleanCell(true);
+      const cell = new cells.VectorCell([
+        new cells.BooleanCell(true)
+      ]);
+      cell.removeChildren(childToRemove);
+      expect(cell.length).to.equal(1);
+    });
+
+    it("should uncache the owner if at least one child is removed", () => {
+      const owner = new MockOwner();
+      const childToRemove = new cells.BooleanCell(true);
+      const cell = new cells.VectorCell([
+        childToRemove
+      ], owner);
+      expect(owner.cached).to.be.true;
+      cell.removeChildren(childToRemove);
+      expect(owner.cached).to.be.false;
+    });
+
+    it("should not uncache the owner if no children are removed", () => {
+      const owner = new MockOwner();
+      const childToRemove = new cells.BooleanCell(true);
+      const cell = new cells.VectorCell([
+        new cells.BooleanCell(false)
+      ], owner);
+      expect(owner.cached).to.be.true;
+      cell.removeChildren(childToRemove);
+      expect(owner.cached).to.be.true;
+    });
   });
 
   describe("#encode()", () => {
