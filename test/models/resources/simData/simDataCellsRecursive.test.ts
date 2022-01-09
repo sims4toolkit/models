@@ -1388,25 +1388,47 @@ describe("VectorCell", () => {
 describe("VariantCell", () => {
   describe("#child", () => {
     it("should uncache the owner when set", () => {
-      // TODO:
+      const owner = new MockOwner();
+      const cell = new cells.VariantCell(0, cells.BooleanCell.getDefault(), owner);
+      expect(owner.cached).to.be.true;
+      cell.child = cell.child.clone();
+      expect(owner.cached).to.be.false;
     });
 
     it("should uncache the owner when mutated", () => {
-      // TODO:
+      const owner = new MockOwner();
+      const cell = new cells.VariantCell(0, cells.BooleanCell.getDefault(), owner);
+      expect(owner.cached).to.be.true;
+      cell.child.value = false;
+      expect(owner.cached).to.be.false;
     });
 
     it("should uncache the owner when deleted", () => {
-      // TODO:
+      const owner = new MockOwner();
+      const cell = new cells.VariantCell(0, cells.BooleanCell.getDefault(), owner);
+      expect(owner.cached).to.be.true;
+      delete cell.child;
+      expect(owner.cached).to.be.false;
+    });
+
+    it("should not uncache the owner when retrieved", () => {
+      const owner = new MockOwner();
+      const cell = new cells.VariantCell(0, cells.BooleanCell.getDefault(), owner);
+      expect(owner.cached).to.be.true;
+      const child = cell.child;
+      expect(owner.cached).to.be.true;
     });
   });
 
   describe("#childType", () => {
     it("should be undefined if there is no child", () => {
-      // TODO:
+      const cell = cells.VariantCell.getDefault();
+      expect(cell.childType).to.be.undefined;
     });
 
     it("should be the data type of the child", () => {
-      // TODO:
+      const cell = new cells.VariantCell(0, cells.BooleanCell.getDefault());
+      expect(cell.childType).to.equal(SimDataType.Boolean);
     });
   });
 
