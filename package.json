@@ -12,7 +12,7 @@
     "dev": "npm run clear ; tsc --watch",
     "build": "npm run clear ; tsc",
     "test": "mocha -r ts-node/register \"test/**/*.test.ts\"",
-    "test:current": "mocha -r ts-node/register \"test/**/simDataCellsRecursive.test.ts\""
+    "test:current": "mocha -r ts-node/register \"test/**/simDataFragments.test.ts\""
   },
   "author": "frankkulak",
   "license": "MIT",
