@@ -16,6 +16,13 @@ export default abstract class CacheableModel {
         if (property === 'owner') target._onOwnerChange(prev);
         if (target._cachedProps.includes(property)) target.uncache();
         return ref;
+      },
+      deleteProperty(target: CacheableModel, property: string) {
+        const prev: any = target[property];
+        const ref = Reflect.deleteProperty(target, property);
+        if (property === 'owner') target._onOwnerChange(prev);
+        if (target._cachedProps.includes(property)) target.uncache();
+        return ref;
       }
     });
   }
