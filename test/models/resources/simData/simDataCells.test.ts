@@ -1,5 +1,6 @@
 import { expect } from "chai";
 import { simDataCells, simDataFragments, hashing, simDataTypes, xmlDom } from "../../../../dst/api";
+import { XmlElementNode, XmlValueNode } from "../../../../dst/lib/models/xml/dom";
 import { BinaryDecoder, BinaryEncoder } from "../../../../dst/lib/utils/encoding";
 import MockOwner from "../../../mocks/mockOwner";
 
@@ -2607,44 +2608,168 @@ describe("ObjectCell", () => {
   });
 
   describe("static#fromXmlNode()", () => {
+    const node = new XmlElementNode({
+      tag: "U",
+      attributes: {
+        name: "obj",
+        schema: "TestSchema"
+      },
+      children: [
+        new XmlElementNode({
+          tag: "T",
+          attributes: {
+            name: "boolean"
+          },
+          children: [
+            new XmlValueNode(true)
+          ]
+        }),
+        new XmlElementNode({
+          tag: "T",
+          attributes: {
+            name: "uint32"
+          },
+          children: [
+            new XmlValueNode(15)
+          ]
+        }),
+        new XmlElementNode({
+          tag: "T",
+          attributes: {
+            name: "string"
+          },
+          children: [
+            new XmlValueNode("hi")
+          ]
+        })
+      ]
+    });
+
     it("should create a cell following a given schema", () => {
-      // TODO:
-    });
-
-    it("should have a type of object", () => {
-      // TODO:
-    });
-
-    it("should contain the correct primitive children", () => {
-      // TODO:
+      const cell = cells.ObjectCell.fromXmlNode(node, [testSchema]);
+      expect(cell.dataType).to.equal(SimDataType.Object);
+      expect(cell.rowLength).to.equal(3);
+      expect(cell.row.boolean?.asAny.value).to.equal(true);
+      expect(cell.row.uint32?.asAny.value).to.equal(15);
+      expect(cell.row.string?.asAny.value).to.equal("hi");
     });
 
     it("should contain a vector child if there is one", () => {
-      // TODO:
+      const vectorSchema = new SimDataSchema("VectorSchema", 0x12, [
+        new SimDataSchemaColumn("vector", SimDataType.Vector, 0)
+      ]);
+
+      const node = new XmlElementNode({
+        tag: "U",
+        attributes: {
+          schema: "VectorSchema" 
+        },
+        children: [
+          new XmlElementNode({
+            tag: "L",
+            attributes: {
+              name: "vector"
+            },
+            children: [
+              new XmlElementNode({
+                tag: "T",
+                attributes: {
+                  type: "Boolean" 
+                },
+                children: [
+                  new XmlValueNode("1")
+                ]
+              })
+            ]
+          })
+        ]
+      });
+
+      const cell = cells.ObjectCell.fromXmlNode(node, [vectorSchema]);
+      expect(cell.row.vector?.asAny.children[0].value).to.be.true;
     });
 
     it("should contain a variant child if there is one", () => {
-      // TODO:
+      const variantSchema = new SimDataSchema("VariantSchema", 0x12, [
+        new SimDataSchemaColumn("variant", SimDataType.Variant, 0)
+      ]);
+
+      const node = new XmlElementNode({
+        tag: "U",
+        attributes: {
+          schema: "VariantSchema" 
+        },
+        children: [
+          new XmlElementNode({
+            tag: "V",
+            attributes: {
+              name: "variant",
+              variant: "0x00001234"
+            },
+            children: [
+              new XmlElementNode({
+                tag: "T",
+                attributes: {
+                  type: "Boolean" 
+                },
+                children: [
+                  new XmlValueNode("1")
+                ]
+              })
+            ]
+          })
+        ]
+      });
+
+      const cell = cells.ObjectCell.fromXmlNode(node, [variantSchema]);
+      expect(cell.row.variant?.asAny.child.value).to.be.true;
     });
 
     it("should contain an object child if there is one", () => {
-      // TODO:
+      const parent = new XmlElementNode({
+        tag: "U",
+        attributes: {
+          schema: "NestedObject",
+        },
+        children: [ node ]
+      });
+
+      const cell = cells.ObjectCell.fromXmlNode(parent, [testSchema, nestedObjectSchema]);
+
+      expect(cell.rowLength).to.equal(1);
+      const child: simDataCells.ObjectCell = cell.row.obj.asAny;
+      expect(child.rowLength).to.equal(3);
+      expect(child.row.boolean?.asAny.value).to.equal(true);
+      expect(child.row.uint32?.asAny.value).to.equal(15);
+      expect(child.row.string?.asAny.value).to.equal("hi");
     });
 
     it("should throw if object doesn't use one of the supplied schemas", () => {
-      // TODO:
+      expect(() => cells.ObjectCell.fromXmlNode(node, [])).to.throw();
     });
 
     it("should throw if a child object doesn't use one of the supplied schemas", () => {
-      // TODO:
+      const parent = new XmlElementNode({
+        tag: "U",
+        attributes: {
+          schema: "NestedObject",
+        },
+        children: [ node ]
+      });
+
+      expect(() => cells.ObjectCell.fromXmlNode(parent, [testSchema])).to.throw();
     });
 
     it("should throw if node is missing a column for its schema", () => {
-      // TODO:
+      const clone = node.clone();
+      clone.children.splice(0, 1);
+      expect(() => cells.ObjectCell.fromXmlNode(clone, [testSchema])).to.throw();
     });
 
     it("should throw if node has two of the same column", () => {
-      // TODO:
+      const clone = node.clone();
+      clone.addClones(clone.children[0]);
+      expect(() => cells.ObjectCell.fromXmlNode(clone, [testSchema])).to.throw();
     });
   });
 });

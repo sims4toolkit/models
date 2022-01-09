@@ -128,7 +128,7 @@ export abstract class Cell extends CacheableModel {
    * @param schemas Schemas that this cell or its children may follow
    * @param node Node to parse as a cell
    */
-  static parseXmlNode(dataType: SimDataType, schemas: SimDataSchema[], node: XmlNode): Cell {
+  static parseXmlNode(dataType: SimDataType, node: XmlNode, schemas: SimDataSchema[]): Cell {
     switch (dataType) {
       case SimDataType.Boolean:
         return BooleanCell.fromXmlNode(node);
@@ -158,11 +158,11 @@ export abstract class Cell extends CacheableModel {
       case SimDataType.ResourceKey:
         return ResourceKeyCell.fromXmlNode(node);
       case SimDataType.Object:
-        return ObjectCell.fromXmlNode(schemas, node);
+        return ObjectCell.fromXmlNode(node, schemas);
       case SimDataType.Vector:
-        return VectorCell.fromXmlNode(schemas, node);
+        return VectorCell.fromXmlNode(node, schemas);
       case SimDataType.Variant:
-        return VariantCell.fromXmlNode(schemas, node);
+        return VariantCell.fromXmlNode(node, schemas);
       case SimDataType.Undefined:
       default:
         throw new Error(`Cannot parse a "${dataType}" node as a cell.`);
@@ -1003,12 +1003,12 @@ export class ObjectCell extends Cell {
    * @param schemas Schemas that this object or its children may follow
    * @param node Node to parse as a ObjectCell
    */
-  static fromXmlNode(schemas: SimDataSchema[], node: XmlNode): ObjectCell {
-    const { schema, row } = ObjectCell._parseXmlNode(schemas, node);
+  static fromXmlNode(node: XmlNode, schemas: SimDataSchema[]): ObjectCell {
+    const { schema, row } = ObjectCell._parseXmlNode(node, schemas);
     return new ObjectCell(schema, row);
   }
 
-  protected static _parseXmlNode(schemas: SimDataSchema[], node: XmlNode): { schema: SimDataSchema, row: ObjectCellRow } {
+  protected static _parseXmlNode(node: XmlNode, schemas: SimDataSchema[]): { schema: SimDataSchema, row: ObjectCellRow } {
     const schema = schemas.find(schema => schema.name === node.attributes.schema);
     if (!schema)
       throw new Error(`Missing a schema with the name "${node.attributes.schema}".`);
@@ -1027,7 +1027,7 @@ export class ObjectCell extends Cell {
       const child = namedChildNodes[column.name];
       if (!child)
         throw new Error(`${schema} Object is missing its "${column.name}" column.`);
-      const cell = Cell.parseXmlNode(column.type, schemas, child);
+      const cell = Cell.parseXmlNode(column.type, child, schemas);
       row[column.name] = cell;
     });
 
@@ -1193,7 +1193,7 @@ export class VectorCell<T extends Cell = Cell> extends Cell {
    * @param schemas Schemas that this vectors children may follow
    * @param node Node to parse as a VectorCell
    */
-  static fromXmlNode(schemas: SimDataSchema[], node: XmlNode): VectorCell {
+  static fromXmlNode(node: XmlNode, schemas: SimDataSchema[]): VectorCell {
     if (node.numChildren === 0) {
       return VectorCell.getDefault();
     } else {
@@ -1207,7 +1207,7 @@ export class VectorCell<T extends Cell = Cell> extends Cell {
         const thisChildType = SimDataTypeUtils.parseSims4StudioName(type);
         if (thisChildType !== childType)
           throw new Error(`Vector children have mis-matched types: ${childType} ≠ ${thisChildType}`);
-        return Cell.parseXmlNode(childType, schemas, childNode);
+        return Cell.parseXmlNode(childType, childNode, schemas);
       });
 
       return new VectorCell(children);
@@ -1306,20 +1306,20 @@ export class VariantCell extends Cell {
    * @param schemas Schemas that this variant's child may follow
    * @param node Node to parse as a VariantCell
    */
-  static fromXmlNode(schemas: SimDataSchema[], node: XmlNode): VariantCell {
+  static fromXmlNode(node: XmlNode, schemas: SimDataSchema[]): VariantCell {
     const typeHash = parseInt(node.attributes.variant, 16);
     if (Number.isNaN(typeHash))
       throw new Error(`Expected variant to have a numerical 'variant' attribute, but found '${node.attributes.variant}'.`);
 
     if (node.attributes.schema) {
-      const child = ObjectCell.fromXmlNode(schemas, node);
+      const child = ObjectCell.fromXmlNode(node, schemas);
       return new VariantCell(typeHash, child);
     } else {
       if (node.child) {
         const childType = SimDataTypeUtils.parseSims4StudioName(node.child.attributes.type);
         if (childType === undefined)
           throw new Error(`'${childType}' is not a valid value for the 'type' attribute.`);
-        const child = Cell.parseXmlNode(childType, schemas, node.child);
+        const child = Cell.parseXmlNode(childType, node.child, schemas);
         return new VariantCell(typeHash, child);
       } else {
         return new VariantCell(typeHash, undefined);
