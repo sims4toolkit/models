@@ -147,7 +147,7 @@ export default class SimDataResource extends Resource implements SimDataDto {
 
     const instancesNode = dom.children.find(node => node.tag === "Instances");
     const instances = instancesNode.children.map(instanceNode => {
-      return SimDataInstance.fromXmlNode(schemas, instanceNode);
+      return SimDataInstance.fromXmlNode(instanceNode, schemas);
     });
 
     return new SimDataResource(version, unused, schemas, instances);

@@ -2777,31 +2777,69 @@ describe("ObjectCell", () => {
 describe("VectorCell", () => {
   describe("#children", () => {
     it("should uncache the owner when pushed", () => {
-      // TODO:
+      const owner = new MockOwner();
+      const cell = new cells.VectorCell<simDataCells.BooleanCell>([], owner);
+      expect(owner.cached).to.be.true;
+      cell.children.push(new cells.BooleanCell(true));
+      expect(owner.cached).to.be.false;
     });
 
     it("should set the owner of a child that is pushed", () => {
-      // TODO:
+      const owner = new MockOwner();
+      const cell = new cells.VectorCell<simDataCells.BooleanCell>([], owner);
+      const child = new cells.BooleanCell(true);
+      cell.children.push(child);
+      expect(child.owner).to.equal(owner);
     });
 
     it("should uncache the owner when spliced", () => {
-      // TODO:
+      const owner = new MockOwner();
+      const cell = new cells.VectorCell<simDataCells.BooleanCell>([
+        new cells.BooleanCell(true)
+      ], owner);
+      expect(owner.cached).to.be.true;
+      cell.children.splice(0, 1);
+      expect(owner.cached).to.be.false;
     });
 
     it("should uncache the owner when a child is mutated", () => {
-      // TODO:
+      const owner = new MockOwner();
+      const cell = new cells.VectorCell<simDataCells.BooleanCell>([
+        new cells.BooleanCell(true)
+      ], owner);
+      expect(owner.cached).to.be.true;
+      cell.children[0].value = false;
+      expect(owner.cached).to.be.false;
     });
 
     it("should uncache the owner when a child is set", () => {
-      // TODO:
+      const owner = new MockOwner();
+      const cell = new cells.VectorCell<simDataCells.BooleanCell>([
+        new cells.BooleanCell(true)
+      ], owner);
+      expect(owner.cached).to.be.true;
+      cell.children[0] = new cells.BooleanCell(false);
+      expect(owner.cached).to.be.false;
     });
 
     it("should set the owner of a child that is set", () => {
-      // TODO:
+      const owner = new MockOwner();
+      const cell = new cells.VectorCell<simDataCells.BooleanCell>([
+        new cells.BooleanCell(true)
+      ], owner);
+      const child = new cells.BooleanCell(false);
+      cell.children[0] = child;
+      expect(child.owner).to.equal(owner);
     });
 
     it("should not uncache the owner when a child is retrieved", () => {
-      // TODO:
+      const owner = new MockOwner();
+      const cell = new cells.VectorCell<simDataCells.BooleanCell>([
+        new cells.BooleanCell(true)
+      ], owner);
+      expect(owner.cached).to.be.true;
+      const child = cell.children[0];
+      expect(owner.cached).to.be.true;
     });
   });
 

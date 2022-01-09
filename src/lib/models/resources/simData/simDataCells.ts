@@ -888,7 +888,7 @@ export class ObjectCell extends Cell {
     const owner = this.owner;
     for (const colName in row) if (row[colName]) row[colName].owner = owner;
     this._row = getProxy(row, (t, p, child: Cell) => {
-      if (child) child.owner = owner;
+      if (child instanceof Cell) child.owner = owner;
       owner?.uncache();
     });
   }
@@ -1053,7 +1053,7 @@ export class VectorCell<T extends Cell = Cell> extends Cell {
     const owner = this.owner;
     children.forEach(child => child.owner = owner);
     this._children = getProxy(children, (t, p, child: Cell) => {
-      if (child) child.owner = owner;
+      if (child instanceof Cell) child.owner = owner;
       owner?.uncache();
     });
   }
@@ -1237,7 +1237,7 @@ export class VariantCell extends Cell {
   get child() { return this._child; }
   set child(child: Cell) {
     this._child = child;
-    if (child) child.owner = this.owner;
+    if (child instanceof Cell) child.owner = this.owner;
   }
 
   /** Gets the data type of this cell's child, if it has one. */
