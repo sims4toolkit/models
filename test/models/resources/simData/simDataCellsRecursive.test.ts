@@ -1387,10 +1387,6 @@ describe("VectorCell", () => {
 
 describe("VariantCell", () => {
   describe("#child", () => {
-    it("should change the value when set", () => {
-      // TODO:
-    });
-
     it("should uncache the owner when set", () => {
       // TODO:
     });
@@ -1399,23 +1395,31 @@ describe("VariantCell", () => {
       // TODO:
     });
 
-    it("should uncache the owner when removed", () => {
+    it("should uncache the owner when deleted", () => {
       // TODO:
     });
   });
 
   describe("#childType", () => {
-    // TODO:
+    it("should be undefined if there is no child", () => {
+      // TODO:
+    });
+
+    it("should be the data type of the child", () => {
+      // TODO:
+    });
   });
 
   describe("#owner", () => {
-    it("should update the owner of all children when set", () => {
+    it("should update the owner of the child when set", () => {
       // TODO:
     });
   });
 
   describe("#typeHash", () => {
-    // TODO:
+    it("should uncache the owner when set", () => {
+      // TODO:
+    });
   });
 
   describe("#constructor", () => {
@@ -1438,30 +1442,408 @@ describe("VariantCell", () => {
     it("should not have an owner if one isn't given", () => {
       // TODO:
     });
+
+    it("should not set the owner of the child if one isn't given", () => {
+      // TODO:
+    });
   });
 
   describe("#clone()", () => {
-    // TODO:
+    it("should not mutate the original", () => {
+      // TODO:
+    });
+
+    it("should not mutate the child of the original", () => {
+      // TODO:
+    });
+
+    it("should copy the type hash", () => {
+      // TODO:
+    });
+
+    it("should copy the child", () => {
+      // TODO:
+    });
+
+    it("should not copy the owner", () => {
+      // TODO:
+    });
+
+    it("should not copy the owner of the child", () => {
+      // TODO:
+    });
   });
 
   describe("#encode()", () => {
-    // TODO:
+    it("should throw if no offset is provided", () => {
+      // const buffer = Buffer.alloc(8);
+      // const encoder = new BinaryEncoder(buffer);
+      // const cell = new cells.VectorCell([]);
+      // expect(() => cell.encode(encoder)).to.throw();
+      // TODO:
+    });
+
+    it("should throw if the variant is invalid", () => {
+      // const buffer = Buffer.alloc(8);
+      // const encoder = new BinaryEncoder(buffer);
+      // const cell = new cells.VectorCell([
+      //   cells.BooleanCell.getDefault(),
+      //   cells.NumberCell.getDefault(SimDataType.UInt32)
+      // ]);
+      // expect(() => cell.encode(encoder, { offset: 4 })).to.throw();
+      // TODO:
+    });
+
+    it("should write the (positive) offset and type hash", () => {
+      // const buffer = Buffer.alloc(8);
+      // const encoder = new BinaryEncoder(buffer);
+      // const cell = new cells.VectorCell([]);
+      // cell.encode(encoder, { offset: 10 });
+      // const decoder = encoder.getDecoder();
+      // expect(decoder.int32()).to.equal(10);
+      // expect(decoder.uint32()).to.equal(0);
+      // TODO:
+    });
+
+    it("should write the (negative) offset and type hash", () => {
+      // const buffer = Buffer.alloc(8);
+      // const encoder = new BinaryEncoder(buffer);
+      // const cell = new cells.VectorCell([]);
+      // cell.encode(encoder, { offset: 10 });
+      // const decoder = encoder.getDecoder();
+      // expect(decoder.int32()).to.equal(10);
+      // expect(decoder.uint32()).to.equal(0);
+      // TODO:
+    });
   });
 
   describe("#toXmlNode()", () => {
-    // TODO:
+    it("should use a V tag", () => {
+      const cell = cells.VariantCell.getDefault();
+      const node = cell.toXmlNode();
+      expect(node.tag).to.equal("V");
+    });
+
+    it("should write the variant type hash in hex", () => {
+      const cell = new cells.VariantCell(0x00001234, undefined);
+      const node = cell.toXmlNode();
+      expect(node.attributes.variant).to.equal(0x00001234);
+      expect(node.toXml()).to.equal(`<V variant="0x00001234"/>`);
+    });
+
+    it("should write the name that is given", () => {
+      const cell = cells.VariantCell.getDefault();
+      const node = cell.toXmlNode({ nameAttr: "variant" });
+      expect(node.attributes.name).to.equal("variant");
+      expect(node.toXml()).to.equal(`<V variant="0x00000000" name="variant"/>`);
+    });
+
+    it("should write its type if told to", () => {
+      const cell = cells.VariantCell.getDefault();
+      const node = cell.toXmlNode({ typeAttr: true });
+      expect(node.attributes.type).to.equal("Variant");
+      expect(node.toXml()).to.equal(`<V variant="0x00000000" type="Variant"/>`);
+    });
+
+    it("should be empty if there is no child", () => {
+      const cell = cells.VariantCell.getDefault();
+      const node = cell.toXmlNode();
+      expect(node.toXml()).to.equal(`<V variant="0x00000000"/>`);
+    });
+
+    it("should contain its child and write its type", () => {
+      // TODO:
+//       const cell = new cells.VectorCell([
+//         new cells.BooleanCell(true),
+//         new cells.BooleanCell(false),
+//       ]);
+//       const node = cell.toXmlNode();
+//       expect(node.children).to.have.lengthOf(2);
+//       expect(node.children[0].attributes.type).to.equal("Boolean");
+//       expect(node.children[1].attributes.type).to.equal("Boolean");
+//       expect(node.toXml()).to.equal(`<L>
+//   <T type="Boolean">1</T>
+//   <T type="Boolean">0</T>
+// </L>`);
+    });
   });
 
   describe("#validate()", () => {
-    // TODO:
+    it("should throw if this variant is valid, but its child isn't", () => {
+      // const cell = new cells.VectorCell([
+      //   new cells.NumberCell(SimDataType.UInt32, 15),
+      //   new cells.NumberCell(SimDataType.UInt32, -15)
+      // ]);
+
+      // expect(() => cell.validate()).to.throw();
+      // TODO:
+    });
+
+    it("should not throw if this variant and its child are valid", () => {
+      // const cell = new cells.VectorCell([
+      //   new cells.NumberCell(SimDataType.UInt32, 15),
+      //   new cells.NumberCell(SimDataType.UInt32, 15)
+      // ]);
+
+      // expect(() => cell.validate()).to.not.throw();
+      // TODO:
+    });
+
+    it("should throw if the child's owner is different and ignoreCache is false", () => {
+      // TODO:
+    });
+
+    it("should throw if this variant's type hash is undefined", () => {
+      // TODO:
+    });
+
+    it("should throw if this variant's type hash is null", () => {
+      // TODO:
+    });
+
+    it("should throw if this variant's type hash is NaN", () => {
+      // TODO:
+    });
+
+    it("should not throw if the child's owner is different and ignoreCache is true", () => {
+      // TODO:
+    });
   });
 
   describe("static#getDefault()", () => {
-    // TODO:
+    it("should have a type of Variant", () => {
+      const cell = cells.VariantCell.getDefault();
+      expect(cell.dataType).to.equal(SimDataType.Variant);
+    });
+
+    it("should not have an owner", () => {
+      const cell = cells.VariantCell.getDefault();
+      expect(cell.owner).to.be.undefined;
+    });
+
+    it("should not have a child", () => {
+      const cell = cells.VariantCell.getDefault();
+      expect(cell.child).to.be.undefined;
+    });
+
+    it("should have a type hash of 0", () => {
+      const cell = cells.VariantCell.getDefault();
+      expect(cell.typeHash).to.equal(0);
+    });
   });
 
   describe("static#fromXmlNode()", () => {
-    // TODO:
+    const validNode = new XmlElementNode({
+      tag: "V",
+      attributes: {
+        variant: "0x12345678"
+      },
+      children: [
+        new XmlElementNode({
+          tag: "T",
+          attributes: {
+            type: "Boolean"
+          },
+          children: [
+            new XmlValueNode(true)
+          ]
+        })
+      ]
+    });
+
+    it("should throw if child doesn't specify its type", () => {
+      const node = validNode.clone();
+      delete node.child.attributes.type;
+      expect(() => cells.VariantCell.fromXmlNode(node)).to.throw();
+    });
+
+    it("should read child correctly", () => {
+      // const cell = cells.VectorCell.fromXmlNode<simDataCells.BooleanCell>(validNode);
+      // expect(cell.children).to.have.lengthOf(2);
+      // const [ child1, child2 ] = cell.children;
+      // expect(child1.dataType).to.equal(SimDataType.Boolean);
+      // expect(child1.value).to.be.true;
+      // expect(child2.dataType).to.equal(SimDataType.Boolean);
+      // expect(child2.value).to.be.false;
+      // TODO:
+    });
+
+    it("should read vector child correctly", () => {
+      // TODO:
+      // const node = new XmlElementNode({
+      //   tag: "L",
+      //   children: [
+      //     new XmlElementNode({
+      //       tag: "L",
+      //       attributes: {
+      //         type: "Vector"
+      //       },
+      //       children: [
+      //         new XmlElementNode({
+      //           tag: "T",
+      //           attributes: {
+      //             type: "Single"
+      //           },
+      //           children: [
+      //             new XmlValueNode(1.5)
+      //           ]
+      //         })
+      //       ]
+      //     })
+      //   ]
+      // });
+
+      // const cell = cells.VectorCell.fromXmlNode<simDataCells.VectorCell<simDataCells.NumberCell>>(node);
+      // expect(cell.childType).to.equal(SimDataType.Vector);
+      // expect(cell.length).to.equal(1);
+      // const single = cell.children[0].children[0];
+      // expect(single.dataType).to.equal(SimDataType.Float);
+      // expect(single.value).to.be.approximately(1.5, 0.001);
+    });
+
+    it("should read variant child correctly", () => {
+      // TODO:
+      // const node = new XmlElementNode({
+      //   tag: "L",
+      //   children: [
+      //     new XmlElementNode({
+      //       tag: "V",
+      //       attributes: {
+      //         type: "Variant",
+      //         variant: "0x12345678"
+      //       },
+      //       children: [
+      //         new XmlElementNode({
+      //           tag: "T",
+      //           attributes: {
+      //             type: "Single"
+      //           },
+      //           children: [
+      //             new XmlValueNode(1.5)
+      //           ]
+      //         })
+      //       ]
+      //     })
+      //   ]
+      // });
+
+      // const cell = cells.VectorCell.fromXmlNode<simDataCells.VariantCell<simDataCells.NumberCell>>(node);
+      // expect(cell.childType).to.equal(SimDataType.Variant);
+      // expect(cell.length).to.equal(1);
+      // const single = cell.children[0].child;
+      // expect(single.dataType).to.equal(SimDataType.Float);
+      // expect(single.value).to.be.approximately(1.5, 0.001);
+    });
+
+    it("should read object child correctly, if its schema is provided", () => {
+      // TODO:
+      // const node = new XmlElementNode({
+      //   tag: "L",
+      //   children: [
+      //     new XmlElementNode({
+      //       tag: "U",
+      //       attributes: {
+      //         type: "Object",
+      //         schema: "TestSchema"
+      //       },
+      //       children: [
+      //         new XmlElementNode({
+      //           tag: "T",
+      //           attributes: {
+      //             name: "boolean"
+      //           },
+      //           children: [
+      //             new XmlValueNode(true)
+      //           ]
+      //         }),
+      //         new XmlElementNode({
+      //           tag: "T",
+      //           attributes: {
+      //             name: "uint32"
+      //           },
+      //           children: [
+      //             new XmlValueNode(15)
+      //           ]
+      //         }),
+      //         new XmlElementNode({
+      //           tag: "T",
+      //           attributes: {
+      //             name: "string"
+      //           },
+      //           children: [
+      //             new XmlValueNode("hi")
+      //           ]
+      //         })
+      //       ]
+      //     })
+      //   ]
+      // });
+
+      // const cell = cells.VectorCell.fromXmlNode<simDataCells.ObjectCell>(node, [testSchema]);
+      // expect(cell.length).to.equal(1);
+      // const obj = cell.children[0];
+      // expect(obj.rowLength).to.equal(3);
+      // expect(obj.row.boolean.asAny.value).to.equal(true);
+      // expect(obj.row.uint32.asAny.value).to.equal(15);
+      // expect(obj.row.string.asAny.value).to.equal("hi");
+    });
+
+    it("should throw if child is an object but its schema wasn't provided", () => {
+      // TODO:
+      // const node = new XmlElementNode({
+      //   tag: "L",
+      //   children: [
+      //     new XmlElementNode({
+      //       tag: "U",
+      //       attributes: {
+      //         type: "Object",
+      //         schema: "TestSchema"
+      //       },
+      //       children: [
+      //         new XmlElementNode({
+      //           tag: "T",
+      //           attributes: {
+      //             name: "boolean"
+      //           },
+      //           children: [
+      //             new XmlValueNode(true)
+      //           ]
+      //         }),
+      //         new XmlElementNode({
+      //           tag: "T",
+      //           attributes: {
+      //             name: "uint32"
+      //           },
+      //           children: [
+      //             new XmlValueNode(15)
+      //           ]
+      //         }),
+      //         new XmlElementNode({
+      //           tag: "T",
+      //           attributes: {
+      //             name: "string"
+      //           },
+      //           children: [
+      //             new XmlValueNode("hi")
+      //           ]
+      //         })
+      //       ]
+      //     })
+      //   ]
+      // });
+
+      // expect(() => cells.VectorCell.fromXmlNode(node)).to.throw();
+    });
+
+    it("should not have an owner", () => {
+      const cell = cells.VariantCell.fromXmlNode(validNode);
+      expect(cell.owner).to.be.undefined;
+    });
+
+    it("should not set the owner of its child", () => {
+      const cell = cells.VariantCell.fromXmlNode(validNode);
+      expect(cell.child.owner).to.be.undefined;
+    });
   });
 });
 
