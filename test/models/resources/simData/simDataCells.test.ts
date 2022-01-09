@@ -2845,29 +2845,46 @@ describe("VectorCell", () => {
 
   describe("#childType", () => {
     it("should return the data type of the first child", () => {
-      // TODO:
+      const cell = new cells.VectorCell<simDataCells.BooleanCell>([
+        cells.BooleanCell.getDefault()
+      ]);
+      expect(cell.childType).to.equal(SimDataType.Boolean);
     });
 
     it("should return undefined when there are no children", () => {
-      // TODO:
+      const cell = cells.VectorCell.getDefault();
+      expect(cell.childType).to.be.undefined;
     });
   });
 
   describe("#length", () => {
     it("should return 0 when there are no children", () => {
-      // TODO:
+      const cell = cells.VectorCell.getDefault();
+      expect(cell.length).to.equal(0);
     });
 
     it("should return the number of children in the array", () => {
-      // TODO:
+      const cell = new cells.VectorCell<simDataCells.BooleanCell>([
+        cells.BooleanCell.getDefault()
+      ]);
+      expect(cell.length).to.equal(1);
     });
 
     it("should return the correct number after adding a child", () => {
-      // TODO:
+      const cell = new cells.VectorCell<simDataCells.BooleanCell>([
+        cells.BooleanCell.getDefault()
+      ]);
+      cell.children.push(cells.BooleanCell.getDefault());
+      expect(cell.length).to.equal(2);
     });
 
     it("should return the correct number after deleting a child", () => {
-      // TODO:
+      const cell = new cells.VectorCell<simDataCells.BooleanCell>([
+        cells.BooleanCell.getDefault(),
+        cells.BooleanCell.getDefault()
+      ]);
+      cell.children.splice(0, 1);
+      expect(cell.length).to.equal(1);
     });
   });
 
@@ -2895,23 +2912,11 @@ describe("VectorCell", () => {
     });
   });
 
-  describe("#addChildren()", () => {
-    // TODO:
-  });
-
-  describe("#addChildClones()", () => {
+  describe("#pushClones()", () => {
     // TODO:
   });
 
   describe("#removeChildren()", () => {
-    // TODO:
-  });
-
-  describe("#setChild()", () => {
-    // TODO:
-  });
-
-  describe("#setChildClone()", () => {
     // TODO:
   });
 
