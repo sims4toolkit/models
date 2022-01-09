@@ -879,7 +879,7 @@ export class ObjectCell extends Cell {
   get row() { return this._row; }
   private set row(row: ObjectCellRow) {
     const owner = this.owner;
-    for (const colName in row) row[colName].owner = owner;
+    for (const colName in row) if (row[colName]) row[colName].owner = owner;
     this._row = getProxy(row, (t, p, child: Cell) => {
       if (child) child.owner = owner;
       owner?.uncache();
@@ -989,7 +989,6 @@ export class ObjectCell extends Cell {
    */
   static getDefault(schema: SimDataSchema): ObjectCell {
     const row: ObjectCellRow = {};
-    schema.columns.forEach(column => row[column.name] = undefined);
     return new ObjectCell(schema, row);
   }
 
@@ -1281,7 +1280,7 @@ export class VariantCell extends Cell {
   }
 
   validate({ ignoreCache = false } = {}): void {
-    if (!ignoreCache && this.child.owner !== this) {
+    if (!ignoreCache && this.child.owner !== this.owner) {
       throw new Error("Cache Problem: Child cell has another owner.");
     }
 

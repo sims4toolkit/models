@@ -2306,7 +2306,7 @@ describe("ObjectCell", () => {
       // TODO:
     });
 
-    it("should be the owner of its new children", () => {
+    it("should not clone the owner of its new children", () => {
       // TODO:
     });
 
@@ -2329,23 +2329,56 @@ describe("ObjectCell", () => {
 
   describe("#encode()", () => {
     it("should write the given (negative) offset", () => {
-      // TODO:
+      const buffer = Buffer.alloc(4);
+      const encoder = new BinaryEncoder(buffer);
+      const cell = new cells.ObjectCell(testSchema, {
+        boolean: new cells.BooleanCell(true),
+        string: new cells.TextCell(SimDataType.String, "Hi"),
+        uint32: new cells.NumberCell(SimDataType.UInt32, 15)
+      });
+      cell.encode(encoder, { offset: -5 });
+      const decoder = new BinaryDecoder(buffer);
+      expect(decoder.int32()).to.equal(-5);
     });
 
     it("should write the given (positive) offset", () => {
-      // TODO:
+      const buffer = Buffer.alloc(4);
+      const encoder = new BinaryEncoder(buffer);
+      const cell = new cells.ObjectCell(testSchema, {
+        boolean: new cells.BooleanCell(true),
+        string: new cells.TextCell(SimDataType.String, "Hi"),
+        uint32: new cells.NumberCell(SimDataType.UInt32, 15)
+      });
+      cell.encode(encoder, { offset: 5 });
+      const decoder = new BinaryDecoder(buffer);
+      expect(decoder.int32()).to.equal(5);
     });
 
     it("should throw if no offset is provided", () => {
-      // TODO:
+      const encoder = new BinaryEncoder(Buffer.alloc(4));
+      const cell = new cells.ObjectCell(testSchema, {
+        boolean: new cells.BooleanCell(true),
+        string: new cells.TextCell(SimDataType.String, "Hi"),
+        uint32: new cells.NumberCell(SimDataType.UInt32, 15)
+      });
+      expect(() => cell.encode(encoder)).to.throw();
     });
 
     it("should throw if the object cell is invalid", () => {
-      // TODO:
+      const encoder = new BinaryEncoder(Buffer.alloc(4));
+      const cell = new cells.ObjectCell(testSchema, {});
+      expect(() => cell.encode(encoder, { offset: 5 })).to.throw();
     });
 
     it("should not throw if there is just an issue with cache validation", () => {
-      // TODO:
+      const encoder = new BinaryEncoder(Buffer.alloc(4));
+      const cell = new cells.ObjectCell(testSchema, {
+        boolean: new cells.BooleanCell(true),
+        string: new cells.TextCell(SimDataType.String, "Hi"),
+        uint32: new cells.NumberCell(SimDataType.UInt32, 15)
+      });
+      cell.row.boolean.owner = new MockOwner();
+      expect(() => cell.encode(encoder, { offset: 5 })).to.not.throw();
     });
   });
 
@@ -2423,23 +2456,23 @@ describe("ObjectCell", () => {
 
   describe("static#getDefault()", () => {
     it("should create a cell with the given schema", () => {
-      // TODO:
-    });
-
-    it("should use the exact schema that is given", () => {
-      // TODO:
+      const cell = cells.ObjectCell.getDefault(testSchema);
+      expect(cell.schema).to.equal(testSchema);
     });
 
     it("should have no children", () => {
-      // TODO:
+      const cell = cells.ObjectCell.getDefault(testSchema);
+      expect(cell.rowLength).to.equal(0);
     });
 
     it("should not have an owner", () => {
-      // TODO:
+      const cell = cells.ObjectCell.getDefault(testSchema);
+      expect(cell.owner).to.be.undefined;
     });
 
     it("should have the object data type", () => {
-      // TODO:
+      const cell = cells.ObjectCell.getDefault(testSchema);
+      expect(cell.dataType).to.equal(SimDataType.Object);
     });
   });
 
