@@ -1049,7 +1049,47 @@ describe("VectorCell", () => {
   });
 
   describe("#toXmlNode()", () => {
-    // TODO:
+    it("should use an L tag", () => {
+      const cell = cells.VectorCell.getDefault();
+      const node = cell.toXmlNode();
+      expect(node.tag).to.equal("L");
+    });
+
+    it("should write the name that is given", () => {
+      const cell = cells.VectorCell.getDefault();
+      const node = cell.toXmlNode({ nameAttr: "vector" });
+      expect(node.attributes.name).to.equal("vector");
+      expect(node.toXml()).to.equal(`<L name="vector"/>`);
+    });
+
+    it("should write its type if told to", () => {
+      const cell = cells.VectorCell.getDefault();
+      const node = cell.toXmlNode({ typeAttr: true });
+      expect(node.attributes.type).to.equal("Vector");
+      expect(node.toXml()).to.equal(`<L type="Vector"/>`);
+    });
+
+    it("should be empty if there are no children", () => {
+      const cell = cells.VectorCell.getDefault();
+      const node = cell.toXmlNode();
+      expect(node.children).to.be.an('Array').that.is.empty;
+      expect(node.toXml()).to.equal(`<L/>`);
+    });
+
+    it("should contain its children and write their types", () => {
+      const cell = new cells.VectorCell([
+        new cells.BooleanCell(true),
+        new cells.BooleanCell(false),
+      ]);
+      const node = cell.toXmlNode();
+      expect(node.children).to.have.lengthOf(2);
+      expect(node.children[0].attributes.type).to.equal("Boolean");
+      expect(node.children[1].attributes.type).to.equal("Boolean");
+      expect(node.toXml()).to.equal(`<L>
+  <T type="Boolean">1</T>
+  <T type="Boolean">0</T>
+</L>`);
+    });
   });
 
   describe("#validate()", () => {
