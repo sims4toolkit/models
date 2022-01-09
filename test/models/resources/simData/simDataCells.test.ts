@@ -30,6 +30,13 @@ const testSchema = new SimDataSchema("TestSchema", 0x1234, [
 //#region Tests
 
 describe("Cell", function() {
+  describe("#asAny", () => {
+    it("should return the exact object", () => {
+      const cell = new cells.BooleanCell(true);
+      expect(cell.asAny).to.equal(cell);
+    });
+  });
+
   describe("static#parseXmlNode()", function() {
     // TODO:
   });
@@ -2291,39 +2298,99 @@ describe("ObjectCell", () => {
 
   describe("#clone()", () => {
     it("should create a new cell with cloned child cells", () => {
-      // TODO:
+      const cell = new cells.ObjectCell(testSchema, {
+        boolean: new cells.BooleanCell(true)
+      });
+      const clone = cell.clone();
+      expect(clone.rowLength).to.equal(1);
+      expect(clone.row.boolean.dataType).to.equal(SimDataType.Boolean);
+      expect(clone.row.boolean.asAny.value).to.be.true;
     });
 
     it("should not mutate the original", () => {
-      // TODO:
+      const cell = new cells.ObjectCell(testSchema, {
+        boolean: new cells.BooleanCell(true)
+      });
+      const clone = cell.clone();
+      clone.row.string = new cells.TextCell(SimDataType.String, "");
+      expect(clone.rowLength).to.equal(2);
+      expect(cell.rowLength).to.equal(1);
     });
 
     it("should not mutate the original children", () => {
-      // TODO:
+      const cell = new cells.ObjectCell(testSchema, {
+        boolean: new cells.BooleanCell(true)
+      });
+      const clone = cell.clone();
+      clone.row.boolean.asAny.value = false;
+      expect(clone.row.boolean.asAny.value).to.be.false;
+      expect(cell.row.boolean.asAny.value).to.be.true;
     });
 
     it("should not clone the owner", () => {
-      // TODO:
+      const owner = new MockOwner();
+      const cell = new cells.ObjectCell(testSchema, {
+        boolean: new cells.BooleanCell(true)
+      }, owner);
+      const clone = cell.clone();
+      expect(clone.owner).to.be.undefined;
     });
 
     it("should not clone the owner of its new children", () => {
-      // TODO:
+      const owner = new MockOwner();
+      const cell = new cells.ObjectCell(testSchema, {
+        boolean: new cells.BooleanCell(true)
+      }, owner);
+      const clone = cell.clone();
+      expect(clone.row.boolean.owner).to.be.undefined;
     });
 
     it("should not create a new schema object if not told to", () => {
-      // TODO:
+      const cell = new cells.ObjectCell(testSchema, {
+        boolean: new cells.BooleanCell(true)
+      });
+      const clone = cell.clone();
+      expect(cell.schema).to.equal(clone.schema);
     });
 
     it("should not create a new schema object for its children if not told to", () => {
-      // TODO:
+      const outerSchema = new SimDataSchema("NestedObject", 0x12, [
+        new SimDataSchemaColumn("obj", SimDataType.Object, 0)
+      ]);
+
+      const cell = new cells.ObjectCell(outerSchema, {
+        obj: new cells.ObjectCell(testSchema, {
+          boolean: new cells.BooleanCell(true)
+        })
+      });
+
+      const clone = cell.clone();
+
+      expect(clone.row.obj.asAny.schema).to.equal(testSchema);
     });
 
     it("should create a new schema object if told to", () => {
-      // TODO:
+      const cell = new cells.ObjectCell(testSchema, {
+        boolean: new cells.BooleanCell(true)
+      });
+      const clone = cell.clone({ cloneSchema: true });
+      expect(cell.schema).to.not.equal(clone.schema);
     });
 
     it("should create a new schema object for its children if told to", () => {
-      // TODO:
+      const outerSchema = new SimDataSchema("NestedObject", 0x12, [
+        new SimDataSchemaColumn("obj", SimDataType.Object, 0)
+      ]);
+
+      const cell = new cells.ObjectCell(outerSchema, {
+        obj: new cells.ObjectCell(testSchema, {
+          boolean: new cells.BooleanCell(true)
+        })
+      });
+
+      const clone = cell.clone({ cloneSchema: true });
+
+      expect(clone.row.obj.asAny.schema).to.not.equal(testSchema);
     });
   });
 

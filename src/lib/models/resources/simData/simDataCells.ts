@@ -17,6 +17,13 @@ type PrimitiveType = boolean | number | bigint | string;
  * A value that appears in a SimData table.
  */
 export abstract class Cell extends CacheableModel {
+  /**
+   * Returns this cell casted as an `any`, to make accessing properties from an
+   * object row less tedious if using TypeScript. This is of no use to those
+   * using JavaScript.
+   */
+  get asAny(): any { return this; }
+
   constructor(public readonly dataType: SimDataType, owner?: CacheableModel) {
     super(owner);
   }
@@ -958,16 +965,14 @@ export class ObjectCell extends Cell {
    * 
    * @param options Options for cloning
    */
-  protected _internalClone({ cloneSchema = false, newSchemas }: CellCloneOptions = {}): {
+  protected _internalClone({ cloneSchema = false, newSchemas = [] }: CellCloneOptions = {}): {
     schema: SimDataSchema;
     row: ObjectCellRow;
   } {
     if (cloneSchema) {
       var schema = this.schema.clone();
-    } else if (newSchemas) {
-      var schema = newSchemas.find(schema => schema.hash === this.schema.hash) || this.schema;
     } else {
-      var schema = this.schema;
+      var schema = newSchemas.find(schema => schema.hash === this.schema.hash) || this.schema;
     }
 
     const row: ObjectCellRow = {};
