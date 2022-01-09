@@ -42,14 +42,18 @@ export function getProxy<T extends object>(obj: T, fn: (target: T, property: str
   if (obj._isProxy) return obj;
 
   return new Proxy(obj, {
-    set: function(target, property, value) {
+    set(target, property, value) {
       const ref = Reflect.set(target, property, value);
       fn(target, property, value);
       return ref;
     },
-    get: function(target, property) {
+    get(target, property) {
       if (property === "_isProxy") return true;
-      return target[property];
+      return Reflect.get(target, property);
+    },
+    deleteProperty(target, property) {
+      fn(target, property, undefined);
+      return Reflect.deleteProperty(target, property);
     }
   });
 }

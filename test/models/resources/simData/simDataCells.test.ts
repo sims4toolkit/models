@@ -1,9 +1,10 @@
 import { expect } from "chai";
-import { simDataCells, hashing, simDataTypes, xmlDom } from "../../../../dst/api";
+import { simDataCells, simDataFragments, hashing, simDataTypes, xmlDom } from "../../../../dst/api";
 import { BinaryDecoder, BinaryEncoder } from "../../../../dst/lib/utils/encoding";
 import MockOwner from "../../../mocks/mockOwner";
 
 const cells = simDataCells;
+const { SimDataSchema, SimDataSchemaColumn } = simDataFragments;
 const { fnv32 } = hashing;
 const { SimDataType } = simDataTypes;
 
@@ -17,6 +18,12 @@ function getPlainNode(value: any): xmlDom.XmlElementNode {
     ]
   });
 }
+
+const testSchema = new SimDataSchema("TestSchema", 0x1234, [
+  new SimDataSchemaColumn("boolean", SimDataType.Boolean, 0),
+  new SimDataSchemaColumn("uint32", SimDataType.UInt32, 0),
+  new SimDataSchemaColumn("string", SimDataType.String, 0)
+]);
 
 //#endregion Helpers
 
@@ -2095,39 +2102,101 @@ describe("Float4Cell", function() {
 describe("ObjectCell", () => {
   describe("#row", () => {
     it("should uncache the owner when a child is added", () => {
-      // TODO:
+      const owner = new MockOwner();
+      const cell = new cells.ObjectCell(testSchema, {}, owner);
+      expect(owner.cached).to.be.true;
+      cell.row.boolean = new cells.BooleanCell(true);
+      expect(owner.cached).to.be.false;
     });
 
     it("should set the owner of a child that is added", () => {
-      // TODO:
+      const owner = new MockOwner();
+      const cell = new cells.ObjectCell(testSchema, {}, owner);
+      const child = new cells.BooleanCell(true);
+      expect(child.owner).to.be.undefined;
+      cell.row.boolean = child;
+      expect(child.owner).to.equal(owner);
     });
 
     it("should uncache the owner when a child is deleted", () => {
-      // TODO:
+      const owner = new MockOwner();
+      const cell = new cells.ObjectCell(testSchema, {
+        boolean: new cells.BooleanCell(true)
+      }, owner);
+      expect(owner.cached).to.be.true;
+      delete cell.row.boolean;
+      expect(owner.cached).to.be.false;
+    });
+
+    it("should delete a child when the delete operator is used", () => {
+      const owner = new MockOwner();
+      const cell = new cells.ObjectCell(testSchema, {
+        boolean: new cells.BooleanCell(true)
+      }, owner);
+      expect(cell.row.boolean).to.not.be.undefined;
+      delete cell.row.boolean;
+      expect(cell.row.boolean).to.be.undefined;
     });
 
     it("should uncache the owner when a child is mutated", () => {
-      // TODO:
+      const owner = new MockOwner();
+      const cell = new cells.ObjectCell(testSchema, {
+        boolean: new cells.BooleanCell(true)
+      }, owner);
+      expect(owner.cached).to.be.true;
+      (cell.row.boolean as simDataCells.BooleanCell).value = false
+      expect(owner.cached).to.be.false;
     });
 
     it("should uncache the owner when a child is set", () => {
-      // TODO:
+      const owner = new MockOwner();
+      const cell = new cells.ObjectCell(testSchema, {
+        boolean: new cells.BooleanCell(true)
+      }, owner);
+      expect(owner.cached).to.be.true;
+      cell.row.boolean = new cells.BooleanCell(false);
+      expect(owner.cached).to.be.false;
     });
 
     it("should uncache the owner when a child is set to undefined", () => {
-      // TODO:
+      const owner = new MockOwner();
+      const cell = new cells.ObjectCell(testSchema, {
+        boolean: new cells.BooleanCell(true)
+      }, owner);
+      expect(owner.cached).to.be.true;
+      cell.row.boolean = undefined;
+      expect(owner.cached).to.be.false;
     });
 
     it("should uncache the owner when a child is set to null", () => {
-      // TODO:
+      const owner = new MockOwner();
+      const cell = new cells.ObjectCell(testSchema, {
+        boolean: new cells.BooleanCell(true)
+      }, owner);
+      expect(owner.cached).to.be.true;
+      cell.row.boolean = null;
+      expect(owner.cached).to.be.false;
     });
 
     it("should set the owner of a child that is set", () => {
-      // TODO:
+      const owner = new MockOwner();
+      const cell = new cells.ObjectCell(testSchema, {
+        boolean: new cells.BooleanCell(true)
+      }, owner);
+      const newChild = new cells.BooleanCell(false);
+      expect(newChild.owner).to.be.undefined;
+      cell.row.boolean = newChild;
+      expect(newChild.owner).to.equal(owner);
     });
 
     it("should not uncache the owner when a child is retrieved", () => {
-      // TODO:
+      const owner = new MockOwner();
+      const cell = new cells.ObjectCell(testSchema, {
+        boolean: new cells.BooleanCell(true)
+      }, owner);
+      expect(owner.cached).to.be.true;
+      const child = cell.row.boolean;
+      expect(owner.cached).to.be.true;
     });
   });
 

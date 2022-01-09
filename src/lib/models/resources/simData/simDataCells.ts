@@ -878,11 +878,11 @@ export class ObjectCell extends Cell {
    */
   get row() { return this._row; }
   private set row(row: ObjectCellRow) {
-    const owner = this;
+    const owner = this.owner;
     for (const colName in row) row[colName].owner = owner;
     this._row = getProxy(row, (t, p, child: Cell) => {
       if (child) child.owner = owner;
-      owner.uncache();
+      owner?.uncache();
     });
   }
 
@@ -936,7 +936,7 @@ export class ObjectCell extends Cell {
         if (cell.dataType !== column.type)
           throw new Error(`Cell's type does not match its column: ${cell.dataType} ≠ ${column.type}`);
 
-        if (!ignoreCache && cell.owner !== this)
+        if (!ignoreCache && cell.owner !== this.owner)
           throw new Error("Cache Problem: Child cell has another owner.");
 
         cell.validate({ ignoreCache });
@@ -1041,13 +1041,11 @@ export class VectorCell<T extends Cell = Cell> extends Cell {
    */
   get children() { return this._children; }
   private set children(children: T[]) {
-    const owner = this;
-    children.forEach(child => child.owner = this);
+    const owner = this.owner;
+    children.forEach(child => child.owner = owner);
     this._children = getProxy(children, (t, p, child: Cell) => {
-      if (child) {
-        child.owner = owner;
-        child.uncache();
-      }
+      if (child) child.owner = owner;
+      owner?.uncache();
     });
   }
 
@@ -1095,7 +1093,7 @@ export class VectorCell<T extends Cell = Cell> extends Cell {
           throw new Error(`Not all vector children have the same type: ${this.childType} ≠ ${child.dataType}`);
         }
 
-        if (!ignoreCache && child.owner !== this) {
+        if (!ignoreCache && child.owner !== this.owner) {
           throw new Error("Cache Problem: Child cell has another owner.");
         }
   
@@ -1117,11 +1115,8 @@ export class VectorCell<T extends Cell = Cell> extends Cell {
    */
   addChildren(...children: T[]) {
     children.forEach(child => {
-      child.owner = this;
       this.children.push(child);
     });
-
-    this.uncache();
   }
 
   /**
@@ -1142,7 +1137,7 @@ export class VectorCell<T extends Cell = Cell> extends Cell {
    * @param children Children to remove from this cell
    */
   removeChildren(...children: T[]) {
-    if(removeFromArray(children, this.children)) this.uncache();
+    removeFromArray(children, this.children)
   }
   
   /**
@@ -1156,9 +1151,7 @@ export class VectorCell<T extends Cell = Cell> extends Cell {
   setChild(index: number, child: T) {
     if (index < 0) return;
     while (index >= this.children.length) this.children.push(undefined);
-    child.owner = this;
     this.children[index] = child;
-    this.uncache();
   }
 
   /**
