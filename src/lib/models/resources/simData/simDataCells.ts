@@ -1237,7 +1237,7 @@ export class VariantCell extends Cell {
   get child() { return this._child; }
   set child(child: Cell) {
     this._child = child;
-    if (child) child.owner = this;
+    if (child) child.owner = this.owner;
   }
 
   /** Gets the data type of this cell's child, if it has one. */
