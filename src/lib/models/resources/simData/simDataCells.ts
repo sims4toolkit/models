@@ -1058,11 +1058,11 @@ export class VectorCell<T extends Cell = Cell> extends Cell {
     });
   }
 
-  /** Shorthand for children.length */
+  /** Shorthand for `children.length` */
   get length() { return this.children.length; }
 
   /**
-   * Shorthand for `children[0].dataType`. If there are no children, the
+   * Shorthand for `children[0]?.dataType`. If there are no children, the
    * returned value is undefined.
    */
   get childType() { return this.children[0]?.dataType; }
@@ -1081,7 +1081,7 @@ export class VectorCell<T extends Cell = Cell> extends Cell {
 
   encode(encoder: BinaryEncoder, options?: CellEncodingOptions): void {
     this.validate({ ignoreCache: true });
-    encoder.int32(this._getOffsetEncodingOption(options)); // FIXME: int32 or uint32?
+    encoder.int32(this._getOffsetEncodingOption(options));
     encoder.uint32(this.children.length);
   }
 
@@ -1121,27 +1121,16 @@ export class VectorCell<T extends Cell = Cell> extends Cell {
   //#region Public Methods
 
   /**
-   * Child cells to add. Make sure that the cells being added do not already
-   * belong to another model, or else their cache ownership will be broken.
-   * If adding cells that belong to another model, use `addChildClones()`.
-   * 
-   * @param children Children to add to this cell
-   */
-  addChildren(...children: T[]) {
-    children.forEach(child => {
-      this.children.push(child);
-    });
-  }
-
-  /**
-   * Child cells to add. Each cell will be cloned before it is added,
-   * ensuring that the cache ownership of the original children is kept intact.
+   * Pushes the given cells into this vector's children array, but clones them
+   * before doing so (this should be used instead of `push()` when re-using
+   * cells between vectors, or else cacheing may break). Alternatively, you may
+   * use `push()` as long as you clone the cells yourself.
    * 
    * @param children Children to clone and add to this cell
    */
-  addChildClones(...children: T[]) {
+  pushClones(...children: T[]) {
     //@ts-expect-error The cell clones are guaranteed to be of type T
-    this.addChildren(...(values.map(cell => cell.clone())));
+    this.children.push(...(children.map(cell => cell.clone())));
   }
 
   /**
@@ -1152,34 +1141,6 @@ export class VectorCell<T extends Cell = Cell> extends Cell {
    */
   removeChildren(...children: T[]) {
     removeFromArray(children, this.children)
-  }
-  
-  /**
-   * Sets the child at the given index. If the index is negative, nothing
-   * happens. If the index is out of bounds, the array will be padded with
-   * undefined values up to the specified index.
-   * 
-   * @param index Index of child to set
-   * @param child Child to set
-   */
-  setChild(index: number, child: T) {
-    if (index < 0) return;
-    while (index >= this.children.length) this.children.push(undefined);
-    this.children[index] = child;
-  }
-
-  /**
-   * Clones and sets the child at the given index. If the index is negative,
-   * nothing happens. If the index is out of bounds, the array will be padded
-   * with undefined values up to the specified index.
-   * 
-   * @param index Index of child to set
-   * @param child Child to clone and set
-   */
-  setChildClone(index: number, child: T) {
-    //@ts-expect-error If given child is not the right type, then that is the 
-    // user's fault, and validation will fail when it is time to serialize.
-    this.setChild(index, child.clone());
   }
 
   //#endregion Public Methods
