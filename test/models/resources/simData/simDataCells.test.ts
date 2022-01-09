@@ -2539,35 +2539,48 @@ describe("ObjectCell", () => {
 
   describe("#validate()", () => {
     it("should throw if there is no schema", () => {
-      // TODO:
+      const cell = new cells.ObjectCell(undefined, {});
+      expect(() => cell.validate()).to.throw();
     });
 
     it("should throw if this object has less columns than its schema", () => {
-      // TODO:
+      const cell = new cells.ObjectCell(testSchema, {});
+      expect(() => cell.validate()).to.throw();
     });
 
     it("should throw if this object has more columns than its schema", () => {
-      // TODO:
+      const cell = newValidObjectCell();
+      cell.row.variant = cells.VariantCell.getDefault();
+      expect(() => cell.validate()).to.throw();
     });
 
     it("should throw if this object has the right number of columns, but a type is different", () => {
-      // TODO:
+      const cell = newValidObjectCell();
+      cell.row.boolean = cells.VariantCell.getDefault();
+      expect(() => cell.validate()).to.throw();
     });
 
     it("should throw if this object is valid, but one of its children aren't", () => {
-      // TODO:
+      const cell = newValidObjectCell();
+      cell.row.uint32.asAny.value = -1;
+      expect(() => cell.validate()).to.throw();
     });
 
     it("should not throw if this object and all of its children are valid", () => {
-      // TODO:
+      const cell = newValidObjectCell();
+      expect(() => cell.validate()).to.not.throw();
     });
 
     it("should throw if one of this object's children has a different owner and ignoreCache is false", () => {
-      // TODO:
+      const cell = newValidObjectCell();
+      cell.row.uint32.owner = new MockOwner();
+      expect(() => cell.validate({ ignoreCache: false })).to.throw();
     });
 
     it("should not throw if one of this object's children has a different owner and ignoreCache is true", () => {
-      // TODO:
+      const cell = newValidObjectCell();
+      cell.row.uint32.owner = undefined;
+      expect(() => cell.validate({ ignoreCache: true })).to.not.throw();
     });
   });
 
