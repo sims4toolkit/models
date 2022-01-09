@@ -2890,25 +2890,54 @@ describe("VectorCell", () => {
 
   describe("#owner", () => {
     it("should update the owner of all children when set", () => {
-      // TODO:
+      const owner = new MockOwner();
+      const child1 = cells.BooleanCell.getDefault();
+      const child2 = cells.BooleanCell.getDefault();
+      const cell = new cells.VectorCell<simDataCells.BooleanCell>([
+        child1,
+        child2
+      ], owner);
+      const newOwner = new MockOwner();
+      cell.owner = newOwner;
+      expect(child1.owner).to.equal(newOwner);
+      expect(child2.owner).to.equal(newOwner);
     });
   });
 
   describe("#constructor", () => {
     it("should set the owner of all given children", () => {
-      // TODO:
+      const owner = new MockOwner();
+      const child1 = cells.BooleanCell.getDefault();
+      const child2 = cells.BooleanCell.getDefault();
+      const cell = new cells.VectorCell<simDataCells.BooleanCell>([
+        child1,
+        child2
+      ], owner);
+      expect(child1.owner).to.equal(owner);
+      expect(child2.owner).to.equal(owner);
     });
 
     it("should contain the given children", () => {
-      // TODO:
+      const child1 = cells.BooleanCell.getDefault();
+      const child2 = cells.BooleanCell.getDefault();
+      const cell = new cells.VectorCell<simDataCells.BooleanCell>([
+        child1,
+        child2
+      ]);
+      expect(cell.children.length).to.equal(2);
+      expect(cell.children[0]).to.equal(child1);
+      expect(cell.children[1]).to.equal(child2);
     });
 
     it("should use the owner that is given", () => {
-      // TODO:
+      const owner = new MockOwner();
+      const cell = new cells.VectorCell([], owner);
+      expect(cell.owner).to.equal(owner);
     });
 
     it("should not have an owner if one isn't given", () => {
-      // TODO:
+      const cell = new cells.VectorCell([]);
+      expect(cell.owner).to.be.undefined;
     });
   });
 
