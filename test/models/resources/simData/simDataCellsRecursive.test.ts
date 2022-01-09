@@ -1453,33 +1453,49 @@ describe("VariantCell", () => {
 
   describe("#typeHash", () => {
     it("should uncache the owner when set", () => {
-      // TODO:
+      const owner = new MockOwner();
+      const cell = new cells.VariantCell(0, undefined, owner);
+      expect(owner.cached).to.be.true;
+      cell.typeHash = 0x1234;
+      expect(owner.cached).to.be.false;
     });
   });
 
   describe("#constructor", () => {
     it("should have the given type hash", () => {
-      // TODO:
+      const cell = new cells.VariantCell(0x1234, undefined);
+      expect(cell.typeHash).to.equal(0x1234);
     });
 
     it("should set the owner of the given child", () => {
-      // TODO:
+      const owner = new MockOwner();
+      const child = cells.BooleanCell.getDefault();
+      expect(child.owner).to.be.undefined;
+      const cell = new cells.VariantCell(0, child, owner);
+      expect(child.owner).to.equal(owner);
     });
 
     it("should contain the given child", () => {
-      // TODO:
+      const child = cells.BooleanCell.getDefault();
+      const cell = new cells.VariantCell(0, child);
+      expect(cell.child).to.equal(child);
     });
 
     it("should use the owner that is given", () => {
-      // TODO:
+      const owner = new MockOwner();
+      const cell = new cells.VariantCell(0, undefined, owner);
+      expect(cell.owner).to.equal(owner);
     });
 
     it("should not have an owner if one isn't given", () => {
-      // TODO:
+      const cell = new cells.VariantCell(0, undefined);
+      expect(cell.owner).to.be.undefined;
     });
 
     it("should not set the owner of the child if one isn't given", () => {
-      // TODO:
+      const child = cells.BooleanCell.getDefault();
+      const cell = new cells.VariantCell(0, child);
+      expect(child.owner).to.be.undefined;
     });
   });
 
