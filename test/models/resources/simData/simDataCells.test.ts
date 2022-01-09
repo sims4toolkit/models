@@ -2164,11 +2164,21 @@ describe("ObjectCell", () => {
       // TODO:
     });
 
-    it("should create a new object with the exact given schema", () => {
+    it("should set the owner of all given children", () => {
       // TODO:
     });
 
-    // TODO: more tests
+    it("should contain the given children", () => {
+      // TODO:
+    });
+
+    it("should use the owner that is given", () => {
+      // TODO:
+    });
+
+    it("should not have an owner if one isn't given", () => {
+      // TODO:
+    });
   });
 
   describe("#clone()", () => {
@@ -2326,7 +2336,45 @@ describe("ObjectCell", () => {
   });
 
   describe("static#fromXmlNode()", () => {
-    // TODO:
+    it("should create a cell following a given schema", () => {
+      // TODO:
+    });
+
+    it("should have a type of object", () => {
+      // TODO:
+    });
+
+    it("should contain the correct primitive children", () => {
+      // TODO:
+    });
+
+    it("should contain a vector child if there is one", () => {
+      // TODO:
+    });
+
+    it("should contain a variant child if there is one", () => {
+      // TODO:
+    });
+
+    it("should contain an object child if there is one", () => {
+      // TODO:
+    });
+
+    it("should throw if object doesn't use one of the supplied schemas", () => {
+      // TODO:
+    });
+
+    it("should throw if a child object doesn't use one of the supplied schemas", () => {
+      // TODO:
+    });
+
+    it("should throw if node is missing a column for its schema", () => {
+      // TODO:
+    });
+
+    it("should throw if node has two of the same column", () => {
+      // TODO:
+    });
   });
 });
 
@@ -2385,6 +2433,24 @@ describe("VectorCell", () => {
     });
 
     it("should return undefined when there are no children", () => {
+      // TODO:
+    });
+  });
+
+  describe("#constructor", () => {
+    it("should set the owner of all given children", () => {
+      // TODO:
+    });
+
+    it("should contain the given children", () => {
+      // TODO:
+    });
+
+    it("should use the owner that is given", () => {
+      // TODO:
+    });
+
+    it("should not have an owner if one isn't given", () => {
       // TODO:
     });
   });
@@ -2455,6 +2521,28 @@ describe("VariantCell", () => {
 
   describe("#typeHash", () => {
     // TODO:
+  });
+
+  describe("#constructor", () => {
+    it("should have the given type hash", () => {
+      // TODO:
+    });
+
+    it("should set the owner of the given child", () => {
+      // TODO:
+    });
+
+    it("should contain the given child", () => {
+      // TODO:
+    });
+
+    it("should use the owner that is given", () => {
+      // TODO:
+    });
+
+    it("should not have an owner if one isn't given", () => {
+      // TODO:
+    });
   });
 
   describe("#clone()", () => {
