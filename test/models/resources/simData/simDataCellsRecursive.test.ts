@@ -1527,7 +1527,7 @@ describe("VariantCell", () => {
     it("should write the variant type hash in hex", () => {
       const cell = new cells.VariantCell(0x00001234, undefined);
       const node = cell.toXmlNode();
-      expect(node.attributes.variant).to.equal(0x00001234);
+      expect(node.attributes.variant).to.equal("0x00001234");
       expect(node.toXml()).to.equal(`<V variant="0x00001234"/>`);
     });
 
@@ -1535,14 +1535,14 @@ describe("VariantCell", () => {
       const cell = cells.VariantCell.getDefault();
       const node = cell.toXmlNode({ nameAttr: "variant" });
       expect(node.attributes.name).to.equal("variant");
-      expect(node.toXml()).to.equal(`<V variant="0x00000000" name="variant"/>`);
+      expect(node.toXml()).to.equal(`<V name="variant" variant="0x00000000"/>`);
     });
 
     it("should write its type if told to", () => {
       const cell = cells.VariantCell.getDefault();
       const node = cell.toXmlNode({ typeAttr: true });
       expect(node.attributes.type).to.equal("Variant");
-      expect(node.toXml()).to.equal(`<V variant="0x00000000" type="Variant"/>`);
+      expect(node.toXml()).to.equal(`<V type="Variant" variant="0x00000000"/>`);
     });
 
     it("should be empty if there is no child", () => {
