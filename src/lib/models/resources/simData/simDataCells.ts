@@ -1273,21 +1273,21 @@ export class VariantCell<T extends Cell = Cell> extends Cell {
    * @param schemas Schemas that this variant's child may follow
    * @param node Node to parse as a VariantCell
    */
-  static fromXmlNode(node: XmlNode, schemas: SimDataSchema[] = []): VariantCell {
+  static fromXmlNode<U extends Cell = Cell>(node: XmlNode, schemas: SimDataSchema[] = []): VariantCell<U> {
     const typeHash = parseInt(node.attributes.variant, 16);
     if (Number.isNaN(typeHash))
       throw new Error(`Expected variant to have a numerical 'variant' attribute, but found '${node.attributes.variant}'.`);
 
     if (node.attributes.schema) {
       const child = ObjectCell.fromXmlNode(node, schemas);
-      return new VariantCell(typeHash, child);
+      return new VariantCell<U>(typeHash, child as unknown as U);
     } else {
       if (node.child) {
         const childType = SimDataTypeUtils.parseSims4StudioName(node.child.attributes.type);
         if (childType === undefined)
           throw new Error(`'${childType}' is not a valid value for the 'type' attribute.`);
         const child = Cell.parseXmlNode(childType, node.child, schemas);
-        return new VariantCell(typeHash, child);
+        return new VariantCell<U>(typeHash, child as unknown as U);
       } else {
         return new VariantCell(typeHash, undefined);
       }
