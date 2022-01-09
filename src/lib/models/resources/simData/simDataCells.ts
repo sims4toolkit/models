@@ -948,6 +948,11 @@ export class ObjectCell extends Cell {
 
   //#region Protected Methods
 
+  protected _onOwnerChange(previousOwner: CacheableModel): void {
+    for (const column in this.row) this.row[column].owner = this.owner;
+    super._onOwnerChange(previousOwner);
+  }
+
   /**
    * Returns the schema and row for a clone.
    * 
@@ -1100,6 +1105,11 @@ export class VectorCell<T extends Cell = Cell> extends Cell {
         child.validate({ ignoreCache });
       });
     }
+  }
+
+  protected _onOwnerChange(previousOwner: CacheableModel): void {
+    this.children.forEach(child => child.owner = this.owner);
+    super._onOwnerChange(previousOwner);
   }
 
   //#endregion Overriden Methods
@@ -1276,6 +1286,11 @@ export class VariantCell extends Cell {
     }
 
     this.child?.validate({ ignoreCache });
+  }
+
+  protected _onOwnerChange(previousOwner: CacheableModel): void {
+    if (this.child) this.child.owner = this.owner;
+    super._onOwnerChange(previousOwner);
   }
 
   //#region Static Methods
