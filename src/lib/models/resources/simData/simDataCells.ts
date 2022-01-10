@@ -907,7 +907,7 @@ export class ObjectCell extends MultiValueCell {
 
   constructor(public schema: SimDataSchema, row: ObjectCellRow, owner?: CacheableModel) {
     super(SimDataType.Object, owner);
-    this.row = row;
+    this.row = row ?? {};
     this._watchProps('schema');
   }
 
@@ -1072,7 +1072,7 @@ export class VectorCell<T extends Cell = Cell> extends MultiValueCell {
 
   constructor(children: T[], owner?: CacheableModel) {
     super(SimDataType.Vector, owner);
-    this.children = children;
+    this.children = children ?? [];
   }
 
   //#region Overriden Methods
