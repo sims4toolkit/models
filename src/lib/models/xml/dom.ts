@@ -1,7 +1,9 @@
 import { XMLParser } from "fast-xml-parser";
-import { XML_DECLARATION } from "../../utils/constants";
 
 //#region Types
+
+/** The line that appears at the top of XML files. */
+const XML_DECLARATION = '<?xml version="1.0" encoding="utf-8"?>';
 
 /** Generic interface that can support any attributes. */
 type Attributes = { [key: string]: any; };
