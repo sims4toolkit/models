@@ -885,10 +885,10 @@ describe("VectorCell", () => {
     });
   });
 
-  describe("#pushClones()", () => {
+  describe("#addClones()", () => {
     it("should add the given children", () => {
       const cell = cells.VectorCell.getDefault<simDataCells.BooleanCell>();
-      cell.pushClones(new cells.BooleanCell(true));
+      cell.addClones(new cells.BooleanCell(true));
       expect(cell.length).to.equal(1);
       expect(cell.children[0].value).to.be.true;
     });
@@ -896,7 +896,7 @@ describe("VectorCell", () => {
     it("should not mutate the original children (they should be clones)", () => {
       const cell = cells.VectorCell.getDefault<simDataCells.BooleanCell>();
       const child = new cells.BooleanCell(true);
-      cell.pushClones(child);
+      cell.addClones(child);
       const childClone = cell.children[0];
       expect(childClone).to.not.equal(child);
       childClone.value = false;
@@ -908,14 +908,14 @@ describe("VectorCell", () => {
       const owner = new MockOwner();
       const cell = new cells.VectorCell([], owner);
       expect(owner.cached).to.be.true;
-      cell.pushClones(new cells.BooleanCell(true));
+      cell.addClones(new cells.BooleanCell(true));
       expect(owner.cached).to.be.false;
     });
 
     it("should set the owner of the clones", () => {
       const owner = new MockOwner();
       const cell = new cells.VectorCell([], owner);
-      cell.pushClones(new cells.BooleanCell(true));
+      cell.addClones(new cells.BooleanCell(true));
       expect(cell.children[0].owner).to.equal(owner);
     });
 
@@ -924,7 +924,7 @@ describe("VectorCell", () => {
       const booleanOwner = new MockOwner();
       const cell = new cells.VectorCell([], vectorOwner);
       const child = new cells.BooleanCell(true, booleanOwner);
-      cell.pushClones(child);
+      cell.addClones(child);
       expect(child.owner).to.equal(booleanOwner);
     });
   });

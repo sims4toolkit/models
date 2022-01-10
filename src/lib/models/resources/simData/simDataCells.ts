@@ -1131,7 +1131,7 @@ export class VectorCell<T extends Cell = Cell> extends MultiValueCell {
    * 
    * @param children Children to clone and add to this cell
    */
-  pushClones(...children: T[]) {
+  addClones(...children: T[]) {
     //@ts-expect-error The cell clones are guaranteed to be of type T
     this.children.push(...(children.map(cell => cell.clone())));
   }
