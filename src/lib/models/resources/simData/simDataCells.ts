@@ -894,7 +894,7 @@ export class ObjectCell extends MultiValueCell {
    */
   get row() { return this._row; }
   private set row(row: ObjectCellRow) {
-    const owner = this.owner;
+    const owner = this._getCollectionOwner();
     for (const colName in row) if (row[colName]) row[colName].owner = owner;
     this._row = this._getCollectionProxy(row);
   }
@@ -1056,7 +1056,7 @@ export class VectorCell<T extends Cell = Cell> extends MultiValueCell {
    */
   get children() { return this._children; }
   private set children(children: T[]) {
-    const owner = this.owner;
+    const owner = this._getCollectionOwner();
     children.forEach(child => child.owner = owner);
     this._children = this._getCollectionProxy(children);
   }
