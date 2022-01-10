@@ -1,3 +1,6 @@
+/** An object that contains a collection of CacheableModels. */
+type CachedCollection = { [key: string]: CacheableModel; } | CacheableModel[];
+
 /**
  * Base class for models that either can be cached or are part of another model
  * that can be cached. They may have an owning model that needs to be notified
@@ -32,6 +35,48 @@ export default abstract class CacheableModel {
    */
   uncache() {
     this.owner?.uncache();
+  }
+
+  /**
+   * Returns the owner to use for collections that this model contains. By
+   * default, the owner is `this`.
+   */
+  protected _getCollectionOwner(): CacheableModel {
+    return this;
+  }
+
+  /**
+   * Returns a proxy that listens for changes in CachedCollections that this
+   * model contains.
+   * 
+   * @param obj CachedCollection to get proxy for
+   * @returns Proxy for given object
+   */
+  protected _getCollectionProxy<T extends CachedCollection>(obj: T): T {
+    //@ts-expect-error TS doesn't know about _isProxy
+    if (obj._isProxy) return obj;
+
+    // can't use `this` within the Proxy traps or else it means something else
+    const getOwner = () => this._getCollectionOwner();
+
+    return new Proxy(obj, {
+      set(target, property, value) {
+        const ref = Reflect.set(target, property, value);
+        const owner = getOwner();
+        if (value instanceof CacheableModel) value.owner = owner;
+        owner?.uncache();
+        return ref;
+      },
+      get(target, property) {
+        if (property === "_isProxy") return true;
+        return Reflect.get(target, property);
+      },
+      deleteProperty(target, property) {
+        const ref = Reflect.deleteProperty(target, property);
+        getOwner()?.uncache();
+        return ref;
+      }
+    });
   }
 
   /**

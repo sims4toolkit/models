@@ -28,32 +28,3 @@ export function removeFromArray<T>(toRemove: T[], removeFrom: T[]) {
   });
   return anyRemoved;
 }
-
-/**
- * Returns a proxy that will listen for any changes to the given object and call
- * a function when it notices one.
- * 
- * @param obj Object to get proxy for
- * @param fn Function to call when the obj is mutated
- * @returns Proxy for given obj
- */
-export function getProxy<T extends object>(obj: T, fn: (target: T, property: string | symbol, value: any) => void): T {
-  //@ts-ignore _isProxy is returned from the getter, TS doesn't know about it
-  if (obj._isProxy) return obj;
-
-  return new Proxy(obj, {
-    set(target, property, value) {
-      const ref = Reflect.set(target, property, value);
-      fn(target, property, value);
-      return ref;
-    },
-    get(target, property) {
-      if (property === "_isProxy") return true;
-      return Reflect.get(target, property);
-    },
-    deleteProperty(target, property) {
-      fn(target, property, undefined);
-      return Reflect.deleteProperty(target, property);
-    }
-  });
-}

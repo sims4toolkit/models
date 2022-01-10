@@ -47,6 +47,16 @@ describe("ObjectCell", () => {
       expect(boolean.owner).to.equal(secondOwner);
       expect(string.owner).to.equal(secondOwner);
     });
+
+    it("should use the new owner for new children after updating the owner", () => {
+      const owner = new MockOwner();
+      const cell = new cells.ObjectCell(testSchema, {}, owner);
+      const newOwner = new MockOwner();
+      cell.owner = newOwner;
+      const child = new cells.BooleanCell(true);
+      cell.row.boolean = child;
+      expect(child.owner).to.equal(newOwner);
+    });
   });
 
   describe("#row", () => {
@@ -825,6 +835,16 @@ describe("VectorCell", () => {
       cell.owner = newOwner;
       expect(child1.owner).to.equal(newOwner);
       expect(child2.owner).to.equal(newOwner);
+    });
+
+    it("should use the new owner for new children after updating the owner", () => {
+      const owner = new MockOwner();
+      const cell = new cells.VectorCell([], owner);
+      const newOwner = new MockOwner();
+      cell.owner = newOwner;
+      const child = new cells.BooleanCell(true);
+      cell.children.push(child);
+      expect(child.owner).to.equal(newOwner);
     });
   });
 

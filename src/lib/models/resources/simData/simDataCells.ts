@@ -4,7 +4,7 @@ import type { BinaryDecoder, BinaryEncoder } from "../../../utils/encoding";
 import { CellCloneOptions, CellEncodingOptions, CellToXmlOptions, ObjectCellRow } from "./shared";
 import CacheableModel from "../../abstract/cacheableModel";
 import { SimDataType, SimDataTypeUtils } from "./simDataTypes";
-import { getProxy, removeFromArray } from "../../../utils/helpers";
+import { removeFromArray } from "../../../utils/helpers";
 import { XmlElementNode, XmlNode, XmlValueNode } from "../../xml/dom";
 import { formatAsHexString } from "../../../utils/formatting";
 import { fnv32 } from "../../../utils/hashing";
@@ -194,6 +194,15 @@ abstract class PrimitiveValueCell<T extends PrimitiveType> extends Cell {
    * Gets the value to nest within the XML node for this cell.
    */
   protected abstract _getXmlValue(): XmlValueNode;
+}
+
+/**
+ * A SimData cell that contains a collection of other cells.
+ */
+abstract class MultiValueCell extends Cell {
+  protected _getCollectionOwner(): CacheableModel {
+    return this.owner;
+  }
 }
 
 /**
@@ -875,7 +884,7 @@ export class Float4Cell extends FloatVectorCell {
 /**
  * A cell that contains rows that line up with schema columns.
  */
-export class ObjectCell extends Cell {
+export class ObjectCell extends MultiValueCell {
   readonly dataType: SimDataType.Object;
   private _row: ObjectCellRow;
 
@@ -887,10 +896,7 @@ export class ObjectCell extends Cell {
   private set row(row: ObjectCellRow) {
     const owner = this.owner;
     for (const colName in row) if (row[colName]) row[colName].owner = owner;
-    this._row = getProxy(row, (t, p, child: Cell) => {
-      if (child instanceof Cell) child.owner = owner;
-      owner?.uncache();
-    });
+    this._row = this._getCollectionProxy(row);
   }
 
   /** Shorthand for `Object.keys(this.row).length`. */
@@ -1040,7 +1046,7 @@ export class ObjectCell extends Cell {
 /**
  * A cell that contains a list of values of the same type.
  */
-export class VectorCell<T extends Cell = Cell> extends Cell {
+export class VectorCell<T extends Cell = Cell> extends MultiValueCell {
   readonly dataType: SimDataType.Vector;
   private _children: T[];
 
@@ -1052,10 +1058,7 @@ export class VectorCell<T extends Cell = Cell> extends Cell {
   private set children(children: T[]) {
     const owner = this.owner;
     children.forEach(child => child.owner = owner);
-    this._children = getProxy(children, (t, p, child: Cell) => {
-      if (child instanceof Cell) child.owner = owner;
-      owner?.uncache();
-    });
+    this._children = this._getCollectionProxy(children);
   }
 
   /** Shorthand for `children.length` */
