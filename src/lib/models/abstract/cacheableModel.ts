@@ -39,7 +39,8 @@ export default abstract class CacheableModel {
 
   /**
    * Returns the owner to use for collections that this model contains. By
-   * default, the owner is `this`.
+   * default, the owner is `this`. This function is necessary to avoid using
+   * `this` in proxy traps.
    */
   protected _getCollectionOwner(): CacheableModel {
     return this;
@@ -50,7 +51,6 @@ export default abstract class CacheableModel {
    * model contains.
    * 
    * @param obj CachedCollection to get proxy for
-   * @returns Proxy for given object
    */
   protected _getCollectionProxy<T extends CachedCollection>(obj: T): T {
     //@ts-expect-error TS doesn't know about _isProxy
