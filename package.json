@@ -8,9 +8,9 @@
   ],
   "types": "dst/api.d.js",
   "scripts": {
-    "clear": "rm -rf ./dst/**",
-    "dev": "npm run clear ; tsc --watch",
-    "build": "npm run clear ; tsc",
+    "clean": "rm -rf ./dst/**",
+    "dev": "npm run clean ; tsc --watch",
+    "build": "npm run clean ; tsc",
     "test": "mocha -r ts-node/register \"test/**/*.test.ts\"",
     "test:current": "mocha -r ts-node/register \"test/**/simDataFragments.test.ts\""
   },
