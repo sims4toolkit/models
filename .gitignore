@@ -4,3 +4,4 @@ localTests/
 out/
 pocs/
 .VSCodeCounter/
+.vscode/settings.json
