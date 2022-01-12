@@ -1,7 +1,15 @@
 {
-  "name": "@s4tk/core",
+  "name": "@s4tk/models",
   "version": "0.1.0",
-  "description": "The DBPF interface used by Sims 4 Toolkit.",
+  "description": "Reads and writes all of the models required by S4TK, including package files, tuning, SimData, and string tables.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sims4toolkit/models.git"
+  },
+  "homepage": "https://github.com/sims4toolkit/models#readme",
+  "bugs": {
+    "url" : "https://github.com/sims4toolkit/models/issues"
+  },
   "main": "dst/api.js",
   "files": [
     "dst/"
@@ -15,6 +23,10 @@
     "test:current": "mocha -r ts-node/register \"test/**/simDataFragments.test.ts\""
   },
   "author": "frankkulak",
+  "funding": {
+    "type" : "patreon",
+    "url" : "https://www.patreon.com/bePatron?u=40823163"
+  },
   "license": "MIT",
   "devDependencies": {
     "@types/chai": "^4.3.0",
