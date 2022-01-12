@@ -1,5 +1,5 @@
 import { expect } from "chai";
-import { RawResource, StringTableResource } from '../../../../dst/api';
+import { RawResource, StringTableResource } from '../../../dst/api';
 
 function getRAW(content = "default content") {
   return RawResource.from(Buffer.from(content));

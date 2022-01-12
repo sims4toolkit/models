@@ -1,7 +1,7 @@
 import { XmlDocumentNode, XmlElementNode } from "@s4tk/utils/xml";
 import { formatAsHexString } from "@s4tk/utils/formatting";
 import Resource from "../resource";
-import { removeFromArray } from "../../../utils/helpers";
+import { removeFromArray } from "../../helpers";
 import { SimDataInstance, SimDataSchema } from "./simDataFragments";
 import { SimDataDto, SUPPORTED_VERSION } from "./shared";
 import readData from "./serialization/readData";

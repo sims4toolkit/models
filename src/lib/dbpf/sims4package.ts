@@ -10,7 +10,7 @@ import writeDbpf from './serialization/writeDbpf';
  * DBPF for short). Sims 4 Toolkit uses "DBPF" instead of "package" to avoid
  * confusion with npm packages and the reserved `package` keyword.
  */
-export default class Dbpf extends WritableModel implements DbpfDto {
+export default class Sims4Package extends WritableModel implements DbpfDto {
   private _nextId: number;
   private _entries: ResourceEntry[];
 
@@ -23,15 +23,15 @@ export default class Dbpf extends WritableModel implements DbpfDto {
   /**
    * Creates and returns a new, empty DBPF.
    */
-  static create(): Dbpf {
-    return new Dbpf([]);
+  static create(): Sims4Package {
+    return new Sims4Package([]);
   }
 
   /**
    * Creates a new DBPF from a buffer that contains binary data.
    */
-  static from(buffer: Buffer, options?: DbpfOptions): Dbpf {
-    return new Dbpf(readDbpf(buffer, options), buffer);
+  static from(buffer: Buffer, options?: DbpfOptions): Sims4Package {
+    return new Sims4Package(readDbpf(buffer, options), buffer);
   }
 
   /**

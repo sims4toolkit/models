@@ -1,4 +1,4 @@
-import type Dbpf from "../dbpf";
+import type Dbpf from "../sims4package";
 
 import { BinaryEncoder } from "@s4tk/utils/encoding";
 

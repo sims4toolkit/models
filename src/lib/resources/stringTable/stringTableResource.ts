@@ -3,7 +3,7 @@ import type { SerializationOptions } from "../../shared";
 
 import { fnv32 } from "@s4tk/utils/hashing";
 import Resource from "../resource";
-import { removeFromArray } from "../../../utils/helpers";
+import { removeFromArray } from "../../helpers";
 import CacheableModel from "../../abstract/cacheableModel";
 import readStbl from "./serialization/readStbl";
 import writeStbl from "./serialization/writeStbl";

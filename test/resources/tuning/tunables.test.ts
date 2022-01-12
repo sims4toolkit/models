@@ -1,7 +1,7 @@
 import { expect } from "chai";
 import { fnv32 } from "@s4tk/utils/hashing";
 import { formatStringKey } from "@s4tk/utils/formatting";
-import { StringTableResource, tunables } from "../../../../dst/api";
+import { StringTableResource, tunables } from "../../../dst/api";
 const { I, M, T, E, L, U, V, C, Comment, LocString, getLocStringFn } = tunables;
 
 describe("#I()", function() {

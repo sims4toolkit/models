@@ -1,18 +1,18 @@
-import Dbpf from "./lib/models/dbpf/dbpf";
-import XmlResource from "./lib/models/resources/generic/xmlResource";
-import RawResource from "./lib/models/resources/generic/rawResource";
-import TuningResource from "./lib/models/resources/tuning/tuningResource";
-import SimDataResource from "./lib/models/resources/simData/simDataResource";
-import StringTableResource from "./lib/models/resources/stringTable/stringTableResource";
-import * as tunables from "./lib/models/resources/tuning/tunables";
-import * as simDataCells from "./lib/models/resources/simData/simDataCells";
-import * as simDataFragments from "./lib/models/resources/simData/simDataFragments";
-import * as simDataTypes from "./lib/models/resources/simData/simDataTypes";
+import Sims4Package from "./lib/dbpf/sims4package";
+import XmlResource from "./lib/resources/generic/xmlResource";
+import RawResource from "./lib/resources/generic/rawResource";
+import TuningResource from "./lib/resources/tuning/tuningResource";
+import SimDataResource from "./lib/resources/simData/simDataResource";
+import StringTableResource from "./lib/resources/stringTable/stringTableResource";
+import * as tunables from "./lib/resources/tuning/tunables";
+import * as simDataCells from "./lib/resources/simData/simDataCells";
+import * as simDataFragments from "./lib/resources/simData/simDataFragments";
+import * as simDataTypes from "./lib/resources/simData/simDataTypes";
 
 
 export {
   // Models
-  Dbpf,
+  Sims4Package,
   RawResource,
   XmlResource,
   TuningResource,

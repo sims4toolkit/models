@@ -2,12 +2,12 @@ import * as fs from "fs";
 import * as path from "path";
 import { expect } from "chai";
 import { XmlDocumentNode } from "@s4tk/utils/xml";
-import { TuningResource, tunables } from '../../../../dst/api';
+import { TuningResource, tunables } from '../../../dst/api';
 
 const XML_DECLARATION = '<?xml version="1.0" encoding="utf-8"?>';
 
 function getTuningFromFile(filename) {
-  const filepath = path.resolve(__dirname, `../../../data/tuning/${filename}.xml`);
+  const filepath = path.resolve(__dirname, `../../data/tuning/${filename}.xml`);
   const buffer = fs.readFileSync(filepath);
   return TuningResource.from(buffer);
 }

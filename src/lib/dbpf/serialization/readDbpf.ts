@@ -1,7 +1,7 @@
 import * as zlib from "zlib";
 import { BinaryDecoder } from "@s4tk/utils/encoding";
-import { BinaryResourceType, TuningResourceType } from "../../../enums/resourceType";
-import { makeList } from "../../../utils/helpers";
+// import { BinaryResourceType, TuningResourceType } from "../../../enums/resourceType";
+import { makeList } from "../../helpers";
 import RawResource from "../../resources/generic/rawResource";
 import Resource from "../../resources/resource";
 import SimDataResource from "../../resources/simData/simDataResource";
@@ -10,6 +10,18 @@ import TuningResource from "../../resources/tuning/tuningResource";
 import { DbpfOptions, ResourceEntry } from "../shared";
 
 //#region Types & Interfaces
+
+type ResourceType = BinaryResourceType | TuningResourceType;
+
+enum BinaryResourceType {
+  SimData = 0x545AC67A,
+  StringTable = 0x220557DA,
+}
+
+enum TuningResourceType {
+  Buff = 0x6017E896,
+  Trait = 0xCB5FDDC7,
+}
 
 /**
  * An entry that appears in the index of a binary DBPF.

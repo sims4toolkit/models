@@ -1,5 +1,5 @@
 import { expect } from "chai";
-import { simDataFragments, simDataTypes } from "../../../../dst/api";
+import { simDataFragments, simDataTypes } from "../../../dst/api";
 
 const { SimDataSchema, SimDataSchemaColumn, SimDataInstance } = simDataFragments;
 const { SimDataType } = simDataTypes;

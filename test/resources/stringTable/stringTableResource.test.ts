@@ -2,7 +2,7 @@ import * as fs from "fs";
 import * as path from "path";
 import { expect } from "chai";
 import * as hashing from "@s4tk/utils/hashing";
-import { StringTableResource } from "../../../../dst/api";
+import { StringTableResource } from "../../../dst/api";
 
 //#region Helpers
 
@@ -13,7 +13,7 @@ function getSTBL(filename, options = undefined) {
     return StringTableResource.from(cachedBuffers[filename], options);
   }
 
-  const filepath = path.resolve(__dirname, `../../../data/stbls/${filename}.stbl`);
+  const filepath = path.resolve(__dirname, `../../data/stbls/${filename}.stbl`);
   const buffer = fs.readFileSync(filepath);
   cachedBuffers[filename] = buffer;
   return StringTableResource.from(buffer, options);
