@@ -1,5 +1,6 @@
 import type { KeyStringPair } from "../shared";
-import { BinaryEncoder } from "../../../../utils/encoding";
+
+import { BinaryEncoder } from "@s4tk/utils/encoding";
 
 /**
  * Writes STBL content to a buffer.

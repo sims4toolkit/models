@@ -1,5 +1,5 @@
+import { XmlDocumentNode, XmlNode } from "@s4tk/utils/xml";
 import Resource from "../resource";
-import { XmlDocumentNode, XmlNode } from "../../xml/dom";
 
 /**
  * Model for a plaintext, XML resource.

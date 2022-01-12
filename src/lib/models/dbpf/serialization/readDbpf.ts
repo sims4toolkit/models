@@ -1,6 +1,6 @@
 import * as zlib from "zlib";
+import { BinaryDecoder } from "@s4tk/utils/encoding";
 import { BinaryResourceType, TuningResourceType } from "../../../enums/resourceType";
-import { BinaryDecoder } from "../../../utils/encoding";
 import { makeList } from "../../../utils/helpers";
 import RawResource from "../../resources/generic/rawResource";
 import Resource from "../../resources/resource";

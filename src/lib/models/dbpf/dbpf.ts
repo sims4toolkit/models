@@ -1,4 +1,5 @@
 import type { DbpfDto, DbpfOptions, ResourceEntry, ResourceEntryPredicate } from './shared';
+
 import WritableModel from "../abstract/writableModel";
 import readDbpf from './serialization/readDbpf';
 import writeDbpf from './serialization/writeDbpf';

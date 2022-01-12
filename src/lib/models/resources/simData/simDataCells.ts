@@ -1,13 +1,14 @@
+import type { BinaryDecoder, BinaryEncoder } from "@s4tk/utils/encoding";
 import type { SimDataSchema } from "./simDataFragments";
 import type { SimDataNumber, SimDataBigInt, SimDataText, SimDataFloatVector } from "./simDataTypes";
-import type { BinaryDecoder, BinaryEncoder } from "../../../utils/encoding";
+
+import { XmlElementNode, XmlNode, XmlValueNode } from "@s4tk/utils/xml";
+import { formatAsHexString } from "@s4tk/utils/formatting";
+import { fnv32 } from "@s4tk/utils/hashing";
 import { CellCloneOptions, CellEncodingOptions, CellToXmlOptions, ObjectCellRow } from "./shared";
 import CacheableModel from "../../abstract/cacheableModel";
 import { SimDataType, SimDataTypeUtils } from "./simDataTypes";
 import { removeFromArray } from "../../../utils/helpers";
-import { XmlElementNode, XmlNode, XmlValueNode } from "../../xml/dom";
-import { formatAsHexString } from "../../../utils/formatting";
-import { fnv32 } from "../../../utils/hashing";
 
 type PrimitiveType = boolean | number | bigint | string;
 

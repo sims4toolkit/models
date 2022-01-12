@@ -1,5 +1,5 @@
+import { BinaryDecoder } from "@s4tk/utils/encoding";
 import { ObjectCellRow, RELOFFSET_NULL, SimDataDto } from "../shared";
-import { BinaryDecoder } from "../../../../utils/encoding";
 import { makeList } from "../../../../utils/helpers";
 import { SimDataSchema, SimDataSchemaColumn, SimDataInstance } from "../simDataFragments";
 import { SimDataType, SimDataRecursiveType } from "../simDataTypes";

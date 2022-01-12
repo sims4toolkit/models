@@ -1,7 +1,8 @@
 import type { KeyStringPair, StringTableError } from "./shared";
 import type { SerializationOptions } from "../../shared";
+
+import { fnv32 } from "@s4tk/utils/hashing";
 import Resource from "../resource";
-import { fnv32 } from "../../../utils/hashing";
 import { removeFromArray } from "../../../utils/helpers";
 import CacheableModel from "../../abstract/cacheableModel";
 import readStbl from "./serialization/readStbl";

@@ -1,5 +1,6 @@
 import type Dbpf from "../dbpf";
-import { BinaryEncoder } from "../../../utils/encoding";
+
+import { BinaryEncoder } from "@s4tk/utils/encoding";
 
 /**
  * Writes the given DBPF into a buffer.

@@ -1,7 +1,7 @@
 import { expect } from "chai";
+import { XmlElementNode, XmlValueNode } from "@s4tk/utils/xml";
+import { BinaryEncoder } from "@s4tk/utils/encoding";
 import { simDataCells, simDataFragments, simDataTypes } from "../../../../dst/api";
-import { XmlElementNode, XmlValueNode } from "../../../../dst/lib/models/xml/dom";
-import { BinaryEncoder } from "../../../../dst/lib/utils/encoding";
 import MockOwner from "../../../mocks/mockOwner";
 
 const cells = simDataCells;
