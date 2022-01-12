@@ -5,6 +5,13 @@ import XmlResource from "../generic/xmlResource";
  * Model for a plaintext, XML tuning resource.
  */
 export default class TuningResource extends XmlResource {
+  /**
+   * Creates a new XmlResource instance. This constructor is not considered to
+   * be a part of the public API. Please refer to `create()` and `from()`
+   * instead.
+   * 
+   * @param params Arguments for construction
+   */
   protected constructor(params: {
     content?: string;
     buffer?: Buffer;

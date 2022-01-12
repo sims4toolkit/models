@@ -66,7 +66,7 @@ export default class XmlResource extends Resource {
    * be a part of the public API. Please refer to `create()` and `from()`
    * instead.
    * 
-   * @param arguments Arguments for construction
+   * @param params Arguments for construction
    */
   protected constructor({ content, buffer, dom }: {
     content?: string;

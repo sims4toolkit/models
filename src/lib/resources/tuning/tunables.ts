@@ -1,6 +1,5 @@
 import type { XmlNode } from "@s4tk/utils/xml";
 import type StringTableResource from "../stringTable/stringTableResource";
-
 import { XmlElementNode, XmlCommentNode, XmlValueNode } from "@s4tk/utils/xml";
 import { formatStringKey } from "@s4tk/utils/formatting";
 
@@ -29,7 +28,7 @@ type TuningAttributes = { [key in TuningAttributeKey]?: any; };
  * 
  * @param args Object containing the arguments
  */
- export function I({ c, i, m, n, s, children = [] }: {
+export function I({ c, i, m, n, s, children = [] }: {
   c: string;
   i: string;
   m: string;
