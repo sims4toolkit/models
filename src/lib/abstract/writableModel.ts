@@ -30,7 +30,7 @@ export default abstract class WritableModel extends CacheableModel {
    * 
    * @param options Options for construction 
    */
-  constructor({ buffer, owner }: {
+  protected constructor({ buffer, owner }: {
     buffer?: Buffer;
     owner?: WritableModel;
   } = {}) {

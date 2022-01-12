@@ -9,7 +9,7 @@ type CachedCollection = { [key: string]: CacheableModel; } | CacheableModel[];
 export default abstract class CacheableModel {
   private _cachedProps: string[] = [];
 
-  constructor(public owner?: CacheableModel) {
+  protected constructor(public owner?: CacheableModel) {
     this._cachedProps = [];
 
     return new Proxy(this, {
