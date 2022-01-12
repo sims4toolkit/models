@@ -18,7 +18,8 @@
   "scripts": {
     "clean": "rm -rf ./dst/**",
     "dev": "npm run clean ; tsc --watch",
-    "build": "npm run clean ; tsc",
+    "build": "npm run clean ; tsc ; node scripts/prepublish.cjs",
+    "publish": "npm run build && sh scripts/publish.sh",
     "test": "mocha -r ts-node/register \"test/**/*.test.ts\"",
     "test:current": "mocha -r ts-node/register \"test/**/simDataFragments.test.ts\""
   },
