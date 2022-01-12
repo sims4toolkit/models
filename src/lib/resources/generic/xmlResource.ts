@@ -11,32 +11,33 @@ export default class XmlResource extends Resource {
 
   /** The XML content of this resource. */
   get content(): string {
-    if (this._content == undefined) this._content = this._dom?.toXml() || '';
-    return this._content;
+    try {
+      return this._content ??= this._dom?.toXml() ?? '';
+    } catch (e) {
+      throw new Error(`Failed to convert XML DOM to plain text:\n${e}`);
+    }
   }
 
-  /** Sets the plain text content, resets the DOM, and uncaches the resource. */
   set content(content: string) {
     this._content = content;
-    this._dom = undefined;
+    delete this._dom;
     this.uncache();
   }
 
   /**
-   * The DOM for this resource. To mutate the DOM, use `updateDom()` so
-   * that cache is handled properly.
+   * The DOM for this resource. To mutate the contents of the DOM, either use
+   * `updateDom()` or set this property so that cacheing is handled properly.
    */
   get dom(): XmlDocumentNode {
-    if (this._dom == undefined)
-      this._dom = XmlDocumentNode.from(this.content, {
+    try {
+      return this._dom ??= XmlDocumentNode.from(this.content, {
         allowMultipleRoots: true
       });
-    return this._dom;
+    } catch (e) {
+      throw new Error(`Failed to generate DOM for XML:\n${e}`);
+    }
   }
 
-  /**
-   * Sets the DOM, resets the plain text content, and uncaches the resource.
-   */
   set dom(dom: XmlDocumentNode) {
     this._dom = dom;
     this._content = undefined;
@@ -44,18 +45,14 @@ export default class XmlResource extends Resource {
   }
 
   /**
-   * Shorthand for getting the first child of the DOM, since XML resources
-   * should only have one child in their DOM anyways. To mutate the root, use
-   * `updateRoot()` so that the cache is handled properly.
+   * Shorthand for `dom.child`, since most XML resources should only have one
+   * child anyways. To mutate the root, either use `updateRoot()` or set this
+   * property so that cacheing is handled properly.
    */
   get root(): XmlNode {
     return this.dom.child;
   }
 
-  /**
-   * Sets the first child of the DOM, resets the plain text content, and
-   * uncaches the resource.
-   */
   set root(node: XmlNode) {
     this.updateDom(dom => {
       dom.child = node;
@@ -64,6 +61,13 @@ export default class XmlResource extends Resource {
 
   //#region Initialization
 
+  /**
+   * Creates a new XmlResource instance. This constructor is not considered to
+   * be a part of the public API. Please refer to `create()` and `from()`
+   * instead.
+   * 
+   * @param arguments Arguments for construction
+   */
   protected constructor({ content, buffer, dom }: {
     content?: string;
     buffer?: Buffer;
@@ -110,28 +114,27 @@ export default class XmlResource extends Resource {
   //#endregion Initialization
   
   /**
-   * Allows you to alter the DOM in a way that keeps the content and buffer in
-   * sync. If you alter the DOM outside of this method, you can encounter some
-   * problems with mis-matched caches.
+   * Accepts a callback function to which the DOM is passed as an argument, so
+   * that it can be mutated in a way that ensures cacheing is handled properly.
    * 
-   * @param fn Callback function in which you can alter the DOM
+   * @param fn Callback function in which the DOM can be altered
    */
   updateDom(fn: (dom: XmlDocumentNode) => void) {
     fn(this.dom);
-    this._content = undefined;
+    delete this._content;
     this.uncache();
   }
 
   /**
-   * Allows you to alter the first child of the DOM in a way that keeps the
-   * content and buffer in sync. If you alter the DOM outside of this method,
-   * you can encounter some problems with mis-matched caches.
+   * Accepts a callback function to which the DOM's root element (i.e. its
+   * first, and hopefully only, child) is passed as an argument, so that it can
+   * be mutated in a way that ensures cacheing is handled properly.
    * 
-   * @param fn Callback function in which you can alter the root of the DOM
+   * @param fn Callback function in which the DOM root can be altered
    */
   updateRoot(fn: (root: XmlNode) => void) {
     fn(this.root);
-    this._content = undefined;
+    delete this._content;
     this.uncache();
   }
 

@@ -21,14 +21,14 @@ export default abstract class WritableModel extends CacheableModel {
    * is the same as checking if the model does not have a cached buffer.
    */
   get hasChanged(): boolean {
-    return this._cachedBuffer === undefined;
+    return this._cachedBuffer == undefined;
   }
 
   /**
    * Creates a new WritableModel. Arguments are given in an object because none
    * are required and either may be supplied without the other.
    * 
-   * @param options Options for construction 
+   * @param arguments Arguments for construction 
    */
   protected constructor({ buffer, owner }: {
     buffer?: Buffer;

@@ -19,12 +19,13 @@ export default class RawResource extends Resource {
   }
 
   /**
-   * Creates a new RawResource instance.
+   * Creates a new RawResource instance. This constructor is not considered to
+   * be a part of the public API. Please refer to `from()` instead.
    * 
    * @param buffer Buffer to load into this resource
    * @param reason Reason why this resource is being loaded raw
    */
-  constructor(buffer: Buffer, reason?: string) {
+  protected constructor(buffer: Buffer, reason?: string) {
     super({ buffer });
     this._reason = reason;
   }
