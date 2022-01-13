@@ -84,6 +84,11 @@ export class SimDataSchema extends CacheableModel {
     });
   }
 
+  protected _onOwnerChange(previousOwner: CacheableModel): void {
+    this.columns.forEach(column => column.owner = this._getCollectionOwner());
+    super._onOwnerChange(previousOwner);
+  }
+
   /**
    * Parses an S4S-style XML node as a schema.
    * 

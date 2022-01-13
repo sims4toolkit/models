@@ -1,7 +1,6 @@
 import type { BinaryDecoder, BinaryEncoder } from "@s4tk/utils/encoding";
 import type { SimDataSchema } from "./simDataFragments";
 import type { SimDataNumber, SimDataBigInt, SimDataText, SimDataFloatVector } from "./simDataTypes";
-
 import { XmlElementNode, XmlNode, XmlValueNode } from "@s4tk/utils/xml";
 import { formatAsHexString } from "@s4tk/utils/formatting";
 import { fnv32 } from "@s4tk/utils/hashing";
@@ -1116,7 +1115,7 @@ export class VectorCell<T extends Cell = Cell> extends MultiValueCell {
   }
 
   protected _onOwnerChange(previousOwner: CacheableModel): void {
-    this.children.forEach(child => child.owner = this.owner);
+    this.children.forEach(child => child.owner = this._getCollectionOwner());
     super._onOwnerChange(previousOwner);
   }
 
