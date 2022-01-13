@@ -276,27 +276,88 @@ describe("SimDataSchemaColumn", () => {
 });
 
 describe("SimDataInstance", () => {
-  describe("#owner", () => {
-    // TODO:
-  });
+  // most tests are done in ObjectCell, since instance is basically just an
+  // ObjectCell with a name
 
   describe("#name", () => {
-    // TODO:
+    it("should uncache the owner when set", () => {
+      // TODO:
+    });
   });
 
   describe("#clone", () => {
-    // TODO:
+    it("should copy the name", () => {
+      // TODO:
+    });
+
+    it("should not copy the owner", () => {
+      // TODO:
+    });
+
+    it("should not mutate the original", () => {
+      // TODO:
+    });
   });
 
   describe("#toXmlNode()", () => {
-    // TODO:
+    it("should use an 'I' tag", () => {
+      // TODO:
+    });
+
+    it("should have an 'Object' type", () => {
+      // TODO:
+    });
+
+    it("should have its schema name written", () => {
+      // TODO:
+    });
+
+    it("should write its children with their names", () => {
+      // TODO:
+    });
   });
 
   describe("static#fromObjectCell()", () => {
-    // TODO:
+    it("should not mutate the original object cell", () => {
+      // TODO:
+    });
+
+    it("should create an instance with the given name", () => {
+      // TODO:
+    });
+
+    it("should copy the owner", () => {
+      // TODO:
+    });
+
+    it("should set the owner of its children", () => {
+      // TODO:
+    });
   });
 
   describe("static#fromXmlNode()", () => {
-    // TODO:
+    it("should throw if the tag != 'I'", () => {
+      // TODO:
+    });
+
+    it("should throw if there is no name", () => {
+      // TODO:
+    });
+
+    it("should throw if there is no schema", () => {
+      // TODO:
+    });
+
+    it("should throw if its schema was not provided", () => {
+      // TODO:
+    });
+
+    it("should have the name and schema that are specified", () => {
+      // TODO:
+    });
+
+    it("should contain the correct children", () => {
+      // TODO:
+    });
   });
 });

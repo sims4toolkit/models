@@ -205,7 +205,7 @@ export class SimDataInstance extends ObjectCell {
    * @param source ObjectCell to base this instance off of
    */
   static fromObjectCell(name: string, source: ObjectCell): SimDataInstance {
-    return new SimDataInstance(name, source.schema, source.row);
+    return new SimDataInstance(name, source.schema, source.row, source.owner as SimDataResource);
   }
 
   /**
