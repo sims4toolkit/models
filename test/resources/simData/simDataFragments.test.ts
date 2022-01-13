@@ -111,23 +111,40 @@ describe("SimDataSchema", () => {
 
   describe("#constructor", () => {
     it("should use the given name, hash, and columns", () => {
-      // TODO:
+      const schema = new SimDataSchema("TestSchema", 0x1234, [
+        new SimDataSchemaColumn("boolean", SimDataType.Boolean, 0),
+        new SimDataSchemaColumn("uint32", SimDataType.UInt32, 0)
+      ]);
+
+      expect(schema.name).to.equal("TestSchema");
+      expect(schema.hash).to.equal(0x1234);
+      expect(schema.columns).to.have.lengthOf(2);
+      expect(schema.columns[0].name).to.equal("boolean");
+      expect(schema.columns[1].name).to.equal("uint32");
     });
 
     it("should have an empty array of columns if given undefined", () => {
-      // TODO:
+      const schema = new SimDataSchema("TestSchema", 0x1234, undefined);
+      expect(schema.columns).to.be.an('Array').that.is.empty;
     });
 
     it("should use the owner that is given", () => {
-      // TODO:
+      const owner = new MockOwner();
+      const schema = new SimDataSchema("TestSchema", 0x1234, undefined, owner);
+      expect(schema.owner).to.equal(owner);
     });
 
     it("should have an undefined owner if none is given", () => {
-      // TODO:
+      const schema = new SimDataSchema("TestSchema", 0x1234, undefined);
+      expect(schema.owner).to.be.undefined;
     });
 
     it("should pass on the owner that is given to its columns", () => {
-      // TODO:
+      const owner = new MockOwner();
+      const schema = new SimDataSchema("TestSchema", 0x1234, [
+        new SimDataSchemaColumn("boolean", SimDataType.Boolean, 0)
+      ], owner);
+      expect(schema.columns[0].owner).to.equal(owner);
     });
   });
 
