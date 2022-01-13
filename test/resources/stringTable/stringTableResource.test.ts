@@ -25,11 +25,6 @@ function assertEntry(entry, id, key, string) {
   expect(entry.string).to.equal(string);
 }
 
-function expectEntriesToBeSame(entry1, entry2) {
-  expect(entry1.key).to.equal(entry2.key);
-  expect(entry1.string).to.equal(entry2.string);
-}
-
 function expectSameContents(stbl1, stbl2) {
   expect(stbl1).to.have.lengthOf(stbl2.length);
   stbl1.entries.forEach((entry, i) => {
@@ -382,7 +377,14 @@ describe('StringTableResource', function() {
     it('should throw if key exceeds 32-bit', function() {
       const stbl = StringTableResource.create();
       expect(stbl).to.have.lengthOf(0);
-      expect(() => stbl.add(0x100000000, "Test")).to.throw("Tried to add key that is > 32-bit: 4294967296");
+      expect(() => stbl.add(0x100000000, "Test")).to.throw("Tried to add key that is not a uint32: 4294967296");
+      expect(stbl).to.have.lengthOf(0);
+    });
+
+    it('should throw if key is negative', function() {
+      const stbl = StringTableResource.create();
+      expect(stbl).to.have.lengthOf(0);
+      expect(() => stbl.add(-1, "Test")).to.throw("Tried to add key that is not a uint32: -1");
       expect(stbl).to.have.lengthOf(0);
     });
 
@@ -689,6 +691,20 @@ describe('StringTableResource', function() {
       const stbl = getSTBL('SmallSTBL');
       //@ts-expect-error The whole point is that it's an error
       expect(() => stbl.entries = undefined).to.throw();
+    });
+
+    it('should uncache after splicing', function() {
+      const stbl = getSTBL('SmallSTBL');
+      expect(stbl.hasChanged).to.be.false;
+      stbl.entries.splice(0, 1);
+      expect(stbl.hasChanged).to.be.true;
+    });
+
+    it('should uncache after deleting', function() {
+      const stbl = getSTBL('SmallSTBL');
+      expect(stbl.hasChanged).to.be.false;
+      delete stbl.entries[1];
+      expect(stbl.hasChanged).to.be.true;
     });
   });
 

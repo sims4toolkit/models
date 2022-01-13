@@ -1,6 +1,5 @@
 import type { KeyStringPair, StringTableError } from "./shared";
 import type { SerializationOptions } from "../../shared";
-
 import { fnv32 } from "@s4tk/utils/hashing";
 import Resource from "../resource";
 import { removeFromArray } from "../../helpers";
@@ -9,7 +8,7 @@ import readStbl from "./serialization/readStbl";
 import writeStbl from "./serialization/writeStbl";
 
 /**
- * Model for binary string table resources.
+ * Model for string table resources.
  */
 export default class StringTableResource extends Resource {
   readonly variant = 'STBL';
@@ -17,34 +16,34 @@ export default class StringTableResource extends Resource {
   private _entries: StringEntry[];
 
   /**
-   * The entries in this string table. Individual entries can be mutated and
-   * cacheing will be handled (e.g. `entries[1].string = "New text"` is
-   * perfectly safe), however, mutating the array itself by adding or removing
-   * entries should be avoided whenever possible, because doing so is a surefire
-   * way to mess up the cache. 
-   * 
-   * To add entries, use the `add()` and `addAndHash()` methods. To remove
-   * entries, either use the `remove()` method on the string table or the 
-   * `delete()` method on the entry you want to remove.
-   * 
-   * If you insist on removing from or sorting the array manually, you can, as
-   * long as you remember to call `uncache()` when you are done. If you insist
-   * on adding entries manually, it's your funeral. Seriously, just use `add()`.
+   * An array that contains the entries for this string table. Mutating this
+   * array and its contents is safe in terms of cacheing, however, you should
+   * not be pushing entries here yourself. Use the `add()` method, so that IDs
+   * are guaranteed to be unique.
    */
-  get entries(): StringEntry[] {
-    return this._entries;
+  get entries() { return this._entries; }
+  private set entries(entries: StringEntry[]) {
+    const owner = this._getCollectionOwner() as StringTableResource;
+    entries.forEach(entry => entry.owner = owner);
+    this._entries = this._getCollectionProxy(entries);
   }
 
-  /** The number of entries in this string table. */
-  get length(): number {
-    return this.entries.length;
-  }
+  /** Shorthand for `entries.length`. */
+  get length(): number { return this.entries.length; }
 
   //#region Initialization
 
+  /**
+   * Creates a new StringTableResource instance. This constructor is not
+   * considered to be a part of the public API. Please refer to `create()` and
+   * `from()` instead.
+   * 
+   * @param entries Entries for this string table
+   * @param buffer Initial buffer to cache
+   */
   protected constructor(entries: KeyStringPair[] = [], buffer?: Buffer) {
     super({ buffer });
-    this._entries = entries.map((entry, id) => {
+    this.entries = entries.map((entry, id) => {
       return new StringEntry(id, entry.key, entry.string, this);
     });
     this._nextId = this.length;
@@ -53,9 +52,6 @@ export default class StringTableResource extends Resource {
   /**
    * Creates and returns a new string table resource from the given entries. If
    * no entries are provided, the string table is empty.
-   * 
-   * Entries should be a list of objects that have a numeric `key` value and a
-   * string `string` value.
    * 
    * @param entries Initial data for this string table 
    */
@@ -98,10 +94,9 @@ export default class StringTableResource extends Resource {
   }
 
   clone(): StringTableResource {
-    return new StringTableResource(this.entries.map(entry => ({
-      key: entry.key,
-      string: entry.string
-    })), this.buffer);
+    // entries will be cloned in the constructor, the buffer doesn't matter
+    const buffer = this.hasChanged ? undefined : this.buffer;
+    return new StringTableResource(this.entries, buffer);
   }
 
   //#endregion Initialization
@@ -110,8 +105,8 @@ export default class StringTableResource extends Resource {
 
   /**
    * Creates an entry for the given key and string, adds it to the string table,
-   * and returns the entry that was created. If the given key is not 32 bit or
-   * if it already exists in the table, an exception is thrown.
+   * and returns the entry that was created. If the given key is not a positive,
+   * 32-bit integer, or if it already exists in the table, an error is thrown.
    * 
    * Options
    * - `allowDuplicateKey`: If `true`, then the function will not throw when
@@ -124,13 +119,12 @@ export default class StringTableResource extends Resource {
    * @throws If the key is not 32-bit or if it already exists
    */
   add(key: number, string: string, { allowDuplicateKey = false } = {}): StringEntry {
-    if (key > 0xFFFFFFFF)
-      throw new Error(`Tried to add key that is > 32-bit: ${key}`);
+    if (key < 0 || key > 0xFFFFFFFF)
+      throw new Error(`Tried to add key that is not a uint32: ${key}`);
     if (!allowDuplicateKey && this.getByKey(key))
       throw new Error(`Tried to add key that already exists: ${key}`);
     const entry = new StringEntry(this._nextId++, key, string, this);
     this.entries.push(entry);
-    this.uncache();
     return entry;
   }
 
@@ -154,7 +148,7 @@ export default class StringTableResource extends Resource {
     toHash?: string;
     allowDuplicateKey?: boolean;
   } = {}): StringEntry {
-    return this.add(fnv32(toHash || string), string, { allowDuplicateKey });
+    return this.add(fnv32(toHash ?? string), string, { allowDuplicateKey });
   }
 
   /**
@@ -297,7 +291,7 @@ export default class StringTableResource extends Resource {
    * @param entries Entries to remove from this string table
    */
   remove(...entries: StringEntry[]) {
-    if (removeFromArray(entries, this.entries)) this.uncache();
+    removeFromArray(entries, this.entries);
   }
 
   //#endregion Public Methods - DELETE
@@ -314,11 +308,11 @@ export default class StringTableResource extends Resource {
 /**
  * An entry in a StringTableResource.
  */
-class StringEntry extends CacheableModel {
+class StringEntry extends CacheableModel implements KeyStringPair {
   public owner?: StringTableResource;
 
-  constructor(public readonly id: number, public key: number, public string: string, stbl: StringTableResource) {
-    super(stbl);
+  constructor(public readonly id: number, public key: number, public string: string, owner: StringTableResource) {
+    super(owner);
     this._watchProps('key', 'string');
   }
 
@@ -326,6 +320,6 @@ class StringEntry extends CacheableModel {
    * Removes this entry from the STBL that owns it.
    */
   delete() {
-    this.owner.remove(this);
+    this.owner?.remove(this);
   }
 }
