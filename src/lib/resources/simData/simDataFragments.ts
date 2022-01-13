@@ -11,7 +11,6 @@ import { removeFromArray } from "../../helpers";
  * A schema that objects in a SimData can follow.
  */
 export class SimDataSchema extends CacheableModel {
-  public owner?: SimDataResource;
   private _columns: SimDataSchemaColumn[];
 
   /**
@@ -25,13 +24,13 @@ export class SimDataSchema extends CacheableModel {
     this._columns = this._getCollectionProxy(columns);
   }
 
-  constructor(public name: string, public hash: number, columns: SimDataSchemaColumn[], owner?: SimDataResource) {
+  constructor(public name: string, public hash: number, columns: SimDataSchemaColumn[], owner?: CacheableModel) {
     super(owner);
     this.columns = columns ?? [];
     this._watchProps('name', 'hash');
   }
 
-  protected _getCollectionOwner(): SimDataResource {
+  protected _getCollectionOwner(): CacheableModel {
     return this.owner;
   }
 
@@ -113,9 +112,7 @@ export class SimDataSchema extends CacheableModel {
  * A column in a SimData schema.
  */
 export class SimDataSchemaColumn extends CacheableModel {
-  public owner?: SimDataResource;
-
-  constructor(public name: string, public type: SimDataType, public flags: number, owner?: SimDataResource) {
+  constructor(public name: string, public type: SimDataType, public flags: number, owner?: CacheableModel) {
     super(owner);
     this._watchProps('name', 'type', 'flags');
   }
@@ -168,9 +165,7 @@ export class SimDataSchemaColumn extends CacheableModel {
  * a SimData XML, so these are the models that users are familiar with.
  */
 export class SimDataInstance extends ObjectCell {
-  public owner?: SimDataResource;
-
-  constructor(public name: string, schema: SimDataSchema, row: ObjectCellRow, owner?: SimDataResource) {
+  constructor(public name: string, schema: SimDataSchema, row: ObjectCellRow, owner?: CacheableModel) {
     super(schema, row, owner);
     this._watchProps('name');
   }
