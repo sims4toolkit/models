@@ -12,6 +12,15 @@ const testSchema = new SimDataSchema("TestSchema", 0x1234, [
 ]);
 
 describe("SimDataSchema", () => {
+  function expectOwnerToUncache(fn: (schema: simDataFragments.SimDataSchema) => void) {
+    const schema = testSchema.clone();
+      const owner = new MockOwner();
+      schema.owner = owner;
+      expect(owner.cached).to.be.true;
+      fn(schema);
+      expect(owner.cached).to.be.false;
+  }
+
   describe("#owner", () => {
     it("should update the owner of contained columns when set", () => {
       const schema = testSchema.clone();
@@ -24,61 +33,43 @@ describe("SimDataSchema", () => {
 
   describe("#columns", () => {
     it("should uncache the owner when pushed to", () => {
-      const schema = testSchema.clone();
-      const owner = new MockOwner();
-      schema.owner = owner;
-      expect(owner.cached).to.be.true;
-      schema.columns.push(new SimDataSchemaColumn("float3", SimDataType.Float3, 0));
-      expect(owner.cached).to.be.false;
+      expectOwnerToUncache(schema => {
+        schema.columns.push(new SimDataSchemaColumn("float3", SimDataType.Float3, 0));
+      });
     });
 
     it("should uncache the owner when spliced", () => {
-      const schema = testSchema.clone();
-      const owner = new MockOwner();
-      schema.owner = owner;
-      expect(owner.cached).to.be.true;
-      schema.columns.splice(0, 1);
-      expect(owner.cached).to.be.false;
+      expectOwnerToUncache(schema => {
+        schema.columns.splice(0, 1);
+      });
     });
 
     it("should uncache the owner when sorted", () => {
-      const schema = testSchema.clone();
-      const owner = new MockOwner();
-      schema.owner = owner;
-      expect(owner.cached).to.be.true;
-      schema.columns.sort((a, b) => {
-        if (a.name < b.name) return -1;
-        if (b.name < a.name) return 1;
-        return 0;
+      expectOwnerToUncache(schema => {
+        schema.columns.sort((a, b) => {
+          if (a.name < b.name) return -1;
+          if (b.name < a.name) return 1;
+          return 0;
+        });
       });
-      expect(owner.cached).to.be.false;
     });
 
     it("should uncache the owner when child is set", () => {
-      const schema = testSchema.clone();
-      const owner = new MockOwner();
-      schema.owner = owner;
-      expect(owner.cached).to.be.true;
-      schema.columns[0] = new SimDataSchemaColumn("float3", SimDataType.Float3, 0);
-      expect(owner.cached).to.be.false;
+      expectOwnerToUncache(schema => {
+        schema.columns[0] = new SimDataSchemaColumn("float3", SimDataType.Float3, 0);
+      });
     });
 
     it("should uncache the owner when child is deleted", () => {
-      const schema = testSchema.clone();
-      const owner = new MockOwner();
-      schema.owner = owner;
-      expect(owner.cached).to.be.true;
-      delete schema.columns[0];
-      expect(owner.cached).to.be.false;
+      expectOwnerToUncache(schema => {
+        delete schema.columns[0];
+      });
     });
 
     it("should uncache the owner when child is mutated", () => {
-      const schema = testSchema.clone();
-      const owner = new MockOwner();
-      schema.owner = owner;
-      expect(owner.cached).to.be.true;
-      schema.columns[0].name = "some_better_name";
-      expect(owner.cached).to.be.false;
+      expectOwnerToUncache(schema => {
+        schema.columns[0].name = "some_better_name";
+      });
     });
 
     it("should set the owner of a column that is set", () => {
@@ -104,13 +95,17 @@ describe("SimDataSchema", () => {
 
   describe("#hash", () => {
     it("should uncache the owner when set", () => {
-      // TODO:
+      expectOwnerToUncache(schema => {
+        schema.hash = 0;
+      });
     });
   });
 
   describe("#name", () => {
     it("should uncache the owner when set", () => {
-      // TODO:
+      expectOwnerToUncache(schema => {
+        schema.name = "BetterName";
+      });
     });
   });
 
