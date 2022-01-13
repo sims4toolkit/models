@@ -335,6 +335,12 @@ describe("SimDataInstance", () => {
   // most tests are done in ObjectCell, since instance is basically just an
   // ObjectCell with a name
 
+  describe("#owner", () => {
+    it("should update the owner of contained cells when set", () => {
+      // TODO:
+    });
+  });
+
   describe("#name", () => {
     it("should uncache the owner when set", () => {
       // TODO:
