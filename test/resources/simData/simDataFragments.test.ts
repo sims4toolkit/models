@@ -190,15 +190,44 @@ describe("SimDataSchema", () => {
 
   describe("#removeColumns()", () => {
     it("should remove the one exact column that is given", () => {
-      // TODO:
+      const schema = testSchema.clone();
+      const columnToRemove = schema.columns[0];
+      expect(schema.columns).to.have.lengthOf(3);
+      expect(schema.columns[0].name).to.equal("boolean");
+      expect(schema.columns[1].name).to.equal("uint32");
+      expect(schema.columns[2].name).to.equal("string");
+      schema.removeColumns(columnToRemove);
+      expect(schema.columns).to.have.lengthOf(2);
+      expect(schema.columns[0].name).to.equal("uint32");
+      expect(schema.columns[1].name).to.equal("string");
     });
 
-    it("should remove the multiple exact columns that is given", () => {
-      // TODO:
+    it("should uncache the owner", () => {
+      expectOwnerToUncache(schema => {
+        const columnToRemove = schema.columns[0];
+        schema.removeColumns(columnToRemove);
+      });
+    });
+
+    it("should remove the multiple exact columns that are given", () => {
+      const schema = testSchema.clone();
+      const firstColumn = schema.columns[0];
+      const thirdColumn = schema.columns[2];
+      expect(schema.columns).to.have.lengthOf(3);
+      expect(schema.columns[0].name).to.equal("boolean");
+      expect(schema.columns[1].name).to.equal("uint32");
+      expect(schema.columns[2].name).to.equal("string");
+      schema.removeColumns(firstColumn, thirdColumn);
+      expect(schema.columns).to.have.lengthOf(1);
+      expect(schema.columns[0].name).to.equal("uint32");
     });
 
     it("should not remove an identical column if it is not the same object", () => {
-      // TODO:
+      const schema = testSchema.clone();
+      const columnToRemove = schema.columns[0].clone();
+      expect(schema.columns).to.have.lengthOf(3);
+      schema.removeColumns(columnToRemove);
+      expect(schema.columns).to.have.lengthOf(3);
     });
   });
 
