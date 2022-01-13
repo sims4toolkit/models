@@ -180,32 +180,98 @@ describe("SimDataSchema", () => {
 });
 
 describe("SimDataSchemaColumn", () => {
-  describe("#owner", () => {
-    // TODO:
-  });
-
   describe("#flags", () => {
-    // TODO:
+    it("should uncache the owner when set", () => {
+      // TODO:
+    });
   });
 
   describe("#name", () => {
-    // TODO:
+    it("should uncache the owner when set", () => {
+      // TODO:
+    });
   });
 
   describe("#type", () => {
-    // TODO:
+    it("should uncache the owner when set", () => {
+      // TODO:
+    });
+  });
+
+  describe("#constructor", () => {
+    it("should use the given name, type, and flags", () => {
+      // TODO:
+    });
+
+    it("should use the owner that is given", () => {
+      // TODO:
+    });
+
+    it("should have an undefined owner if none is given", () => {
+      // TODO:
+    });
   });
 
   describe("#clone()", () => {
-    // TODO:
+    it("should copy the name, type, and flags of this column", () => {
+      // TODO:
+    });
+
+    it("should not copy the owner", () => {
+      // TODO:
+    });
+
+    it("should not mutate the original", () => {
+      // TODO:
+    });
   });
 
-  describe("#removeColumns()", () => {
-    // TODO:
+  describe("#toXmlNode()", () => {
+    it("should use the tag 'Column'", () => {
+      // TODO:
+    });
+
+    it("should have 'name', 'type', and 'flags' attributes", () => {
+      // TODO:
+    });
+
+    it("should write the type as its string value", () => {
+      // TODO:
+    });
+
+    it("should write 'Single' for a type of 'Float'", () => {
+      // TODO:
+    });
+
+    it("should write the flags as 32-bit with 0x prefix", () => {
+      // TODO:
+    });
   });
 
   describe("static#fromXmlNode()", () => {
-    // TODO:
+    it("should throw if the tag != 'Column'", () => {
+      // TODO:
+    });
+
+    it("should throw if there is no name", () => {
+      // TODO:
+    });
+
+    it("should throw if there is no type", () => {
+      // TODO:
+    });
+
+    it("should throw if there is no flags", () => {
+      // TODO:
+    });
+
+    it("should parse flags as a number", () => {
+      // TODO:
+    });
+
+    it("should have the name, type, and flags specified", () => {
+      // TODO:
+    });
   });
 });
 
