@@ -1,3 +1,4 @@
+import type { SerializationOptions } from "../../../shared";
 import { BinaryDecoder } from "@s4tk/utils/encoding";
 import { ObjectCellRow, RELOFFSET_NULL, SimDataDto } from "../shared";
 import { makeList } from "../../../helpers";
@@ -180,9 +181,11 @@ function readSchema(decoder: BinaryDecoder): BinarySchema {
  * Reads a binary DATA file in a buffer as a SimData.
  * 
  * @param buffer Buffer to read
+ * @param options Options for reading
  */
-export default function readData(buffer: Buffer): SimDataDto {
+export default function readData(buffer: Buffer, options?: SerializationOptions): SimDataDto {
   const decoder = new BinaryDecoder(buffer);
+  const throwErrors = options === undefined || !options.ignoreErrors;
 
   //#region Cell Helpers
 
@@ -307,10 +310,10 @@ export default function readData(buffer: Buffer): SimDataDto {
 
   // Header and binary info
   const mnFileIdentifier = decoder.charsUtf8(4);
-  if (mnFileIdentifier !== "DATA")
+  if (throwErrors && mnFileIdentifier !== "DATA")
     throw new Error("Not a SimData file (must begin with \"DATA\").");
   const mnVersion = decoder.uint32();
-  if (mnVersion < 0x100 || mnVersion > 0x101)
+  if (throwErrors && mnVersion < 0x100 || mnVersion > 0x101)
     throw new Error("Unknown version (must be 0x100 or 0x101).");
   const nTableHeaderPos = decoder.tell();
   const mnTableHeaderOffset = decoder.int32();
