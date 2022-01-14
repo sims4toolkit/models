@@ -168,23 +168,46 @@ describe("SimDataSchema", () => {
 
   describe("#clone()", () => {
     it("should copy the name, hash, and columns of this schema", () => {
-      // TODO:
+      const clone = testSchema.clone();
+      expect(clone.name).to.equal("TestSchema");
+      expect(clone.hash).to.equal(0x1234);
+      expect(clone.columns).to.have.lengthOf(3);
+      expect(clone.columns[0].name).to.equal("boolean");
+      expect(clone.columns[1].name).to.equal("uint32");
+      expect(clone.columns[2].name).to.equal("string");
     });
 
     it("should not copy the owner", () => {
-      // TODO:
+      const owner = new MockOwner();
+      const schema = new SimDataSchema("NewSchema", 0x1, [], owner);
+      const clone = schema.clone();
+      expect(clone.owner).to.be.undefined;
     });
 
     it("should not mutate the original", () => {
-      // TODO:
+      const schema = new SimDataSchema("NewSchema", 0x1, []);
+      const clone = schema.clone();
+      clone.name = "NewerSchema";
+      expect(schema.name).to.equal("NewSchema");
     });
 
     it("should not mutate the original's columns", () => {
-      // TODO:
+      const clone = testSchema.clone();
+      expect(testSchema.columns).to.have.lengthOf(3);
+      expect(clone.columns).to.have.lengthOf(3);
+      clone.columns.splice(0, 1);
+      expect(testSchema.columns).to.have.lengthOf(3);
+      expect(clone.columns).to.have.lengthOf(2);
     });
 
     it("should not copy the column's owners", () => {
-      // TODO:
+      const owner = new MockOwner();
+      const schema = new SimDataSchema("NewSchema", 0x1, [
+        new SimDataSchemaColumn("column", SimDataType.Int16, 0)
+      ], owner);
+      expect(schema.columns[0].owner).to.equal(owner);
+      const clone = schema.clone();
+      expect(clone.columns[0].owner).to.be.undefined;
     });
   });
 
