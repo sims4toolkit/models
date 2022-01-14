@@ -150,19 +150,54 @@ describe("SimDataSchema", () => {
 
   describe("#addColumnClones()", () => {
     it("should add a copy of the given column to this schema", () => {
-      // TODO:
+      const column = new SimDataSchemaColumn("column", SimDataType.Int16, 0);
+      const schema = new SimDataSchema("NewSchema", 1, []);
+      schema.addColumnClones(column);
+      expect(schema.columns).to.have.lengthOf(1);
+      expect(schema.columns[0]).to.not.equal(column);
+    });
+
+    it("should add a copy of the given columns to this schema", () => {
+      const column1 = new SimDataSchemaColumn("column1", SimDataType.Int16, 0);
+      const column2 = new SimDataSchemaColumn("column2", SimDataType.Int16, 0);
+      const schema = new SimDataSchema("NewSchema", 1, []);
+      schema.addColumnClones(column1, column2);
+      expect(schema.columns).to.have.lengthOf(2);
+      expect(schema.columns[0]).to.not.equal(column1);
+      expect(schema.columns[1]).to.not.equal(column2);
     });
 
     it("should not mutate the original", () => {
-      // TODO:
+      const column = new SimDataSchemaColumn("column", SimDataType.Int16, 0);
+      const schema = new SimDataSchema("NewSchema", 1, []);
+      schema.addColumnClones(column);
+      schema.columns[0].name = "new_column";
+      expect(column.name).to.equal("column");
     });
 
     it("should set the owner of the new column", () => {
-      // TODO:
+      const owner = new MockOwner();
+      const schema = new SimDataSchema("NewSchema", 0x1, [], owner);
+      const column = new SimDataSchemaColumn("column", SimDataType.Int16, 0);
+      schema.addColumnClones(column);
+      expect(schema.columns[0].owner).to.equal(owner);
+    });
+
+    it("should not set the owner of the original column", () => {
+      const owner = new MockOwner();
+      const schema = new SimDataSchema("NewSchema", 0x1, [], owner);
+      const column = new SimDataSchemaColumn("column", SimDataType.Int16, 0);
+      schema.addColumnClones(column);
+      expect(column.owner).to.be.undefined;
     });
 
     it("should uncache the owner", () => {
-      // TODO:
+      const owner = new MockOwner();
+      const schema = new SimDataSchema("NewSchema", 0x1, [], owner);
+      const column = new SimDataSchemaColumn("column", SimDataType.Int16, 0);
+      expect(owner.cached).to.be.true;
+      schema.addColumnClones(column);
+      expect(owner.cached).to.be.false;
     });
   });
 
