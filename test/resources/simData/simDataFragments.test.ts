@@ -560,33 +560,69 @@ describe("SimDataInstance", () => {
 
   describe("#clone", () => {
     it("should copy the name", () => {
-      // TODO:
+      const inst = new SimDataInstance("InstanceName", testSchema, {});
+      const clone = inst.clone();
+      expect(clone.name).to.equal("InstanceName");
     });
 
     it("should not copy the owner", () => {
-      // TODO:
+      const owner = new MockOwner();
+      const inst = new SimDataInstance("InstanceName", testSchema, {}, owner);
+      const clone = inst.clone();
+      expect(clone.owner).to.be.undefined;
     });
 
     it("should not mutate the original", () => {
-      // TODO:
+      const inst = new SimDataInstance("InstanceName", testSchema, {});
+      const clone = inst.clone();
+      clone.name = "NewName";
+      expect(inst.name).to.equal("InstanceName");
     });
   });
 
   describe("#toXmlNode()", () => {
     it("should use an 'I' tag", () => {
-      // TODO:
+      const inst = new SimDataInstance("InstanceName", testSchema, {
+        boolean: new cells.BooleanCell(true),
+        uint32: new cells.NumberCell(SimDataType.UInt32, 64),
+        string: new cells.TextCell(SimDataType.String, "hi")
+      });
+      const node = inst.toXmlNode();
+      expect(node.tag).to.equal("I");
     });
 
     it("should have an 'Object' type", () => {
-      // TODO:
+      const inst = new SimDataInstance("InstanceName", testSchema, {
+        boolean: new cells.BooleanCell(true),
+        uint32: new cells.NumberCell(SimDataType.UInt32, 64),
+        string: new cells.TextCell(SimDataType.String, "hi")
+      });
+      const node = inst.toXmlNode();
+      expect(node.attributes.type).to.equal("Object");
     });
 
     it("should have its schema name written", () => {
-      // TODO:
+      const inst = new SimDataInstance("InstanceName", testSchema, {
+        boolean: new cells.BooleanCell(true),
+        uint32: new cells.NumberCell(SimDataType.UInt32, 64),
+        string: new cells.TextCell(SimDataType.String, "hi")
+      });
+      const node = inst.toXmlNode();
+      expect(node.attributes.schema).to.equal("TestSchema");
     });
 
     it("should write its children with their names", () => {
-      // TODO:
+      const inst = new SimDataInstance("InstanceName", testSchema, {
+        boolean: new cells.BooleanCell(true),
+        uint32: new cells.NumberCell(SimDataType.UInt32, 64),
+        string: new cells.TextCell(SimDataType.String, "hi")
+      });
+      const node = inst.toXmlNode();
+      expect(node.numChildren).to.equal(3);
+      const [ child1, child2, child3 ] = node.children;
+      expect(child1.attributes.name).to.equal("boolean");
+      expect(child2.attributes.name).to.equal("uint32");
+      expect(child3.attributes.name).to.equal("string");
     });
   });
 
