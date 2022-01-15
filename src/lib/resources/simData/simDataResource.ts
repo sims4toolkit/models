@@ -1,5 +1,5 @@
 import type { SerializationOptions } from "../../shared";
-import { XmlDocumentNode, XmlElementNode, XmlNode } from "@s4tk/utils/xml";
+import { XmlDocumentNode, XmlElementNode } from "@s4tk/utils/xml";
 import { formatAsHexString } from "@s4tk/utils/formatting";
 import Resource from "../resource";
 import { removeFromArray } from "../../helpers";
@@ -7,7 +7,6 @@ import { SimDataInstance, SimDataSchema } from "./simDataFragments";
 import { SimDataDto, SUPPORTED_VERSION } from "./shared";
 import readData from "./serialization/readData";
 import writeData from "./serialization/writeData";
-import cacheableModel from "../../abstract/cacheableModel";
 
 /**
  * A resource for SimData (binary tuning). SimDatas are essentially mini
@@ -20,21 +19,6 @@ export default class SimDataResource extends Resource implements SimDataDto {
   private _schemas: SimDataSchema[];
   private _instances: SimDataInstance[];
 
-  /**
-   * An array that contains the schemas for this SimData. Mutating this array
-   * and its children is safe in terms of cacheing.
-   */
-  get schemas() { return this._schemas; }
-  private set schemas(schemas: SimDataSchema[]) {
-    const owner = this._getCollectionOwner();
-    schemas.forEach(schema => schema.owner = owner);
-    this._schemas = this._getCollectionProxy(schemas);
-  }
-
-  /** Shorthand for `schemas[0]` */
-  get schema() { return this.schemas[0]; }
-  set schema(schema: SimDataSchema) { this.schemas[0] = schema; }
-  
   /**
    * An array that contains the instances for this SimData. Mutating this array
    * and its children is safe in terms of cacheing.
@@ -52,6 +36,21 @@ export default class SimDataResource extends Resource implements SimDataDto {
 
   /** Shorthand for `instances[0].row` */
   get props() { return this.instance.row; }
+
+  /**
+   * An array that contains the schemas for this SimData. Mutating this array
+   * and its children is safe in terms of cacheing.
+   */
+  get schemas() { return this._schemas; }
+  private set schemas(schemas: SimDataSchema[]) {
+    const owner = this._getCollectionOwner();
+    schemas.forEach(schema => schema.owner = owner);
+    this._schemas = this._getCollectionProxy(schemas);
+  }
+
+  /** Shorthand for `schemas[0]` */
+  get schema() { return this.schemas[0]; }
+  set schema(schema: SimDataSchema) { this.schemas[0] = schema; }
 
   //#region Initialization
 
@@ -123,17 +122,18 @@ export default class SimDataResource extends Resource implements SimDataDto {
    * @throws If the given XML could not be parsed as a SimData
    */
   static fromXml(xml: string | Buffer): SimDataResource {
-    const dom = XmlDocumentNode.from(xml).child;
-    return this.fromXmlNode(dom);
+    return this.fromXmlDocument(XmlDocumentNode.from(xml));
   }
 
   /**
-   * Creates a SimDataResource from an S4S-style XML DOM.
+   * Creates a SimDataResource from an S4S-style XML document.
    * 
-   * @param dom XML DOM from which to parse SimData
-   * @throws If the given XML DOM could not be parsed as a SimData
+   * @param dom XML document from which to parse SimData
+   * @throws If the given XML document could not be parsed as a SimData
    */
-  static fromXmlNode(dom: XmlNode): SimDataResource {
+  static fromXmlDocument(doc: XmlDocumentNode): SimDataResource {
+    const dom = doc.child;
+
     if (!dom || dom.tag !== "SimData")
       throw new Error(`Expected <SimData>, but got <${dom.tag}>`);
 
@@ -230,13 +230,6 @@ export default class SimDataResource extends Resource implements SimDataDto {
 
   protected _serialize(): Buffer {
     return writeData(this);
-  }
-
-  protected _onOwnerChange(previousOwner: cacheableModel): void {
-    const owner = this._getCollectionOwner();
-    this.schemas.forEach(schema => schema.owner = owner);
-    this.instances.forEach(inst => inst.owner = owner);
-    super._onOwnerChange(previousOwner);
   }
 
   //#endregion Protected Methods
