@@ -169,7 +169,7 @@ export default class SimDataResource extends Resource implements SimDataDto {
    * @param schemas Schemas to remove
    */
   removeSchemas(...schemas: SimDataSchema[]) {
-    removeFromArray(schemas, this.schemas)
+    removeFromArray(schemas, this.schemas);
   }
 
   /**
@@ -179,7 +179,7 @@ export default class SimDataResource extends Resource implements SimDataDto {
    * @param instances Instances to remove
    */
   removeInstances(...instances: SimDataInstance[]) {
-    removeFromArray(instances, this.instances)
+    removeFromArray(instances, this.instances);
   }
 
   /**
