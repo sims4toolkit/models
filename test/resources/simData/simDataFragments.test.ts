@@ -456,23 +456,23 @@ describe("SimDataSchemaColumn", () => {
 
   describe("#toXmlNode()", () => {
     it("should use the tag 'Column'", () => {
-      // TODO:
+      const column = new SimDataSchemaColumn("boolean", SimDataType.Boolean, 0x1234);
+      const node = column.toXmlNode();
+      expect(node.tag).to.equal("Column");
     });
 
     it("should have 'name', 'type', and 'flags' attributes", () => {
-      // TODO:
-    });
-
-    it("should write the type as its string value", () => {
-      // TODO:
+      const column = new SimDataSchemaColumn("boolean", SimDataType.Boolean, 0x1234);
+      const node = column.toXmlNode();
+      expect(node.attributes.name).to.equal("boolean");
+      expect(node.attributes.type).to.equal("Boolean");
+      expect(node.attributes.flags).to.equal("0x00001234");
     });
 
     it("should write 'Single' for a type of 'Float'", () => {
-      // TODO:
-    });
-
-    it("should write the flags as 32-bit with 0x prefix", () => {
-      // TODO:
+      const column = new SimDataSchemaColumn("float", SimDataType.Float, 0);
+      const node = column.toXmlNode();
+      expect(node.attributes.type).to.equal("Single");
     });
   });
 
