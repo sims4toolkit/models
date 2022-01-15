@@ -5,27 +5,115 @@ describe("SimDataResource", () => {
   //#region Properties
 
   describe("#owner", () => {
-    // TODO:
+    it("should not change the owner of the children when set", () => {
+      // TODO:
+    });
   });
 
   describe("#instance", () => {
-    // TODO:
+    it("should return the first child of the instances array", () => {
+      // TODO:
+    });
+
+    it("should set the first child of the instances array", () => {
+      // TODO:
+    });
+
+    it("should uncache the owner when set", () => {
+      // TODO:
+    });
+
+    it("should mutate the first instance", () => {
+      // TODO:
+    });
   });
 
   describe("#instances", () => {
-    // TODO:
+    it("should uncache the owner when pushed to", () => {
+      // TODO:
+    });
+
+    it("should uncache the owner when spliced", () => {
+      // TODO:
+    });
+
+    it("should uncache the owner when sorted", () => {
+      // TODO:
+    });
+
+    it("should uncache the owner when child is set", () => {
+      // TODO:
+    });
+
+    it("should uncache the owner when child is mutated", () => {
+      // TODO:
+    });
+
+    it("should set the owner of a pushed child to this simdata", () => {
+      // TODO:
+    });
+
+    it("should set the owner of a set child to this simdata", () => {
+      // TODO:
+    });
   });
 
   describe("#props", () => {
-    // TODO:
+    it("should return an object containing the cells in the first instance", () => {
+      // TODO:
+    });
+
+    it("should mutate the first instance's cells", () => {
+      // TODO:
+    });
   });
   
   describe("#schema", () => {
-    // TODO:
+    it("should return the first child of the schemas array", () => {
+      // TODO:
+    });
+
+    it("should set the first child of the schemas array", () => {
+      // TODO:
+    });
+
+    it("should uncache the owner when set", () => {
+      // TODO:
+    });
+
+    it("should mutate the first instance", () => {
+      // TODO:
+    });
   });
 
   describe("#schemas", () => {
-    // TODO:
+    it("should uncache the owner when pushed to", () => {
+      // TODO:
+    });
+
+    it("should uncache the owner when spliced", () => {
+      // TODO:
+    });
+
+    it("should uncache the owner when sorted", () => {
+      // TODO:
+    });
+
+    it("should uncache the owner when child is set", () => {
+      // TODO:
+    });
+
+    it("should uncache the owner when child is mutated", () => {
+      // TODO:
+    });
+
+    it("should set the owner of a pushed child to this simdata", () => {
+      // TODO:
+    });
+
+    it("should set the owner of a set child to this simdata", () => {
+      // TODO:
+    });
   });
 
   //#endregion Properties
