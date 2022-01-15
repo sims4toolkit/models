@@ -4,12 +4,6 @@ import { SimDataResource } from "../../../dst/api";
 describe("SimDataResource", () => {
   //#region Properties
 
-  describe("#owner", () => {
-    it("should not change the owner of the children when set", () => {
-      // TODO:
-    });
-  });
-
   describe("#instance", () => {
     it("should return the first child of the instances array", () => {
       // TODO:
@@ -116,12 +110,26 @@ describe("SimDataResource", () => {
     });
   });
 
+  describe("#unused", () => {
+    // TODO:
+  });
+
+  describe("#version", () => {
+    // TODO:
+  });
+
   //#endregion Properties
 
   //#region Initialization
 
   describe("#constructor", () => {
-    // TODO:
+    it("should use all properties that are given", () => {
+      // TODO:
+    });
+
+    it("should set itself as the owner of all schemas and instances", () => {
+      // TODO:
+    });
   });
 
   describe("#clone()", () => {
@@ -149,11 +157,39 @@ describe("SimDataResource", () => {
   //#region Methods
 
   describe("#removeInstances()", () => {
-    // TODO:
+    it("should remove the one instance that is given", () => {
+      // TODO:
+    });
+
+    it("should remove the multiple instances that are given", () => {
+      // TODO:
+    });
+
+    it("should not remove an identical instance that is not the same object", () => {
+      // TODO:
+    });
+
+    it("should uncache the owner", () => {
+      // TODO:
+    });
   });
 
   describe("#removeSchemas()", () => {
-    // TODO:
+    it("should remove the one schema that is given", () => {
+      // TODO:
+    });
+
+    it("should remove the multiple schemas that are given", () => {
+      // TODO:
+    });
+
+    it("should not remove an identical schema that is not the same object", () => {
+      // TODO:
+    });
+
+    it("should uncache the owner", () => {
+      // TODO:
+    });
   });
 
   describe("#toXmlDocument()", () => {
