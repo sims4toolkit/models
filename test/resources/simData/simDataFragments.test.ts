@@ -1,3 +1,4 @@
+import { XmlDocumentNode } from "@s4tk/utils/xml";
 import { expect } from "chai";
 import { simDataFragments, simDataTypes } from "../../../dst/api";
 import MockOwner from "../../mocks/mockOwner";
@@ -310,27 +311,68 @@ describe("SimDataSchema", () => {
 
   describe("static#fromXmlNode()", () => {
     it("should throw if the tag != 'Schema'", () => {
-      // TODO:
+      const node = XmlDocumentNode.from(`<S name="TestSchema" schema_hash="0x00001234">
+        <Columns>
+          <Column name="boolean" type="Boolean" flags="0x00000000" />
+          <Column name="float" type="Single" flags="0x00000000" />
+          <Column name="string" type="String" flags="0x00000000" />
+        </Columns>
+      </S>`).child;
+
+      expect(() => SimDataSchema.fromXmlNode(node)).to.throw();
     });
 
     it("should throw if there is no name", () => {
-      // TODO:
+      const node = XmlDocumentNode.from(`<Schema schema_hash="0x00001234">
+        <Columns>
+          <Column name="boolean" type="Boolean" flags="0x00000000" />
+          <Column name="float" type="Single" flags="0x00000000" />
+          <Column name="string" type="String" flags="0x00000000" />
+        </Columns>
+      </Schema>`).child;
+
+      expect(() => SimDataSchema.fromXmlNode(node)).to.throw();
     });
 
     it("should throw if there is no schema hash", () => {
-      // TODO:
+      const node = XmlDocumentNode.from(`<Schema name="TestSchema">
+        <Columns>
+          <Column name="boolean" type="Boolean" flags="0x00000000" />
+          <Column name="float" type="Single" flags="0x00000000" />
+          <Column name="string" type="String" flags="0x00000000" />
+        </Columns>
+      </Schema>`).child;
+
+      expect(() => SimDataSchema.fromXmlNode(node)).to.throw();
     });
 
     it("should throw if there are no columns", () => {
-      // TODO:
-    });
+      const node = XmlDocumentNode.from(`<Schema name="TestSchema" schema_hash="0x00001234">
+      </Schema>`).child;
 
-    it("should parse schema hash as a number", () => {
-      // TODO:
+      expect(() => SimDataSchema.fromXmlNode(node)).to.throw();
     });
 
     it("should have the name, hash, and children specified", () => {
-      // TODO:
+      const node = XmlDocumentNode.from(`<Schema name="TestSchema" schema_hash="0x00001234">
+        <Columns>
+          <Column name="boolean" type="Boolean" flags="0x00000000" />
+          <Column name="float" type="Single" flags="0x00000000" />
+          <Column name="string" type="String" flags="0x00000000" />
+        </Columns>
+      </Schema>`).child;
+
+      const schema = SimDataSchema.fromXmlNode(node);
+      expect(schema.name).to.equal("TestSchema");
+      expect(schema.hash).to.equal(0x1234);
+      expect(schema.columns).to.have.lengthOf(3);
+      const [ col1, col2, col3 ] = schema.columns;
+      expect(col1.name).to.equal("boolean");
+      expect(col1.type).to.equal(SimDataType.Boolean);
+      expect(col2.name).to.equal("float");
+      expect(col2.type).to.equal(SimDataType.Float);
+      expect(col3.name).to.equal("string");
+      expect(col3.type).to.equal(SimDataType.String);
     });
   });
 });
