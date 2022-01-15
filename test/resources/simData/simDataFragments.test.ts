@@ -646,27 +646,72 @@ describe("SimDataInstance", () => {
 
   describe("static#fromXmlNode()", () => {
     it("should throw if the tag != 'I'", () => {
-      // TODO:
+      const node = XmlDocumentNode.from(`<Inst name="InstanceName" schema="TestSchema" type="Object">
+        <T name="boolean">1</T>
+        <T name="uint32">64</T>
+        <T name="string">hi</T>
+      </Inst>`).child;
+
+      expect(() => SimDataInstance.fromXmlNode(node, [testSchema])).to.throw();
     });
 
     it("should throw if there is no name", () => {
-      // TODO:
+      const node = XmlDocumentNode.from(`<I schema="TestSchema" type="Object">
+        <T name="boolean">1</T>
+        <T name="uint32">64</T>
+        <T name="string">hi</T>
+      </I>`).child;
+
+      expect(() => SimDataInstance.fromXmlNode(node, [testSchema])).to.throw();
     });
 
     it("should throw if there is no schema", () => {
-      // TODO:
+      const node = XmlDocumentNode.from(`<I name="InstanceName" type="Object">
+        <T name="boolean">1</T>
+        <T name="uint32">64</T>
+        <T name="string">hi</T>
+      </I>`).child;
+      
+      expect(() => SimDataInstance.fromXmlNode(node, [testSchema])).to.throw();
     });
 
     it("should throw if its schema was not provided", () => {
-      // TODO:
+      const node = XmlDocumentNode.from(`<I name="InstanceName" schema="TestSchema" type="Object">
+        <T name="boolean">1</T>
+        <T name="uint32">64</T>
+        <T name="string">hi</T>
+      </I>`).child;
+
+      expect(() => SimDataInstance.fromXmlNode(node, [])).to.throw();
     });
 
     it("should have the name and schema that are specified", () => {
-      // TODO:
+      const node = XmlDocumentNode.from(`<I name="InstanceName" schema="TestSchema" type="Object">
+        <T name="boolean">1</T>
+        <T name="uint32">64</T>
+        <T name="string">hi</T>
+      </I>`).child;
+
+      const inst = SimDataInstance.fromXmlNode(node, [testSchema]);
+      expect(inst.name).to.equal("InstanceName");
+      expect(inst.schema).to.equal(testSchema);
     });
 
     it("should contain the correct children", () => {
-      // TODO:
+      const node = XmlDocumentNode.from(`<I name="InstanceName" schema="TestSchema" type="Object">
+        <T name="boolean">1</T>
+        <T name="uint32">64</T>
+        <T name="string">hi</T>
+      </I>`).child;
+
+      const inst = SimDataInstance.fromXmlNode(node, [testSchema]);
+      expect(inst.rowLength).to.equal(3);
+      expect(inst.row.boolean.asAny.value).to.equal(true);
+      expect(inst.row.boolean.dataType).to.equal(SimDataType.Boolean);
+      expect(inst.row.uint32.asAny.value).to.equal(64);
+      expect(inst.row.uint32.dataType).to.equal(SimDataType.UInt32);
+      expect(inst.row.string.asAny.value).to.equal("hi");
+      expect(inst.row.string.dataType).to.equal(SimDataType.String);
     });
   });
 });
