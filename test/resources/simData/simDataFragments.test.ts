@@ -290,20 +290,21 @@ describe("SimDataSchema", () => {
   });
 
   describe("#toXmlNode()", () => {
+    const node = testSchema.toXmlNode();
+
     it("should use the tag 'Schema'", () => {
-      // TODO:
+      expect(node.tag).to.equal("Schema");
     });
 
     it("should have 'name' and 'schema_hash' attributes", () => {
-      // TODO:
-    });
-
-    it("should write the schema hash as 32-bit with 0x prefix", () => {
-      // TODO:
+      expect(node.attributes.name).to.equal("TestSchema");
+      expect(node.attributes.schema_hash).to.equal("0x00001234");
     });
 
     it("should contain one child with the tag 'Columns' that contains one child for each of its columns", () => {
-      // TODO:
+      expect(node.numChildren).to.equal(1);
+      expect(node.child.tag).to.equal("Columns");
+      expect(node.child.numChildren).to.equal(3);
     });
   });
 
