@@ -1,10 +1,11 @@
 import { XmlDocumentNode } from "@s4tk/utils/xml";
 import { expect } from "chai";
-import { simDataFragments, simDataTypes } from "../../../dst/api";
+import { simDataFragments, simDataTypes, simDataCells } from "../../../dst/api";
 import MockOwner from "../../mocks/mockOwner";
 
 const { SimDataSchema, SimDataSchemaColumn, SimDataInstance } = simDataFragments;
 const { SimDataType } = simDataTypes;
+const cells = simDataCells;
 
 const testSchema = new SimDataSchema("TestSchema", 0x1234, [
   new SimDataSchemaColumn("boolean", SimDataType.Boolean, 0),
@@ -29,6 +30,16 @@ describe("SimDataSchema", () => {
       const owner = new MockOwner();
       schema.owner = owner;
       expect(schema.columns[0].owner).to.equal(owner);
+    });
+
+    it("should use the new owner for new children after updating the owner", () => {
+      const schema = testSchema.clone();
+      const owner = new MockOwner();
+      schema.owner = owner;
+      const column = new SimDataSchemaColumn("name", 0, 0);
+      expect(column.owner).to.be.undefined;
+      schema.columns.push(column);
+      expect(column.owner).to.equal(owner);
     });
   });
 
@@ -513,13 +524,37 @@ describe("SimDataInstance", () => {
 
   describe("#owner", () => {
     it("should update the owner of contained cells when set", () => {
-      // TODO:
+      const firstOwner = new MockOwner();
+      const boolean = new cells.BooleanCell(true);
+      const string = new cells.TextCell(SimDataType.String, "Hi");
+      const cell = new SimDataInstance("InstanceName", testSchema, {
+        boolean,
+        string
+      }, firstOwner);
+      const secondOwner = new MockOwner();
+      cell.owner = secondOwner;
+      expect(boolean.owner).to.equal(secondOwner);
+      expect(string.owner).to.equal(secondOwner);
+    });
+
+    it("should use the new owner for new children after updating the owner", () => {
+      const owner = new MockOwner();
+      const inst = new SimDataInstance("InstanceName", testSchema, {}, owner);
+      const newOwner = new MockOwner();
+      inst.owner = newOwner;
+      const child = new cells.BooleanCell(true);
+      inst.row.boolean = child;
+      expect(child.owner).to.equal(newOwner);
     });
   });
 
   describe("#name", () => {
     it("should uncache the owner when set", () => {
-      // TODO:
+      const owner = new MockOwner();
+      const inst = new SimDataInstance("InstanceName", testSchema, {}, owner);
+      expect(owner.cached).to.be.true;
+      inst.name = "NewName";
+      expect(owner.cached).to.be.false;
     });
   });
 
