@@ -1,5 +1,5 @@
 import type { SerializationOptions } from "../../shared";
-import { XmlDocumentNode, XmlElementNode } from "@s4tk/utils/xml";
+import { XmlDocumentNode, XmlElementNode, XmlNode } from "@s4tk/utils/xml";
 import { formatAsHexString } from "@s4tk/utils/formatting";
 import Resource from "../resource";
 import { removeFromArray } from "../../helpers";
@@ -7,6 +7,7 @@ import { SimDataInstance, SimDataSchema } from "./simDataFragments";
 import { SimDataDto, SUPPORTED_VERSION } from "./shared";
 import readData from "./serialization/readData";
 import writeData from "./serialization/writeData";
+import cacheableModel from "../../abstract/cacheableModel";
 
 /**
  * A resource for SimData (binary tuning). SimDatas are essentially mini
@@ -19,53 +20,40 @@ export default class SimDataResource extends Resource implements SimDataDto {
   private _schemas: SimDataSchema[];
   private _instances: SimDataInstance[];
 
-  // TODO: cache dom
-
   /**
-   * The schemas in this SimData. Individual schemas can be mutated and cacheing
-   * will be handled (e.g. `schemas[0].name = "Schema"` is perfectly safe),
-   * however, mutating the array itself by adding or removing schemas should be
-   * avoided whenever possible, because doing so is a surefire way to mess up
-   * the cache. 
-   * 
-   * To add schemas, use the `addSchemas()` or `addSchemaClones()` methods. To
-   * remove schemas, use the `removeSchemas()` method or call `delete()` on
-   * individual schemas.
-   * 
-   * If you insist on removing from or editing the array manually, you can, as
-   * long as you remember to call `uncache()` when you are done. If you insist
-   * on adding schemas manually, it's your funeral.
+   * An array that contains the schemas for this SimData. Mutating this array
+   * and its children is safe in terms of cacheing.
    */
   get schemas() { return this._schemas; }
+  private set schemas(schemas: SimDataSchema[]) {
+    const owner = this._getCollectionOwner();
+    schemas.forEach(schema => schema.owner = owner);
+    this._schemas = this._getCollectionProxy(schemas);
+  }
+
+  /** Shorthand for `schemas[0]` */
+  get schema() { return this.schemas[0]; }
+  set schema(schema: SimDataSchema) { this.schemas[0] = schema; }
   
   /**
-   * The instances in this SimData. Instances are not "real" parts of a SimData,
-   * but this model uses them as a convenient way to avoid working with data
-   * tables directly.
-   * 
-   * Individual instances can be mutated and cacheing will be handled (e.g. 
-   * `instances[0].name = "Instance"` is perfectly safe), however, mutating the
-   * array itself by adding or removing instances should be avoided whenever
-   * possible, because doing so is a surefire way to mess up the cache. 
-   * 
-   * To add instances, use the `addInstances()` or `addInstanceClones()`
-   * methods. To remove instances, use the `removeInstances()` method or call
-   * `delete()` on individual instances.
-   * 
-   * If you insist on removing from or editing the array manually, you can, as
-   * long as you remember to call `uncache()` when you are done. If you insist
-   * on adding instances manually, it's your funeral.
+   * An array that contains the instances for this SimData. Mutating this array
+   * and its children is safe in terms of cacheing.
    */
   get instances() { return this._instances; }
+  private set instances(instances: SimDataInstance[]) {
+    const owner = this._getCollectionOwner();
+    instances.forEach(inst => inst.owner = owner);
+    this._instances = this._getCollectionProxy(instances);
+  }
 
   /** Shorthand for `instances[0]` */
   get instance() { return this.instances[0]; }
+  set instance(instance: SimDataInstance) { this.instances[0] = instance; }
 
   /** Shorthand for `instances[0].row` */
   get props() { return this.instance.row; }
 
-  /** Shorthand for `schemas[0]` */
-  get schema() { return this.schemas[0]; }
+  //#region Initialization
 
   protected constructor(
     public version: number,
@@ -75,10 +63,8 @@ export default class SimDataResource extends Resource implements SimDataDto {
     buffer?: Buffer
   ) {
     super({ buffer });
-    this._schemas = schemas;
-    schemas.forEach(schema => schema.owner = this);
-    this._instances = instances; 
-    instances.forEach(instance => instance.owner = this);
+    this.schemas = schemas;
+    this.instances = instances; 
     this._watchProps('version', 'unused');
   }
 
@@ -131,14 +117,23 @@ export default class SimDataResource extends Resource implements SimDataDto {
   }
 
   /**
-   * Creats a SimDataResource from S4S-style XML.
+   * Creates a SimDataResource from S4S-style XML.
    * 
    * @param xml XML string or buffer to parse as a SimData
    * @throws If the given XML could not be parsed as a SimData
    */
   static fromXml(xml: string | Buffer): SimDataResource {
     const dom = XmlDocumentNode.from(xml).child;
+    return this.fromXmlNode(dom);
+  }
 
+  /**
+   * Creates a SimDataResource from an S4S-style XML DOM.
+   * 
+   * @param dom XML DOM from which to parse SimData
+   * @throws If the given XML DOM could not be parsed as a SimData
+   */
+  static fromXmlNode(dom: XmlNode): SimDataResource {
     if (!dom || dom.tag !== "SimData")
       throw new Error(`Expected <SimData>, but got <${dom.tag}>`);
 
@@ -163,50 +158,28 @@ export default class SimDataResource extends Resource implements SimDataDto {
     return new SimDataResource(version, unused, schemas, instances);
   }
 
-  /**
-   * Adds schemas to this SimData and uncaches the buffer.
-   * 
-   * @param schemas Schemas to add
-   */
-  addSchemas(...schemas: SimDataSchema[]) {
-    this.schemas.push(...schemas);
-    schemas.forEach(schema => schema.owner = this);
-    this.uncache();
-  }
+  //#endregion Initialization
+
+  //#region Public Methods
 
   /**
-   * Removes schemas from this SimData and uncaches the buffer. Note that
-   * schemas are removed by reference equality, so the passed in schemas must be
-   * the exact objects you want to remove. Alternatively, you can call
-   * `delete()` on the schemas themselves to remove them one by one.
+   * Removes schemas from this SimData by reference equality, so the passed in
+   * schemas must be the exact objects to remove.
    * 
    * @param schemas Schemas to remove
    */
   removeSchemas(...schemas: SimDataSchema[]) {
-    if (removeFromArray(schemas, this.schemas)) this.uncache();
+    removeFromArray(schemas, this.schemas)
   }
 
   /**
-   * Adds instances to this SimData and uncaches the buffer.
-   * 
-   * @param instances Instances to add
-   */
-  addInstances(...instances: SimDataInstance[]) {
-    this.instances.push(...instances);
-    instances.forEach(instance => instance.owner = this);
-    this.uncache();
-  }
-
-  /**
-   * Removes instances from this SimData and uncaches the buffer. Note that
-   * instances are removed by reference equality, so the passed in instances
-   * must be the exact objects you want to remove. Alternatively, you can call
-   * `delete()` on the instances themselves to remove them one by one.
+   * Removes instances from this SimData by reference equality, so the passed in
+   * instances must be the exact objects to remove.
    * 
    * @param instances Instances to remove
    */
   removeInstances(...instances: SimDataInstance[]) {
-    if (removeFromArray(instances, this.instances)) this.uncache();
+    removeFromArray(instances, this.instances)
   }
 
   /**
@@ -214,25 +187,12 @@ export default class SimDataResource extends Resource implements SimDataDto {
    * it would appear in Sims 4 Studio.
    */
   toXmlDocument({ sort = false }: { sort?: boolean; } = {}): XmlDocumentNode {
-    const doc = new XmlDocumentNode(new XmlElementNode({
-      tag: 'SimData',
-      attributes: {
-        version: formatAsHexString(this.version, 8, true),
-        u: formatAsHexString(this.unused, 8, true)
-      },
-      children: [
-        new XmlElementNode({
-          tag: 'Instances',
-          children: this.instances.map(i => i.toXmlNode())
-        }),
-        new XmlElementNode({
-          tag: 'Schemas',
-          children: this.schemas.map(s => s.toXmlNode())
-        })
-      ]
-    }));
+    const instNode = new XmlElementNode({
+      tag: 'Instances',
+      children: this.instances.map(i => i.toXmlNode())
+    });
 
-    if (sort) doc.child.child.deepSort((a, b) => {
+    if (sort) instNode.deepSort((a, b) => {
       const aName = a.attributes.name;
       const bName = b.attributes.name;
       if (aName) {
@@ -246,10 +206,38 @@ export default class SimDataResource extends Resource implements SimDataDto {
       return bName ? 1 : 0;
     });
 
+    const doc = new XmlDocumentNode(new XmlElementNode({
+      tag: 'SimData',
+      attributes: {
+        version: formatAsHexString(this.version, 8, true),
+        u: formatAsHexString(this.unused, 8, true)
+      },
+      children: [
+        instNode,
+        new XmlElementNode({
+          tag: 'Schemas',
+          children: this.schemas.map(s => s.toXmlNode())
+        })
+      ]
+    }));
+
     return doc;
   }
+
+  //#endregion Public Methods
+
+  //#region Protected Methods
 
   protected _serialize(): Buffer {
     return writeData(this);
   }
+
+  protected _onOwnerChange(previousOwner: cacheableModel): void {
+    const owner = this._getCollectionOwner();
+    this.schemas.forEach(schema => schema.owner = owner);
+    this.instances.forEach(inst => inst.owner = owner);
+    super._onOwnerChange(previousOwner);
+  }
+
+  //#endregion Protected Methods
 }
