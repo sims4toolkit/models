@@ -478,27 +478,31 @@ describe("SimDataSchemaColumn", () => {
 
   describe("static#fromXmlNode()", () => {
     it("should throw if the tag != 'Column'", () => {
-      // TODO:
+      const node = XmlDocumentNode.from(`<C name="boolean" type="Boolean" flags="0x00001234" />`).child;
+      expect(() => SimDataSchemaColumn.fromXmlNode(node)).to.throw();
     });
 
     it("should throw if there is no name", () => {
-      // TODO:
+      const node = XmlDocumentNode.from(`<Column type="Boolean" flags="0x00001234" />`).child;
+      expect(() => SimDataSchemaColumn.fromXmlNode(node)).to.throw();
     });
 
     it("should throw if there is no type", () => {
-      // TODO:
+      const node = XmlDocumentNode.from(`<Column name="boolean" flags="0x00001234" />`).child;
+      expect(() => SimDataSchemaColumn.fromXmlNode(node)).to.throw();
     });
 
     it("should throw if there is no flags", () => {
-      // TODO:
-    });
-
-    it("should parse flags as a number", () => {
-      // TODO:
+      const node = XmlDocumentNode.from(`<Column name="boolean" type="Boolean" />`).child;
+      expect(() => SimDataSchemaColumn.fromXmlNode(node)).to.throw();
     });
 
     it("should have the name, type, and flags specified", () => {
-      // TODO:
+      const node = XmlDocumentNode.from(`<Column name="boolean" type="Boolean" flags="0x00001234" />`).child;
+      const column = SimDataSchemaColumn.fromXmlNode(node);
+      expect(column.name).to.equal("boolean");
+      expect(column.type).to.equal(SimDataType.Boolean);
+      expect(column.flags).to.equal(0x00001234);
     });
   });
 });
