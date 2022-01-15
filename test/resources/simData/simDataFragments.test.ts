@@ -412,29 +412,45 @@ describe("SimDataSchemaColumn", () => {
 
   describe("#constructor", () => {
     it("should use the given name, type, and flags", () => {
-      // TODO:
+      const column = new SimDataSchemaColumn("boolean", SimDataType.Boolean, 0x1234);
+      expect(column.name).to.equal("boolean");
+      expect(column.type).to.equal(SimDataType.Boolean);
+      expect(column.flags).to.equal(0x1234);
     });
 
     it("should use the owner that is given", () => {
-      // TODO:
+      const owner = new MockOwner();
+      const column = new SimDataSchemaColumn("boolean", SimDataType.Boolean, 0, owner);
+      expect(column.owner).to.equal(owner);
     });
 
     it("should have an undefined owner if none is given", () => {
-      // TODO:
+      const column = new SimDataSchemaColumn("boolean", SimDataType.Boolean, 0);
+      expect(column.owner).to.be.undefined;
     });
   });
 
   describe("#clone()", () => {
     it("should copy the name, type, and flags of this column", () => {
-      // TODO:
+      const column = new SimDataSchemaColumn("boolean", SimDataType.Boolean, 0x1234);
+      const clone = column.clone();
+      expect(clone.name).to.equal("boolean");
+      expect(clone.type).to.equal(SimDataType.Boolean);
+      expect(clone.flags).to.equal(0x1234);
     });
 
     it("should not copy the owner", () => {
-      // TODO:
+      const owner = new MockOwner();
+      const column = new SimDataSchemaColumn("boolean", SimDataType.Boolean, 0x1234, owner);
+      const clone = column.clone();
+      expect(clone.owner).to.be.undefined;
     });
 
     it("should not mutate the original", () => {
-      // TODO:
+      const column = new SimDataSchemaColumn("boolean", SimDataType.Boolean, 0x1234);
+      const clone = column.clone();
+      clone.name = "new_name";
+      expect(column.name).to.equal("boolean");
     });
   });
 
