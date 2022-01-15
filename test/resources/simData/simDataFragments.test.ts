@@ -627,20 +627,36 @@ describe("SimDataInstance", () => {
   });
 
   describe("static#fromObjectCell()", () => {
-    it("should not mutate the original object cell", () => {
-      // TODO:
+    it("should mutate the original object cell", () => {
+      const cell = new cells.ObjectCell(testSchema, {
+        boolean: new cells.BooleanCell(true),
+        string: new cells.TextCell(SimDataType.String, "Hi")
+      });
+
+      const inst = SimDataInstance.fromObjectCell("InstanceName", cell);
+      inst.row.string.asAny.value = "Hello";
+      expect(cell.row.string.asAny.value).to.equal("Hello");
     });
 
     it("should create an instance with the given name", () => {
-      // TODO:
+      const cell = new cells.ObjectCell(testSchema, {
+        boolean: new cells.BooleanCell(true),
+        string: new cells.TextCell(SimDataType.String, "Hi")
+      });
+
+      const inst = SimDataInstance.fromObjectCell("InstanceName", cell);
+      expect(inst.name).to.equal("InstanceName");
     });
 
     it("should copy the owner", () => {
-      // TODO:
-    });
+      const owner = new MockOwner();
+      const cell = new cells.ObjectCell(testSchema, {
+        boolean: new cells.BooleanCell(true),
+        string: new cells.TextCell(SimDataType.String, "Hi")
+      }, owner);
 
-    it("should set the owner of its children", () => {
-      // TODO:
+      const inst = SimDataInstance.fromObjectCell("InstanceName", cell);
+      expect(inst.owner).to.equal(owner);
     });
   });
 
