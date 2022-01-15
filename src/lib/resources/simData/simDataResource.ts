@@ -70,7 +70,8 @@ export default class SimDataResource extends Resource implements SimDataDto {
   clone(): SimDataResource {
     const newSchemas = this.schemas.map(s => s.clone());
     const instances = this.instances.map(i => i.clone({ newSchemas }));
-    return new SimDataResource(this.version, this.unused, newSchemas, instances);
+    const buffer = this.hasChanged ? undefined : this.buffer;
+    return new SimDataResource(this.version, this.unused, newSchemas, instances, buffer);
   }
 
   /**

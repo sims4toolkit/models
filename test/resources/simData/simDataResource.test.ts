@@ -137,11 +137,51 @@ describe("SimDataResource", () => {
   });
 
   describe("#clone()", () => {
-    // TODO:
+    it("should copy all properties", () => {
+      // TODO:
+    });
+
+    it("should not copy the owner", () => {
+      // TODO:
+    });
+
+    it("should not mutate the original", () => {
+      // TODO:
+    });
+
+    it("should not mutate the schemas of the original", () => {
+      // TODO:
+    });
+
+    it("should not mutate the instances of the original", () => {
+      // TODO:
+    });
+
+    it("should set self as owner of new schemas/instances", () => {
+      // TODO:
+    });
   });
 
   describe("static#create()", () => {
-    // TODO:
+    it("should use all properties that are given", () => {
+      // TODO:
+    });
+
+    it("should use a default version of 0x101", () => {
+      // TODO:
+    });
+
+    it("should use a default unused value of 0", () => {
+      // TODO:
+    });
+
+    it("should use an empty list as default for schemas", () => {
+      // TODO:
+    });
+
+    it("should use an empty list as default for instances", () => {
+      // TODO:
+    });
   });
 
   describe("static#from()", () => {
