@@ -111,11 +111,15 @@ describe("SimDataResource", () => {
   });
 
   describe("#unused", () => {
-    // TODO:
+    it("should uncache when set", () => {
+      // TODO:
+    });
   });
 
   describe("#version", () => {
-    // TODO:
+    it("should uncache when set", () => {
+      // TODO:
+    });
   });
 
   //#endregion Properties
