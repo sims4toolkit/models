@@ -15,11 +15,11 @@ const testSchema = new SimDataSchema("TestSchema", 0x1234, [
 describe("SimDataSchema", () => {
   function expectOwnerToUncache(fn: (schema: simDataFragments.SimDataSchema) => void) {
     const schema = testSchema.clone();
-      const owner = new MockOwner();
-      schema.owner = owner;
-      expect(owner.cached).to.be.true;
-      fn(schema);
-      expect(owner.cached).to.be.false;
+    const owner = new MockOwner();
+    schema.owner = owner;
+    expect(owner.cached).to.be.true;
+    fn(schema);
+    expect(owner.cached).to.be.false;
   }
 
   describe("#owner", () => {
@@ -378,21 +378,35 @@ describe("SimDataSchema", () => {
 });
 
 describe("SimDataSchemaColumn", () => {
+  function expectOwnerToUncache(fn: (column: simDataFragments.SimDataSchemaColumn) => void) {
+    const owner = new MockOwner();
+    const column = new SimDataSchemaColumn("boolean", SimDataType.Boolean, 0, owner);
+    expect(owner.cached).to.be.true;
+    fn(column);
+    expect(owner.cached).to.be.false;
+  }
+
   describe("#flags", () => {
     it("should uncache the owner when set", () => {
-      // TODO:
+      expectOwnerToUncache(column => {
+        column.flags += 1;
+      });
     });
   });
 
   describe("#name", () => {
     it("should uncache the owner when set", () => {
-      // TODO:
+      expectOwnerToUncache(column => {
+        column.name = "new_names";
+      });
     });
   });
 
   describe("#type", () => {
     it("should uncache the owner when set", () => {
-      // TODO:
+      expectOwnerToUncache(column => {
+        column.type = SimDataType.String;
+      });
     });
   });
 
