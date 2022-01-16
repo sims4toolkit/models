@@ -4,6 +4,14 @@ import { SimDataResource } from "../../../dst/api";
 describe("SimDataResource", () => {
   //#region Properties
 
+  describe("#buffer", () => {
+    // TODO:
+  });
+
+  describe("#hasChanged", () => {
+    // TODO:
+  });
+
   describe("#instance", () => {
     it("should return the first child of the instances array", () => {
       // TODO:
@@ -112,6 +120,12 @@ describe("SimDataResource", () => {
 
   describe("#unused", () => {
     it("should uncache when set", () => {
+      // TODO:
+    });
+  });
+
+  describe("#variant", () => {
+    it("should be 'DATA'", () => {
       // TODO:
     });
   });
@@ -259,6 +273,16 @@ describe("SimDataResource", () => {
     });
 
     it("should have a 'Schemas' section with all schemas written correctly", () => {
+      // TODO:
+    });
+  });
+
+  describe("#uncache()", () => {
+    it("should reset the buffer", () => {
+      // TODO:
+    });
+
+    it("should uncache the owner", () => {
       // TODO:
     });
   });
