@@ -1,5 +1,21 @@
+import fs from "fs";
+import path from "path";
 import { expect } from "chai";
 import { SimDataResource } from "../../../dst/api";
+
+const cachedBuffers: { [key: string]: Buffer; } = {};
+
+function getBuffer(filename: string, type: "xml" | "simdata") {
+  if (cachedBuffers[filename]) {
+    return cachedBuffers[filename];
+  } else {
+    const folder = type === "xml" ? "xml" : "binary";
+    const filepath = path.resolve(__dirname, `../../data/simdatas/${folder}/${filename}.${type}`);
+    const buffer = fs.readFileSync(filepath);
+    cachedBuffers[filename] = buffer;
+    return buffer;
+  }
+}
 
 describe("SimDataResource", () => {
   //#region Properties
