@@ -1,5 +1,5 @@
-/** An object that contains a collection of CacheableModels. */
-type CachedCollection = { [key: string]: CacheableModel; } | CacheableModel[];
+/** An object or array that can be cached within a cacheable model. */
+type CachedCollection = { [key: string]: any; } | any[];
 
 /**
  * Base class for models that either can be cached or are part of another model

@@ -9,9 +9,16 @@ export interface SerializationOptions {
   ignoreErrors: boolean;
 
   /**
-   * If true, then the result of a resource's static `from()` method will not
+   * If `true`, then the result of a resource's static `from()` method will not
    * throw an error. If there is an error, the function will return `undefined`
-   * instead.
+   * instead. This is `false` by default.
    */
   dontThrow: boolean;
+
+  /**
+   * (For packages only) If `true`, then the resources within this package will
+   * all be loaded as raw resources, and can only be read as plain text. This is
+   * `false` by default.
+   */
+  loadRaw: boolean;
 }

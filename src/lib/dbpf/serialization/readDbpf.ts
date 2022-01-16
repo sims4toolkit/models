@@ -1,13 +1,12 @@
 import * as zlib from "zlib";
 import { BinaryDecoder } from "@s4tk/utils/encoding";
-// import { BinaryResourceType, TuningResourceType } from "../../../enums/resourceType";
 import { makeList } from "../../helpers";
 import RawResource from "../../resources/generic/rawResource";
 import Resource from "../../resources/resource";
 import SimDataResource from "../../resources/simData/simDataResource";
 import StringTableResource from "../../resources/stringTable/stringTableResource";
 import TuningResource from "../../resources/tuning/tuningResource";
-import { DbpfOptions, ResourceEntry } from "../shared";
+import { DbpfDto } from "../shared";
 
 //#region Types & Interfaces
 
@@ -91,7 +90,7 @@ function isXML(buffer: Buffer): boolean {
  * @param buffer Buffer to read as a DBPF
  * @param ignoreErrors Whether or not non-fatal errors should be ignored
  */
-export default function readDbpf(buffer: Buffer, options?: DbpfOptions): ResourceEntry[] {
+export default function readDbpf(buffer: Buffer, options?: DbpfOptions): DbpfDto {
   const decoder = new BinaryDecoder(buffer);
 
   const validateErrors = options === undefined ? true : !options.ignoreErrors;
