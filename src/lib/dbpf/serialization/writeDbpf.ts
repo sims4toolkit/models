@@ -19,12 +19,12 @@ export default function writeDbpf(dbpf: Dbpf): Buffer {
 
   const indexBuffer: Buffer = (() => {
     // each entry is 32 bytes, and flags are 4
-    const buffer = Buffer.alloc(dbpf.numEntries() * 32 + 4);
+    const buffer = Buffer.alloc(dbpf.length * 32 + 4);
     const encoder = new BinaryEncoder(buffer);
 
     encoder.uint32(0); // flags will always be null
 
-    dbpf.getEntries().forEach(entry => {
+    dbpf.entries.forEach(entry => {
       encoder.uint32(entry.key.type);
       encoder.uint32(entry.key.group);
       // TODO: instance ex
@@ -47,7 +47,7 @@ export default function writeDbpf(dbpf: Dbpf): Buffer {
     encoder.uint32(2); // version major
     encoder.uint32(1); // version minor
     encoder.skip(24); // mnUserVersion through unused2
-    encoder.uint32(dbpf.numEntries());
+    encoder.uint32(dbpf.length);
     encoder.uint32(0); // FIXME: what is the low pos?
     encoder.uint32(indexBuffer.length); // index size
     encoder.skip(12); // unused3

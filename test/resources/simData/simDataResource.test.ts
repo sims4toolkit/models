@@ -1,16 +1,16 @@
 import fs from "fs";
 import path from "path";
 import { expect } from "chai";
-import { SimDataResource } from "../../../dst/api";
+import { simDataFragments, SimDataResource } from "../../../dst/api";
 
 const cachedBuffers: { [key: string]: Buffer; } = {};
 
-function getBuffer(filename: string, type: "xml" | "simdata") {
+function getBuffer(filename: string) {
   if (cachedBuffers[filename]) {
     return cachedBuffers[filename];
   } else {
-    const folder = type === "xml" ? "xml" : "binary";
-    const filepath = path.resolve(__dirname, `../../data/simdatas/${folder}/${filename}.${type}`);
+    const folder = filename.split('.')[1] === "xml" ? "xml" : "binary";
+    const filepath = path.resolve(__dirname, `../../data/simdatas/${folder}/${filename}`);
     const buffer = fs.readFileSync(filepath);
     cachedBuffers[filename] = buffer;
     return buffer;
@@ -22,11 +22,19 @@ describe("SimDataResource", () => {
 
   describe("#buffer", () => {
     it("should be the same as the buffer it was created with if no changes were made", () => {
-      // TODO:
+      const buffer = getBuffer("buff.simdata");
+      const simdata = SimDataResource.from(buffer);
+      expect(simdata.buffer).to.equal(buffer);
     });
 
     it("should throw if the current model cannot be serialized", () => {
-      // TODO:
+      const simdata = SimDataResource.create({
+        instances: [
+          new simDataFragments.SimDataInstance("", undefined, undefined)
+        ]
+      });
+
+      expect(() => simdata.buffer).to.throw();
     });
 
     it("should reserialize all_data_types.simdata correctly", () => {

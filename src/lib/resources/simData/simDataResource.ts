@@ -93,7 +93,7 @@ export default class SimDataResource extends Resource implements SimDataDto {
     unused = 0,
     schemas = [],
     instances = []
-  }: SimDataDto): SimDataResource {
+  }: SimDataDto = {}): SimDataResource {
     return new SimDataResource(version, unused, schemas, instances);
   }
 

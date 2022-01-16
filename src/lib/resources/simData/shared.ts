@@ -5,10 +5,10 @@ import type { SimDataInstance, SimDataSchema } from "./simDataFragments";
  * A transfer object for SimData models.
  */
 export interface SimDataDto {
-  version: number;
-  unused: number;
-  schemas: SimDataSchema[];
-  instances: SimDataInstance[];
+  version?: number;
+  unused?: number;
+  schemas?: SimDataSchema[];
+  instances?: SimDataInstance[];
 }
 
 /**

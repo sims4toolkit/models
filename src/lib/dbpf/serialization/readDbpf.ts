@@ -7,6 +7,7 @@ import SimDataResource from "../../resources/simData/simDataResource";
 import StringTableResource from "../../resources/stringTable/stringTableResource";
 import TuningResource from "../../resources/tuning/tuningResource";
 import { DbpfDto } from "../shared";
+import { SerializationOptions } from "../../shared";
 
 //#region Types & Interfaces
 
@@ -90,7 +91,7 @@ function isXML(buffer: Buffer): boolean {
  * @param buffer Buffer to read as a DBPF
  * @param ignoreErrors Whether or not non-fatal errors should be ignored
  */
-export default function readDbpf(buffer: Buffer, options?: DbpfOptions): DbpfDto {
+export default function readDbpf(buffer: Buffer, options?: SerializationOptions): DbpfDto {
   const decoder = new BinaryDecoder(buffer);
 
   const validateErrors = options === undefined ? true : !options.ignoreErrors;
@@ -160,20 +161,21 @@ export default function readDbpf(buffer: Buffer, options?: DbpfOptions): DbpfDto
     loadFilesAsRaw ? (_, buffer) => RawResource.from(buffer)
                    : getResourceModel;
 
-  return index.map((entry, id) => {
-    decoder.seek(entry.position);
-    const buffer = decoder.slice(entry.size);
+  return undefined;
+  // return index.map((entry, id) => {
+  //   decoder.seek(entry.position);
+  //   const buffer = decoder.slice(entry.size);
 
-    return {
-      id,
-      key: {
-        type: entry.type,
-        group: entry.group,
-        instance: entry.instance
-      },
-      resource: getResourceFn(entry, buffer)
-    };
-  });
+  //   return {
+  //     id,
+  //     key: {
+  //       type: entry.type,
+  //       group: entry.group,
+  //       instance: entry.instance
+  //     },
+  //     resource: getResourceFn(entry, buffer)
+  //   };
+  // });
 
   //#endregion Entries
 }
