@@ -19,7 +19,7 @@
       <Columns>
         <Column name="object_variant" type="Variant" flags="0x00000000" />
         <Column name="vector_variant" type="Variant" flags="0x00000000" />
-        <!-- Variants cannot contain variants -->
+        <!-- Variants in variants aren't supported by s4s -->
       </Columns>
     </Schema>
     <Schema name="ObjectSchema" schema_hash="0xAA25E28D">
