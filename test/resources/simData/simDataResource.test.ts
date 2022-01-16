@@ -189,7 +189,16 @@ describe("SimDataResource", () => {
   });
 
   describe("static#fromXml()", () => {
-    // TODO:
+    // most tests are done in fromXmlDocument, since all this function does is
+    // converts the xml string to a document and then calls that
+
+    it("should work with an XML declaration", () => {
+      // TODO:
+    });
+
+    it("should work without an XML declaration", () => {
+      // TODO:
+    });
   });
 
   describe("static#fromXmlDocument()", () => {
@@ -237,7 +246,21 @@ describe("SimDataResource", () => {
   });
 
   describe("#toXmlDocument()", () => {
-    // TODO:
+    it("should have an XML declaration", () => {
+      // TODO:
+    });
+
+    it("should have a 'SimData' tag with 'version' and 'u' attributes", () => {
+      // TODO:
+    });
+
+    it("should have an 'Instances' section with all instances written correctly", () => {
+      // TODO:
+    });
+
+    it("should have a 'Schemas' section with all schemas written correctly", () => {
+      // TODO:
+    });
   });
 
   //#endregion Methods
