@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<SimData version="0x00000101" u="0x00000000">
+  <Instances>
+    <I name="variant_recursion" schema="VariantRecursion" type="Object">
+      <V name="object_variant" variant="0x12345678" schema="ObjectSchema">
+        <T name="first">32</T>
+        <T name="second">64</T>
+      </V>
+      <V name="vector_variant" variant="0x12345678">
+        <L type="Vector">
+          <T type="UInt32">32</T>
+          <T type="UInt32">64</T>
+        </L>
+      </V>
+    </I>
+  </Instances>
+  <Schemas>
+    <Schema name="VariantRecursion" schema_hash="0x3EE1E34C">
+      <Columns>
+        <Column name="object_variant" type="Variant" flags="0x00000000" />
+        <Column name="vector_variant" type="Variant" flags="0x00000000" />
+        <!-- Variants cannot contain variants -->
+      </Columns>
+    </Schema>
+    <Schema name="ObjectSchema" schema_hash="0xAA25E28D">
+      <Columns>
+        <Column name="first" type="UInt32" flags="0x00000000" />
+        <Column name="second" type="UInt32" flags="0x00000000" />
+      </Columns>
+    </Schema>
+  </Schemas>
+</SimData>

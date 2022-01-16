@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<SimData version="0x00000101" u="0x00000000">
+  <Instances>
+    <I name="vector_recursion" schema="VectorRecursion" type="Object">
+      <L name="object_vector">
+        <U type="Object" schema="ObjectSchema">
+          <T name="uint32">32</T>
+        </U>
+        <U type="Object" schema="ObjectSchema">
+          <T name="uint32">64</T>
+        </U>
+      </L>
+      <L name="vector_vector">
+        <L type="Vector">
+          <T type="UInt32">32</T>
+          <T type="UInt32">64</T>
+        </L>
+        <L type="Vector">
+          <T type="UInt32">32</T>
+          <T type="UInt32">64</T>
+        </L>
+      </L>
+    </I>
+  </Instances>
+  <Schemas>
+    <Schema name="VectorRecursion" schema_hash="0x3EE1E34C">
+      <Columns>
+        <Column name="object_vector" type="Vector" flags="0x00000000" />
+        <Column name="vector_vector" type="Vector" flags="0x00000000" />
+        <!-- Vectors of variants are not supported by s4s -->
+      </Columns>
+    </Schema>
+    <Schema name="ObjectSchema" schema_hash="0xAA25E28D">
+      <Columns>
+        <Column name="uint32" type="UInt32" flags="0x00000000" />
+      </Columns>
+    </Schema>
+  </Schemas>
+</SimData>
