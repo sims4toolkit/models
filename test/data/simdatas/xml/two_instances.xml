@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<SimData version="0x00000101" u="0x00000000">
+  <Instances>
+    <I name="first_inst" schema="FirstSchema" type="Object">
+      <T name="number">5</T>
+    </I>
+    <I name="second_inst" schema="SecondSchema" type="Object">
+      <T name="number">10</T>
+    </I>
+  </Instances>
+  <Schemas>
+    <Schema name="FirstSchema" schema_hash="0x0D045687">
+      <Columns>
+        <Column name="number" type="UInt32" flags="0x00000000" />
+      </Columns>
+    </Schema>
+    <Schema name="SecondSchema" schema_hash="0xCF3458FD">
+      <Columns>
+        <Column name="number" type="UInt32" flags="0x00000000" />
+      </Columns>
+    </Schema>
+  </Schemas>
+</SimData>

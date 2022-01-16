@@ -199,13 +199,36 @@ describe("SimDataResource", () => {
   });
 
   describe("static#from()", () => {
-    // TODO:
+    it("should read all_data_types.simdata correctly", () => {
+      // TODO:
+    });
+
+    it("should read buff.simdata correctly", () => {
+      // TODO:
+    });
+
+    it("should read mood.simdata correctly", () => {
+      // TODO:
+    });
+
+    it("should read trait.simdata correctly", () => {
+      // TODO:
+    });
+
+    it("should read two_instances.simdata correctly", () => {
+      // TODO:
+    });
+
+    it("should read variant_recursion.simdata correctly", () => {
+      // TODO:
+    });
+
+    it("should read vector_recursion.simdata correctly", () => {
+      // TODO:
+    });
   });
 
   describe("static#fromXml()", () => {
-    // most tests are done in fromXmlDocument, since all this function does is
-    // converts the xml string to a document and then calls that
-
     it("should work with an XML declaration", () => {
       // TODO:
     });
@@ -213,10 +236,39 @@ describe("SimDataResource", () => {
     it("should work without an XML declaration", () => {
       // TODO:
     });
+
+    it("should read all_data_types.xml correctly", () => {
+      // TODO:
+    });
+
+    it("should read buff.xml correctly", () => {
+      // TODO:
+    });
+
+    it("should read mood.xml correctly", () => {
+      // TODO:
+    });
+
+    it("should read trait.xml correctly", () => {
+      // TODO:
+    });
+
+    it("should read two_instances.xml correctly", () => {
+      // TODO:
+    });
+
+    it("should read variant_recursion.xml correctly", () => {
+      // TODO:
+    });
+
+    it("should read vector_recursion.xml correctly", () => {
+      // TODO:
+    });
   });
 
   describe("static#fromXmlDocument()", () => {
-    // TODO:
+    // fromXml() uses this function for everything but parsing the string as an
+    // XML document, so tests for it are tests for this
   });
 
   //#endregion Initialization
