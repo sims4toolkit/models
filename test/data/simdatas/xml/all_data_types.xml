@@ -31,7 +31,7 @@
     <Schema name="AllDataTypes" schema_hash="0xA9DE97E9">
       <Columns>
         <Column name="boolean" type="Boolean" flags="0x00000000" />
-        <!-- 8 bit ints intenttionally excluded -->
+        <!-- 8 bit ints intentionally excluded b/c not supported by s4s -->
         <Column name="int16" type="Int16" flags="0x00000000" />
         <Column name="uint16" type="UInt16" flags="0x00000000" />
         <Column name="int32" type="Int32" flags="0x00000000" />
