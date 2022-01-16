@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="utf-8"?>
+<SimData version="0x00000101" u="0x00000000">
+  <Instances>
+    <I name="Mood_Playful" schema="Mood" type="Object">
+      <L name="audio_stings_on_add">
+        <T type="ResourceKey">FD04E3BE-001407EC-0A657F72DE013EF0</T>
+        <T type="ResourceKey">FD04E3BE-001407EC-D3D597BD504C6F7E</T>
+        <T type="ResourceKey">FD04E3BE-001407EC-7B4ED486F6D1E097</T>
+      </L>
+      <U name="base_color" schema="TunableColorRGBA">
+        <T name="a">255</T>
+        <T name="b">234</T>
+        <T name="g">81</T>
+        <T name="r">240</T>
+      </U>
+      <T name="buff_polarity">2</T>
+      <L name="colored_ghost_list">
+        <U type="Object" schema="TraitColoredGhostTuple">
+          <T name="color_saturation">1</T>
+          <T name="edge_color_brightness">0.5</T>
+          <T name="trait">252849</T>
+        </U>
+        <U type="Object" schema="TraitColoredGhostTuple">
+          <T name="color_saturation">2</T>
+          <T name="edge_color_brightness">1</T>
+          <T name="trait">256353</T>
+        </U>
+      </L>
+      <L name="descriptions">
+        <T type="LocalizationKey">0xBFF50F88</T>
+        <T type="LocalizationKey">0x99A4E6B8</T>
+        <T type="LocalizationKey">0xE101570B</T>
+      </L>
+      <L name="descriptions_age_override">
+        <U type="Object" schema="DescriptionsAgeOverrideMappingTuple">
+          <T name="Age">2</T>
+          <L name="description_text">
+            <T type="LocalizationKey">0x17C58618</T>
+            <T type="LocalizationKey">0x17C58618</T>
+            <T type="LocalizationKey">0x17C58618</T>
+          </L>
+        </U>
+      </L>
+      <U name="descriptions_trait_override" schema="TunableMoodDescriptionTraitOverride">
+        <L name="descriptions" />
+        <T name="trait">0</T>
+      </U>
+      <U name="edge_color" schema="TunableColorRGBA">
+        <T name="a">255</T>
+        <T name="b">168</T>
+        <T name="g">50</T>
+        <T name="r">185</T>
+      </U>
+      <T name="filter_param_desaturation">0</T>
+      <T name="filter_param_lens_distortion">0</T>
+      <T name="filter_param_noise_distortion">0</T>
+      <T name="filter_param_noise_jumpiness">0</T>
+      <T name="filter_param_noise_scale_x">1</T>
+      <T name="filter_param_noise_scale_y">1</T>
+      <T name="filter_param_noise_scroll_y">0</T>
+      <T name="filter_param_opacity_offset">0</T>
+      <L name="icons" />
+      <L name="mood_colors">
+        <T type="Float3">150,10,255</T>
+        <T type="Float3">150,10,255</T>
+        <T type="Float3">150,10,255</T>
+      </L>
+      <L name="mood_frequencies">
+        <T type="Single">0</T>
+        <T type="Single">0</T>
+        <T type="Single">2</T>
+      </L>
+      <L name="mood_names">
+        <T type="LocalizationKey">0x977E5A36</T>
+        <T type="LocalizationKey">0x5940C027</T>
+        <T type="LocalizationKey">0x1FBB7A52</T>
+      </L>
+      <T name="noise_texture">00000000-00000000-0000000000000000</T>
+      <L name="portrait_frames">
+        <T type="String">Playful</T>
+        <T type="String">Silly</T>
+        <T type="String">Hysterical</T>
+      </L>
+      <L name="portrait_pose_indexes">
+        <T type="Int32">23</T>
+        <T type="Int32">24</T>
+        <T type="Int32">25</T>
+      </L>
+      <L name="thumbnail_vfx_list">
+        <U type="Object" schema="MoodVFXInfoTuple">
+          <T name="effect_name">ep08_humanoid_robot_brain_playful</T>
+          <T name="joint_name">b__Head__</T>
+        </U>
+      </L>
+    </I>
+  </Instances>
+  <Schemas>
+    <Schema name="Mood" schema_hash="0xBF8FFCF2">
+      <Columns>
+        <Column name="audio_stings_on_add" type="Vector" flags="0x00000000" />
+        <Column name="base_color" type="Object" flags="0x00000000" />
+        <Column name="buff_polarity" type="Int64" flags="0x00000000" />
+        <Column name="colored_ghost_list" type="Vector" flags="0x00000000" />
+        <Column name="descriptions" type="Vector" flags="0x00000000" />
+        <Column name="descriptions_age_override" type="Vector" flags="0x00000000" />
+        <Column name="descriptions_trait_override" type="Object" flags="0x00000000" />
+        <Column name="edge_color" type="Object" flags="0x00000000" />
+        <Column name="filter_param_desaturation" type="Single" flags="0x00000000" />
+        <Column name="filter_param_lens_distortion" type="Single" flags="0x00000000" />
+        <Column name="filter_param_noise_distortion" type="Single" flags="0x00000000" />
+        <Column name="filter_param_noise_jumpiness" type="Single" flags="0x00000000" />
+        <Column name="filter_param_noise_scale_x" type="Single" flags="0x00000000" />
+        <Column name="filter_param_noise_scale_y" type="Single" flags="0x00000000" />
+        <Column name="filter_param_noise_scroll_y" type="Single" flags="0x00000000" />
+        <Column name="filter_param_opacity_offset" type="Single" flags="0x00000000" />
+        <Column name="icons" type="Vector" flags="0x00000000" />
+        <Column name="mood_colors" type="Vector" flags="0x00000000" />
+        <Column name="mood_frequencies" type="Vector" flags="0x00000000" />
+        <Column name="mood_names" type="Vector" flags="0x00000000" />
+        <Column name="noise_texture" type="ResourceKey" flags="0x00000000" />
+        <Column name="portrait_frames" type="Vector" flags="0x00000000" />
+        <Column name="portrait_pose_indexes" type="Vector" flags="0x00000000" />
+        <Column name="thumbnail_vfx_list" type="Vector" flags="0x00000000" />
+      </Columns>
+    </Schema>
+    <Schema name="TunableColorRGBA" schema_hash="0x4A938D09">
+      <Columns>
+        <Column name="a" type="Int32" flags="0x00000000" />
+        <Column name="b" type="Int32" flags="0x00000000" />
+        <Column name="g" type="Int32" flags="0x00000000" />
+        <Column name="r" type="Int32" flags="0x00000000" />
+      </Columns>
+    </Schema>
+    <Schema name="TraitColoredGhostTuple" schema_hash="0x3E9E8285">
+      <Columns>
+        <Column name="color_saturation" type="Single" flags="0x00000000" />
+        <Column name="edge_color_brightness" type="Single" flags="0x00000000" />
+        <Column name="trait" type="TableSetReference" flags="0x00000000" />
+      </Columns>
+    </Schema>
+    <Schema name="DescriptionsAgeOverrideMappingTuple" schema_hash="0x773BB9EA">
+      <Columns>
+        <Column name="Age" type="Int64" flags="0x00000000" />
+        <Column name="description_text" type="Vector" flags="0x00000000" />
+      </Columns>
+    </Schema>
+    <Schema name="TunableMoodDescriptionTraitOverride" schema_hash="0x380B9546">
+      <Columns>
+        <Column name="descriptions" type="Vector" flags="0x00000000" />
+        <Column name="trait" type="TableSetReference" flags="0x00000000" />
+      </Columns>
+    </Schema>
+    <Schema name="MoodVFXInfoTuple" schema_hash="0x27D7469B">
+      <Columns>
+        <Column name="effect_name" type="String" flags="0x00000000" />
+        <Column name="joint_name" type="String" flags="0x00000000" />
+      </Columns>
+    </Schema>
+  </Schemas>
+</SimData>

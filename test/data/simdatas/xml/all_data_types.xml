@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<SimData version="0x00000101" u="0x00000000">
+  <Instances>
+    <I name="all_data_types" schema="AllDataTypes" type="Object">
+      <T name="boolean">0</T>
+      <T name="int16">-16</T>
+      <T name="uint16">16</T>
+      <T name="int32">-32</T>
+      <T name="uint32">32</T>
+      <T name="int64">-64</T>
+      <T name="uint64">64</T>
+      <T name="float">1.5</T>
+      <T name="string">hello world</T>
+      <T name="hashed_string">goodbye world</T>
+      <U name="object" schema="AllFloatVectors">
+        <T name="float_vector_2">1.5,2.5</T>
+        <T name="float_vector_3">1.5,2.5,3.5</T>
+        <T name="float_vector_4">1.5,2.5,3.5,4.5</T>
+      </U>
+      <L name="vector">
+        <T type="TableSetReference">1698046433601770820</T>
+        <T type="TableSetReference">9850221522270858180</T>
+      </L>
+      <T name="res_key">FD04E3BE-001407EC-3BF33216A25546EA</T>
+      <V name="variant" variant="0x2A52082F">
+        <T type="LocalizationKey">0xE1C53267</T>
+      </V>
+    </I>
+  </Instances>
+  <Schemas>
+    <Schema name="AllDataTypes" schema_hash="0xA9DE97E9">
+      <Columns>
+        <Column name="boolean" type="Boolean" flags="0x00000000" />
+        <!-- 8 bit ints intenttionally excluded -->
+        <Column name="int16" type="Int16" flags="0x00000000" />
+        <Column name="uint16" type="UInt16" flags="0x00000000" />
+        <Column name="int32" type="Int32" flags="0x00000000" />
+        <Column name="uint32" type="UInt32" flags="0x00000000" />
+        <Column name="int64" type="Int64" flags="0x00000000" />
+        <Column name="uint64" type="UInt64" flags="0x00000000" />
+        <Column name="float" type="Single" flags="0x00000000" />
+        <Column name="string" type="String" flags="0x00000000" />
+        <Column name="hashed_string" type="HashedString" flags="0x00000000" />
+        <Column name="object" type="Object" flags="0x00000000" />
+        <!-- Object contains float vectors -->
+        <Column name="vector" type="Vector" flags="0x00000000" />
+        <!-- Vector contains table set refs -->
+        <Column name="res_key" type="ResourceKey" flags="0x00000000" />
+        <Column name="variant" type="Variant" flags="0x00000000" />
+        <!-- Variant contains loc key -->
+      </Columns>
+    </Schema>
+    <Schema name="AllFloatVectors" schema_hash="0x67503246">
+      <Columns>
+        <Column name="float_vector_2" type="Float2" flags="0x00000000" />
+        <Column name="float_vector_3" type="Float3" flags="0x00000000" />
+        <Column name="float_vector_4" type="Float4" flags="0x00000000" />
+      </Columns>
+    </Schema>
+  </Schemas>
+</SimData>
