@@ -5,11 +5,63 @@ describe("SimDataResource", () => {
   //#region Properties
 
   describe("#buffer", () => {
-    // TODO:
+    it("should be the same as the buffer it was created with if no changes were made", () => {
+      // TODO:
+    });
+
+    it("should throw if the current model cannot be serialized", () => {
+      // TODO:
+    });
+
+    it("should reserialize all_data_types.simdata correctly", () => {
+      // TODO:
+    });
+
+    it("should reserialize buff.simdata correctly", () => {
+      // TODO:
+    });
+
+    it("should reserialize mood.simdata correctly", () => {
+      // TODO:
+    });
+
+    it("should reserialize trait.simdata correctly", () => {
+      // TODO:
+    });
+
+    it("should reserialize two_instances.simdata correctly", () => {
+      // TODO:
+    });
+
+    it("should reserialize variant_recursion.simdata correctly", () => {
+      // TODO:
+    });
+
+    it("should reserialize vector_recursion.simdata correctly", () => {
+      // TODO:
+    });
   });
 
   describe("#hasChanged", () => {
-    // TODO:
+    it("should be false after loading from a buffer", () => {
+      // TODO:
+    });
+
+    it("should be true after loading from xml", () => {
+      // TODO:
+    });
+
+    it("should be true after creating", () => {
+      // TODO:
+    });
+
+    it("should be true after constructing", () => {
+      // TODO:
+    });
+
+    it("should be false after getting buffer", () => {
+      // TODO:
+    });
   });
 
   describe("#instance", () => {
