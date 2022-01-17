@@ -215,49 +215,76 @@ describe("SimDataResource", () => {
   
   describe("#schema", () => {
     it("should return the first child of the schemas array", () => {
-      // TODO:
+      const simdata = getSimDataFromBinary("mood");
+      expect(simdata.schema.name).to.equal("Mood");
+      expect(simdata.schema.hash).to.equal(0xBF8FFCF2);
+      expect(simdata.schema.columns).to.have.lengthOf(24);
     });
 
     it("should set the first child of the schemas array", () => {
-      // TODO:
+      const simdata = getSimDataFromBinary("mood");
+      simdata.schema = simdata.schemas[1];
+      expect(simdata.schema.name).to.equal("TunableColorRGBA");
     });
 
     it("should uncache the owner when set", () => {
-      // TODO:
+      const simdata = getSimDataFromBinary("mood");
+      expect(simdata.hasChanged).to.be.false;
+      simdata.schema = simdata.schemas[1];
+      expect(simdata.hasChanged).to.be.true;
     });
 
-    it("should mutate the first instance", () => {
-      // TODO:
+    it("should mutate the first schema", () => {
+      const simdata = getSimDataFromBinary("mood");
+      expect(simdata.schemas[0].name).to.equal("Mood");
+      simdata.schema.name = "NewName";
+      expect(simdata.schemas[0].name).to.equal("NewName");
     });
   });
 
   describe("#schemas", () => {
     it("should uncache the owner when pushed to", () => {
-      // TODO:
+      const simdata = getSimDataFromBinary("buff");
+      expect(simdata.hasChanged).to.be.false;
+      simdata.schemas.push(simdata.schema.clone());
+      expect(simdata.hasChanged).to.be.true;
     });
 
     it("should uncache the owner when spliced", () => {
-      // TODO:
-    });
-
-    it("should uncache the owner when sorted", () => {
-      // TODO:
+      const simdata = getSimDataFromBinary("buff");
+      expect(simdata.hasChanged).to.be.false;
+      simdata.schemas.splice(0, 1);
+      expect(simdata.hasChanged).to.be.true;
     });
 
     it("should uncache the owner when child is set", () => {
-      // TODO:
+      const simdata = getSimDataFromBinary("buff");
+      expect(simdata.hasChanged).to.be.false;
+      simdata.schemas[0] = simdata.schema.clone();
+      expect(simdata.hasChanged).to.be.true;
     });
 
     it("should uncache the owner when child is mutated", () => {
-      // TODO:
+      const simdata = getSimDataFromBinary("buff");
+      expect(simdata.hasChanged).to.be.false;
+      simdata.schemas[0].name = "NewName";
+      expect(simdata.hasChanged).to.be.true;
     });
 
     it("should set the owner of a pushed child to this simdata", () => {
-      // TODO:
+      const simdata = getSimDataFromBinary("buff");
+      const child = simdata.schema.clone();
+      expect(child.owner).to.be.undefined;
+      simdata.schemas.push(child);
+      expect(child.owner).to.equal(simdata);
     });
 
     it("should set the owner of a set child to this simdata", () => {
-      // TODO:
+      const simdata = getSimDataFromBinary("buff");
+      const child = simdata.schema.clone();
+      expect(child.owner).to.be.undefined;
+      simdata.schemas[0] = child;
+      expect(child.owner).to.equal(simdata);
     });
   });
 
