@@ -263,19 +263,26 @@ describe("SimDataResource", () => {
 
   describe("#unused", () => {
     it("should uncache when set", () => {
-      // TODO:
+      const simdata = getSimDataFromBinary("buff");
+      expect(simdata.hasChanged).to.be.false;
+      simdata.unused = 0x12;
+      expect(simdata.hasChanged).to.be.true;
     });
   });
 
   describe("#variant", () => {
     it("should be 'DATA'", () => {
-      // TODO:
+      const simdata = getSimDataFromBinary("buff");
+      expect(simdata.variant).to.equal("DATA");
     });
   });
 
   describe("#version", () => {
     it("should uncache when set", () => {
-      // TODO:
+      const simdata = getSimDataFromBinary("buff");
+      expect(simdata.hasChanged).to.be.false;
+      simdata.version = 0x100;
+      expect(simdata.hasChanged).to.be.true;
     });
   });
 
