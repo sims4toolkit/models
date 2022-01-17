@@ -1,5 +1,6 @@
 import fs from "fs";
 import path from "path";
+import util from 'util';
 import { expect } from "chai";
 import { simDataFragments, SimDataResource } from "../../../dst/api";
 
@@ -194,11 +195,12 @@ describe("SimDataResource", () => {
 
   describe("#props", () => {
     it("should return an object containing the cells in the first instance", () => {
-      const simdata = SimDataResource.from(getBuffer("buff.simdata"));
+      const simdata = getSimDataFromBinary("buff");
       // TODO:
     });
 
     it("should mutate the first instance's cells", () => {
+      const simdata = getSimDataFromBinary("buff");
       // TODO:
     });
   });
@@ -355,7 +357,15 @@ describe("SimDataResource", () => {
     });
 
     it("should set self as owner of new schemas/instances", () => {
-      // TODO:
+      const simdata = getSimDataFromBinary("buff");
+
+      simdata.schemas.forEach(schema => {
+        expect(schema.owner).to.equal(simdata);
+      });
+
+      simdata.instances.forEach(inst => {
+        expect(inst.owner).to.equal(simdata);
+      });
     });
   });
 

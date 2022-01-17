@@ -8,11 +8,12 @@ type CachedCollection = { [key: string]: any; } | any[];
  */
 export default abstract class CacheableModel {
   private _cachedProps: string[] = [];
+  private _proxy: any;
 
   protected constructor(public owner?: CacheableModel) {
     this._cachedProps = [];
 
-    return new Proxy(this, {
+    this._proxy = new Proxy(this, {
       set(target: CacheableModel, property: string, value: any) {
         const prev: any = target[property];
         const ref = Reflect.set(target, property, value);
@@ -28,6 +29,8 @@ export default abstract class CacheableModel {
         return ref;
       }
     });
+
+    return this._proxy;
   }
 
   /**
@@ -43,7 +46,7 @@ export default abstract class CacheableModel {
    * `this` in proxy traps.
    */
   protected _getCollectionOwner(): CacheableModel {
-    return this;
+    return this._proxy;
   }
 
   /**
