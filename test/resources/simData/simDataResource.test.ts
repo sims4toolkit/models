@@ -75,23 +75,24 @@ describe("SimDataResource", () => {
 
   describe("#hasChanged", () => {
     it("should be false after loading from a buffer", () => {
-      // TODO:
+      const simdata = SimDataResource.from(getBuffer("buff.simdata"));
+      expect(simdata.hasChanged).to.be.false;
     });
 
     it("should be true after loading from xml", () => {
-      // TODO:
+      const simdata = SimDataResource.fromXml(getBuffer("buff.xml"));
+      expect(simdata.hasChanged).to.be.true;
     });
 
     it("should be true after creating", () => {
-      // TODO:
-    });
-
-    it("should be true after constructing", () => {
-      // TODO:
+      const simdata = SimDataResource.create();
+      expect(simdata.hasChanged).to.be.true;
     });
 
     it("should be false after getting buffer", () => {
-      // TODO:
+      const simdata = SimDataResource.fromXml(getBuffer("buff.xml"));
+      simdata.buffer;
+      expect(simdata.hasChanged).to.be.false;
     });
   });
 
@@ -223,16 +224,6 @@ describe("SimDataResource", () => {
 
   //#region Initialization
 
-  describe("#constructor", () => {
-    it("should use all properties that are given", () => {
-      // TODO:
-    });
-
-    it("should set itself as the owner of all schemas and instances", () => {
-      // TODO:
-    });
-  });
-
   describe("#clone()", () => {
     it("should copy all properties", () => {
       // TODO:
@@ -279,6 +270,10 @@ describe("SimDataResource", () => {
     it("should use an empty list as default for instances", () => {
       // TODO:
     });
+
+    it("should set self as owner of new schemas/instances", () => {
+      // TODO:
+    });
   });
 
   describe("static#from()", () => {
@@ -307,6 +302,10 @@ describe("SimDataResource", () => {
     });
 
     it("should read vector_recursion.simdata correctly", () => {
+      // TODO:
+    });
+
+    it("should set self as owner of new schemas/instances", () => {
       // TODO:
     });
   });
@@ -345,6 +344,10 @@ describe("SimDataResource", () => {
     });
 
     it("should read vector_recursion.xml correctly", () => {
+      // TODO:
+    });
+
+    it("should set self as owner of new schemas/instances", () => {
       // TODO:
     });
   });
