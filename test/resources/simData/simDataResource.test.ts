@@ -454,16 +454,35 @@ describe("SimDataResource", () => {
         numColumns: 10,
         firstColumnName: "audio_sting_on_add",
         firstColumnType: SimDataType.ResourceKey,
-        cellTest(cell) {
-          expect(cell.asAny.type).to.equal(0xFD04E3BE);
-          expect(cell.asAny.group).to.equal(0x001407EC);
-          expect(cell.asAny.instance).to.equal(0x8AF8B916CF64C646n);
+        cellTest(cell: simDataCells.ResourceKeyCell) {
+          expect(cell.type).to.equal(0xFD04E3BE);
+          expect(cell.group).to.equal(0x001407EC);
+          expect(cell.instance).to.equal(0x8AF8B916CF64C646n);
         }
       });
     });
 
     it("should read mood.simdata correctly", () => {
-      // TODO:
+      testSimData({
+        filename: "mood",
+        unused: 0,
+        numInstances: 1,
+        instanceName: "Mood_Playful",
+        numSchemas: 6,
+        schemaName: "Mood",
+        schemaHash: 0xBF8FFCF2,
+        numColumns: 24,
+        firstColumnName: "base_color",
+        firstColumnType: SimDataType.Object,
+        cellTest(cell: simDataCells.ObjectCell) {
+          expect(cell.rowLength).to.equal(4);
+          expect(cell.schema.name).to.equal("TunableColorRGBA");
+          expect(cell.row.a.asAny.value).to.equal(255);
+          expect(cell.row.b.asAny.value).to.equal(234);
+          expect(cell.row.g.asAny.value).to.equal(81);
+          expect(cell.row.r.asAny.value).to.equal(240);
+        }
+      });
     });
 
     it("should read trait.simdata correctly", () => {
@@ -478,9 +497,9 @@ describe("SimDataResource", () => {
         numColumns: 17,
         firstColumnName: "ages",
         firstColumnType: SimDataType.Vector,
-        cellTest(cell) {
-          expect(cell.asAny.length).to.equal(5);
-          expect(cell.asAny.children[0].value).to.equal(8n);
+        cellTest(cell: simDataCells.VectorCell) {
+          expect(cell.length).to.equal(5);
+          expect(cell.children[0].asAny.value).to.equal(8n);
         }
       });
     });
