@@ -123,7 +123,7 @@ export default class SimDataResource extends Resource implements SimDataDto {
    * @throws If the given XML could not be parsed as a SimData
    */
   static fromXml(xml: string | Buffer): SimDataResource {
-    return this.fromXmlDocument(XmlDocumentNode.from(xml));
+    return this.fromXmlDocument(XmlDocumentNode.from(xml, { ignoreComments: true }));
   }
 
   /**
