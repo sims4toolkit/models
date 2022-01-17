@@ -828,11 +828,19 @@ describe("SimDataResource", () => {
 
   describe("#uncache()", () => {
     it("should reset the buffer", () => {
-      // TODO:
+      const simdata = getSimDataFromBinary("buff");
+      expect(simdata.hasChanged).to.be.false;
+      simdata.uncache();
+      expect(simdata.hasChanged).to.be.true;
     });
 
     it("should uncache the owner", () => {
-      // TODO:
+      const owner = new MockOwner();
+      const simdata = getSimDataFromBinary("buff");
+      simdata.owner = owner;
+      expect(owner.cached).to.be.true;
+      simdata.uncache();
+      expect(owner.cached).to.be.false;
     });
   });
 
