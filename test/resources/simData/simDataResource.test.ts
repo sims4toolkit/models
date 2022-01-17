@@ -804,19 +804,31 @@ describe("SimDataResource", () => {
 
   describe("#removeSchemas()", () => {
     it("should remove the one schema that is given", () => {
-      // TODO:
+      const simdata = getSimDataFromBinary("mood");
+      expect(simdata.schemas).to.have.lengthOf(6);
+      simdata.removeSchemas(simdata.schema);
+      expect(simdata.schemas).to.have.lengthOf(5);
     });
 
     it("should remove the multiple schemas that are given", () => {
-      // TODO:
+      const simdata = getSimDataFromBinary("mood");
+      expect(simdata.schemas).to.have.lengthOf(6);
+      simdata.removeSchemas(simdata.schemas[0], simdata.schemas[1]);
+      expect(simdata.schemas).to.have.lengthOf(4);
     });
 
     it("should not remove an identical schema that is not the same object", () => {
-      // TODO:
+      const simdata = getSimDataFromBinary("mood");
+      expect(simdata.schemas).to.have.lengthOf(6);
+      simdata.removeSchemas(simdata.schema.clone());
+      expect(simdata.schemas).to.have.lengthOf(6);
     });
 
     it("should uncache the owner", () => {
-      // TODO:
+      const simdata = getSimDataFromBinary("mood");
+      expect(simdata.hasChanged).to.be.false;
+      simdata.removeSchemas(simdata.schema);
+      expect(simdata.hasChanged).to.be.true;
     });
   });
 
