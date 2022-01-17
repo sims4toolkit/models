@@ -22,6 +22,7 @@ interface SerialSchema {
 interface SerialColumn {
   name: string; // what mnNameOffset points to
   dataType: SimDataType; // mnDataType
+  flags: number;
   offset: number; // mnOffset
 }
 
@@ -165,9 +166,11 @@ export default function writeData(model: SimDataDto): Buffer {
     const columns: SerialColumn[] = schema.columns.map(column => ({
       name: column.name,
       dataType: column.type,
+      flags: column.flags,
       offset: 0  // to be set when column size is calculated
     }));
 
+    columns.forEach(column => hashName(column)); // needed for when there is 1
     columns.sort((a, b) => hashName(a) - hashName(b));
 
     let size = 0;
@@ -337,7 +340,12 @@ export default function writeData(model: SimDataDto): Buffer {
     const buffer = Buffer.alloc(totalSize);
     const encoder = new BinaryEncoder(buffer);
 
-    const nameOffset = (name: string) => totalSize - encoder.tell() + stringTableOffsets[name];
+    const nameOffset = (name: string) => {
+      const value = totalSize - encoder.tell() + stringTableOffsets[name];
+      if (Number.isNaN(value))
+        throw new Error(`Name '${name}' never had its offset recorded.`);
+      return value;
+    }
     
     let filledColumns = 0;
     serialSchemas.forEach(schema => {
@@ -357,7 +365,7 @@ export default function writeData(model: SimDataDto): Buffer {
           encoder.int32(nameOffset(column.name));
           encoder.uint32(nameHashes[column.name]);
           encoder.uint16(column.dataType);
-          encoder.uint16(0); // flags
+          encoder.uint16(column.flags); // flags
           encoder.uint32(column.offset);
           encoder.int32(RELOFFSET_NULL); // FIXME: is this actually used?
           filledColumns += 20;
