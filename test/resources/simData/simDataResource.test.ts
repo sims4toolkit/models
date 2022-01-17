@@ -1,8 +1,8 @@
 import fs from "fs";
 import path from "path";
-import util from 'util';
 import { expect } from "chai";
 import { simDataFragments, SimDataResource } from "../../../dst/api";
+import MockOwner from "../../mocks/mockOwner";
 
 const cachedBuffers: { [key: string]: Buffer; } = {};
 
@@ -292,27 +292,55 @@ describe("SimDataResource", () => {
 
   describe("#clone()", () => {
     it("should copy all properties", () => {
-      // TODO:
+      const simdata = getSimDataFromBinary("buff");
+      const clone = simdata.clone();
+      expect(simdata).to.not.equal(clone);
+      expect(simdata.equals(clone)).to.be.true;
     });
 
     it("should not copy the owner", () => {
-      // TODO:
+      const owner = new MockOwner();
+      const simdata = getSimDataFromBinary("buff");
+      simdata.owner = owner;
+      const clone = simdata.clone();
+      expect(simdata.owner).to.equal(owner);
+      expect(clone.owner).to.be.undefined;
     });
 
     it("should not mutate the original", () => {
-      // TODO:
+      const simdata = getSimDataFromBinary("buff");
+      const clone = simdata.clone();
+      clone.unused = 0x12;
+      expect(simdata.unused).to.equal(0);
     });
 
     it("should not mutate the schemas of the original", () => {
-      // TODO:
+      const simdata = getSimDataFromBinary("buff");
+      const clone = simdata.clone();
+      clone.schema.name = "NewName";
+      expect(clone.schema.name).to.equal("NewName");
+      expect(simdata.schema.name).to.equal("Buff");
     });
 
     it("should not mutate the instances of the original", () => {
-      // TODO:
+      const simdata = getSimDataFromBinary("buff");
+      const clone = simdata.clone();
+      clone.instance.name = "NewName";
+      expect(clone.instance.name).to.equal("NewName");
+      expect(simdata.instance.name).to.equal("Buff_Memory_scared");
     });
 
     it("should set self as owner of new schemas/instances", () => {
-      // TODO:
+      const simdata = getSimDataFromBinary("buff");
+      const clone = simdata.clone();
+
+      clone.schemas.forEach(schema => {
+        expect(schema.owner).to.equal(clone);
+      });
+
+      clone.instances.forEach(inst => {
+        expect(inst.owner).to.equal(clone);
+      });
     });
   });
 
