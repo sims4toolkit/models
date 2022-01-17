@@ -1,11 +1,12 @@
 import fs from "fs";
 import path from "path";
 import { expect } from "chai";
-import { simDataFragments, SimDataResource } from "../../../dst/api";
+import { simDataFragments, SimDataResource, simDataTypes } from "../../../dst/api";
 import MockOwner from "../../mocks/mockOwner";
 
-const cachedBuffers: { [key: string]: Buffer; } = {};
+const { SimDataType } = simDataTypes;
 
+const cachedBuffers: { [key: string]: Buffer; } = {};
 function getBuffer(filename: string) {
   if (cachedBuffers[filename]) {
     return cachedBuffers[filename];
@@ -403,7 +404,33 @@ describe("SimDataResource", () => {
     });
 
     it("should read buff.simdata correctly", () => {
-      // TODO:
+      const simdata = SimDataResource.from(getBuffer("buff.simdata"));
+
+      // header
+      expect(simdata.version).to.equal(0x101);
+      expect(simdata.unused).to.equal(0);
+
+      // instances
+      expect(simdata.instances).to.have.lengthOf(1);
+      expect(simdata.instance.name).to.equal("Buff_Memory_scared");
+      expect(simdata.instance.schema.name).to.equal("Buff");
+      expect(simdata.instance.rowLength).to.equal(10);
+      const { audio_sting_on_add } = simdata.instance.row;
+      expect(audio_sting_on_add.asAny.type).to.equal(0xFD04E3BE);
+      expect(audio_sting_on_add.asAny.group).to.equal(0x001407EC);
+      expect(audio_sting_on_add.asAny.instance).to.equal(0x8AF8B916CF64C646n);
+
+      // schemas
+      expect(simdata.schemas).to.have.lengthOf(1);
+      expect(simdata.schema.name).to.equal("Buff");
+      expect(simdata.schema.hash).to.equal(0x0D045687);
+      expect(simdata.schema.columns).to.have.lengthOf(10);
+      const column = simdata.schema.columns.find(column => {
+        return column.name === "audio_sting_on_add";
+      });
+      expect(column).to.not.be.undefined;
+      expect(column.type).to.equal(SimDataType.ResourceKey);
+      expect(column.flags).to.equal(0);
     });
 
     it("should read mood.simdata correctly", () => {
@@ -411,7 +438,31 @@ describe("SimDataResource", () => {
     });
 
     it("should read trait.simdata correctly", () => {
-      // TODO:
+      const simdata = SimDataResource.from(getBuffer("trait.simdata"));
+
+      // header
+      expect(simdata.version).to.equal(0x101);
+      expect(simdata.unused).to.equal(0);
+
+      // instances
+      expect(simdata.instances).to.have.lengthOf(1);
+      expect(simdata.instance.name).to.equal("trait_HotHeaded");
+      expect(simdata.instance.schema.name).to.equal("Trait");
+      expect(simdata.instance.rowLength).to.equal(17);
+      const { trait_description } = simdata.instance.row;
+      expect(trait_description.asAny.value).to.equal(0xB72DA8C3);
+
+      // schemas
+      expect(simdata.schemas).to.have.lengthOf(1);
+      expect(simdata.schema.name).to.equal("Trait");
+      expect(simdata.schema.hash).to.equal(0xDE2EAF66);
+      expect(simdata.schema.columns).to.have.lengthOf(17);
+      const column = simdata.schema.columns.find(column => {
+        return column.name === "ages";
+      });
+      expect(column).to.not.be.undefined;
+      expect(column.type).to.equal(SimDataType.Vector);
+      expect(column.flags).to.equal(0);
     });
 
     it("should read two_instances.simdata correctly", () => {
