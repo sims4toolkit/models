@@ -708,6 +708,10 @@ describe('StringTableResource', function() {
     });
   });
 
+  describe("#equals()", () => {
+    // TODO:
+  });
+
   describe('#findErrors()', function() {
     context('stbl has no errors', function() {
       it('should return an empty array', function() {

@@ -377,6 +377,10 @@ describe("ObjectCell", () => {
     });
   });
 
+  describe("#equals()", () => {
+    // TODO:
+  });
+
   describe("#toXmlNode()", () => {
     it("should write the name of the schema in an attribute", () => {
       const cell = newValidObjectCell();
@@ -1079,6 +1083,10 @@ describe("VectorCell", () => {
     });
   });
 
+  describe("#equals()", () => {
+    // TODO:
+  });
+
   describe("#toXmlNode()", () => {
     it("should use an L tag", () => {
       const cell = cells.VectorCell.getDefault();
@@ -1617,6 +1625,10 @@ describe("VariantCell", () => {
       expect(decoder.int32()).to.equal(-10);
       expect(decoder.uint32()).to.equal(0x1234);
     });
+  });
+
+  describe("#equals()", () => {
+    // TODO:
   });
 
   describe("#toXmlNode()", () => {

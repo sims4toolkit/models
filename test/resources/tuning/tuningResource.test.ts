@@ -418,6 +418,10 @@ describe('TuningResource', function() {
 
   //#region Methods
 
+  describe("#equals()", () => {
+    // TODO:
+  });
+
   describe('#updateDom()', function() {
     it('should uncache the buffer', function() {
       const tun = TuningResource.from(Buffer.from("<T>50</T>"));

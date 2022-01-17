@@ -360,6 +360,10 @@ describe("SimDataResource", () => {
 
   //#region Methods
 
+  describe("#equals()", () => {
+    // TODO:
+  });
+
   describe("#removeInstances()", () => {
     it("should remove the one instance that is given", () => {
       // TODO:

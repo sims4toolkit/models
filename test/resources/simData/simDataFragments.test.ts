@@ -258,6 +258,10 @@ describe("SimDataSchema", () => {
     });
   });
 
+  describe("#equals()", () => {
+    // TODO:
+  });
+
   describe("#removeColumns()", () => {
     it("should remove the one exact column that is given", () => {
       const schema = testSchema.clone();
@@ -465,6 +469,10 @@ describe("SimDataSchemaColumn", () => {
     });
   });
 
+  describe("#equals()", () => {
+    // TODO:
+  });
+
   describe("#toXmlNode()", () => {
     it("should use the tag 'Column'", () => {
       const column = new SimDataSchemaColumn("boolean", SimDataType.Boolean, 0x1234);
@@ -578,6 +586,10 @@ describe("SimDataInstance", () => {
       clone.name = "NewName";
       expect(inst.name).to.equal("InstanceName");
     });
+  });
+
+  describe("#equals()", () => {
+    // TODO:
   });
 
   describe("#toXmlNode()", () => {

@@ -105,6 +105,24 @@ describe("BooleanCell", function() {
     });
   });
 
+  describe("#equals()", () => {
+    it("should return true when both have the same type and value", () => {
+      // TODO:
+    });
+
+    it("should return false when type is different", () => {
+      // TODO:
+    });
+
+    it("should return false when value is different", () => {
+      // TODO:
+    });
+
+    it("should return false when other is undefined", () => {
+      // TODO:
+    });
+  });
+
   describe("#encode()", () => {
     it("should write one byte", () => {
       const encoder = new BinaryEncoder(Buffer.alloc(1));
@@ -312,6 +330,24 @@ describe("TextCell", function() {
       const clone = cell.clone();
       clone.value = "Something else";
       expect(cell.value).to.equal("Something");
+    });
+  });
+
+  describe("#equals()", () => {
+    it("should return true when both have the same type and value", () => {
+      // TODO:
+    });
+
+    it("should return false when type is different", () => {
+      // TODO:
+    });
+
+    it("should return false when value is different", () => {
+      // TODO:
+    });
+
+    it("should return false when other is undefined", () => {
+      // TODO:
     });
   });
 
@@ -736,6 +772,24 @@ describe("NumberCell", function() {
     });
   });
 
+  describe("#equals()", () => {
+    it("should return true when both have the same type and value", () => {
+      // TODO:
+    });
+
+    it("should return false when type is different", () => {
+      // TODO:
+    });
+
+    it("should return false when value is different", () => {
+      // TODO:
+    });
+
+    it("should return false when other is undefined", () => {
+      // TODO:
+    });
+  });
+
   describe("#toXmlNode()", () => {
     it("should create a node that contains the value", () => {
       const cell = new cells.NumberCell(SimDataType.UInt32, 25);
@@ -1069,6 +1123,24 @@ describe("BigIntCell", function() {
     });
   });
 
+  describe("#equals()", () => {
+    it("should return true when both have the same type and value", () => {
+      // TODO:
+    });
+
+    it("should return false when type is different", () => {
+      // TODO:
+    });
+
+    it("should return false when value is different", () => {
+      // TODO:
+    });
+
+    it("should return false when other is undefined", () => {
+      // TODO:
+    });
+  });
+
   describe("#toXmlNode()", () => {
     it("should create a node that contains the value", () => {
       const cell = new cells.BigIntCell(SimDataType.UInt64, 25n);
@@ -1342,6 +1414,32 @@ describe("ResourceKeyCell", function() {
     });
   });
 
+  describe("#equals()", () => {
+    it("should return true when both have the same data type and values", () => {
+      // TODO:
+    });
+
+    it("should return false when data type is different", () => {
+      // TODO:
+    });
+
+    it("should return false when type is different", () => {
+      // TODO:
+    });
+
+    it("should return false when group is different", () => {
+      // TODO:
+    });
+
+    it("should return false when instance is different", () => {
+      // TODO:
+    });
+
+    it("should return false when other is undefined", () => {
+      // TODO:
+    });
+  });
+
   describe("#toXmlNode()", () => {
     it("should create a node with the TGI in a hyphen-separated string", () => {
       const cell = new cells.ResourceKeyCell(0x220557DA, 0x80000000, 0x0012B12A0D85486En);
@@ -1561,6 +1659,28 @@ describe("Float2Cell", function() {
     });
   });
 
+  describe("#equals()", () => {
+    it("should return true when both have the same data type and values", () => {
+      // TODO:
+    });
+
+    it("should return false when data type is different", () => {
+      // TODO:
+    });
+
+    it("should return false when x is different", () => {
+      // TODO:
+    });
+
+    it("should return false when y is different", () => {
+      // TODO:
+    });
+
+    it("should return false when other is undefined", () => {
+      // TODO:
+    });
+  });
+
   describe("#toXmlNode()", () => {
     it("should create a node with the floats separated by commas", () => {
       const cell = new cells.Float2Cell(1.1, 2.2);
@@ -1767,6 +1887,32 @@ describe("Float3Cell", function() {
       const cell = new cells.Float3Cell(1.1, 2.2, 3.3);
       cell.z = null;
       expect(() => cell.encode(encoder)).to.throw();
+    });
+  });
+
+  describe("#equals()", () => {
+    it("should return true when both have the same data type and values", () => {
+      // TODO:
+    });
+
+    it("should return false when data type is different", () => {
+      // TODO:
+    });
+
+    it("should return false when x is different", () => {
+      // TODO:
+    });
+
+    it("should return false when y is different", () => {
+      // TODO:
+    });
+
+    it("should return false when z is different", () => {
+      // TODO:
+    });
+
+    it("should return false when other is undefined", () => {
+      // TODO:
     });
   });
 
@@ -1996,6 +2142,36 @@ describe("Float4Cell", function() {
       const cell = new cells.Float4Cell(1.1, 2.2, 3.3, 4.4);
       cell.w = null;
       expect(() => cell.encode(encoder)).to.throw();
+    });
+  });
+
+  describe("#equals()", () => {
+    it("should return true when both have the same data type and values", () => {
+      // TODO:
+    });
+
+    it("should return false when data type is different", () => {
+      // TODO:
+    });
+
+    it("should return false when x is different", () => {
+      // TODO:
+    });
+
+    it("should return false when y is different", () => {
+      // TODO:
+    });
+
+    it("should return false when z is different", () => {
+      // TODO:
+    });
+
+    it("should return false when w is different", () => {
+      // TODO:
+    });
+
+    it("should return false when other is undefined", () => {
+      // TODO:
     });
   });
 
