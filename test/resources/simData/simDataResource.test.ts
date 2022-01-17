@@ -439,7 +439,21 @@ describe("SimDataResource", () => {
     }
 
     it("should read all_data_types.simdata correctly", () => {
-      // TODO:
+      testSimData({
+        filename: "all_data_types",
+        unused: 0x1A,
+        numInstances: 1,
+        instanceName: "all_data_types",
+        numSchemas: 2,
+        schemaName: "AllDataTypes",
+        schemaHash: 0xA9DE97E9,
+        numColumns: 14,
+        firstColumnName: "float",
+        firstColumnType: SimDataType.Float,
+        cellTest(cell: simDataCells.NumberCell) {
+          expect(cell.value).to.be.approximately(1.5, 0.0001);
+        }
+      });
     });
 
     it("should read buff.simdata correctly", () => {
