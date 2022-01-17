@@ -505,15 +505,63 @@ describe("SimDataResource", () => {
     });
 
     it("should read two_instances.simdata correctly", () => {
-      // TODO:
+      testSimData({
+        filename: "two_instances",
+        unused: 0,
+        numInstances: 2,
+        instanceName: "first_inst",
+        numSchemas: 2,
+        schemaName: "FirstSchema",
+        schemaHash: 0x0D045687,
+        numColumns: 1,
+        firstColumnName: "number",
+        firstColumnType: SimDataType.UInt32,
+        cellTest(cell: simDataCells.NumberCell) {
+          expect(cell.value).to.equal(5);
+        }
+      });
     });
 
     it("should read variant_recursion.simdata correctly", () => {
-      // TODO:
+      testSimData({
+        filename: "variant_recursion",
+        unused: 0,
+        numInstances: 1,
+        instanceName: "variant_recursion",
+        numSchemas: 2,
+        schemaName: "VariantRecursion",
+        schemaHash: 0x3EE1E34C,
+        numColumns: 3,
+        firstColumnName: "vector_variant",
+        firstColumnType: SimDataType.Variant,
+        cellTest(cell: simDataCells.VariantCell) {
+          expect(cell.childType).to.equal(SimDataType.Vector);
+          expect(cell.child.asAny.children).to.have.lengthOf(2);
+          expect(cell.child.asAny.children[0].asAny.value).to.equal(32);
+          expect(cell.child.asAny.children[1].asAny.value).to.equal(64);
+        }
+      });
     });
 
     it("should read vector_recursion.simdata correctly", () => {
-      // TODO:
+      testSimData({
+        filename: "vector_recursion",
+        unused: 0,
+        numInstances: 1,
+        instanceName: "vector_recursion",
+        numSchemas: 2,
+        schemaName: "VectorRecursion",
+        schemaHash: 0x3EE1E34C,
+        numColumns: 3,
+        firstColumnName: "vector_vector",
+        firstColumnType: SimDataType.Vector,
+        cellTest(cell: simDataCells.VectorCell) {
+          expect(cell.childType).to.equal(SimDataType.Vector);
+          expect(cell.children).to.have.lengthOf(2);
+          expect(cell.children[0].asAny.children[0].value).to.equal(32);
+          expect(cell.children[0].asAny.children[1].value).to.equal(64);
+        }
+      });
     });
 
     it("should set self as owner of new schemas/instances", () => {
