@@ -258,6 +258,15 @@ export default function writeData(model: SimDataDto): Buffer {
   }
 
   function addVectorCell(cell: cells.VectorCell): TableRef {
+    if (cell.childType === SimDataType.Vector || cell.childType === SimDataType.Variant) {
+      // TODO:
+      return addVectorChildren(cell); // FIXME: remove
+    } else {
+      return addVectorChildren(cell);
+    }
+  }
+
+  function addVectorChildren(cell: cells.VectorCell): TableRef {
     if (cell.childType === undefined) return TABLEREF_NULL;
 
     let firstChildRef: TableRef;
@@ -270,6 +279,23 @@ export default function writeData(model: SimDataDto): Buffer {
   }
 
   function addVariantCell(cell: cells.VariantCell): TableRef {
+    if (cell.childType === SimDataType.Vector || cell.childType === SimDataType.Variant) {
+      const table = getRawTable(cell.child.dataType);
+      
+      const ref: TableRef = {
+        dataType: cell.child.dataType,
+        index: table.row.length
+      };
+
+      table.row.push({ cell: cell.child, ref: addCell(cell.child) });
+
+      return ref;
+    } else {
+      return addVariantChild(cell);
+    }
+  }
+
+  function addVariantChild(cell: cells.VariantCell): TableRef {
     return cell.child ? addCell(cell.child) : TABLEREF_NULL;
   }
 
