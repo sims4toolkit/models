@@ -118,27 +118,31 @@ describe("SimDataResource", () => {
 
   describe("#instance", () => {
     it("should return the first child of the instances array when there is only one", () => {
-      // TODO:
+      const simdata = getSimDataFromBinary("buff");
+      expect(simdata.instance.name).to.equal("Buff_Memory_scared");
     });
 
     it("should return the first child of the instances array when there are two", () => {
-      // TODO:
+      const simdata = getSimDataFromBinary("two_instances");
+      expect(simdata.instance.name).to.equal("first_inst");
     });
 
     it("should be undefined when there are no instances in this simdata", () => {
-      // TODO:
+      const simdata = SimDataResource.create();
+      expect(simdata.instance).to.be.undefined;
     });
 
     it("should set the first child of the instances array", () => {
-      // TODO:
+      const simdata = getSimDataFromBinary("two_instances");
+      simdata.instance = simdata.instances[1];
+      expect(simdata.instance.name).to.equal("second_inst");
     });
 
     it("should uncache the owner when set", () => {
-      // TODO:
-    });
-
-    it("should mutate the first instance", () => {
-      // TODO:
+      const simdata = getSimDataFromBinary("two_instances");
+      expect(simdata.hasChanged).to.be.false;
+      simdata.instance = simdata.instances[1];
+      expect(simdata.hasChanged).to.be.true;
     });
   });
 
