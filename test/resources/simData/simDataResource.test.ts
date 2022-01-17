@@ -5,6 +5,7 @@ import { simDataCells, simDataFragments, SimDataResource, simDataTypes } from ".
 import MockOwner from "../../mocks/mockOwner";
 
 const { SimDataType } = simDataTypes;
+const { SimDataSchema, SimDataSchemaColumn, SimDataInstance } = simDataFragments;
 
 //#region Helpers
 
@@ -417,27 +418,56 @@ describe("SimDataResource", () => {
 
   describe("static#create()", () => {
     it("should use all properties that are given", () => {
-      // TODO:
+      const schema = new SimDataSchema("Shema", 0, []);
+      const instance = new SimDataInstance("", schema, {});
+
+      const simdata = SimDataResource.create({
+        version: 0x102,
+        unused: 0x1A,
+        schemas: [ schema ],
+        instances: [ instance ]
+      });
+
+      expect(simdata.version).to.equal(0x102);
+      expect(simdata.unused).to.equal(0x1A);
+      expect(simdata.schema).to.equal(schema);
+      expect(simdata.instance).to.equal(instance);
     });
 
     it("should use a default version of 0x101", () => {
-      // TODO:
+      const simdata = SimDataResource.create();
+      expect(simdata.version).to.equal(0x101);
     });
 
     it("should use a default unused value of 0", () => {
-      // TODO:
+      const simdata = SimDataResource.create();
+      expect(simdata.unused).to.equal(0);
     });
 
     it("should use an empty list as default for schemas", () => {
-      // TODO:
+      const simdata = SimDataResource.create();
+      expect(simdata.schemas).to.be.an('Array').that.is.empty;
     });
 
     it("should use an empty list as default for instances", () => {
-      // TODO:
+      const simdata = SimDataResource.create();
+      expect(simdata.instances).to.be.an('Array').that.is.empty;
     });
 
     it("should set self as owner of new schemas/instances", () => {
-      // TODO:
+      const schema = new SimDataSchema("Shema", 0, []);
+      const instance = new SimDataInstance("", schema, {});
+
+      expect(schema.owner).to.be.undefined;
+      expect(instance.owner).to.be.undefined;
+
+      const simdata = SimDataResource.create({
+        schemas: [ schema ],
+        instances: [ instance ]
+      });
+
+      expect(schema.owner).to.equal(simdata);
+      expect(instance.owner).to.equal(simdata);
     });
   });
 
