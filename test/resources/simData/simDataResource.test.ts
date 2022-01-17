@@ -863,21 +863,37 @@ describe("SimDataResource", () => {
   });
 
   describe("#toXmlDocument()", () => {
-    it("should have an XML declaration", () => {
-      // TODO:
-    });
-
     it("should have a 'SimData' tag with 'version' and 'u' attributes", () => {
-      // TODO:
+      const simdata = getSimDataFromBinary("buff");
+      const doc = simdata.toXmlDocument();
+      expect(doc.child.tag).to.equal("SimData");
+      expect(doc.child.attributes.version).to.equal("0x00000101");
+      expect(doc.child.attributes.u).to.equal("0x00000000");
     });
 
     it("should have an 'Instances' section with all instances written correctly", () => {
-      // TODO:
+      const simdata = getSimDataFromBinary("buff");
+      const doc = simdata.toXmlDocument({ sort: true });
+      const instances = doc.child.children.find(node => node.tag === "Instances");
+      expect(instances.numChildren).to.equal(1);
+      expect(instances.child.tag).to.equal("I");
+      expect(instances.child.attributes.name).to.equal("Buff_Memory_scared");
+      expect(instances.child.numChildren).to.equal(10);
+      expect(instances.child.child.innerValue).to.equal("FD04E3BE-001407EC-8AF8B916CF64C646");
     });
 
     it("should have a 'Schemas' section with all schemas written correctly", () => {
-      // TODO:
+      const simdata = getSimDataFromBinary("mood");
+      const doc = simdata.toXmlDocument({ sort: true });
+      const schemas = doc.child.children.find(node => node.tag === "Schemas");
+      expect(schemas.numChildren).to.equal(6);
+      expect(schemas.child.tag).to.equal("Schema");
+      expect(schemas.child.child.tag).to.equal("Columns");
+      expect(schemas.child.child.numChildren).to.equal(24);
+      expect(schemas.child.child.child.attributes.name).to.equal("audio_stings_on_add");
     });
+
+    // TODO: sorting
   });
 
   describe("#uncache()", () => {
