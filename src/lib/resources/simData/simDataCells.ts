@@ -7,7 +7,7 @@ import { fnv32 } from "@s4tk/utils/hashing";
 import { CellCloneOptions, CellEncodingOptions, CellToXmlOptions, ObjectCellRow } from "./shared";
 import CacheableModel from "../../abstract/cacheableModel";
 import { SimDataType, SimDataTypeUtils } from "./simDataTypes";
-import { removeFromArray } from "../../helpers";
+import { arraysAreEqual, removeFromArray } from "../../helpers";
 
 type PrimitiveType = boolean | number | bigint | string;
 
@@ -56,6 +56,15 @@ export abstract class Cell extends CacheableModel {
    * @param options Additional parameters need to encode this cell
    */
   abstract encode(encoder: BinaryEncoder, options?: CellEncodingOptions): void;
+
+  /**
+   * Checks whether this cell contains the same values as the other.
+   * 
+   * @param other Other cell to check for equality
+   */
+  equals(other: Cell): boolean {
+    return other && this.dataType === other.dataType;
+  }
 
   /**
    * Creates an XmlElementNode object that represents this cell as it would
@@ -182,6 +191,11 @@ abstract class PrimitiveValueCell<T extends PrimitiveType> extends Cell {
     this._watchProps('value');
   }
 
+  equals(other: PrimitiveValueCell<T>): boolean {
+    if (!super.equals(other)) return false;
+    return this.value === other.value;
+  }
+
   toXmlNode(options: CellToXmlOptions = {}): XmlElementNode {
     return new XmlElementNode({
       tag: "T",
@@ -225,6 +239,13 @@ abstract class FloatVectorCell extends Cell {
   encode(encoder: BinaryEncoder, options?: CellEncodingOptions): void {
     this.validate();
     this._floatNames.forEach(floatName => encoder.float(this[floatName]));
+  }
+
+  equals(other: FloatVectorCell): boolean {
+    if (!super.equals(other)) return false;
+    return this._floatNames.every(floatName => {
+      return this[floatName] === other?.[floatName];
+    });
   }
   
   toXmlNode(options: CellToXmlOptions = {}): XmlElementNode {
@@ -663,6 +684,14 @@ export class ResourceKeyCell extends Cell {
     encoder.uint32(this.group);
   }
 
+  equals(other: ResourceKeyCell): boolean {
+    if (!super.equals(other)) return false;
+    if (this.type !== other.type) return false;
+    if (this.group !== other.group) return false;
+    if (this.instance !== other.instance) return false;
+    return true;
+  }
+
   toXmlNode(options: CellToXmlOptions = {}): XmlElementNode {
     const type = formatAsHexString(this.type, 8, false);
     const group = formatAsHexString(this.group, 8, false);
@@ -921,6 +950,23 @@ export class ObjectCell extends MultiValueCell {
     encoder.int32(this._getOffsetEncodingOption(options));
   }
 
+  equals(other: ObjectCell): boolean {
+    if (!super.equals(other)) return false;
+
+    if (this.schema) {
+      if (!this.schema.equals(other.schema)) return false;
+    } else if (other.schema) {
+      return false;
+    }
+
+    if (this.rowLength !== other.rowLength) return false;
+    for (const columnName in this.row) {
+      if (!this.row[columnName].equals(other.row[columnName])) return false;
+    }
+
+    return true;
+  }
+
   toXmlNode(options: CellToXmlOptions = {}): XmlElementNode {
     const attributes = this._xmlAttributes(options);
     attributes.schema = this.schema.name;
@@ -1088,6 +1134,11 @@ export class VectorCell<T extends Cell = Cell> extends MultiValueCell {
     encoder.uint32(this.children.length);
   }
 
+  equals(other: VectorCell): boolean {
+    if (!super.equals(other)) return false;
+    return arraysAreEqual(this.children, other.children);
+  }
+
   toXmlNode(options: CellToXmlOptions = {}): XmlElementNode {
     return new XmlElementNode({
       tag: "L",
@@ -1224,6 +1275,18 @@ export class VariantCell<T extends Cell = Cell> extends Cell {
     this.validate({ ignoreCache: true });
     encoder.int32(this._getOffsetEncodingOption(options)); // intentionally signed
     encoder.uint32(this.typeHash);
+  }
+
+  equals(other: VariantCell): boolean {
+    if (!super.equals(other)) return false;
+
+    if (this.child) {
+      if (!this.child.equals(other.child)) return false;
+    } else if (other.child) {
+      return false;
+    }
+
+    return this.typeHash === other.typeHash
   }
 
   toXmlNode(options: CellToXmlOptions = {}): XmlElementNode {

@@ -5,7 +5,7 @@ import { formatAsHexString } from "@s4tk/utils/formatting";
 import { ObjectCell } from "./simDataCells";
 import CacheableModel from "../../abstract/cacheableModel";
 import { SimDataType, SimDataTypeUtils } from "./simDataTypes";
-import { removeFromArray } from "../../helpers";
+import { arraysAreEqual, removeFromArray } from "../../helpers";
 
 /**
  * A schema that objects in a SimData can follow.
@@ -51,6 +51,18 @@ export class SimDataSchema extends CacheableModel {
    */
   clone(): SimDataSchema {
     return new SimDataSchema(this.name, this.hash, this.columns.map(column => column.clone()));
+  }
+
+  /**
+   * Checks whether this schema contains the same values as the other.
+   * 
+   * @param other Other schema to check for equality
+   */
+  equals(other: SimDataSchema): boolean {
+    if (!other) return false;
+    if (this.name !== other.name) return false;
+    if (this.hash !== other.hash) return false;
+    return arraysAreEqual(this.columns, other.columns);
   }
 
   /**
@@ -131,6 +143,19 @@ export class SimDataSchemaColumn extends CacheableModel {
   }
 
   /**
+   * Checks whether this column contains the same values as the other.
+   * 
+   * @param other Other column to check for equality
+   */
+  equals(other: SimDataSchemaColumn): boolean {
+    if (!other) return false;
+    if (this.name !== other.name) return false;
+    if (this.type !== other.type) return false;
+    if (this.flags !== other.flags) return false;
+    return true;
+  }
+
+  /**
    * Creates an XmlElementNode object that represents this column as it would
    * appear within an S4S-style XML SimData document.
    */
@@ -178,6 +203,11 @@ export class SimDataInstance extends ObjectCell {
   clone(options?: CellCloneOptions): SimDataInstance {
     const { schema, row } = this._internalClone(options);
     return new SimDataInstance(this.name, schema, row);
+  }
+
+  equals(other: SimDataInstance): boolean {
+    if (!super.equals(other)) return false;
+    return this.name === other.name;
   }
 
   /**

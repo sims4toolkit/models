@@ -2,7 +2,7 @@ import type { SerializationOptions } from "../../shared";
 import { XmlDocumentNode, XmlElementNode } from "@s4tk/utils/xml";
 import { formatAsHexString } from "@s4tk/utils/formatting";
 import Resource from "../resource";
-import { removeFromArray } from "../../helpers";
+import { arraysAreEqual, removeFromArray } from "../../helpers";
 import { SimDataInstance, SimDataSchema } from "./simDataFragments";
 import { SimDataDto, SUPPORTED_VERSION } from "./shared";
 import readData from "./serialization/readData";
@@ -162,6 +162,15 @@ export default class SimDataResource extends Resource implements SimDataDto {
   //#endregion Initialization
 
   //#region Public Methods
+
+  equals(other: SimDataResource): boolean {
+    if (!super.equals(other)) return false;
+    if (this.version !== other.version) return false;
+    if (this.unused !== other.unused) return false;
+    if (!arraysAreEqual(this.schemas, other.schemas)) return false;
+    if (!arraysAreEqual(this.instances, other.instances)) return false;
+    return true;
+  }
 
   /**
    * Removes schemas from this SimData by reference equality, so the passed in

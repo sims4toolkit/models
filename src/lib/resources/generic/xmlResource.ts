@@ -112,6 +112,11 @@ export default class XmlResource extends Resource {
   }
 
   //#endregion Initialization
+
+  equals(other: XmlResource): boolean {
+    if (!super.equals(other)) return false;
+    return this.content === other.content;
+  }
   
   /**
    * Accepts a callback function to which the DOM is passed as an argument, so

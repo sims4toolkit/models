@@ -34,6 +34,12 @@ export default class RawResource extends Resource {
     return RawResource.from(this.buffer);
   }
 
+  equals(other: RawResource): boolean {
+    if (!super.equals(other)) return false;
+    if (this.reason !== other.reason) return false;
+    return this.plainText === other.plainText;
+  }
+
   uncache() {
     // intentionally blank because this resource cannot be uncached
   }

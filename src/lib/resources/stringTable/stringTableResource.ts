@@ -2,7 +2,7 @@ import type { KeyStringPair, StringTableError } from "./shared";
 import type { SerializationOptions } from "../../shared";
 import { fnv32 } from "@s4tk/utils/hashing";
 import Resource from "../resource";
-import { removeFromArray } from "../../helpers";
+import { arraysAreEqual, removeFromArray } from "../../helpers";
 import CacheableModel from "../../abstract/cacheableModel";
 import readStbl from "./serialization/readStbl";
 import writeStbl from "./serialization/writeStbl";
@@ -169,6 +169,11 @@ export default class StringTableResource extends Resource {
 
   //#region Public Methods - READ
 
+  equals(other: StringTableResource): boolean {
+    if (!super.equals(other)) return false;
+    return arraysAreEqual(this.entries, other.entries);
+  }
+
   /**
    * Finds and returns any errors that are in this string table. Returns an
    * empty array if there are no errors.
@@ -321,5 +326,17 @@ class StringEntry extends CacheableModel implements KeyStringPair {
    */
   delete() {
     this.owner?.remove(this);
+  }
+
+  /**
+   * Returns whether this entry is equal to another one.
+   * 
+   * @param other Other entry to check for equality
+   */
+  equals(other: StringEntry): boolean {
+    if (!other) return false;
+    if (this.key !== other.key) return false;
+    if (this.string !== other.string) return false;
+    return true;
   }
 }

@@ -11,4 +11,13 @@ export default abstract class Resource extends WritableModel {
 
   /** Returns a deep copy of this resource. */
   abstract clone(): Resource;
+
+  /**
+   * Returns whether this resource contains the exact same values as another.
+   * 
+   * @param other Other resource to check for equality with this one
+   */
+  equals(other: Resource): boolean {
+    return other && this.variant === other.variant;
+  }
 }

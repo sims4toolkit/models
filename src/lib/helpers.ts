@@ -28,3 +28,15 @@ export function removeFromArray<T>(toRemove: T[], removeFrom: T[]) {
   });
   return anyRemoved;
 }
+
+/**
+ * Checks if the two given arrays contain the same contents, as dictacted by
+ * the first array's children's `equals()` methods.
+ * 
+ * @param arr1 First array to check
+ * @param arr2 Second array to check
+ */
+export function arraysAreEqual(arr1: { equals(item: any): boolean; }[], arr2: any[]): boolean {
+  if (arr1.length !== arr2?.length) return false;
+  return arr1.every(a => arr2.some(b => a.equals(b)));
+}
