@@ -21,6 +21,15 @@ describe("SimDataResource", () => {
   //#region Properties
 
   describe("#buffer", () => {
+    function testReserialization(filename: string) {
+      const buffer = getBuffer(filename);
+      const xml = buffer.toString();
+      const original = SimDataResource.fromXml(buffer);
+      original.uncache();
+      const simdata = SimDataResource.from(original.buffer);
+      expect(simdata.toXmlDocument({ sort: true }).toXml()).to.equal(xml);
+    }
+
     it("should be the same as the buffer it was created with if no changes were made", () => {
       const buffer = getBuffer("buff.simdata");
       const simdata = SimDataResource.from(buffer);
@@ -37,32 +46,32 @@ describe("SimDataResource", () => {
       expect(() => simdata.buffer).to.throw();
     });
 
-    it("should reserialize all_data_types.simdata correctly", () => {
-      // TODO:
+    it("should reserialize all_data_types.xml correctly", () => {
+      testReserialization("all_data_types.xml");
     });
 
-    it("should reserialize buff.simdata correctly", () => {
-      // TODO:
+    it("should reserialize buff.xml correctly", () => {
+      testReserialization("buff.xml");
     });
 
-    it("should reserialize mood.simdata correctly", () => {
-      // TODO:
+    it("should reserialize mood.xml correctly", () => {
+      testReserialization("mood.xml");
     });
 
-    it("should reserialize trait.simdata correctly", () => {
-      // TODO:
+    it("should reserialize trait.xml correctly", () => {
+      testReserialization("trait.xml");
     });
 
-    it("should reserialize two_instances.simdata correctly", () => {
-      // TODO:
+    it("should reserialize two_instances.xml correctly", () => {
+      testReserialization("two_instances.xml");
     });
 
-    it("should reserialize variant_recursion.simdata correctly", () => {
-      // TODO:
+    it("should reserialize variant_recursion.xml correctly", () => {
+      testReserialization("variant_recursion.xml");
     });
 
-    it("should reserialize vector_recursion.simdata correctly", () => {
-      // TODO:
+    it("should reserialize vector_recursion.xml correctly", () => {
+      testReserialization("vector_recursion.xml");
     });
   });
 
