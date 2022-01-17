@@ -1,7 +1,7 @@
 import fs from "fs";
 import path from "path";
 import { expect } from "chai";
-import { simDataFragments, SimDataResource, simDataTypes } from "../../../dst/api";
+import { simDataCells, simDataFragments, SimDataResource, simDataTypes } from "../../../dst/api";
 import MockOwner from "../../mocks/mockOwner";
 
 const { SimDataType } = simDataTypes;
@@ -399,38 +399,67 @@ describe("SimDataResource", () => {
   });
 
   describe("static#from()", () => {
+    function testSimData(args: {
+      filename: string;
+      unused: number;
+      numInstances: number;
+      instanceName: string;
+      numSchemas: number;
+      schemaName: string;
+      schemaHash: number;
+      numColumns: number;
+      firstColumnName: string;
+      cellTest(cell: simDataCells.Cell): void;
+      firstColumnType: simDataTypes.SimDataType;
+    }) {
+      const simdata = SimDataResource.from(getBuffer(`${args.filename}.simdata`));
+
+      // header
+      expect(simdata.version).to.equal(0x101);
+      expect(simdata.unused).to.equal(args.unused);
+
+      // instances
+      expect(simdata.instances).to.have.lengthOf(args.numInstances);
+      expect(simdata.instance.name).to.equal(args.instanceName);
+      expect(simdata.instance.schema.name).to.equal(args.schemaName);
+      expect(simdata.instance.rowLength).to.equal(args.numColumns);
+      args.cellTest(simdata.instance.row[args.firstColumnName]);
+
+      // schemas
+      expect(simdata.schemas).to.have.lengthOf(args.numSchemas);
+      expect(simdata.schema.name).to.equal(args.schemaName);
+      expect(simdata.schema.hash).to.equal(args.schemaHash);
+      expect(simdata.schema.columns).to.have.lengthOf(args.numColumns);
+      const column = simdata.schema.columns.find(column => {
+        return column.name === args.firstColumnName;
+      });
+      expect(column).to.not.be.undefined;
+      expect(column.type).to.equal(args.firstColumnType);
+      expect(column.flags).to.equal(0);
+    }
+
     it("should read all_data_types.simdata correctly", () => {
       // TODO:
     });
 
     it("should read buff.simdata correctly", () => {
-      const simdata = SimDataResource.from(getBuffer("buff.simdata"));
-
-      // header
-      expect(simdata.version).to.equal(0x101);
-      expect(simdata.unused).to.equal(0);
-
-      // instances
-      expect(simdata.instances).to.have.lengthOf(1);
-      expect(simdata.instance.name).to.equal("Buff_Memory_scared");
-      expect(simdata.instance.schema.name).to.equal("Buff");
-      expect(simdata.instance.rowLength).to.equal(10);
-      const { audio_sting_on_add } = simdata.instance.row;
-      expect(audio_sting_on_add.asAny.type).to.equal(0xFD04E3BE);
-      expect(audio_sting_on_add.asAny.group).to.equal(0x001407EC);
-      expect(audio_sting_on_add.asAny.instance).to.equal(0x8AF8B916CF64C646n);
-
-      // schemas
-      expect(simdata.schemas).to.have.lengthOf(1);
-      expect(simdata.schema.name).to.equal("Buff");
-      expect(simdata.schema.hash).to.equal(0x0D045687);
-      expect(simdata.schema.columns).to.have.lengthOf(10);
-      const column = simdata.schema.columns.find(column => {
-        return column.name === "audio_sting_on_add";
+      testSimData({
+        filename: "buff",
+        unused: 0,
+        numInstances: 1,
+        instanceName: "Buff_Memory_scared",
+        numSchemas: 1,
+        schemaName: "Buff",
+        schemaHash: 0x0D045687,
+        numColumns: 10,
+        firstColumnName: "audio_sting_on_add",
+        firstColumnType: SimDataType.ResourceKey,
+        cellTest(cell) {
+          expect(cell.asAny.type).to.equal(0xFD04E3BE);
+          expect(cell.asAny.group).to.equal(0x001407EC);
+          expect(cell.asAny.instance).to.equal(0x8AF8B916CF64C646n);
+        }
       });
-      expect(column).to.not.be.undefined;
-      expect(column.type).to.equal(SimDataType.ResourceKey);
-      expect(column.flags).to.equal(0);
     });
 
     it("should read mood.simdata correctly", () => {
@@ -438,31 +467,22 @@ describe("SimDataResource", () => {
     });
 
     it("should read trait.simdata correctly", () => {
-      const simdata = SimDataResource.from(getBuffer("trait.simdata"));
-
-      // header
-      expect(simdata.version).to.equal(0x101);
-      expect(simdata.unused).to.equal(0);
-
-      // instances
-      expect(simdata.instances).to.have.lengthOf(1);
-      expect(simdata.instance.name).to.equal("trait_HotHeaded");
-      expect(simdata.instance.schema.name).to.equal("Trait");
-      expect(simdata.instance.rowLength).to.equal(17);
-      const { trait_description } = simdata.instance.row;
-      expect(trait_description.asAny.value).to.equal(0xB72DA8C3);
-
-      // schemas
-      expect(simdata.schemas).to.have.lengthOf(1);
-      expect(simdata.schema.name).to.equal("Trait");
-      expect(simdata.schema.hash).to.equal(0xDE2EAF66);
-      expect(simdata.schema.columns).to.have.lengthOf(17);
-      const column = simdata.schema.columns.find(column => {
-        return column.name === "ages";
+      testSimData({
+        filename: "trait",
+        unused: 0,
+        numInstances: 1,
+        instanceName: "trait_HotHeaded",
+        numSchemas: 1,
+        schemaName: "Trait",
+        schemaHash: 0xDE2EAF66,
+        numColumns: 17,
+        firstColumnName: "ages",
+        firstColumnType: SimDataType.Vector,
+        cellTest(cell) {
+          expect(cell.asAny.length).to.equal(5);
+          expect(cell.asAny.children[0].value).to.equal(8n);
+        }
       });
-      expect(column).to.not.be.undefined;
-      expect(column.type).to.equal(SimDataType.Vector);
-      expect(column.flags).to.equal(0);
     });
 
     it("should read two_instances.simdata correctly", () => {
