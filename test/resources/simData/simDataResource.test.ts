@@ -196,12 +196,20 @@ describe("SimDataResource", () => {
   describe("#props", () => {
     it("should return an object containing the cells in the first instance", () => {
       const simdata = getSimDataFromBinary("buff");
-      // TODO:
+      const { audio_sting_on_add, buff_description, mood_type, mood_weight } = simdata.props;
+      expect(audio_sting_on_add.asAny.type).equals(0xFD04E3BE);
+      expect(audio_sting_on_add.asAny.group).equals(0x001407EC);
+      expect(audio_sting_on_add.asAny.instance).equals(0x8AF8B916CF64C646n);
+      expect(buff_description.asAny.value).equals(0x9D3FD52C);
+      expect(mood_type.asAny.value).equals(251719n);
+      expect(mood_weight.asAny.value).equals(1);
     });
 
     it("should mutate the first instance's cells", () => {
       const simdata = getSimDataFromBinary("buff");
-      // TODO:
+      expect(simdata.props.mood_weight.asAny.value).equals(1);
+      simdata.props.mood_weight.asAny.value = 2;
+      expect(simdata.props.mood_weight.asAny.value).equals(2);
     });
   });
   
