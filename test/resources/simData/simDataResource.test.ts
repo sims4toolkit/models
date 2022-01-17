@@ -6,6 +6,8 @@ import MockOwner from "../../mocks/mockOwner";
 
 const { SimDataType } = simDataTypes;
 
+//#region Helpers
+
 const cachedBuffers: { [key: string]: Buffer; } = {};
 function getBuffer(filename: string) {
   if (cachedBuffers[filename]) {
@@ -65,6 +67,8 @@ function testSimData(simdata: SimDataResource, args: SimDataTestArgs) {
   expect(column.type).to.equal(args.firstColumnType);
   expect(column.flags).to.equal(0);
 }
+
+//#endregion Helpers
 
 describe("SimDataResource", () => {
   //#region Properties
@@ -602,14 +606,6 @@ describe("SimDataResource", () => {
       testSimData(simdata, args);
     }
 
-    it("should work with an XML declaration", () => {
-      // TODO:
-    });
-
-    it("should work without an XML declaration", () => {
-      // TODO:
-    });
-
     it("should read all_data_types.simdata correctly", () => {
       testXmlSimData({
         filename: "all_data_types",
@@ -751,7 +747,15 @@ describe("SimDataResource", () => {
     });
 
     it("should set self as owner of new schemas/instances", () => {
-      // TODO:
+      const simdata = getSimDataFromXml("buff");
+
+      simdata.schemas.forEach(schema => {
+        expect(schema.owner).to.equal(simdata);
+      });
+
+      simdata.instances.forEach(inst => {
+        expect(inst.owner).to.equal(simdata);
+      });
     });
   });
 
