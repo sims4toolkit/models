@@ -27,6 +27,45 @@ function getSimDataFromXml(filename: string) {
   return SimDataResource.fromXml(getBuffer(`${filename}.xml`));
 }
 
+interface SimDataTestArgs {
+  filename: string;
+  unused: number;
+  numInstances: number;
+  instanceName: string;
+  numSchemas: number;
+  schemaName: string;
+  schemaHash: number;
+  numColumns: number;
+  firstColumnName: string;
+  cellTest(cell: simDataCells.Cell): void;
+  firstColumnType: simDataTypes.SimDataType;
+}
+
+function testSimData(simdata: SimDataResource, args: SimDataTestArgs) {
+  // header
+  expect(simdata.version).to.equal(0x101);
+  expect(simdata.unused).to.equal(args.unused);
+
+  // instances
+  expect(simdata.instances).to.have.lengthOf(args.numInstances);
+  expect(simdata.instance.name).to.equal(args.instanceName);
+  expect(simdata.instance.schema.name).to.equal(args.schemaName);
+  expect(simdata.instance.rowLength).to.equal(args.numColumns);
+  args.cellTest(simdata.instance.row[args.firstColumnName]);
+
+  // schemas
+  expect(simdata.schemas).to.have.lengthOf(args.numSchemas);
+  expect(simdata.schema.name).to.equal(args.schemaName);
+  expect(simdata.schema.hash).to.equal(args.schemaHash);
+  expect(simdata.schema.columns).to.have.lengthOf(args.numColumns);
+  const column = simdata.schema.columns.find(column => {
+    return column.name === args.firstColumnName;
+  });
+  expect(column).to.not.be.undefined;
+  expect(column.type).to.equal(args.firstColumnType);
+  expect(column.flags).to.equal(0);
+}
+
 describe("SimDataResource", () => {
   //#region Properties
 
@@ -399,47 +438,13 @@ describe("SimDataResource", () => {
   });
 
   describe("static#from()", () => {
-    function testSimData(args: {
-      filename: string;
-      unused: number;
-      numInstances: number;
-      instanceName: string;
-      numSchemas: number;
-      schemaName: string;
-      schemaHash: number;
-      numColumns: number;
-      firstColumnName: string;
-      cellTest(cell: simDataCells.Cell): void;
-      firstColumnType: simDataTypes.SimDataType;
-    }) {
+    function testBinarySimData(args: SimDataTestArgs) {
       const simdata = SimDataResource.from(getBuffer(`${args.filename}.simdata`));
-
-      // header
-      expect(simdata.version).to.equal(0x101);
-      expect(simdata.unused).to.equal(args.unused);
-
-      // instances
-      expect(simdata.instances).to.have.lengthOf(args.numInstances);
-      expect(simdata.instance.name).to.equal(args.instanceName);
-      expect(simdata.instance.schema.name).to.equal(args.schemaName);
-      expect(simdata.instance.rowLength).to.equal(args.numColumns);
-      args.cellTest(simdata.instance.row[args.firstColumnName]);
-
-      // schemas
-      expect(simdata.schemas).to.have.lengthOf(args.numSchemas);
-      expect(simdata.schema.name).to.equal(args.schemaName);
-      expect(simdata.schema.hash).to.equal(args.schemaHash);
-      expect(simdata.schema.columns).to.have.lengthOf(args.numColumns);
-      const column = simdata.schema.columns.find(column => {
-        return column.name === args.firstColumnName;
-      });
-      expect(column).to.not.be.undefined;
-      expect(column.type).to.equal(args.firstColumnType);
-      expect(column.flags).to.equal(0);
+      testSimData(simdata, args);
     }
 
     it("should read all_data_types.simdata correctly", () => {
-      testSimData({
+      testBinarySimData({
         filename: "all_data_types",
         unused: 0x1A,
         numInstances: 1,
@@ -457,7 +462,7 @@ describe("SimDataResource", () => {
     });
 
     it("should read buff.simdata correctly", () => {
-      testSimData({
+      testBinarySimData({
         filename: "buff",
         unused: 0,
         numInstances: 1,
@@ -477,7 +482,7 @@ describe("SimDataResource", () => {
     });
 
     it("should read mood.simdata correctly", () => {
-      testSimData({
+      testBinarySimData({
         filename: "mood",
         unused: 0,
         numInstances: 1,
@@ -500,7 +505,7 @@ describe("SimDataResource", () => {
     });
 
     it("should read trait.simdata correctly", () => {
-      testSimData({
+      testBinarySimData({
         filename: "trait",
         unused: 0,
         numInstances: 1,
@@ -519,7 +524,7 @@ describe("SimDataResource", () => {
     });
 
     it("should read two_instances.simdata correctly", () => {
-      testSimData({
+      testBinarySimData({
         filename: "two_instances",
         unused: 0,
         numInstances: 2,
@@ -537,7 +542,7 @@ describe("SimDataResource", () => {
     });
 
     it("should read variant_recursion.simdata correctly", () => {
-      testSimData({
+      testBinarySimData({
         filename: "variant_recursion",
         unused: 0,
         numInstances: 1,
@@ -558,7 +563,7 @@ describe("SimDataResource", () => {
     });
 
     it("should read vector_recursion.simdata correctly", () => {
-      testSimData({
+      testBinarySimData({
         filename: "vector_recursion",
         unused: 0,
         numInstances: 1,
@@ -592,6 +597,11 @@ describe("SimDataResource", () => {
   });
 
   describe("static#fromXml()", () => {
+    function testXmlSimData(args: SimDataTestArgs) {
+      const simdata = SimDataResource.fromXml(getBuffer(`${args.filename}.xml`));
+      testSimData(simdata, args);
+    }
+
     it("should work with an XML declaration", () => {
       // TODO:
     });
@@ -600,32 +610,144 @@ describe("SimDataResource", () => {
       // TODO:
     });
 
-    it("should read all_data_types.xml correctly", () => {
-      // TODO:
+    it("should read all_data_types.simdata correctly", () => {
+      testXmlSimData({
+        filename: "all_data_types",
+        unused: 0x1A,
+        numInstances: 1,
+        instanceName: "all_data_types",
+        numSchemas: 2,
+        schemaName: "AllDataTypes",
+        schemaHash: 0xA9DE97E9,
+        numColumns: 14,
+        firstColumnName: "float",
+        firstColumnType: SimDataType.Float,
+        cellTest(cell: simDataCells.NumberCell) {
+          expect(cell.value).to.be.approximately(1.5, 0.0001);
+        }
+      });
     });
 
-    it("should read buff.xml correctly", () => {
-      // TODO:
+    it("should read buff.simdata correctly", () => {
+      testXmlSimData({
+        filename: "buff",
+        unused: 0,
+        numInstances: 1,
+        instanceName: "Buff_Memory_scared",
+        numSchemas: 1,
+        schemaName: "Buff",
+        schemaHash: 0x0D045687,
+        numColumns: 10,
+        firstColumnName: "audio_sting_on_add",
+        firstColumnType: SimDataType.ResourceKey,
+        cellTest(cell: simDataCells.ResourceKeyCell) {
+          expect(cell.type).to.equal(0xFD04E3BE);
+          expect(cell.group).to.equal(0x001407EC);
+          expect(cell.instance).to.equal(0x8AF8B916CF64C646n);
+        }
+      });
     });
 
-    it("should read mood.xml correctly", () => {
-      // TODO:
+    it("should read mood.simdata correctly", () => {
+      testXmlSimData({
+        filename: "mood",
+        unused: 0,
+        numInstances: 1,
+        instanceName: "Mood_Playful",
+        numSchemas: 6,
+        schemaName: "Mood",
+        schemaHash: 0xBF8FFCF2,
+        numColumns: 24,
+        firstColumnName: "base_color",
+        firstColumnType: SimDataType.Object,
+        cellTest(cell: simDataCells.ObjectCell) {
+          expect(cell.rowLength).to.equal(4);
+          expect(cell.schema.name).to.equal("TunableColorRGBA");
+          expect(cell.row.a.asAny.value).to.equal(255);
+          expect(cell.row.b.asAny.value).to.equal(234);
+          expect(cell.row.g.asAny.value).to.equal(81);
+          expect(cell.row.r.asAny.value).to.equal(240);
+        }
+      });
     });
 
-    it("should read trait.xml correctly", () => {
-      // TODO:
+    it("should read trait.simdata correctly", () => {
+      testXmlSimData({
+        filename: "trait",
+        unused: 0,
+        numInstances: 1,
+        instanceName: "trait_HotHeaded",
+        numSchemas: 1,
+        schemaName: "Trait",
+        schemaHash: 0xDE2EAF66,
+        numColumns: 17,
+        firstColumnName: "ages",
+        firstColumnType: SimDataType.Vector,
+        cellTest(cell: simDataCells.VectorCell) {
+          expect(cell.length).to.equal(5);
+          expect(cell.children[0].asAny.value).to.equal(8n);
+        }
+      });
     });
 
-    it("should read two_instances.xml correctly", () => {
-      // TODO:
+    it("should read two_instances.simdata correctly", () => {
+      testXmlSimData({
+        filename: "two_instances",
+        unused: 0,
+        numInstances: 2,
+        instanceName: "first_inst",
+        numSchemas: 2,
+        schemaName: "FirstSchema",
+        schemaHash: 0x0D045687,
+        numColumns: 1,
+        firstColumnName: "number",
+        firstColumnType: SimDataType.UInt32,
+        cellTest(cell: simDataCells.NumberCell) {
+          expect(cell.value).to.equal(5);
+        }
+      });
     });
 
-    it("should read variant_recursion.xml correctly", () => {
-      // TODO:
+    it("should read variant_recursion.simdata correctly", () => {
+      testXmlSimData({
+        filename: "variant_recursion",
+        unused: 0,
+        numInstances: 1,
+        instanceName: "variant_recursion",
+        numSchemas: 2,
+        schemaName: "VariantRecursion",
+        schemaHash: 0x3EE1E34C,
+        numColumns: 3,
+        firstColumnName: "vector_variant",
+        firstColumnType: SimDataType.Variant,
+        cellTest(cell: simDataCells.VariantCell) {
+          expect(cell.childType).to.equal(SimDataType.Vector);
+          expect(cell.child.asAny.children).to.have.lengthOf(2);
+          expect(cell.child.asAny.children[0].asAny.value).to.equal(32);
+          expect(cell.child.asAny.children[1].asAny.value).to.equal(64);
+        }
+      });
     });
 
-    it("should read vector_recursion.xml correctly", () => {
-      // TODO:
+    it("should read vector_recursion.simdata correctly", () => {
+      testXmlSimData({
+        filename: "vector_recursion",
+        unused: 0,
+        numInstances: 1,
+        instanceName: "vector_recursion",
+        numSchemas: 2,
+        schemaName: "VectorRecursion",
+        schemaHash: 0x3EE1E34C,
+        numColumns: 3,
+        firstColumnName: "vector_vector",
+        firstColumnType: SimDataType.Vector,
+        cellTest(cell: simDataCells.VectorCell) {
+          expect(cell.childType).to.equal(SimDataType.Vector);
+          expect(cell.children).to.have.lengthOf(2);
+          expect(cell.children[0].asAny.children[0].value).to.equal(32);
+          expect(cell.children[0].asAny.children[1].value).to.equal(64);
+        }
+      });
     });
 
     it("should set self as owner of new schemas/instances", () => {
