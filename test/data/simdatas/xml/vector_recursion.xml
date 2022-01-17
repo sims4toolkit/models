@@ -20,6 +20,10 @@
           <T type="UInt32">64</T>
         </L>
       </L>
+      <L name="string_vector">
+        <T type="String">first</T>
+        <T type="String">second</T>
+      </L>
     </I>
   </Instances>
   <Schemas>
@@ -27,6 +31,7 @@
       <Columns>
         <Column name="object_vector" type="Vector" flags="0x00000000" />
         <Column name="vector_vector" type="Vector" flags="0x00000000" />
+        <Column name="string_vector" type="Vector" flags="0x00000000" />
         <!-- Vectors of variants are not supported by s4s -->
       </Columns>
     </Schema>

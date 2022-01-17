@@ -12,6 +12,9 @@
           <T type="UInt32">64</T>
         </L>
       </V>
+      <V name="string_variant" variant="0x12345678">
+        <T type="String">hello</T>
+      </V>
     </I>
   </Instances>
   <Schemas>
@@ -19,6 +22,7 @@
       <Columns>
         <Column name="object_variant" type="Variant" flags="0x00000000" />
         <Column name="vector_variant" type="Variant" flags="0x00000000" />
+        <Column name="string_variant" type="Variant" flags="0x00000000" />
         <!-- Variants in variants aren't supported by s4s -->
       </Columns>
     </Schema>
