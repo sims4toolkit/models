@@ -1,5 +1,5 @@
 import type { SerializationOptions } from "../../shared";
-import { XmlDocumentNode, XmlElementNode } from "@s4tk/utils/xml";
+import { XmlDocumentNode, XmlElementNode, XmlNode } from "@s4tk/utils/xml";
 import { formatAsHexString } from "@s4tk/utils/formatting";
 import Resource from "../resource";
 import { arraysAreEqual, removeFromArray } from "../../helpers";
@@ -202,19 +202,33 @@ export default class SimDataResource extends Resource implements SimDataDto {
       children: this.instances.map(i => i.toXmlNode())
     });
 
-    if (sort) instNode.deepSort((a, b) => {
-      const aName = a.attributes.name;
-      const bName = b.attributes.name;
-      if (aName) {
-        if (bName) {
-          if (aName < bName) return -1;
-          if (aName > bName) return 1;
-          return 0;
-        }
-        return -1;
-      }
-      return bName ? 1 : 0;
+    const schemasNode = new XmlElementNode({
+      tag: 'Schemas',
+      children: this.schemas.map(s => s.toXmlNode())
     });
+
+    if (sort) {
+      const sortAlgo = (a: XmlNode, b: XmlNode) => {
+        const aName = a.attributes.name;
+        const bName = b.attributes.name;
+        if (aName) {
+          if (bName) {
+            if (aName < bName) return -1;
+            if (aName > bName) return 1;
+            return 0;
+          }
+          return -1;
+        }
+        return bName ? 1 : 0;
+      };
+
+      instNode.deepSort(sortAlgo);
+
+      schemasNode.children.forEach(schemaNode => {
+        if (!schemaNode.child) return;
+        schemaNode.child.sort(sortAlgo);
+      });
+    }
 
     const doc = new XmlDocumentNode(new XmlElementNode({
       tag: 'SimData',
@@ -224,10 +238,7 @@ export default class SimDataResource extends Resource implements SimDataDto {
       },
       children: [
         instNode,
-        new XmlElementNode({
-          tag: 'Schemas',
-          children: this.schemas.map(s => s.toXmlNode())
-        })
+        schemasNode
       ]
     }));
 
