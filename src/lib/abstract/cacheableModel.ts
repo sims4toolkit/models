@@ -62,9 +62,11 @@ export default abstract class CacheableModel {
     return new Proxy(obj, {
       set(target, property, value) {
         const ref = Reflect.set(target, property, value);
-        const owner = getOwner();
-        if (value instanceof CacheableModel) value.owner = owner;
-        owner?.uncache();
+        if (property !== "owner") {
+          const owner = getOwner();
+          if (value instanceof CacheableModel) value.owner = owner;
+          owner?.uncache();
+        }
         return ref;
       },
       get(target, property) {

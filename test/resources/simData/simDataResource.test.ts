@@ -148,37 +148,54 @@ describe("SimDataResource", () => {
 
   describe("#instances", () => {
     it("should uncache the owner when pushed to", () => {
-      // TODO:
+      const simdata = getSimDataFromBinary("buff");
+      expect(simdata.hasChanged).to.be.false;
+      simdata.instances.push(simdata.instance.clone());
+      expect(simdata.hasChanged).to.be.true;
     });
 
     it("should uncache the owner when spliced", () => {
-      // TODO:
-    });
-
-    it("should uncache the owner when sorted", () => {
-      // TODO:
+      const simdata = getSimDataFromBinary("two_instances");
+      expect(simdata.hasChanged).to.be.false;
+      simdata.instances.splice(1, 1);
+      expect(simdata.hasChanged).to.be.true;
     });
 
     it("should uncache the owner when child is set", () => {
-      // TODO:
+      const simdata = getSimDataFromBinary("two_instances");
+      expect(simdata.hasChanged).to.be.false;
+      simdata.instances[0] = simdata.instances[1];
+      expect(simdata.hasChanged).to.be.true;
     });
 
     it("should uncache the owner when child is mutated", () => {
-      // TODO:
+      const simdata = getSimDataFromBinary("buff");
+      expect(simdata.hasChanged).to.be.false;
+      simdata.instances[0].name = "Better_Name";
+      expect(simdata.hasChanged).to.be.true;
     });
 
     it("should set the owner of a pushed child to this simdata", () => {
-      // TODO:
+      const simdata = getSimDataFromBinary("buff");
+      const newChild = simdata.instance.clone();
+      expect(newChild.owner).to.be.undefined;
+      simdata.instances.push(newChild);
+      expect(newChild.owner).to.equal(simdata);
     });
 
     it("should set the owner of a set child to this simdata", () => {
-      // TODO:
+      const simdata = getSimDataFromBinary("buff");
+      const newChild = simdata.instance.clone();
+      expect(newChild.owner).to.be.undefined;
+      simdata.instances[0] = newChild;
+      expect(newChild.owner).to.equal(simdata);
     });
   });
 
   describe("#props", () => {
     it("should return an object containing the cells in the first instance", () => {
       const simdata = SimDataResource.from(getBuffer("buff.simdata"));
+      // TODO:
     });
 
     it("should mutate the first instance's cells", () => {
