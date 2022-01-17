@@ -79,6 +79,18 @@ describe("SimDataResource", () => {
     it("should reserialize vector_recursion.xml correctly", () => {
       testReserialization("vector_recursion.xml");
     });
+
+    it("should reserialize correctly when intances reference different schema objects", () => {
+      const original = getSimDataFromXml("buff");
+      const originalSchema = original.schema;
+      expect(original.instance.schema).to.equal(originalSchema);
+      expect(original.instance.schema).to.equal(original.schema);
+      original.schema = originalSchema.clone();
+      expect(original.instance.schema).to.equal(originalSchema);
+      expect(original.instance.schema).to.not.equal(original.schema);
+      const simdata = SimDataResource.from(original.buffer);
+      expect(simdata.equals(original)).to.be.true;
+    });
   });
 
   describe("#hasChanged", () => {
@@ -105,7 +117,15 @@ describe("SimDataResource", () => {
   });
 
   describe("#instance", () => {
-    it("should return the first child of the instances array", () => {
+    it("should return the first child of the instances array when there is only one", () => {
+      // TODO:
+    });
+
+    it("should return the first child of the instances array when there are two", () => {
+      // TODO:
+    });
+
+    it("should be undefined when there are no instances in this simdata", () => {
       // TODO:
     });
 
