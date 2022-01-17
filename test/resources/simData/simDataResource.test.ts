@@ -17,6 +17,14 @@ function getBuffer(filename: string) {
   }
 }
 
+function getSimDataFromBinary(filename: string) {
+  return SimDataResource.from(getBuffer(`${filename}.simdata`));
+}
+
+function getSimDataFromXml(filename: string) {
+  return SimDataResource.fromXml(getBuffer(`${filename}.xml`));
+}
+
 describe("SimDataResource", () => {
   //#region Properties
 
@@ -75,12 +83,12 @@ describe("SimDataResource", () => {
 
   describe("#hasChanged", () => {
     it("should be false after loading from a buffer", () => {
-      const simdata = SimDataResource.from(getBuffer("buff.simdata"));
+      const simdata = getSimDataFromBinary("buff");
       expect(simdata.hasChanged).to.be.false;
     });
 
     it("should be true after loading from xml", () => {
-      const simdata = SimDataResource.fromXml(getBuffer("buff.xml"));
+      const simdata = getSimDataFromXml("buff");
       expect(simdata.hasChanged).to.be.true;
     });
 
@@ -90,7 +98,7 @@ describe("SimDataResource", () => {
     });
 
     it("should be false after getting buffer", () => {
-      const simdata = SimDataResource.fromXml(getBuffer("buff.xml"));
+      const simdata = getSimDataFromXml("buff");
       simdata.buffer;
       expect(simdata.hasChanged).to.be.false;
     });
@@ -146,7 +154,7 @@ describe("SimDataResource", () => {
 
   describe("#props", () => {
     it("should return an object containing the cells in the first instance", () => {
-      // TODO:
+      const simdata = SimDataResource.from(getBuffer("buff.simdata"));
     });
 
     it("should mutate the first instance's cells", () => {
