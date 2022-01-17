@@ -22,12 +22,10 @@ describe("SimDataResource", () => {
 
   describe("#buffer", () => {
     function testReserialization(filename: string) {
-      const buffer = getBuffer(filename);
-      const xml = buffer.toString();
-      const original = SimDataResource.fromXml(buffer);
+      const original = SimDataResource.fromXml(getBuffer(filename));
       original.uncache();
       const simdata = SimDataResource.from(original.buffer);
-      expect(simdata.toXmlDocument({ sort: true }).toXml()).to.equal(xml);
+      expect(simdata.equals(original)).to.be.true;
     }
 
     it("should be the same as the buffer it was created with if no changes were made", () => {
