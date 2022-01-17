@@ -774,19 +774,31 @@ describe("SimDataResource", () => {
 
   describe("#removeInstances()", () => {
     it("should remove the one instance that is given", () => {
-      // TODO:
+      const simdata = getSimDataFromBinary("two_instances");
+      expect(simdata.instances).to.have.lengthOf(2);
+      simdata.removeInstances(simdata.instance);
+      expect(simdata.instances).to.have.lengthOf(1);
     });
 
     it("should remove the multiple instances that are given", () => {
-      // TODO:
+      const simdata = getSimDataFromBinary("two_instances");
+      expect(simdata.instances).to.have.lengthOf(2);
+      simdata.removeInstances(simdata.instances[0], simdata.instances[1]);
+      expect(simdata.instances).to.be.empty;
     });
 
     it("should not remove an identical instance that is not the same object", () => {
-      // TODO:
+      const simdata = getSimDataFromBinary("two_instances");
+      expect(simdata.instances).to.have.lengthOf(2);
+      simdata.removeInstances(simdata.instance.clone());
+      expect(simdata.instances).to.have.lengthOf(2);
     });
 
-    it("should uncache the owner", () => {
-      // TODO:
+    it("should uncache the buffer", () => {
+      const simdata = getSimDataFromBinary("two_instances");
+      expect(simdata.hasChanged).to.be.false;
+      simdata.removeInstances(simdata.instance);
+      expect(simdata.hasChanged).to.be.true;
     });
   });
 
