@@ -1,3 +1,4 @@
+import type CacheableModel from "./cacheableModel";
 import WritableModel from "./writableModel";
 
 /**
@@ -49,7 +50,7 @@ export abstract class MappedModel<Key, Value, Entry extends MappedModelEntry<Key
 
   protected constructor(entries: { key: Key; value: Value; }[], options: {
     buffer?: Buffer;
-    owner?: WritableModel;
+    owner?: CacheableModel;
   } = {}) {
     super(options);
     this._entryMap = new Map();
