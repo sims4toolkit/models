@@ -5,3 +5,4 @@ out/
 pocs/
 .VSCodeCounter/
 .vscode/settings.json
+.nyc_output/
