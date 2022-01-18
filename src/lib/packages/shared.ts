@@ -36,7 +36,7 @@ interface Version {
  * A wrapper for a resource to track its metadata within a DBPF.
  */
 export interface ResourceEntryDto {
-  key: ResourceKey;
+  key: ResourceKeyDto;
   resource: Resource;
   buffer?: Buffer;
 }
@@ -44,7 +44,7 @@ export interface ResourceEntryDto {
 /**
  * The (ideally) unique identifier for a resource.
  */
-export interface ResourceKey {
+export interface ResourceKeyDto {
   type: number;
   group: number;
   instance: bigint;
