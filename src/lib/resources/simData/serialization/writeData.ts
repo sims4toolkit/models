@@ -1,4 +1,4 @@
-import { BinaryEncoder } from "@s4tk/utils/encoding";
+import { BinaryEncoder } from "@s4tk/encoding";
 import { formatAsHexString } from "@s4tk/utils/formatting";
 import { fnv32 } from "@s4tk/utils/hashing";
 import { SimDataDto, HEADER_SIZE, TABLE_HEADER_OFFSET, RELOFFSET_NULL, NO_NAME_HASH, SUPPORTED_VERSION, CellEncodingOptions } from "../shared";

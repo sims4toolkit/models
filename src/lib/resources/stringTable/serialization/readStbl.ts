@@ -1,7 +1,6 @@
 import type { KeyStringPair } from "../shared";
 import type { SerializationOptions } from "../../../shared";
-
-import { BinaryDecoder } from "@s4tk/utils/encoding";
+import { BinaryDecoder } from "@s4tk/encoding";
 
 /**
  * Reads STBL content from the given buffer.

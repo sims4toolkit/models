@@ -1,5 +1,5 @@
 import * as zlib from "zlib";
-import { BinaryDecoder } from "@s4tk/utils/encoding";
+import { BinaryDecoder } from "@s4tk/encoding";
 import { makeList } from "../../helpers";
 import RawResource from "../../resources/generic/rawResource";
 import Resource from "../../resources/resource";

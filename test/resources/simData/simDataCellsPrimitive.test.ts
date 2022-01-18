@@ -1,7 +1,7 @@
 import { expect } from "chai";
 import { simDataCells, simDataTypes } from "../../../dst/api";
 import * as hashing from "@s4tk/utils/hashing";
-import { BinaryDecoder, BinaryEncoder } from "@s4tk/utils/encoding";
+import { BinaryDecoder, BinaryEncoder } from "@s4tk/encoding";
 import * as xmlDom from "@s4tk/utils/xml";
 import MockOwner from "../../mocks/mockOwner";
 

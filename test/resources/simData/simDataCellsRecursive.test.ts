@@ -1,6 +1,6 @@
 import { expect } from "chai";
 import { XmlElementNode, XmlValueNode } from "@s4tk/utils/xml";
-import { BinaryEncoder } from "@s4tk/utils/encoding";
+import { BinaryEncoder } from "@s4tk/encoding";
 import { simDataCells, simDataFragments, simDataTypes } from "../../../dst/api";
 import MockOwner from "../../mocks/mockOwner";
 

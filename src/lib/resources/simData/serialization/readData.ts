@@ -1,5 +1,5 @@
 import type { SerializationOptions } from "../../../shared";
-import { BinaryDecoder } from "@s4tk/utils/encoding";
+import { BinaryDecoder } from "@s4tk/encoding";
 import { ObjectCellRow, RELOFFSET_NULL, SimDataDto } from "../shared";
 import { makeList } from "../../../helpers";
 import { SimDataSchema, SimDataSchemaColumn, SimDataInstance } from "../simDataFragments";

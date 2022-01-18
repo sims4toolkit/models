@@ -1,6 +1,6 @@
 import type Dbpf from "../sims4package";
 
-import { BinaryEncoder } from "@s4tk/utils/encoding";
+import { BinaryEncoder } from "@s4tk/encoding";
 
 /**
  * Writes the given DBPF into a buffer.

@@ -1,4 +1,4 @@
-import type { BinaryDecoder, BinaryEncoder } from "@s4tk/utils/encoding";
+import type { BinaryDecoder, BinaryEncoder } from "@s4tk/encoding";
 import type { SimDataSchema } from "./simDataFragments";
 import type { SimDataNumber, SimDataBigInt, SimDataText, SimDataFloatVector } from "./simDataTypes";
 import { XmlElementNode, XmlNode, XmlValueNode } from "@s4tk/utils/xml";
