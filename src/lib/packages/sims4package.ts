@@ -1,10 +1,14 @@
 import type { DbpfDto, DbpfHeader, ResourceEntryDto, ResourceKeyDto } from './shared';
 import type { SerializationOptions } from '../shared';
 import type Resource from '../resources/resource';
+import zlib from "zlib";
+import clone from 'just-clone';
 import WritableModel from "../abstract/writableModel";
 import readDbpf from './serialization/readDbpf';
 import writeDbpf from './serialization/writeDbpf';
 import CacheableModel from '../abstract/cacheableModel';
+import { formatResourceGroup, formatResourceInstance, formatResourceType } from '@s4tk/utils/formatting';
+import { removeFromArray } from '../helpers';
 
 
 /**
@@ -60,6 +64,20 @@ export default class Sims4Package extends WritableModel implements DbpfDto {
   }
 
   /**
+   * Returns a deep copy of this package.
+   */
+  clone(): Sims4Package {
+    // FIXME: this is ineffcient because it's just going to loop again
+    return new Sims4Package(clone(this.header), this.entries.map(entry => ({
+      key: entry.key.clone(),
+      resource: entry.resource.clone(),
+      buffer: entry.hasChanged ? undefined : entry.buffer
+    })));
+  }
+
+  // TODO: combine()
+
+  /**
    * Creates a new Sims4Package instance from the given header and entries. Both
    * arguments are optional, and if left out, will create an empty package.
    * 
@@ -91,7 +109,89 @@ export default class Sims4Package extends WritableModel implements DbpfDto {
 
   //#region Public Methods
 
-  // TODO:
+  /**
+   * Creates an entry for the given key and resource, adds it to the package,
+   * and returns it. If the given key already exists in the package (by value
+   * equality), an exception is thrown.
+   * 
+   * Options
+   * - `allowDuplicateKey`: If `true`, then the function will not throw when
+   * adding a key that already exists. (Default = `false`)
+   * 
+   * @param key Key to use for the resource
+   * @param resource Resource to add
+   * @param options Object containing options 
+   * @returns Resource entry that was added
+   * @throws If the key already exists
+   */
+  add(key: ResourceKeyDto, resource: Resource, { allowDuplicateKey = false } = {}): ResourceEntry {
+    if (!allowDuplicateKey) {
+      const entry = this.getByKey(key);
+      throw new Error(`Tried to add key that already exists: ${entry.key.format()}`);
+    }
+
+    const entry = new ResourceEntry(this._nextId++, ResourceKey.from(key), resource, this);
+    this.entries.push(entry);
+    return entry;
+  }
+
+  // TODO: addAndGenerateKey
+
+  // TODO: equals
+
+  // TODO: findErrors
+
+  /**
+   * Finds and returns the index of the given entry.
+   * 
+   * @param entry Entry to find index of
+   */
+  findIndex(entry: ResourceEntry): number {
+    return this.entries.findIndex(e => e.id === entry.id);
+  }
+
+  /**
+   * Finds and returns the entry with the given ID.
+   * 
+   * @param id Id of entry to find
+   */
+  getById(id: number): ResourceEntry {
+    return this.entries.find(entry => entry.id === id);
+  }
+
+  /**
+   * Finds and returns the entry with the given key. If there is more than one
+   * entry with the key, the first is returned.
+   * 
+   * @param key Key of entry to find
+   */
+  getByKey(key: ResourceKeyDto): ResourceEntry {
+    return this.entries.find(entry => entry.key.equals(key));
+  }
+
+  /**
+   * Adds all entries from all given packages into this one. Entries are
+   * cloned and are given new IDs relative to this table.
+   * 
+   * @param dbpfs Packages to add entries from
+   */
+  merge(...dbpfs: Sims4Package[]) {
+    dbpfs.forEach(dbpf => {
+      dbpf.entries.forEach(entry => {
+        this.add(entry.key.clone(), entry.resource.clone());
+      });
+    });
+  }
+
+  /**
+   * Removes any number of entries from this package. If just removing one
+   * entry, consider calling its `delete()` method.
+   * 
+   * @param entries Entries to remove from this package
+   */
+  remove(...entries: ResourceEntry[]) {
+    removeFromArray(entries, this.entries);
+  }
 
   //#endregion Public Methods
 
@@ -137,15 +237,20 @@ class ResourceEntry extends WritableModel implements ResourceEntryDto {
     this._watchProps('key', 'resource');
   }
 
+  /**
+   * Removes this entry from the package that owns it.
+   */
+  delete() {
+    this.owner?.remove(this);
+  }
+
   equals(other: ResourceEntry): boolean {
     if (!(other instanceof ResourceEntry)) return false;
     return this.key.equals(other.key) && this.resource.equals(other.resource);
   }
 
   protected _serialize(): Buffer {
-    // TODO: compress buffer
-    const compressedBuffer = this.resource.buffer;
-    return compressedBuffer;
+    return zlib.deflateSync(this.resource.buffer);
   }
 }
 
@@ -164,10 +269,24 @@ class ResourceKey extends CacheableModel implements ResourceKeyDto {
     return new ResourceKey(type, group, instance, owner);
   }
 
-  equals(other: ResourceKey): boolean {
-    if (!(other instanceof ResourceKey)) return false;
+  clone(): ResourceKey {
+    return ResourceKey.from(this);
+  }
+
+  equals(other: ResourceKeyDto): boolean {
+    if (!other) return false;
     return this.type === other.type &&
            this.group === other.group &&
            this.instance === other.instance;
+  }
+
+  /**
+   * Returns the type, group, and instance formatted as a string with the given
+   * delimeter (':' by default).
+   * 
+   * @param delimeter Character to use to separate type, group, and instance
+   */
+  format(delimeter = ':'): string {
+    return `${formatResourceType(this.type)}${delimeter}${formatResourceGroup(this.type)}${delimeter}${formatResourceInstance(this.instance)}`;
   }
 }

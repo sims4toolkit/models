@@ -29,6 +29,8 @@ export function removeFromArray<T>(toRemove: T[], removeFrom: T[]) {
   return anyRemoved;
 }
 
+type Equalable = { equals(item: any): boolean; };
+
 /**
  * Checks if the two given arrays contain the same contents, as dictacted by
  * the first array's children's `equals()` methods.
@@ -36,7 +38,23 @@ export function removeFromArray<T>(toRemove: T[], removeFrom: T[]) {
  * @param arr1 First array to check
  * @param arr2 Second array to check
  */
-export function arraysAreEqual(arr1: { equals(item: any): boolean; }[], arr2: any[]): boolean {
+export function arraysAreEqual(arr1: Equalable[], arr2: any[]): boolean {
   if (arr1.length !== arr2?.length) return false;
   return arr1.every(a => arr2.some(b => a.equals(b)));
+}
+
+/**
+ * Checks if the two given objects contain the same contents, as dictacted by
+ * the first object's children's `equals()` methods.
+ * 
+ * @param obj1 First object to check
+ * @param obj2 Second object to check
+ */
+export function objectsAreEqual(obj1: { [key: string]: Equalable }, obj2: { [key: string]: any }): boolean {
+  if (Object.keys(obj1).length !== Object.keys(obj2).length) return false;
+  for (const key in obj1) {
+    const value = obj1[key];
+    if (!value.equals(obj2[key])) return false;
+  }
+  return true;
 }
