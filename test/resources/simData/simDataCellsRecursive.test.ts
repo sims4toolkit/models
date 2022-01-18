@@ -378,7 +378,25 @@ describe("ObjectCell", () => {
   });
 
   describe("#equals()", () => {
-    // TODO:
+    it("should return true when objects are the same", () => {
+      // TODO:
+    });
+
+    it("should return false when the schema is different", () => {
+      // TODO:
+    });
+
+    it("should return false when there is a different number of cells", () => {
+      // TODO:
+    });
+
+    it("should return false when there is a different cell", () => {
+      // TODO:
+    });
+
+    it("should return false when the other is undefined", () => {
+      // TODO:
+    });
   });
 
   describe("#toXmlNode()", () => {
@@ -1084,7 +1102,21 @@ describe("VectorCell", () => {
   });
 
   describe("#equals()", () => {
-    // TODO:
+    it("should return true when vectors are the same", () => {
+      // TODO:
+    });
+
+    it("should return false when there is a different number of children", () => {
+      // TODO:
+    });
+
+    it("should return false when there is a different child", () => {
+      // TODO:
+    });
+
+    it("should return false when the other is undefined", () => {
+      // TODO:
+    });
   });
 
   describe("#toXmlNode()", () => {
@@ -1628,7 +1660,21 @@ describe("VariantCell", () => {
   });
 
   describe("#equals()", () => {
-    // TODO:
+    it("should return true when variants are the same", () => {
+      // TODO:
+    });
+
+    it("should return false when there is a different type hash", () => {
+      // TODO:
+    });
+
+    it("should return false when there is a different child", () => {
+      // TODO:
+    });
+
+    it("should return false when the other is undefined", () => {
+      // TODO:
+    });
   });
 
   describe("#toXmlNode()", () => {
