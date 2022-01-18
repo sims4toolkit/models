@@ -240,10 +240,10 @@ describe('StringTableResource', function() {
     });
   });
 
-  describe('#merge()', function() {
+  describe('#combine()', function() {
     context('merging nothing', function() {
       it('should return an empty stbl', function() {
-        const stbl = StringTableResource.merge();
+        const stbl = StringTableResource.combine();
         expect(stbl).to.have.lengthOf(0);
       });
     });
@@ -251,25 +251,25 @@ describe('StringTableResource', function() {
     context('merging one', function() {
       it('should return a copy', function() {
         const smallStbl = getSTBL('SmallSTBL');
-        const stbl = StringTableResource.merge(smallStbl);
+        const stbl = StringTableResource.combine(smallStbl);
         expectSameContents(smallStbl, stbl);
       });
 
       it('should not mutate the original when adding', function() {
         const smallStbl = getSTBL('SmallSTBL');
-        const stbl = StringTableResource.merge(smallStbl);
+        const stbl = StringTableResource.combine(smallStbl);
         expectNoMutationOnAdd(smallStbl, stbl);
       });
 
       it('should not mutate the original when updating', function() {
         const smallStbl = getSTBL('SmallSTBL');
-        const stbl = StringTableResource.merge(smallStbl);
+        const stbl = StringTableResource.combine(smallStbl);
         expectNoMutationOnUpdate(smallStbl, stbl);
       });
 
       it('should not mutate the original when removing', function() {
         const smallStbl = getSTBL('SmallSTBL');
-        const stbl = StringTableResource.merge(smallStbl);
+        const stbl = StringTableResource.combine(smallStbl);
         expectNoMutationOnRemove(smallStbl, stbl);
       });
     });
@@ -279,14 +279,14 @@ describe('StringTableResource', function() {
         it('should return an empty stbl', function() {
           const empty1 = StringTableResource.create();
           const empty2 = StringTableResource.create();
-          const merged = StringTableResource.merge(empty1, empty2);
+          const merged = StringTableResource.combine(empty1, empty2);
           expect(merged.length).to.equal(0);
         });
 
         it('should not mutate original on add', function() {
           const empty1 = StringTableResource.create();
           const empty2 = StringTableResource.create();
-          const merged = StringTableResource.merge(empty1, empty2);
+          const merged = StringTableResource.combine(empty1, empty2);
           expectNoMutationOnAdd(empty1, merged);
         });
       });
@@ -295,28 +295,28 @@ describe('StringTableResource', function() {
         it('should return a copy of the one with entries', function() {
           const smallSTBL = getSTBL('SmallSTBL');
           const emptySTBL = StringTableResource.create();
-          const merged = StringTableResource.merge(smallSTBL, emptySTBL);
+          const merged = StringTableResource.combine(smallSTBL, emptySTBL);
           expectSameContents(smallSTBL, merged);
         });
 
         it('should not mutate original on add', function() {
           const smallSTBL = getSTBL('SmallSTBL');
           const emptySTBL = StringTableResource.create();
-          const merged = StringTableResource.merge(smallSTBL, emptySTBL);
+          const merged = StringTableResource.combine(smallSTBL, emptySTBL);
           expectNoMutationOnAdd(smallSTBL, merged);
         });
 
         it('should not mutate original on update', function() {
           const smallSTBL = getSTBL('SmallSTBL');
           const emptySTBL = StringTableResource.create();
-          const merged = StringTableResource.merge(smallSTBL, emptySTBL);
+          const merged = StringTableResource.combine(smallSTBL, emptySTBL);
           expectNoMutationOnUpdate(smallSTBL, merged);
         });
 
         it('should not mutate original on remove', function() {
           const smallSTBL = getSTBL('SmallSTBL');
           const emptySTBL = StringTableResource.create();
-          const merged = StringTableResource.merge(smallSTBL, emptySTBL);
+          const merged = StringTableResource.combine(smallSTBL, emptySTBL);
           expectNoMutationOnRemove(smallSTBL, merged);
         });
       });
@@ -327,7 +327,7 @@ describe('StringTableResource', function() {
           const freshSTBL = StringTableResource.create();
           freshSTBL.add(1234, "First");
           freshSTBL.add(5678, "Second");
-          const merged = StringTableResource.merge(smallSTBL, freshSTBL);
+          const merged = StringTableResource.combine(smallSTBL, freshSTBL);
           expect(merged).to.have.lengthOf(smallSTBL.length + 2);
           smallSTBL.add(1234, "First");
           smallSTBL.add(5678, "Second");
@@ -344,7 +344,7 @@ describe('StringTableResource', function() {
         stbl2.add(456, "Second");
         const stbl3 = StringTableResource.create();
         stbl3.add(789, "Third");
-        const merged = StringTableResource.merge(stbl1, stbl2, stbl3);
+        const merged = StringTableResource.combine(stbl1, stbl2, stbl3);
         expect(merged).to.have.lengthOf(3);
         expect(merged.entries[0].string).to.equal("First");
         expect(merged.entries[1].string).to.equal("Second");
@@ -514,13 +514,13 @@ describe('StringTableResource', function() {
     }); 
   });
 
-  describe('#combine()', function() {
+  describe('#merge()', function() {
     context('original is empty', function() {
       context('adding empty stbl', function() {
         it('should still be empty', function() {
           const stbl = StringTableResource.create();
           const empty = StringTableResource.create();
-          stbl.combine(empty);
+          stbl.merge(empty);
           expect(stbl).to.have.lengthOf(0);
         });
       });
@@ -529,7 +529,7 @@ describe('StringTableResource', function() {
         it('should contain the same entries as the given one', function() {
           const empty = StringTableResource.create();
           const withEntries = getSTBL('SmallSTBL');
-          empty.combine(withEntries);
+          empty.merge(withEntries);
           expect(empty.length).to.not.equal(0);
           expectSameContents(empty, withEntries);
         });
@@ -537,21 +537,21 @@ describe('StringTableResource', function() {
         it('should not mutate the given one on add', function() {
           const empty = StringTableResource.create();
           const withEntries = getSTBL('SmallSTBL');
-          empty.combine(withEntries);
+          empty.merge(withEntries);
           expectNoMutationOnAdd(empty, withEntries);
         });
 
         it('should not mutate the given one on update', function() {
           const empty = StringTableResource.create();
           const withEntries = getSTBL('SmallSTBL');
-          empty.combine(withEntries);
+          empty.merge(withEntries);
           expectNoMutationOnUpdate(empty, withEntries);
         });
 
         it('should not mutate the given one on remove', function() {
           const empty = StringTableResource.create();
           const withEntries = getSTBL('SmallSTBL');
-          empty.combine(withEntries);
+          empty.merge(withEntries);
           expectNoMutationOnRemove(empty, withEntries);
         });
       });
@@ -562,8 +562,8 @@ describe('StringTableResource', function() {
           const stbl1 = getSTBL('SmallSTBL');
           const stbl2 = StringTableResource.create();
           stbl2.add(1234, "Test");
-          empty.combine(stbl1, stbl2);
-          const merged = StringTableResource.merge(stbl1, stbl2);
+          empty.merge(stbl1, stbl2);
+          const merged = StringTableResource.combine(stbl1, stbl2);
           expectSameContents(empty, merged);
         });
       });
@@ -575,7 +575,7 @@ describe('StringTableResource', function() {
           const smallStbl = getSTBL('SmallSTBL');
           const clone = smallStbl.clone();
           const empty = StringTableResource.create();
-          smallStbl.combine(empty);
+          smallStbl.merge(empty);
           expectSameContents(smallStbl, clone);
         });
 
@@ -583,7 +583,7 @@ describe('StringTableResource', function() {
           const smallStbl = getSTBL('SmallSTBL');
           const empty = StringTableResource.create();
           expect(smallStbl.hasChanged).to.be.false;
-          smallStbl.combine(empty);
+          smallStbl.merge(empty);
           expect(smallStbl.hasChanged).to.be.false;
         });
       });
@@ -595,8 +595,8 @@ describe('StringTableResource', function() {
           const other = StringTableResource.create();
           other.add(1234, "Test");
           other.add(5678, "Test 2");
-          const merged = StringTableResource.merge(smallStbl, other);
-          smallStbl.combine(other);
+          const merged = StringTableResource.combine(smallStbl, other);
+          smallStbl.merge(other);
           expect(smallStbl).to.have.lengthOf(originalEntries + 2);
           expectSameContents(smallStbl, merged);
         });
@@ -607,7 +607,7 @@ describe('StringTableResource', function() {
           const other = StringTableResource.create();
           other.add(1234, "Test");
           other.add(5678, "Test 2");
-          smallStbl.combine(other);
+          smallStbl.merge(other);
           expect(smallStbl.hasChanged).to.be.true;
         });
       });
@@ -624,8 +624,8 @@ describe('StringTableResource', function() {
           other2.add(2468, "Test 3");
           other2.add(1357, "Test 4");
 
-          const merged = StringTableResource.merge(smallStbl, other1, other2);
-          smallStbl.combine(other1, other2);
+          const merged = StringTableResource.combine(smallStbl, other1, other2);
+          smallStbl.merge(other1, other2);
 
           expectSameContents(smallStbl, merged);
         });
@@ -642,7 +642,7 @@ describe('StringTableResource', function() {
           other2.add(2468, "Test 3");
           other2.add(1357, "Test 4");
 
-          smallStbl.combine(other1, other2);
+          smallStbl.merge(other1, other2);
 
           expect(smallStbl.hasChanged).to.be.true;
         });
@@ -1261,7 +1261,7 @@ describe('StringTableResource', function() {
       it('should return true for a merged stbl', function() {
         const stbl1 = StringTableResource.create();
         const stbl2 = StringTableResource.create();
-        const merged = StringTableResource.merge(stbl1, stbl2);
+        const merged = StringTableResource.combine(stbl1, stbl2);
         expect(merged.hasChanged).to.be.true;
       });
     });
@@ -1285,7 +1285,7 @@ describe('StringTableResource', function() {
         const stbl = getSTBL('SmallSTBL');
         expect(stbl.hasChanged).to.be.false;
         const newStbl = StringTableResource.create();
-        stbl.combine(newStbl);
+        stbl.merge(newStbl);
         expect(stbl.hasChanged).to.be.false;
       });
 
@@ -1294,7 +1294,7 @@ describe('StringTableResource', function() {
         expect(stbl.hasChanged).to.be.false;
         const newStbl = StringTableResource.create();
         newStbl.add(123, "Test");
-        stbl.combine(newStbl);
+        stbl.merge(newStbl);
         expect(stbl.hasChanged).to.be.true;
       });
     });

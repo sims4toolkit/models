@@ -78,12 +78,12 @@ export default class StringTableResource extends Resource {
   }
 
   /**
-   * Merges a variable number of string tables into one. Does not mutate the 
+   * Combines a variable number of string tables into one. Does not mutate the 
    * orignal STBLs, just creates a new one.
    * 
-   * @param stbls String tables to merge
+   * @param stbls String tables to combine
    */
-  static merge(...stbls: StringTableResource[]): StringTableResource {
+  static combine(...stbls: StringTableResource[]): StringTableResource {
     const mergedStbl = StringTableResource.create();
     stbls.forEach(stbl => {
       stbl.entries.forEach(entry => {
@@ -157,7 +157,7 @@ export default class StringTableResource extends Resource {
    * 
    * @param stbls String tables to add entries from
    */
-  combine(...stbls: StringTableResource[]) {
+  merge(...stbls: StringTableResource[]) {
     stbls.forEach(stbl => {
       stbl.entries.forEach(entry => {
         this.add(entry.key, entry.string);
@@ -322,7 +322,7 @@ class StringEntry extends CacheableModel implements KeyStringPair {
   }
 
   /**
-   * Removes this entry from the STBL that owns it.
+   * Removes this entry from the string table that owns it.
    */
   delete() {
     this.owner?.remove(this);
