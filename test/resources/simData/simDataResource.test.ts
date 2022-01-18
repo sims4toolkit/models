@@ -799,7 +799,44 @@ describe("SimDataResource", () => {
   //#region Methods
 
   describe("#equals()", () => {
-    // TODO:
+    it("should return true if the simdatas are the same", () => {
+      const simdata = getSimDataFromBinary("buff");
+      const other = simdata.clone();
+      expect(simdata.equals(other)).to.be.true;
+    });
+
+    it("should return false if the version is different", () => {
+      const simdata = getSimDataFromBinary("buff");
+      const other = simdata.clone();
+      other.version = 0x102;
+      expect(simdata.equals(other)).to.be.false;
+    });
+
+    it("should return false if the unused is different", () => {
+      const simdata = getSimDataFromBinary("buff");
+      const other = simdata.clone();
+      other.unused = 0x1A;
+      expect(simdata.equals(other)).to.be.false;
+    });
+
+    it("should return false if the instances are different", () => {
+      const simdata = getSimDataFromBinary("buff");
+      const other = simdata.clone();
+      other.instances.push(other.instance.clone());
+      expect(simdata.equals(other)).to.be.false;
+    });
+
+    it("should return false if the schemas are different", () => {
+      const simdata = getSimDataFromBinary("buff");
+      const other = simdata.clone();
+      other.schema.name = "NewName";
+      expect(simdata.equals(other)).to.be.false;
+    });
+
+    it("should return false if the other is undefined", () => {
+      const simdata = getSimDataFromBinary("buff");
+      expect(simdata.equals(undefined)).to.be.false;
+    });
   });
 
   describe("#removeInstances()", () => {

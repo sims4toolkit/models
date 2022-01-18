@@ -709,7 +709,47 @@ describe('StringTableResource', function() {
   });
 
   describe("#equals()", () => {
-    // TODO:
+    it("should return true if the stbl is the same", () => {
+      const stbl = getSTBL("SmallSTBL");
+      const other = stbl.clone();
+      expect(stbl.equals(other)).to.be.true;
+    });
+
+    it("should return true if the stbl has the same entries in another order", () => {
+      const stbl = getSTBL("SmallSTBL");
+      const other = stbl.clone();
+      const [ removed ] = other.entries.splice(0, 1);
+      other.add(removed.key, removed.string);
+      expect(stbl.equals(other)).to.be.true;
+    });
+
+    it("should return false if there is another entry", () => {
+      const stbl = getSTBL("SmallSTBL");
+      const other = stbl.clone();
+      other.addAndHash("yeehaw");
+      expect(stbl.equals(other)).to.be.false;
+    });
+
+    it("should return false if there is a missing entry", () => {
+      const stbl = getSTBL("SmallSTBL");
+      const other = stbl.clone();
+      other.entries.splice(0, 1);
+      expect(stbl.equals(other)).to.be.false;
+    });
+
+    it("should return false if an entry has a different key", () => {
+      const stbl = getSTBL("SmallSTBL");
+      const other = stbl.clone();
+      other.entries[0].key = 1;
+      expect(stbl.equals(other)).to.be.false;
+    });
+
+    it("should return false if an entry has a different string", () => {
+      const stbl = getSTBL("SmallSTBL");
+      const other = stbl.clone();
+      other.entries[0].string = "yeehaw";
+      expect(stbl.equals(other)).to.be.false;
+    });
   });
 
   describe('#findErrors()', function() {
