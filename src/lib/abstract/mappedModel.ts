@@ -1,9 +1,12 @@
 import WritableModel from "./writableModel";
 
 /**
- * An entry in a MappedModel.
+ * An entry in a MappedModel. This entry is responsible for notifying the owner
+ * when its key or value updates.
  */
 export interface MappedModelEntry<Key, Value> {
+  owner: MappedModel<Key, Value, MappedModelEntry<Key, Value>>;
+
   /** The key for this entry. */
   get key(): Key;
   set key(key: Key);
@@ -26,7 +29,7 @@ export interface MappedModelEntry<Key, Value> {
  */
 export abstract class MappedModel<Key, Value, Entry extends MappedModelEntry<Key, Value>> extends WritableModel {
   private readonly _entryMap: Map<number, Entry>;
-  private readonly _keyMap: Map<string, number>;
+  private readonly _keyMap: Map<number | string, number>;
   private _nextId: number;
 
   /**
@@ -54,7 +57,7 @@ export abstract class MappedModel<Key, Value, Entry extends MappedModelEntry<Key
 
     entries.forEach((entry, id) => {
       this._entryMap.set(id, this._makeEntry(entry.key, entry.value));
-      this._keyMap.set(this._getKeyString(entry.key), id);
+      this._keyMap.set(this._getKeyIdentifier(entry.key), id);
     });
   }
 
@@ -72,7 +75,7 @@ export abstract class MappedModel<Key, Value, Entry extends MappedModelEntry<Key
     const id = this._nextId++;
     const entry = this._makeEntry(key, value);
     this._entryMap.set(id, entry);
-    this._keyMap.set(this._getKeyString(key), id);
+    this._keyMap.set(this._getKeyIdentifier(key), id);
     this.uncache();
     return entry;
   }
@@ -100,7 +103,7 @@ export abstract class MappedModel<Key, Value, Entry extends MappedModelEntry<Key
     
     if (entry) {
       this._entryMap.delete(id);
-      this._keyMap.delete(this._getKeyString(entry.key));
+      this._keyMap.delete(this._getKeyIdentifier(entry.key));
       this.uncache();
       return true;
     } else {
@@ -144,7 +147,7 @@ export abstract class MappedModel<Key, Value, Entry extends MappedModelEntry<Key
    * @param key Key to get IDs for
    */
   getIdForKey(key: Key): number {
-    return this._keyMap.get(this._getKeyString(key));
+    return this._keyMap.get(this._getKeyIdentifier(key));
   }
 
   /**
@@ -182,10 +185,10 @@ export abstract class MappedModel<Key, Value, Entry extends MappedModelEntry<Key
    * @param current New key
    */
   onKeyUpdate(previous: Key, current: Key) {
-    const previousString = this._getKeyString(previous);
-    const id = this._keyMap.get(previousString);
-    this._keyMap.delete(previousString);
-    this._keyMap.set(this._getKeyString(current), id);
+    const previousIdentifier = this._getKeyIdentifier(previous);
+    const id = this._keyMap.get(previousIdentifier);
+    this._keyMap.delete(previousIdentifier);
+    this._keyMap.set(this._getKeyIdentifier(current), id);
     this.uncache();
   }
 
@@ -194,12 +197,12 @@ export abstract class MappedModel<Key, Value, Entry extends MappedModelEntry<Key
   //#region Protected Methods
 
   /**
-   * Returns a unique string that represents the given key compared to other
+   * Returns a unique value that represents the given key compared to other
    * keys of its type.
    * 
-   * @param key Key to get unique string for
+   * @param key Key to get unique identifier for
    */
-  protected abstract _getKeyString(key: Key): string;
+  protected abstract _getKeyIdentifier(key: Key): number | string;
 
   /**
    * Creates a new entry to add to this model.
