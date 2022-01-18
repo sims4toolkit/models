@@ -259,7 +259,32 @@ describe("SimDataSchema", () => {
   });
 
   describe("#equals()", () => {
-    // TODO:
+    it("should return true if the schemas are the same", () => {
+      const schema = testSchema.clone();
+      const other = schema.clone();
+      expect(schema.equals(other)).to.be.true;
+    });
+
+    it("should return false if the name is different", () => {
+      const schema = testSchema.clone();
+      const other = schema.clone();
+      other.name = "NewName";
+      expect(schema.equals(other)).to.be.false;
+    });
+
+    it("should return false if the hash is different", () => {
+      const schema = testSchema.clone();
+      const other = schema.clone();
+      other.hash = 123;
+      expect(schema.equals(other)).to.be.false;
+    });
+
+    it("should return false if the columns are different", () => {
+      const schema = testSchema.clone();
+      const other = schema.clone();
+      other.columns.push(other.columns[0]);
+      expect(schema.equals(other)).to.be.false;
+    });
   });
 
   describe("#removeColumns()", () => {
@@ -470,7 +495,32 @@ describe("SimDataSchemaColumn", () => {
   });
 
   describe("#equals()", () => {
-    // TODO:
+    it("should return true if the columns are the same", () => {
+      const column = new SimDataSchemaColumn("boolean", SimDataType.Boolean, 0x1234);
+      const other = column.clone();
+      expect(column.equals(other)).to.be.true;
+    });
+
+    it("should return false if the name is different", () => {
+      const column = new SimDataSchemaColumn("boolean", SimDataType.Boolean, 0x1234);
+      const other = column.clone();
+      other.name = "new_name";
+      expect(column.equals(other)).to.be.false;
+    });
+
+    it("should return false if the type is different", () => {
+      const column = new SimDataSchemaColumn("boolean", SimDataType.Boolean, 0x1234);
+      const other = column.clone();
+      other.type = SimDataType.Vector;
+      expect(column.equals(other)).to.be.false;
+    });
+
+    it("should return false if the flags are different", () => {
+      const column = new SimDataSchemaColumn("boolean", SimDataType.Boolean, 0x1234);
+      const other = column.clone();
+      other.flags = 0;
+      expect(column.equals(other)).to.be.false;
+    });
   });
 
   describe("#toXmlNode()", () => {
@@ -589,7 +639,19 @@ describe("SimDataInstance", () => {
   });
 
   describe("#equals()", () => {
-    // TODO:
+    it("should return true if the instances are the same", () => {
+      const inst = new SimDataInstance("InstanceName", testSchema, {});
+      expect(inst.equals(inst.clone())).to.be.true;
+    });
+
+    it("should return false if the name is different", () => {
+      const inst = new SimDataInstance("InstanceName", testSchema, {});
+      const other = inst.clone();
+      other.name = "NewName";
+      expect(inst.equals(other)).to.be.false;
+    });
+
+    // other test cases covered by object cell
   });
 
   describe("#toXmlNode()", () => {
