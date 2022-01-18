@@ -419,7 +419,25 @@ describe('TuningResource', function() {
   //#region Methods
 
   describe("#equals()", () => {
-    // TODO:
+    it("should return true if the contents are the same", () => {
+      const tuning = TuningResource.create({
+        content: "<I>something</I>"
+      });
+
+      expect(tuning.equals(tuning.clone())).to.be.true;
+    });
+
+    it("should return false if the contents are different", () => {
+      const tuning = TuningResource.create({
+        content: "<I>something</I>"
+      });
+
+      const other = TuningResource.create({
+        content: "<I>something_else</I>"
+      });
+
+      expect(tuning.equals(other)).to.be.false;
+    });
   });
 
   describe('#updateDom()', function() {
