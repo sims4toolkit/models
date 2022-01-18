@@ -6,6 +6,7 @@ import WritableModel from "./writableModel";
  */
 export abstract class MappedModel<Key, Value, Entry extends MappedModelEntry<Key, Value>> extends WritableModel {
   private readonly _entryMap: Map<number, Entry>;
+  private readonly _keyMap: Map<string, number>;
   private _nextId: number;
 
   /**
@@ -30,6 +31,11 @@ export abstract class MappedModel<Key, Value, Entry extends MappedModelEntry<Key
     super(options);
     this._entryMap = entries ?? new Map();
     this._nextId = this._entryMap.size;
+    
+    this._keyMap = new Map();
+    for (const [ id, entry ] of this._entryMap) {
+      this._keyMap.set(this._getKeyString(entry.key), id);
+    }
   }
 
   //#region Public Methods
@@ -43,6 +49,7 @@ export abstract class MappedModel<Key, Value, Entry extends MappedModelEntry<Key
   add(entry: Entry): number {
     const id = this._nextId++;
     this._entryMap.set(id, entry);
+    this._keyMap.set(this._getKeyString(entry.key), id);
     this.uncache();
     return id;
   }
@@ -53,6 +60,7 @@ export abstract class MappedModel<Key, Value, Entry extends MappedModelEntry<Key
   clear() {
     if (this.size > 0) {
       this._entryMap.clear();
+      this._keyMap.clear();
       this._nextId = this.size;
       this.uncache();
     }
@@ -65,9 +73,16 @@ export abstract class MappedModel<Key, Value, Entry extends MappedModelEntry<Key
    * @returns True if an entry was removed, false otherwise
    */
   delete(id: number): boolean {
-    const deleted = this._entryMap.delete(id);
-    if (deleted) this.uncache();
-    return deleted;
+    const entry = this._entryMap.get(id);
+    
+    if (entry) {
+      this._entryMap.delete(id);
+      this._keyMap.delete(this._getKeyString(entry.key));
+      this.uncache();
+      return true;
+    } else {
+      return false;
+    }
   }
 
   /**
@@ -106,11 +121,7 @@ export abstract class MappedModel<Key, Value, Entry extends MappedModelEntry<Key
    * @param key Key to get IDs for
    */
   getIdForKey(key: Key): number {
-    for (const [ id, entry ] of this._entryMap) {
-      if (entry.keyEquals(key)) return id;
-    }
-
-    return undefined;
+    return this._keyMap.get(this._getKeyString(key));
   }
 
   /**
@@ -142,6 +153,18 @@ export abstract class MappedModel<Key, Value, Entry extends MappedModelEntry<Key
   }
 
   //#endregion Public Methods
+
+  //#region Protected Methods
+
+  /**
+   * Returns a unique string that represents the given key compared to other
+   * keys of its type.
+   * 
+   * @param key Key to get unique string for
+   */
+  protected abstract _getKeyString(key: Key): string;
+
+  //#endregion Protected Methods
 }
 
 /**
@@ -152,13 +175,7 @@ export abstract class MappedModelEntry<Key, Value> extends CacheableModel {
   public key: Key;
   public value: Value;
 
-  // TODO:
-
-  /**
-   * Returns a string that uniquely identifies the key of this entry comparative
-   * to other keys of the same type.
-   */
-  abstract getKeyString(): string;
+  // TODO: notify owner on key/value update, when key updates, be sure to update the keyMap
 
   /**
    * Checks if the given key is equal to the one that this entry uses.
