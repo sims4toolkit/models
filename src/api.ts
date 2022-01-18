@@ -1,4 +1,4 @@
-import Sims4Package from "./lib/dbpf/sims4package";
+import Sims4Package from "./lib/packages/sims4package";
 import XmlResource from "./lib/resources/generic/xmlResource";
 import RawResource from "./lib/resources/generic/rawResource";
 import TuningResource from "./lib/resources/tuning/tuningResource";

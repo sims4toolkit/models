@@ -4,10 +4,13 @@ import type Resource from "../resources/resource";
  * A DTO for package models (DBPFs).
  */
 export interface DbpfDto {
-  header?: DbpfHeader;
+  header: DbpfHeader;
   entries: ResourceEntryDto[];  
 }
 
+/**
+ * An object containing the header values for a DBPF.
+ */
 export interface DbpfHeader {
   fileVersion?: Version; // uint32; should be 2.1
   userVersion?: Version; // uint32
@@ -21,6 +24,9 @@ export interface DbpfHeader {
   flags?: number; // uint32
 }
 
+/**
+ * A version in a DBPF header.
+ */
 interface Version {
   major: number; // uint32
   minor: number; // uint32
@@ -29,13 +35,15 @@ interface Version {
 /**
  * A wrapper for a resource to track its metadata within a DBPF.
  */
- export interface ResourceEntryDto {
+export interface ResourceEntryDto {
   key: ResourceKey;
   resource: Resource;
   buffer?: Buffer;
 }
 
-/** The (ideally) unique identifier for a resource. */
+/**
+ * The (ideally) unique identifier for a resource.
+ */
 export interface ResourceKey {
   type: number;
   group: number;
