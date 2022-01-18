@@ -32,13 +32,14 @@ export abstract class MappedModel<Key, Value, Entry extends MappedModelEntry<Key
   private readonly _entryMap: Map<number, Entry>;
   private readonly _keyMap: Map<number | string, number>;
   private _nextId: number;
+  private _cachedEntries?: Entry[];
 
   /**
    * An iterable of the entries in this model. Note that mutating this iterable
    * will not update the model, but mutating individual entries will.
    */
   get entries(): Entry[] {
-    return [...this._entryMap.values()];
+    return this._cachedEntries ??= [...this._entryMap.values()];
   }
 
   /**
@@ -61,6 +62,15 @@ export abstract class MappedModel<Key, Value, Entry extends MappedModelEntry<Key
       this._keyMap.set(this._getKeyIdentifier(entry.key), id);
     });
   }
+
+  //#region Overridden Public Methods
+
+  uncache(): void {
+    delete this._cachedEntries;
+    super.uncache();
+  }
+
+  //#endregion Overridden Public Methods
 
   //#region Public Methods
 
@@ -179,6 +189,8 @@ export abstract class MappedModel<Key, Value, Entry extends MappedModelEntry<Key
     return this.getIdForKey(key) !== undefined;
   }
 
+  // TODO: merge()
+
   /**
    * Notifies this model that a key has been updated.
    * 
@@ -192,6 +204,8 @@ export abstract class MappedModel<Key, Value, Entry extends MappedModelEntry<Key
     this._keyMap.set(this._getKeyIdentifier(current), id);
     this.uncache();
   }
+
+  // TODO: validate
 
   //#endregion Public Methods
 

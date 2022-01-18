@@ -33,12 +33,30 @@ export default abstract class CacheableModel {
     return this._proxy;
   }
 
+  //#endregion Public Methods
+
+  /**
+   * Returns a deep copy of this model, containing everything but the owner.
+   */
+  abstract clone(): CacheableModel;
+
+  /**
+   * Determines whether this model is equivalent to another object.
+   * 
+   * @param other Object to compare this model
+   */
+  abstract equals(other: any): boolean;
+
   /**
    * Uncaches this model and notifies its owner (if it has one) to do the same.
    */
   uncache() {
     this.owner?.uncache();
   }
+
+  //#endregion Public Methods
+
+  //#region Protected Methods
 
   /**
    * Returns the owner to use for collections that this model contains. By
@@ -118,4 +136,6 @@ export default abstract class CacheableModel {
   protected _watchProps(...propNames: string[]) {
     this._cachedProps.push(...propNames);
   }
+
+  //#endregion Protected Methods
 }
