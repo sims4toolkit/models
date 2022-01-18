@@ -1,7 +1,7 @@
 import * as fs from "fs";
 import * as path from "path";
 import { expect } from "chai";
-import { XmlDocumentNode } from "@s4tk/utils/xml";
+import { XmlDocumentNode } from "@s4tk/xml-dom";
 import { TuningResource, tunables } from '../../../dst/api';
 
 const XML_DECLARATION = '<?xml version="1.0" encoding="utf-8"?>';

@@ -1,5 +1,5 @@
 import { expect } from "chai";
-import { XmlElementNode, XmlValueNode } from "@s4tk/utils/xml";
+import { XmlElementNode, XmlValueNode } from "@s4tk/xml-dom";
 import { BinaryEncoder } from "@s4tk/encoding";
 import { simDataCells, simDataFragments, simDataTypes } from "../../../dst/api";
 import MockOwner from "../../mocks/mockOwner";

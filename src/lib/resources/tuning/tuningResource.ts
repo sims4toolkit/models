@@ -1,4 +1,4 @@
-import { XmlDocumentNode } from "@s4tk/utils/xml";
+import { XmlDocumentNode } from "@s4tk/xml-dom";
 import XmlResource from "../generic/xmlResource";
 
 /**

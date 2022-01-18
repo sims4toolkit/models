@@ -1,4 +1,4 @@
-import { XmlDocumentNode } from "@s4tk/utils/xml";
+import { XmlDocumentNode } from "@s4tk/xml-dom";
 import { expect } from "chai";
 import { simDataFragments, simDataTypes, simDataCells } from "../../../dst/api";
 import MockOwner from "../../mocks/mockOwner";

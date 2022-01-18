@@ -1,6 +1,6 @@
 import type SimDataResource from "./simDataResource";
 import type { ObjectCellRow, CellCloneOptions } from "./shared";
-import { XmlElementNode, XmlNode } from "@s4tk/utils/xml";
+import { XmlElementNode, XmlNode } from "@s4tk/xml-dom";
 import { formatAsHexString } from "@s4tk/hashing/formatting";
 import { ObjectCell } from "./simDataCells";
 import CacheableModel from "../../abstract/cacheableModel";

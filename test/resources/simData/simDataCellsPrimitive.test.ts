@@ -2,7 +2,7 @@ import { expect } from "chai";
 import { simDataCells, simDataTypes } from "../../../dst/api";
 import * as hashing from "@s4tk/hashing";
 import { BinaryDecoder, BinaryEncoder } from "@s4tk/encoding";
-import * as xmlDom from "@s4tk/utils/xml";
+import * as xmlDom from "@s4tk/xml-dom";
 import MockOwner from "../../mocks/mockOwner";
 
 const cells = simDataCells;

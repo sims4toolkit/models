@@ -1,7 +1,7 @@
 import type { BinaryDecoder, BinaryEncoder } from "@s4tk/encoding";
 import type { SimDataSchema } from "./simDataFragments";
 import type { SimDataNumber, SimDataBigInt, SimDataText, SimDataFloatVector } from "./simDataTypes";
-import { XmlElementNode, XmlNode, XmlValueNode } from "@s4tk/utils/xml";
+import { XmlElementNode, XmlNode, XmlValueNode } from "@s4tk/xml-dom";
 import { formatAsHexString } from "@s4tk/hashing/formatting";
 import { fnv32 } from "@s4tk/hashing";
 import { CellCloneOptions, CellEncodingOptions, CellToXmlOptions, ObjectCellRow } from "./shared";
