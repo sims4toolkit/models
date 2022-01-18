@@ -107,19 +107,26 @@ describe("BooleanCell", function() {
 
   describe("#equals()", () => {
     it("should return true when both have the same type and value", () => {
-      // TODO:
+      const cell = new cells.BooleanCell(true);
+      expect(cell.equals(cell.clone())).to.be.true;
     });
 
     it("should return false when type is different", () => {
-      // TODO:
+      const cell = new cells.BooleanCell(true);
+      const other = new cells.Float2Cell(1, 1);
+      //@ts-expect-error
+      expect(cell.equals(other)).to.be.false;
     });
 
     it("should return false when value is different", () => {
-      // TODO:
+      const cell = new cells.BooleanCell(true);
+      const other = new cells.BooleanCell(false);
+      expect(cell.equals(other)).to.be.false;
     });
 
     it("should return false when other is undefined", () => {
-      // TODO:
+      const cell = new cells.BooleanCell(true);
+      expect(cell.equals(undefined)).to.be.false;
     });
   });
 
@@ -335,19 +342,26 @@ describe("TextCell", function() {
 
   describe("#equals()", () => {
     it("should return true when both have the same type and value", () => {
-      // TODO:
+      const cell = new cells.TextCell(SimDataType.String, "hi");
+      const other = new cells.TextCell(SimDataType.String, "hi");
+      expect(cell.equals(other)).to.be.true;
     });
 
     it("should return false when type is different", () => {
-      // TODO:
+      const cell = new cells.TextCell(SimDataType.String, "hi");
+      const other = new cells.TextCell(SimDataType.HashedString, "hi");
+      expect(cell.equals(other)).to.be.false;
     });
 
     it("should return false when value is different", () => {
-      // TODO:
+      const cell = new cells.TextCell(SimDataType.String, "hi");
+      const other = new cells.TextCell(SimDataType.String, "bye");
+      expect(cell.equals(other)).to.be.false;
     });
 
     it("should return false when other is undefined", () => {
-      // TODO:
+      const cell = new cells.TextCell(SimDataType.String, "hi");
+      expect(cell.equals(undefined)).to.be.false;
     });
   });
 
@@ -774,19 +788,26 @@ describe("NumberCell", function() {
 
   describe("#equals()", () => {
     it("should return true when both have the same type and value", () => {
-      // TODO:
+      const cell = new cells.NumberCell(SimDataType.UInt32, 64);
+      const other = new cells.NumberCell(SimDataType.UInt32, 64);
+      expect(cell.equals(other)).to.be.true;
     });
 
     it("should return false when type is different", () => {
-      // TODO:
+      const cell = new cells.NumberCell(SimDataType.UInt32, 64);
+      const other = new cells.NumberCell(SimDataType.Int32, 64);
+      expect(cell.equals(other)).to.be.false;
     });
 
     it("should return false when value is different", () => {
-      // TODO:
+      const cell = new cells.NumberCell(SimDataType.UInt32, 64);
+      const other = new cells.NumberCell(SimDataType.UInt32, 32);
+      expect(cell.equals(other)).to.be.false;
     });
 
     it("should return false when other is undefined", () => {
-      // TODO:
+      const cell = new cells.NumberCell(SimDataType.UInt32, 64);
+      expect(cell.equals(undefined)).to.be.false;
     });
   });
 
@@ -1125,19 +1146,26 @@ describe("BigIntCell", function() {
 
   describe("#equals()", () => {
     it("should return true when both have the same type and value", () => {
-      // TODO:
+      const cell = new cells.BigIntCell(SimDataType.UInt64, 64n);
+      const other = new cells.BigIntCell(SimDataType.UInt64, 64n);
+      expect(cell.equals(other)).to.be.true;
     });
 
     it("should return false when type is different", () => {
-      // TODO:
+      const cell = new cells.BigIntCell(SimDataType.UInt64, 64n);
+      const other = new cells.BigIntCell(SimDataType.TableSetReference, 64n);
+      expect(cell.equals(other)).to.be.false;
     });
 
     it("should return false when value is different", () => {
-      // TODO:
+      const cell = new cells.BigIntCell(SimDataType.UInt64, 64n);
+      const other = new cells.BigIntCell(SimDataType.UInt64, 128n);
+      expect(cell.equals(other)).to.be.false;
     });
 
     it("should return false when other is undefined", () => {
-      // TODO:
+      const cell = new cells.BigIntCell(SimDataType.UInt64, 64n);
+      expect(cell.equals(undefined)).to.be.false;
     });
   });
 
@@ -1416,27 +1444,39 @@ describe("ResourceKeyCell", function() {
 
   describe("#equals()", () => {
     it("should return true when both have the same data type and values", () => {
-      // TODO:
+      const cell = new cells.ResourceKeyCell(1, 2, 3n);
+      const other = new cells.ResourceKeyCell(1, 2, 3n);
+      expect(cell.equals(other)).to.be.true;
     });
 
     it("should return false when data type is different", () => {
-      // TODO:
+      const cell = new cells.ResourceKeyCell(1, 2, 3n);
+      const other = new cells.Float3Cell(1, 2, 3);
+      //@ts-expect-error
+      expect(cell.equals(other)).to.be.false;
     });
 
     it("should return false when type is different", () => {
-      // TODO:
+      const cell = new cells.ResourceKeyCell(1, 2, 3n);
+      const other = new cells.ResourceKeyCell(0, 2, 3n);
+      expect(cell.equals(other)).to.be.false;
     });
 
     it("should return false when group is different", () => {
-      // TODO:
+      const cell = new cells.ResourceKeyCell(1, 2, 3n);
+      const other = new cells.ResourceKeyCell(1, 0, 3n);
+      expect(cell.equals(other)).to.be.false;
     });
 
     it("should return false when instance is different", () => {
-      // TODO:
+      const cell = new cells.ResourceKeyCell(1, 2, 3n);
+      const other = new cells.ResourceKeyCell(1, 2, 0n);
+      expect(cell.equals(other)).to.be.false;
     });
 
     it("should return false when other is undefined", () => {
-      // TODO:
+      const cell = new cells.ResourceKeyCell(1, 2, 3n);
+      expect(cell.equals(undefined)).to.be.false;
     });
   });
 
@@ -1661,23 +1701,32 @@ describe("Float2Cell", function() {
 
   describe("#equals()", () => {
     it("should return true when both have the same data type and values", () => {
-      // TODO:
+      const cell = new cells.Float2Cell(1, 2);
+      const other = new cells.Float2Cell(1, 2);
+      expect(cell.equals(other)).to.be.true;
     });
 
     it("should return false when data type is different", () => {
-      // TODO:
+      const cell = new cells.Float2Cell(1, 2);
+      const other = new cells.Float3Cell(1, 2, 3);
+      expect(cell.equals(other)).to.be.false;
     });
 
     it("should return false when x is different", () => {
-      // TODO:
+      const cell = new cells.Float2Cell(1, 2);
+      const other = new cells.Float2Cell(0, 2);
+      expect(cell.equals(other)).to.be.false;
     });
 
     it("should return false when y is different", () => {
-      // TODO:
+      const cell = new cells.Float2Cell(1, 2);
+      const other = new cells.Float2Cell(1, 0);
+      expect(cell.equals(other)).to.be.false;
     });
 
     it("should return false when other is undefined", () => {
-      // TODO:
+      const cell = new cells.Float2Cell(1, 2);
+      expect(cell.equals(undefined)).to.be.false;
     });
   });
 
@@ -1892,27 +1941,38 @@ describe("Float3Cell", function() {
 
   describe("#equals()", () => {
     it("should return true when both have the same data type and values", () => {
-      // TODO:
+      const cell = new cells.Float3Cell(1, 2, 3);
+      const other = new cells.Float3Cell(1, 2, 3);
+      expect(cell.equals(other)).to.be.true;
     });
 
     it("should return false when data type is different", () => {
-      // TODO:
+      const cell = new cells.Float3Cell(1, 2, 3);
+      const other = new cells.Float2Cell(1, 2);
+      expect(cell.equals(other)).to.be.false;
     });
 
     it("should return false when x is different", () => {
-      // TODO:
+      const cell = new cells.Float3Cell(1, 2, 3);
+      const other = new cells.Float3Cell(0, 2, 3);
+      expect(cell.equals(other)).to.be.false;
     });
 
     it("should return false when y is different", () => {
-      // TODO:
+      const cell = new cells.Float3Cell(1, 2, 3);
+      const other = new cells.Float3Cell(1, 0, 3);
+      expect(cell.equals(other)).to.be.false;
     });
 
     it("should return false when z is different", () => {
-      // TODO:
+      const cell = new cells.Float3Cell(1, 2, 3);
+      const other = new cells.Float3Cell(1, 2, 0);
+      expect(cell.equals(other)).to.be.false;
     });
 
     it("should return false when other is undefined", () => {
-      // TODO:
+      const cell = new cells.Float3Cell(1, 2, 3);
+      expect(cell.equals(undefined)).to.be.false;
     });
   });
 
@@ -2147,31 +2207,44 @@ describe("Float4Cell", function() {
 
   describe("#equals()", () => {
     it("should return true when both have the same data type and values", () => {
-      // TODO:
+      const cell = new cells.Float4Cell(1, 2, 3, 4);
+      const other = new cells.Float4Cell(1, 2, 3, 4);
+      expect(cell.equals(other)).to.be.true;
     });
 
     it("should return false when data type is different", () => {
-      // TODO:
+      const cell = new cells.Float4Cell(1, 2, 3, 4);
+      const other = new cells.Float2Cell(1, 2);
+      expect(cell.equals(other)).to.be.false;
     });
 
     it("should return false when x is different", () => {
-      // TODO:
+      const cell = new cells.Float4Cell(1, 2, 3, 4);
+      const other = new cells.Float4Cell(0, 2, 3, 4);
+      expect(cell.equals(other)).to.be.false;
     });
 
     it("should return false when y is different", () => {
-      // TODO:
+      const cell = new cells.Float4Cell(1, 2, 3, 4);
+      const other = new cells.Float4Cell(1, 0, 3, 4);
+      expect(cell.equals(other)).to.be.false;
     });
 
     it("should return false when z is different", () => {
-      // TODO:
+      const cell = new cells.Float4Cell(1, 2, 3, 4);
+      const other = new cells.Float4Cell(1, 2, 0, 4);
+      expect(cell.equals(other)).to.be.false;
     });
 
     it("should return false when w is different", () => {
-      // TODO:
+      const cell = new cells.Float4Cell(1, 2, 3, 4);
+      const other = new cells.Float4Cell(1, 2, 3, 0);
+      expect(cell.equals(other)).to.be.false;
     });
 
     it("should return false when other is undefined", () => {
-      // TODO:
+      const cell = new cells.Float4Cell(1, 2, 3, 4);
+      expect(cell.equals(undefined)).to.be.false;
     });
   });
 

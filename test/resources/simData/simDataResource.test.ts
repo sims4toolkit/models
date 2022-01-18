@@ -892,8 +892,6 @@ describe("SimDataResource", () => {
       expect(schemas.child.child.numChildren).to.equal(24);
       expect(schemas.child.child.child.attributes.name).to.equal("audio_stings_on_add");
     });
-
-    // TODO: sorting
   });
 
   describe("#uncache()", () => {
