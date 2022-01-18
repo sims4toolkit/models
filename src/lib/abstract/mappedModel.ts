@@ -32,6 +32,8 @@ export abstract class MappedModel<Key, Value, Entry extends MappedModelEntry<Key
     this._nextId = this._entryMap.size;
   }
 
+  //#region Public Methods
+
   /**
    * Adds an entry to this model and generates a unique ID for it.
    * 
@@ -68,6 +70,12 @@ export abstract class MappedModel<Key, Value, Entry extends MappedModelEntry<Key
     return deleted;
   }
 
+  /**
+   * Removes the first entry from this model that has the given key.
+   * 
+   * @param key Key of the entry to remove
+   * @returns True if an entry was removed, false otherwise
+   */
   deleteByKey(key: Key): boolean {
     return this.delete(this.getIdForKey(key));
   }
@@ -132,6 +140,8 @@ export abstract class MappedModel<Key, Value, Entry extends MappedModelEntry<Key
   hasKey(key: Key): boolean {
     return this.getIdForKey(key) !== undefined;
   }
+
+  //#endregion Public Methods
 }
 
 /**
