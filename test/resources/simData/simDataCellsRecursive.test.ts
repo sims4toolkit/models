@@ -379,23 +379,71 @@ describe("ObjectCell", () => {
 
   describe("#equals()", () => {
     it("should return true when objects are the same", () => {
-      // TODO:
+      const cell = new cells.ObjectCell(testSchema, {
+        boolean: new cells.BooleanCell(true),
+        uint32: new cells.NumberCell(SimDataType.UInt32, 32),
+        string: new cells.TextCell(SimDataType.String, "hi")
+      });
+
+      const other = cell.clone();
+      expect(cell.equals(other)).to.be.true;
+    });
+
+    it("should return true when the schema is a different object, but is equal", () => {
+      const cell = new cells.ObjectCell(testSchema, {
+        boolean: new cells.BooleanCell(true),
+        uint32: new cells.NumberCell(SimDataType.UInt32, 32),
+        string: new cells.TextCell(SimDataType.String, "hi")
+      });
+
+      const other = cell.clone({ cloneSchema: true });
+      expect(cell.equals(other)).to.be.true;
     });
 
     it("should return false when the schema is different", () => {
-      // TODO:
+      const cell = new cells.ObjectCell(testSchema, {
+        boolean: new cells.BooleanCell(true),
+        uint32: new cells.NumberCell(SimDataType.UInt32, 32),
+        string: new cells.TextCell(SimDataType.String, "hi")
+      });
+
+      const other = cell.clone({ cloneSchema: true });
+      other.schema.name = "NewName";
+      expect(cell.equals(other)).to.be.false;
     });
 
     it("should return false when there is a different number of cells", () => {
-      // TODO:
+      const cell = new cells.ObjectCell(testSchema, {
+        boolean: new cells.BooleanCell(true),
+        uint32: new cells.NumberCell(SimDataType.UInt32, 32),
+        string: new cells.TextCell(SimDataType.String, "hi")
+      });
+
+      const other = cell.clone({ cloneSchema: true });
+      delete other.row.boolean;
+      expect(cell.equals(other)).to.be.false;
     });
 
     it("should return false when there is a different cell", () => {
-      // TODO:
+      const cell = new cells.ObjectCell(testSchema, {
+        boolean: new cells.BooleanCell(true),
+        uint32: new cells.NumberCell(SimDataType.UInt32, 32),
+        string: new cells.TextCell(SimDataType.String, "hi")
+      });
+
+      const other = cell.clone({ cloneSchema: true });
+      other.row.boolean.asAny.value = false;
+      expect(cell.equals(other)).to.be.false;
     });
 
     it("should return false when the other is undefined", () => {
-      // TODO:
+      const cell = new cells.ObjectCell(testSchema, {
+        boolean: new cells.BooleanCell(true),
+        uint32: new cells.NumberCell(SimDataType.UInt32, 32),
+        string: new cells.TextCell(SimDataType.String, "hi")
+      });
+
+      expect(cell.equals(undefined)).to.be.false;
     });
   });
 
