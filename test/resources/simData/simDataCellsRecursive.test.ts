@@ -1151,19 +1151,43 @@ describe("VectorCell", () => {
 
   describe("#equals()", () => {
     it("should return true when vectors are the same", () => {
-      // TODO:
+      const cell = new cells.VectorCell<simDataCells.BooleanCell>([
+        new cells.BooleanCell(true),
+        new cells.BooleanCell(false),
+      ]);
+
+      expect(cell.equals(cell.clone())).to.be.true;
     });
 
     it("should return false when there is a different number of children", () => {
-      // TODO:
+      const cell = new cells.VectorCell<simDataCells.BooleanCell>([
+        new cells.BooleanCell(true),
+        new cells.BooleanCell(false),
+      ]);
+
+      const other = cell.clone();
+      other.children.push(new cells.BooleanCell(false));
+      expect(cell.equals(other)).to.be.false;
     });
 
     it("should return false when there is a different child", () => {
-      // TODO:
+      const cell = new cells.VectorCell<simDataCells.BooleanCell>([
+        new cells.BooleanCell(true),
+        new cells.BooleanCell(false),
+      ]);
+
+      const other = cell.clone();
+      other.children[1].value = true;
+      expect(cell.equals(other)).to.be.false;
     });
 
     it("should return false when the other is undefined", () => {
-      // TODO:
+      const cell = new cells.VectorCell<simDataCells.BooleanCell>([
+        new cells.BooleanCell(true),
+        new cells.BooleanCell(false),
+      ]);
+
+      expect(cell.equals(undefined)).to.be.false;
     });
   });
 
@@ -1709,19 +1733,27 @@ describe("VariantCell", () => {
 
   describe("#equals()", () => {
     it("should return true when variants are the same", () => {
-      // TODO:
+      const cell = new cells.VariantCell<simDataCells.BooleanCell>(0x12, new cells.BooleanCell(true));
+      expect(cell.equals(cell.clone())).to.be.true;
     });
 
     it("should return false when there is a different type hash", () => {
-      // TODO:
+      const cell = new cells.VariantCell<simDataCells.BooleanCell>(0x12, new cells.BooleanCell(true));
+      const other = cell.clone();
+      other.typeHash = 0x23;
+      expect(cell.equals(other)).to.be.false;
     });
 
     it("should return false when there is a different child", () => {
-      // TODO:
+      const cell = new cells.VariantCell<simDataCells.BooleanCell>(0x12, new cells.BooleanCell(true));
+      const other = cell.clone();
+      other.child.asAny.value = false;
+      expect(cell.equals(other)).to.be.false;
     });
 
     it("should return false when the other is undefined", () => {
-      // TODO:
+      const cell = new cells.VariantCell<simDataCells.BooleanCell>(0x12, new cells.BooleanCell(true));
+      expect(cell.equals(undefined)).to.be.false;
     });
   });
 
