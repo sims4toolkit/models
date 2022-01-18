@@ -1,7 +1,7 @@
 import * as fs from "fs";
 import * as path from "path";
 import { expect } from "chai";
-import * as hashing from "@s4tk/utils/hashing";
+import * as hashing from "@s4tk/hashing";
 import { StringTableResource } from "../../../dst/api";
 
 //#region Helpers

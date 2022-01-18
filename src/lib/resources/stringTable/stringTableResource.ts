@@ -1,6 +1,6 @@
 import type { KeyStringPair, StringTableError } from "./shared";
 import type { SerializationOptions } from "../../shared";
-import { fnv32 } from "@s4tk/utils/hashing";
+import { fnv32 } from "@s4tk/hashing";
 import Resource from "../resource";
 import { arraysAreEqual, removeFromArray } from "../../helpers";
 import CacheableModel from "../../abstract/cacheableModel";

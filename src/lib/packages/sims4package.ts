@@ -7,7 +7,7 @@ import WritableModel from "../abstract/writableModel";
 import readDbpf from './serialization/readDbpf';
 import writeDbpf from './serialization/writeDbpf';
 import CacheableModel from '../abstract/cacheableModel';
-import { formatResourceGroup, formatResourceInstance, formatResourceType } from '@s4tk/utils/formatting';
+import { formatResourceGroup, formatResourceInstance, formatResourceType } from '@s4tk/hashing/formatting';
 import { removeFromArray } from '../helpers';
 
 

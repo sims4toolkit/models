@@ -1,6 +1,6 @@
 import type { SerializationOptions } from "../../shared";
 import { XmlDocumentNode, XmlElementNode, XmlNode } from "@s4tk/utils/xml";
-import { formatAsHexString } from "@s4tk/utils/formatting";
+import { formatAsHexString } from "@s4tk/hashing/formatting";
 import Resource from "../resource";
 import { arraysAreEqual, removeFromArray } from "../../helpers";
 import { SimDataInstance, SimDataSchema } from "./simDataFragments";
