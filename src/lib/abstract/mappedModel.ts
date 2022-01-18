@@ -1,8 +1,28 @@
-import CacheableModel from "./cacheableModel";
 import WritableModel from "./writableModel";
 
 /**
- * TODO:
+ * An entry in a MappedModel.
+ */
+export interface MappedModelEntry<Key, Value> {
+  /** The key for this entry. */
+  get key(): Key;
+  set key(key: Key);
+
+  /** The value of this entry. */
+  get value(): Value;
+  set value(value: Value);
+
+  /**
+   * Checks if the given key is equal to the one that this entry uses.
+   * 
+   * @param key Key to check for equality
+   * @returns True if the keys are equal, false otherwise
+   */
+  keyEquals(key: Key): boolean;
+}
+
+/**
+ * A base for writable models that contain mapped data.
  */
 export abstract class MappedModel<Key, Value, Entry extends MappedModelEntry<Key, Value>> extends WritableModel {
   private readonly _entryMap: Map<number, Entry>;
@@ -13,8 +33,8 @@ export abstract class MappedModel<Key, Value, Entry extends MappedModelEntry<Key
    * An iterable of the entries in this model. Note that mutating this iterable
    * will not update the model, but mutating individual entries will.
    */
-  get entries(): IterableIterator<Entry> {
-    return this._entryMap.values();
+  get entries(): Entry[] {
+    return [...this._entryMap.values()];
   }
 
   /**
@@ -24,34 +44,37 @@ export abstract class MappedModel<Key, Value, Entry extends MappedModelEntry<Key
     return this._entryMap.size;
   }
 
-  protected constructor(entries: Map<number, Entry>, options: {
+  protected constructor(entries: { key: Key; value: Value; }[], options: {
     buffer?: Buffer;
     owner?: WritableModel;
   } = {}) {
     super(options);
-    this._entryMap = entries ?? new Map();
-    this._nextId = this._entryMap.size;
-    
+    this._entryMap = new Map();
     this._keyMap = new Map();
-    for (const [ id, entry ] of this._entryMap) {
+
+    entries.forEach((entry, id) => {
+      this._entryMap.set(id, this._makeEntry(entry.key, entry.value));
       this._keyMap.set(this._getKeyString(entry.key), id);
-    }
+    });
   }
 
   //#region Public Methods
 
   /**
-   * Adds an entry to this model and generates a unique ID for it.
+   * Creates a new entry with the given key and value, adds it to this model,
+   * and returns it.
    * 
-   * @param entry Entry to add
-   * @returns Unique ID for this entry (not equal to its key)
+   * @param key Key of entry
+   * @param value Value of entry
+   * @returns The entry object that was created
    */
-  add(entry: Entry): number {
+  add(key: Key, value: Value): Entry {
     const id = this._nextId++;
+    const entry = this._makeEntry(key, value);
     this._entryMap.set(id, entry);
-    this._keyMap.set(this._getKeyString(entry.key), id);
+    this._keyMap.set(this._getKeyString(key), id);
     this.uncache();
-    return id;
+    return entry;
   }
 
   /**
@@ -152,6 +175,20 @@ export abstract class MappedModel<Key, Value, Entry extends MappedModelEntry<Key
     return this.getIdForKey(key) !== undefined;
   }
 
+  /**
+   * Notifies this model that a key has been updated.
+   * 
+   * @param previous Previous key
+   * @param current New key
+   */
+  onKeyUpdate(previous: Key, current: Key) {
+    const previousString = this._getKeyString(previous);
+    const id = this._keyMap.get(previousString);
+    this._keyMap.delete(previousString);
+    this._keyMap.set(this._getKeyString(current), id);
+    this.uncache();
+  }
+
   //#endregion Public Methods
 
   //#region Protected Methods
@@ -164,24 +201,13 @@ export abstract class MappedModel<Key, Value, Entry extends MappedModelEntry<Key
    */
   protected abstract _getKeyString(key: Key): string;
 
-  //#endregion Protected Methods
-}
-
-/**
- * TODO:
- */
-export abstract class MappedModelEntry<Key, Value> extends CacheableModel {
-  public owner?: MappedModel<Key, Value, MappedModelEntry<Key, Value>>;
-  public key: Key;
-  public value: Value;
-
-  // TODO: notify owner on key/value update, when key updates, be sure to update the keyMap
-
   /**
-   * Checks if the given key is equal to the one that this entry uses.
+   * Creates a new entry to add to this model.
    * 
-   * @param key Key to check for equality
-   * @returns True if the keys are equal, false otherwise
+   * @param key Key of entry
+   * @param value Value of entry
    */
-  abstract keyEquals(key: Key): boolean;
+  protected abstract _makeEntry(key: Key, value: Value): Entry;
+
+  //#endregion Protected Methods
 }
