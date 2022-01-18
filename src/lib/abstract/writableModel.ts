@@ -5,6 +5,7 @@ import CacheableModel from './cacheableModel';
  * is cached until any changes are made to it or any of its dependents.
  */
 export default abstract class WritableModel extends CacheableModel {
+  public owner?: WritableModel;
   private _cachedBuffer?: Buffer;
 
   /**
