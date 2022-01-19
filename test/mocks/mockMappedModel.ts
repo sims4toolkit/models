@@ -2,7 +2,7 @@ import CacheableModel from "../../dst/lib/abstract/cacheableModel";
 import { PrimitiveMappedModel, PrimitiveEntry } from "../../dst/lib/abstract/primitiveMappedModel";
 
 export default class MockMappedModel extends PrimitiveMappedModel<string, MockEntry> {
-  constructor(entries: { key: number; value: string; }[], owner?: CacheableModel) {
+  constructor(entries: { key: number; value: string; }[] = [], owner?: CacheableModel) {
     super(entries, { owner });
   }
 
