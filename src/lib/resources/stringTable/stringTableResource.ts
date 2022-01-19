@@ -3,17 +3,17 @@ import Resource from "../resource";
 import compare from "just-compare";
 import clone from "just-clone";
 import CacheableModel from "../../abstract/cacheableModel";
-import { MappedModel, MappedModelEntry } from "../../abstract/mappedModel";
 import { SerializationOptions } from "../../shared";
 import readStbl from "./serialization/readStbl";
 import writeStbl from "./serialization/writeStbl";
 import { arraysAreEqual } from "../../helpers";
 import { fnv32 } from "@s4tk/hashing";
+import { PrimitiveEntry, PrimitiveMappedModel } from "../../abstract/primitiveMappedModel";
 
 /**
  * Model for string table resources.
  */
-export default class StringTableResource extends MappedModel<number, string, StringEntry> implements Resource {
+export default class StringTableResource extends PrimitiveMappedModel<string, StringEntry> implements Resource {
   readonly variant: 'STBL';
   private _header?: StblHeader;
 
@@ -102,10 +102,6 @@ export default class StringTableResource extends MappedModel<number, string, Str
 
   //#region Protected Methods
 
-  protected _getKeyIdentifier(key: number): string | number {
-    return key;
-  }
-
   protected _makeEntry(key: number, value: string): StringEntry {
     return new StringEntry(key, value, this);
   }
@@ -120,32 +116,12 @@ export default class StringTableResource extends MappedModel<number, string, Str
 /**
  * An entry in a StringTableResource.
  */
-class StringEntry extends CacheableModel implements MappedModelEntry<number, string> {
-  public owner?: StringTableResource;
-  private _key: number;
-
-  get key(): number { return this._key; }
-  set key(key: number) {
-    const old = this._key;
-    this._key = key;
-    this.owner?.onKeyUpdate(old, key);
-  }
-  
+class StringEntry extends PrimitiveEntry<string> {
   constructor(key: number, public value: string, owner?: StringTableResource) {
-    super(owner);
-    this._key = key;
-    this._watchProps('value');
+    super(key, value, owner);
   }
 
   clone(): CacheableModel {
     return new StringEntry(this.key, this.value);
-  }
-
-  equals(other: StringEntry): boolean {
-    return this.keyEquals(other?.key) && this.value === other?.value;
-  }
-
-  keyEquals(key: number): boolean {
-    return this.key === key;
   }
 }
