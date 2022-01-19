@@ -18,14 +18,14 @@ export default abstract class CacheableModel {
         const prev: any = target[property];
         const ref = Reflect.set(target, property, value);
         if (property === 'owner') target._onOwnerChange(prev);
-        else if (target._cachedProps.includes(property)) target.uncache();
+        if (target._cachedProps.includes(property)) target.uncache();
         return ref;
       },
       deleteProperty(target: CacheableModel, property: string) {
         const prev: any = target[property];
         const ref = Reflect.deleteProperty(target, property);
         if (property === 'owner') target._onOwnerChange(prev);
-        else if (target._cachedProps.includes(property)) target.uncache();
+        if (target._cachedProps.includes(property)) target.uncache();
         return ref;
       }
     });

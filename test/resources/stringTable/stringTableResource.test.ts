@@ -8,13 +8,17 @@ import { StringTableResource } from "../../../dst/api";
 
 const cachedBuffers: { [key: string]: Buffer; } = {};
 
-function getStbl(filename: string): StringTableResource {
+function getBuffer(filename: string): Buffer {
   if (!cachedBuffers[filename]) {
     const filepath = path.resolve(__dirname, `../../data/stbls/${filename}.stbl`);
     cachedBuffers[filename] = fs.readFileSync(filepath);
   }
 
-  return StringTableResource.from(cachedBuffers[filename]);
+  return cachedBuffers[filename];
+}
+
+function getStbl(filename: string): StringTableResource {
+  return StringTableResource.from(getBuffer(filename));
 }
 
 //#endregion Helpers
@@ -89,7 +93,13 @@ describe("StringTableResource", () => {
   });
 
   describe("#header", () => {
-    // TODO:
+    it("should contain values read from buffer", () => {
+      // TODO:
+    });
+
+    it("should uncache the stbl when updated", () => {
+      // TODO:
+    });
   });
 
   describe("#isChanged", () => {
@@ -180,7 +190,9 @@ describe("StringTableResource", () => {
   describe("static#from()", () => {
     context("stbl header and content are valid", () => {
       it("should be cached", () => {
-        // TODO:
+        const stbl = StringTableResource.from(getBuffer("Basic"));
+        expect(stbl.hasChanged).to.be.false;
+        expect(stbl.isCached).to.be.true;
       });
   
       it("should read empty stbl", () => {
