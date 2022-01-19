@@ -92,27 +92,6 @@ describe("StringTableResource", () => {
     // tested as part of other properties/methods
   });
 
-  describe("#header", () => {
-    it("should contain values read from buffer", () => {
-      const stbl = getStbl("Normal");
-      expect(stbl.header.version).to.equal(5);
-      expect(stbl.header.compressed).to.equal(0);
-      expect(stbl.header.reserved1).to.equal(0);
-      expect(stbl.header.reserved2).to.equal(0);
-    });
-
-    it("should uncache the stbl when updated", () => {
-      const stbl = getStbl("Normal");
-      expect(stbl.isCached).to.be.true;
-      stbl.header.version = 6;
-      expect(stbl.isCached).to.be.false;
-    });
-
-    it("should uncache the stbl when updated", () => {
-      const stbl = getStbl("Normal");
-    });
-  });
-
   describe("#isChanged", () => {
     // tested as part of other properties/methods
   });
@@ -158,21 +137,11 @@ describe("StringTableResource", () => {
       expect(stbl.size).to.equal(0);
     });
 
-    it("should use the header that is provided", () => {
-      const stbl = StringTableResource.create({
-        header: { version: 6, compressed: 1 }
-      });
-      expect(stbl.header.version).to.equal(6);
-      expect(stbl.header.compressed).to.equal(1);
-    });
-
     it("should create entries from the given ones", () => {
-      const stbl = StringTableResource.create({
-        entries: [
-          { key: 123, value: "hi" },
-          { key: 456, value: "bye" }
-        ]
-      });
+      const stbl = StringTableResource.create([
+        { key: 123, value: "hi" },
+        { key: 456, value: "bye" }
+      ]);
 
       expect(stbl.size).to.equal(2);
       expect(stbl.get(0).key).to.equal(123);
@@ -184,9 +153,7 @@ describe("StringTableResource", () => {
     it("should not mutate the given entries", () => {
       const original = StringTableResource.create();
       const originalEntry = original.add(123, "hi");
-      const stbl = StringTableResource.create({
-        entries: [ originalEntry ]
-      });
+      const stbl = StringTableResource.create([ originalEntry ]);
 
       stbl.get(0).value = "bye";
       expect(originalEntry.value).to.equal("hi");
@@ -325,15 +292,57 @@ describe("StringTableResource", () => {
   });
 
   describe("#hasKey()", () => {
-    // TODO:
+    it("should return true if the key is in the model", () => {
+      const stbl = getStbl("Normal");
+      expect(stbl.hasKey(0x7E08629A)).to.be.true;
+    });
+
+    it("should return true if the key was not in the model but was added", () => {
+      const stbl = getStbl("Normal");
+      expect(stbl.hasKey(123)).to.be.false;
+      stbl.add(123, "hi");
+      expect(stbl.hasKey(123)).to.be.true;
+    });
+
+    it("should return false if the key is not in the model", () => {
+      const stbl = getStbl("Normal");
+      expect(stbl.hasKey(123)).to.be.false;
+    });
+
+    it("should return false if the key was in the model but was removed", () => {
+      const stbl = getStbl("Normal");
+      expect(stbl.hasKey(0x7E08629A)).to.be.true;
+      stbl.deleteByKey(0x7E08629A);
+      expect(stbl.hasKey(0x7E08629A)).to.be.false;
+    });
   });
 
   describe("#resetEntries()", () => {
-    // TODO:
+    it("should force the entries to make a new list", () => {
+      const stbl = getStbl("Normal");
+      const entries = stbl.entries;
+      expect(entries).to.equal(stbl.entries);
+      stbl.resetEntries();
+      expect(entries).to.not.equal(stbl.entries);
+    });
   });
 
   describe("#uncache()", () => {
-    // TODO:
+    it("should uncache the buffer", () => {
+      // TODO:
+    });
+
+    it("should notify the owner to uncache", () => {
+      // TODO:
+    });
+
+    it("should reset the entries", () => {
+      const stbl = getStbl("Normal");
+      const entries = stbl.entries;
+      expect(entries).to.equal(stbl.entries);
+      stbl.uncache();
+      expect(entries).to.not.equal(stbl.entries);
+    });
   });
 
   describe("#validate()", () => {

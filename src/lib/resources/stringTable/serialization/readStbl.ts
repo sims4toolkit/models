@@ -1,4 +1,4 @@
-import type { KeyStringPair, StblDto, StblHeader } from "../shared";
+import type { KeyStringPair } from "../shared";
 import type { SerializationOptions } from "../../../shared";
 import { BinaryDecoder } from "@s4tk/encoding";
 
@@ -8,10 +8,8 @@ import { BinaryDecoder } from "@s4tk/encoding";
  * @param buffer Buffer to read as a STBL
  * @param options Options to configure
  */
-export default function readStbl(buffer: Buffer, options?: SerializationOptions): StblDto {
+export default function readStbl(buffer: Buffer, options?: SerializationOptions): KeyStringPair[] {
   const decoder = new BinaryDecoder(buffer);
-
-  const header: StblHeader = {};
 
   if (options === undefined || !options.ignoreErrors) {
     // mnFileIdentifier
@@ -19,18 +17,15 @@ export default function readStbl(buffer: Buffer, options?: SerializationOptions)
       throw new Error("Not a string table.");
 
     // mnVersion
-    header.version = decoder.uint16();
-    if (header.version !== 5)
+    if (decoder.uint16() !== 5)
       throw new Error("Version must be 5.");
   } else {
-    decoder.skip(4);
-    header.version = decoder.uint16();
+    decoder.skip(6);
   }
   
-  header.compressed = decoder.uint8(); // mnCompressed
+  decoder.skip(1); // mnCompressed
   const mnNumEntries = decoder.uint64();
-  header.reserved1 = decoder.uint8(); // mReserved[0]
-  header.reserved2 = decoder.uint8(); // mReserved[1]
+  decoder.skip(2); // mReserved
   decoder.skip(4); // mnStringLength (uint32; 4 bytes)
 
   const entries: KeyStringPair[] = [];
@@ -42,5 +37,5 @@ export default function readStbl(buffer: Buffer, options?: SerializationOptions)
     entries.push({ key, value: string });
   }
 
-  return { header, entries };
+  return entries;
 }

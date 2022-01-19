@@ -1,7 +1,5 @@
-import type { KeyStringPair, StblHeader } from "./shared";
+import type { KeyStringPair } from "./shared";
 import Resource from "../resource";
-import compare from "just-compare";
-import clone from "just-clone";
 import CacheableModel from "../../base/cacheableModel";
 import { SerializationOptions } from "../../shared";
 import readStbl from "./serialization/readStbl";
@@ -15,22 +13,11 @@ import { PrimitiveEntry, PrimitiveMappedModel } from "../../base/primitiveMapped
  */
 export default class StringTableResource extends PrimitiveMappedModel<string, StringEntry> implements Resource {
   readonly variant: 'STBL';
-  private _header?: StblHeader;
-
-  /**
-   * Meta information about this string table. You probably shouldn't edit this.
-   * No touchy. Hands off. Mine.
-   */
-  get header() { return this._header ??= {}; }
-  private set header(header: StblHeader) {
-    this._header = header ? this._getCollectionProxy(header) : header;
-  }
 
   //#region Initialization
 
-  protected constructor(header: StblHeader, entries: KeyStringPair[], buffer?: Buffer, owner?: CacheableModel) {
+  protected constructor(entries: KeyStringPair[], buffer?: Buffer, owner?: CacheableModel) {
     super(entries, { buffer, owner });
-    this.header = header;
   }
 
    /**
@@ -44,11 +31,8 @@ export default class StringTableResource extends PrimitiveMappedModel<string, St
    * 
    * @param args Arguments for creation
    */
-  static create({ header = {}, entries = [] }: {
-    header?: StblHeader;
-    entries?: KeyStringPair[];
-  } = {}): StringTableResource {
-    return new StringTableResource(header, entries);
+  static create(entries: KeyStringPair[] = []): StringTableResource {
+    return new StringTableResource(entries);
   }
 
   /**
@@ -59,8 +43,7 @@ export default class StringTableResource extends PrimitiveMappedModel<string, St
    */
   static from(buffer: Buffer, options?: SerializationOptions): StringTableResource {
     try {
-      const dto = readStbl(buffer, options);
-      return new StringTableResource(dto.header, dto.entries, buffer);
+      return new StringTableResource(readStbl(buffer, options), buffer);
     } catch (e) {
       if (options !== undefined && options.dontThrow) {
         return undefined;
@@ -90,12 +73,11 @@ export default class StringTableResource extends PrimitiveMappedModel<string, St
 
   clone(): StringTableResource {
     const buffer = this.hasChanged ? undefined : this.buffer;
-    return new StringTableResource(clone(this.header), this.entries, buffer);
+    return new StringTableResource(this.entries, buffer);
   }
 
   equals(other: StringTableResource): boolean {
-    return compare(this.header, other?.header)
-      && arraysAreEqual(this.entries, other?.entries);
+    return arraysAreEqual(this.entries, other?.entries);
   }
 
   validate(): void {
@@ -111,7 +93,7 @@ export default class StringTableResource extends PrimitiveMappedModel<string, St
   }
 
   protected _serialize(): Buffer {
-    return writeStbl(this);
+    return writeStbl(this.entries);
   }
 
   //#region Protected Methods
