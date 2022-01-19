@@ -181,7 +181,14 @@ export abstract class MappedModel<Key, Value, Entry extends MappedModelEntry<Key
     this.uncache();
   }
 
-  // TODO: validate()
+  /**
+   * Verifies that this model is valid. If it isn't, a detailed exception is
+   * thrown to explain what is wrong. If nothing is wrong, no exception is
+   * thrown.
+   * 
+   * @throws If this model is invalid
+   */
+  // abstract validate(): void; // TODO: uncomment
 
   //#endregion Public Methods
 
