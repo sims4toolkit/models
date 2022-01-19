@@ -72,6 +72,17 @@ export abstract class MappedModel<Key, Value, Entry extends MappedModelEntry<Key
   }
 
   /**
+   * Creates new entries for the give key/value pairs, adds them to this model,
+   * and returns them in an array.
+   * 
+   * @param entries List of objects to add as entries
+   * @returns An array of the entries that were created
+   */
+  addAll(entries: { key: Key; value: Value; }[]): Entry[] {
+    return entries.map(entry => this.add(entry.key, entry.value));
+  }
+
+  /**
    * Removes all entries from this model.
    */
   clear() {
@@ -169,8 +180,6 @@ export abstract class MappedModel<Key, Value, Entry extends MappedModelEntry<Key
     return this.getIdForKey(key) !== undefined;
   }
 
-  // TODO: merge()
-
   /**
    * Notifies this model that a key has been updated.
    * 
@@ -192,15 +201,6 @@ export abstract class MappedModel<Key, Value, Entry extends MappedModelEntry<Key
   resetEntries() {
     delete this._cachedEntries;
   }
-
-  /**
-   * Verifies that this model is valid. If it isn't, a detailed exception is
-   * thrown to explain what is wrong. If nothing is wrong, no exception is
-   * thrown.
-   * 
-   * @throws If this model is invalid
-   */
-  // abstract validate(): void; // TODO: uncomment
 
   //#endregion Public Methods
 
