@@ -94,11 +94,22 @@ describe("StringTableResource", () => {
 
   describe("#header", () => {
     it("should contain values read from buffer", () => {
-      // TODO:
+      const stbl = getStbl("Basic");
+      expect(stbl.header.version).to.equal(5);
+      expect(stbl.header.compressed).to.equal(0);
+      expect(stbl.header.reserved1).to.equal(0);
+      expect(stbl.header.reserved2).to.equal(0);
     });
 
     it("should uncache the stbl when updated", () => {
-      // TODO:
+      const stbl = getStbl("Basic");
+      expect(stbl.isCached).to.be.true;
+      stbl.header.version = 6;
+      expect(stbl.isCached).to.be.false;
+    });
+
+    it("should uncache the stbl when updated", () => {
+      const stbl = getStbl("Basic");
     });
   });
 
@@ -196,19 +207,43 @@ describe("StringTableResource", () => {
       });
   
       it("should read empty stbl", () => {
-        // TODO:
+        const stbl = StringTableResource.from(getBuffer("Empty"));
+        expect(stbl.size).to.equal(0);
       });
   
       it("should read stbl with entries", () => {
-        // TODO:
+        const stbl = StringTableResource.from(getBuffer("Basic"));
+        expect(stbl.size).to.equal(3);
+        const [ first, second, third ] = stbl.entries;
+        expect(first.key).to.equal(0x7E08629A);
+        expect(first.value).to.equal("This is a string.");
+        expect(second.key).to.equal(0xF098F4B5);
+        expect(second.value).to.equal("This is another string!");
+        expect(third.key).to.equal(0x8D6D117D);
+        expect(third.value).to.equal("And this, this is a third.");
       });
 
       it("should read stbl with special characters", () => {
-        // TODO:
+        const stbl = StringTableResource.from(getBuffer("SpecialChars"));
+        expect(stbl.size).to.equal(4);
+        expect(stbl.get(3).value).to.equal("Thís iš å strįñg w/ spêçiāl chars.");
       });
 
       it("should load identical entries as their own objects", () => {
-        // TODO:
+        const stbl = StringTableResource.from(getBuffer("RepeatedStrings"));
+        expect(stbl.size).to.equal(6);
+        const [ first, second, third, fourth, fifth, sixth ] = stbl.entries;
+
+        expect(first).to.not.equal(second);
+        expect(first.equals(second)).to.be.true;
+
+        expect(third).to.not.equal(fourth);
+        expect(third.key).to.not.equal(fourth.key);
+        expect(third.value).to.equal(fourth.value);
+
+        expect(fifth).to.not.equal(sixth);
+        expect(fifth.key).to.equal(sixth.key);
+        expect(fifth.value).to.not.equal(sixth.value);
       });
     });
     
