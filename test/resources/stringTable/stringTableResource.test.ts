@@ -277,7 +277,19 @@ describe("StringTableResource", () => {
   });
 
   describe("#findRepeatedKeys()", () => {
-    // TODO:
+    it("should be empty when there are no repeated keys", () => {
+      const stbl = getStbl("Normal");
+      const keys = stbl.findRepeatedKeys();
+      expect(keys).to.be.an('Array').that.is.empty;
+    });
+
+    it("should return all keys that are repeated", () => {
+      const stbl = getStbl("RepeatedStrings");
+      const keys = stbl.findRepeatedKeys();
+      expect(keys).to.be.an('Array').with.lengthOf(2);
+      expect(keys[0]).to.equal(0xCFE9989D);
+      expect(keys[1]).to.equal(0x849FFEE6);
+    });
   });
 
   describe("#get()", () => {
