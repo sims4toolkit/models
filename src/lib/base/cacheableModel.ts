@@ -9,11 +9,9 @@ type CachedCollection = { [key: string]: any; } | any[];
 export default abstract class CacheableModel {
   private _cachedProps: string[] = [];
   private _proxy: any;
-  private _children: Set<CacheableModel>;
 
   protected constructor(public owner?: CacheableModel) {
     this._cachedProps = [];
-    this._children = new Set();
 
     this._proxy = new Proxy(this, {
       set(target: CacheableModel, property: string, value: any) {
@@ -43,19 +41,6 @@ export default abstract class CacheableModel {
    * as IDs) are not guaranteed to be preserved.
    */
   abstract clone(): CacheableModel;
-
-  /**
-   * Uncaches this model, its owner, and all of its children. Use of this method
-   * if not recommended, as it defeats the purpose of cacheing at all. However,
-   * it is available for use in case there is a bug with cacheing that you
-   * cannot otherwise work around.
-   */
-  deepUncache() {
-    this.uncache();
-    this._children.forEach(child => {
-      child.deepUncache();
-    });
-  }
 
   /**
    * Determines whether this model is equivalent to another object.
@@ -143,18 +128,14 @@ export default abstract class CacheableModel {
    * 
    * @param child The child that was added
    */
-  protected _onChildAdd(child: CacheableModel) {
-    this._children.add(child);
-  }
+  protected _onChildAdd(child: CacheableModel) {}
 
   /**
    * Called when an object removed this one as its owner.
    * 
    * @param child The child that was removed
    */
-  protected _onChildRemove(child: CacheableModel) {
-    this._children.delete(child);
-  }
+  protected _onChildRemove(child: CacheableModel) {}
 
   /**
    * Called after setting the owner of this model.
