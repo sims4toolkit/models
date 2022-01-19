@@ -173,7 +173,7 @@ export abstract class MappedModel<Key, Value, Entry extends MappedModelEntry<Key
    * @param previous Previous key
    * @param current New key
    */
-  onKeyUpdate(previous: Key, current: Key) {
+  _onKeyUpdate(previous: Key, current: Key) {
     const previousIdentifier = this._getKeyIdentifier(previous);
     const id = this._keyMap.get(previousIdentifier);
     this._keyMap.delete(previousIdentifier);

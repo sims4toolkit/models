@@ -22,7 +22,7 @@ export abstract class PrimitiveEntry<Value> extends CacheableModel implements Ma
   set key(key: number) {
     const previous = this._key;
     this._key = key;
-    this.owner?.onKeyUpdate(previous, key);
+    this.owner?._onKeyUpdate(previous, key);
   }
 
   constructor(key: number, public value: Value, owner: PrimitiveMappedModel<Value, PrimitiveEntry<Value>>) {

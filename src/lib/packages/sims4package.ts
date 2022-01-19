@@ -112,10 +112,10 @@ class ResourceEntry extends WritableModel implements MappedModelEntry<ResourceKe
     const onChange = (owner: Sims4Package, target: ResourceKey, property: string, previous: any) => {
       const old = clone(target);
       old[property] = previous;
-      owner?.onKeyUpdate(old, target);
+      owner?._onKeyUpdate(old, target);
     };
 
-    if (this._key) this.owner?.onKeyUpdate(this._key, key);
+    if (this._key) this.owner?._onKeyUpdate(this._key, key);
     this._key = this._getCollectionProxy(key, onChange);
   }
 
