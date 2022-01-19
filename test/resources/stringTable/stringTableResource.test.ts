@@ -43,7 +43,29 @@ describe("StringTableResource", () => {
   });
 
   describe("#size", () => {
-    // TODO:
+    it("should return 0 when the stbl is empty", () => {
+      const stbl = StringTableResource.create();
+      expect(stbl.size).to.equal(0);
+    });
+
+    it("should return the number of entries in the stbl", () => {
+      const stbl = getStbl("Basic");
+      expect(stbl.size).to.equal(3);
+    });
+
+    it("should increase by 1 after adding an entry", () => {
+      const stbl = getStbl("Basic");
+      expect(stbl.size).to.equal(3);
+      stbl.addAndHash("hello");
+      expect(stbl.size).to.equal(4);
+    });
+
+    it("should decrease by 1 after deleting an entry", () => {
+      const stbl = getStbl("Basic");
+      expect(stbl.size).to.equal(3);
+      stbl.delete(0);
+      expect(stbl.size).to.equal(2);
+    });
   });
 
   //#endregion Properties
