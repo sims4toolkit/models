@@ -2,28 +2,6 @@ import type CacheableModel from "./cacheableModel";
 import WritableModel from "./writableModel";
 
 /**
- * An entry in a MappedModel. This entry is responsible for notifying the owner
- * when its key or value updates.
- */
-export interface MappedModelEntry<Key, Value> {
-  owner?: MappedModel<Key, Value, MappedModelEntry<Key, Value>>;
-
-  /** The key for this entry. */
-  key: Key;
-
-  /** The value of this entry. */
-  value: Value;
-
-  /**
-   * Checks if the given key is equal to the one that this entry uses.
-   * 
-   * @param key Key to check for equality
-   * @returns True if the keys are equal, false otherwise
-   */
-  keyEquals(key: Key): boolean;
-}
-
-/**
  * A base for writable models that contain mapped data.
  */
 export abstract class MappedModel<Key, Value, Entry extends MappedModelEntry<Key, Value>> extends WritableModel {
@@ -226,4 +204,26 @@ export abstract class MappedModel<Key, Value, Entry extends MappedModelEntry<Key
   protected abstract _makeEntry(key: Key, value: Value): Entry;
 
   //#endregion Protected Methods
+}
+
+/**
+ * An entry in a MappedModel. This entry is responsible for notifying the owner
+ * when its key or value updates.
+ */
+export interface MappedModelEntry<Key, Value> {
+  owner?: MappedModel<Key, Value, MappedModelEntry<Key, Value>>;
+
+  /** The key for this entry. */
+  key: Key;
+
+  /** The value of this entry. */
+  value: Value;
+
+  /**
+   * Checks if the given key is equal to the one that this entry uses.
+   * 
+   * @param key Key to check for equality
+   * @returns True if the keys are equal, false otherwise
+   */
+  keyEquals(key: Key): boolean;
 }
