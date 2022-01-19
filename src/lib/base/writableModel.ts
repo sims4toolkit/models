@@ -25,6 +25,14 @@ export default abstract class WritableModel extends CacheableModel {
     return this._cachedBuffer == undefined;
   }
 
+  /** 
+   * Whether this model has a cached buffer. This is the same as checking if the
+   * model has not changed.
+   */
+  get isCached(): boolean {
+    return this._cachedBuffer != undefined;
+  }
+
   protected constructor(args?: {
     buffer?: Buffer;
     owner?: CacheableModel;
