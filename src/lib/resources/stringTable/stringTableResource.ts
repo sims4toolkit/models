@@ -1,4 +1,5 @@
 import type { KeyStringPair, StblHeader } from "./shared";
+import Resource from "../resource";
 import compare from "just-compare";
 import clone from "just-clone";
 import CacheableModel from "../../abstract/cacheableModel";
@@ -12,7 +13,8 @@ import { fnv32 } from "@s4tk/hashing";
 /**
  * Model for string table resources.
  */
-export default class StringTableResource extends MappedModel<number, string, StringEntry> {
+export default class StringTableResource extends MappedModel<number, string, StringEntry> implements Resource {
+  readonly variant: 'STBL';
   private _header?: StblHeader;
 
   /**
@@ -86,7 +88,7 @@ export default class StringTableResource extends MappedModel<number, string, Str
     return this.add(key, value);
   }
 
-  clone(): CacheableModel {
+  clone(): StringTableResource {
     const buffer = this.hasChanged ? undefined : this.buffer;
     return new StringTableResource(clone(this.header), this.entries, buffer);
   }
