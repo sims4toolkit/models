@@ -32,7 +32,7 @@ describe("StringTableResource", () => {
 
   describe("#entries", () => {
     it("should return the entries in an array", () => {
-      const stbl = getStbl("Basic");
+      const stbl = getStbl("Normal");
       expect(stbl.entries).to.be.an('Array').with.lengthOf(3);
       const [ first, second, third ] = stbl.entries;
       expect(first.key).to.equal(0x7E08629A);
@@ -44,7 +44,7 @@ describe("StringTableResource", () => {
     });
 
     it("should not mutate the internal map", () => {
-      const stbl = getStbl("Basic");
+      const stbl = getStbl("Normal");
       const entries = stbl.entries;
       expect(stbl.size).to.equal(3);
       entries.splice(0, 1);
@@ -53,7 +53,7 @@ describe("StringTableResource", () => {
     });
 
     it("should not uncache the model when mutated", () => {
-      const stbl = getStbl("Basic");
+      const stbl = getStbl("Normal");
       expect(stbl.isCached).to.be.true;
       const entries = stbl.entries;
       entries.splice(0, 1);
@@ -61,27 +61,27 @@ describe("StringTableResource", () => {
     });
 
     it("should be the same object when accessed more than once without changes", () => {
-      const stbl = getStbl("Basic");
+      const stbl = getStbl("Normal");
       const entries = stbl.entries;
       expect(stbl.entries).to.equal(entries);
     });
 
     it("should be a new object when an entry is added", () => {
-      const stbl = getStbl("Basic");
+      const stbl = getStbl("Normal");
       const entries = stbl.entries;
       stbl.add(2468, "ciao");
       expect(stbl.entries).to.not.equal(entries);
     });
 
     it("should be a new object when an entry is mutated", () => {
-      const stbl = getStbl("Basic");
+      const stbl = getStbl("Normal");
       const entries = stbl.entries;
       entries[0].key = 2468;
       expect(stbl.entries).to.not.equal(entries);
     });
 
     it("should be a new object when an entry is removed", () => {
-      const stbl = getStbl("Basic");
+      const stbl = getStbl("Normal");
       const entries = stbl.entries;
       stbl.delete(0);
       expect(stbl.entries).to.not.equal(entries);
@@ -94,7 +94,7 @@ describe("StringTableResource", () => {
 
   describe("#header", () => {
     it("should contain values read from buffer", () => {
-      const stbl = getStbl("Basic");
+      const stbl = getStbl("Normal");
       expect(stbl.header.version).to.equal(5);
       expect(stbl.header.compressed).to.equal(0);
       expect(stbl.header.reserved1).to.equal(0);
@@ -102,23 +102,19 @@ describe("StringTableResource", () => {
     });
 
     it("should uncache the stbl when updated", () => {
-      const stbl = getStbl("Basic");
+      const stbl = getStbl("Normal");
       expect(stbl.isCached).to.be.true;
       stbl.header.version = 6;
       expect(stbl.isCached).to.be.false;
     });
 
     it("should uncache the stbl when updated", () => {
-      const stbl = getStbl("Basic");
+      const stbl = getStbl("Normal");
     });
   });
 
   describe("#isChanged", () => {
     // tested as part of other properties/methods
-  });
-  
-  describe("#owner", () => {
-    // TODO:
   });
 
   describe("#size", () => {
@@ -128,19 +124,19 @@ describe("StringTableResource", () => {
     });
 
     it("should return the number of entries in the stbl", () => {
-      const stbl = getStbl("Basic");
+      const stbl = getStbl("Normal");
       expect(stbl.size).to.equal(3);
     });
 
     it("should increase by 1 after adding an entry", () => {
-      const stbl = getStbl("Basic");
+      const stbl = getStbl("Normal");
       expect(stbl.size).to.equal(3);
       stbl.addAndHash("hello");
       expect(stbl.size).to.equal(4);
     });
 
     it("should decrease by 1 after deleting an entry", () => {
-      const stbl = getStbl("Basic");
+      const stbl = getStbl("Normal");
       expect(stbl.size).to.equal(3);
       stbl.delete(0);
       expect(stbl.size).to.equal(2);
@@ -201,7 +197,7 @@ describe("StringTableResource", () => {
   describe("static#from()", () => {
     context("stbl header and content are valid", () => {
       it("should be cached", () => {
-        const stbl = StringTableResource.from(getBuffer("Basic"));
+        const stbl = StringTableResource.from(getBuffer("Normal"));
         expect(stbl.hasChanged).to.be.false;
         expect(stbl.isCached).to.be.true;
       });
@@ -212,7 +208,7 @@ describe("StringTableResource", () => {
       });
   
       it("should read stbl with entries", () => {
-        const stbl = StringTableResource.from(getBuffer("Basic"));
+        const stbl = StringTableResource.from(getBuffer("Normal"));
         expect(stbl.size).to.equal(3);
         const [ first, second, third ] = stbl.entries;
         expect(first.key).to.equal(0x7E08629A);
@@ -349,15 +345,19 @@ describe("StringTableResource", () => {
 
 describe("StringEntry", () => {
   describe("#key", () => {
-    // TODO:
-  });
+    it("should uncache the stbl when set", () => {
+      // TODO:
+    });
 
-  describe("#owner", () => {
-    // TODO:
+    it("should update the key map when set", () => {
+      // TODO:
+    });
   });
 
   describe("#value", () => {
-    // TODO:
+    it("should uncache the stbl when set", () => {
+      const stbl = getStbl("Normal");
+    });
   });
 
   describe("#clone()", () => {
