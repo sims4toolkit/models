@@ -5,15 +5,15 @@ import type Resource from "../resources/resource";
  */
 export interface DbpfDto {
   header: DbpfHeader;
-  entries: ResourceEntryDto[];  
+  entries: ResourceKeyPair[];  
 }
 
 /**
  * An object containing the header values for a DBPF.
  */
 export interface DbpfHeader {
-  fileVersion?: Version; // uint32; should be 2.1
-  userVersion?: Version; // uint32
+  fileVersion?: DbpfVersion; // uint32; should be 2.1
+  userVersion?: DbpfVersion; // uint32
   creationTime?: number; // uint32
   updatedTime?: number; // uint32
   unused1?: number; // uint32
@@ -27,24 +27,20 @@ export interface DbpfHeader {
 /**
  * A version in a DBPF header.
  */
-interface Version {
+interface DbpfVersion {
   major: number; // uint32
   minor: number; // uint32
 }
 
-/**
- * A wrapper for a resource to track its metadata within a DBPF.
- */
-export interface ResourceEntryDto {
-  key: ResourceKeyDto;
-  resource: Resource;
-  buffer?: Buffer;
+export interface ResourceKeyPair {
+  key: ResourceKey;
+  value: Resource;
 }
 
 /**
  * The (ideally) unique identifier for a resource.
  */
-export interface ResourceKeyDto {
+export interface ResourceKey {
   type: number;
   group: number;
   instance: bigint;

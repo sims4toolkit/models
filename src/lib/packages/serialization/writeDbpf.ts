@@ -1,4 +1,4 @@
-import type Dbpf from "../sims4package";
+import type { DbpfDto } from "../shared";
 
 import { BinaryEncoder } from "@s4tk/encoding";
 
@@ -7,7 +7,7 @@ import { BinaryEncoder } from "@s4tk/encoding";
  * 
  * @param dbpf DBPF model to serialize into a buffer
  */
-export default function writeDbpf(dbpf: Dbpf): Buffer {
+export default function writeDbpf(dbpf: DbpfDto): Buffer {
   const recordsBuffer: Buffer = (() => {
     const buffer = Buffer.alloc(0); // FIXME: find size
     const encoder = new BinaryEncoder(buffer);
@@ -19,7 +19,7 @@ export default function writeDbpf(dbpf: Dbpf): Buffer {
 
   const indexBuffer: Buffer = (() => {
     // each entry is 32 bytes, and flags are 4
-    const buffer = Buffer.alloc(dbpf.length * 32 + 4);
+    const buffer = Buffer.alloc(dbpf.entries.length * 32 + 4);
     const encoder = new BinaryEncoder(buffer);
 
     encoder.uint32(0); // flags will always be null
@@ -47,7 +47,7 @@ export default function writeDbpf(dbpf: Dbpf): Buffer {
     encoder.uint32(2); // version major
     encoder.uint32(1); // version minor
     encoder.skip(24); // mnUserVersion through unused2
-    encoder.uint32(dbpf.length);
+    encoder.uint32(dbpf.entries.length);
     encoder.uint32(0); // FIXME: what is the low pos?
     encoder.uint32(indexBuffer.length); // index size
     encoder.skip(12); // unused3
