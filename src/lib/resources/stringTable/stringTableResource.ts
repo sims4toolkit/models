@@ -125,11 +125,12 @@ class StringEntry extends PrimitiveEntry<string> {
     super(key, value, owner);
   }
 
-  clone(): CacheableModel {
+  clone(): StringEntry {
     return new StringEntry(this.key, this.value);
   }
 
   validate(): void {
-    // TODO:
+    if (Number.isNaN(this.key) || this.key < 0 || this.key > 0xFFFFFFFF)
+      throw new Error(`Expected string entry's key to be a UInt32, got ${this.key}`);
   }
 }
