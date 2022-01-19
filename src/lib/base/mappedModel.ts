@@ -25,10 +25,10 @@ export abstract class MappedModel<Key, Value, Entry extends MappedModelEntry<Key
     return this._entryMap.size;
   }
 
-  protected constructor(entries: { key: Key; value: Value; }[], options: {
+  protected constructor(entries: { key: Key; value: Value; }[], options?: {
     buffer?: Buffer;
     owner?: CacheableModel;
-  } = {}) {
+  }) {
     super(options);
     this._entryMap = new Map();
     this._keyMap = new Map();
