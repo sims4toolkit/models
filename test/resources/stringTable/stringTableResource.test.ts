@@ -131,13 +131,102 @@ describe("StringTableResource", () => {
   //#region Initialization
 
   describe("static#create()", () => {
-    it("should not have a cached buffer", () => {
-      // TODO:
+    it("should not be cached", () => {
+      const stbl = StringTableResource.create();
+      expect(stbl.isCached).to.be.false;
+    });
+
+    it("should be empty if nothing is given", () => {
+      const stbl = StringTableResource.create();
+      expect(stbl.size).to.equal(0);
+    });
+
+    it("should use the header that is provided", () => {
+      const stbl = StringTableResource.create({
+        header: { version: 6, compressed: 1 }
+      });
+      expect(stbl.header.version).to.equal(6);
+      expect(stbl.header.compressed).to.equal(1);
+    });
+
+    it("should create entries from the given ones", () => {
+      const stbl = StringTableResource.create({
+        entries: [
+          { key: 123, value: "hi" },
+          { key: 456, value: "bye" }
+        ]
+      });
+
+      expect(stbl.size).to.equal(2);
+      expect(stbl.get(0).key).to.equal(123);
+      expect(stbl.get(0).value).to.equal("hi");
+      expect(stbl.get(1).key).to.equal(456);
+      expect(stbl.get(1).value).to.equal("bye");
+    });
+
+    it("should not mutate the given entries", () => {
+      const original = StringTableResource.create();
+      const originalEntry = original.add(123, "hi");
+      const stbl = StringTableResource.create({
+        entries: [ originalEntry ]
+      });
+
+      stbl.get(0).value = "bye";
+      expect(originalEntry.value).to.equal("hi");
+      expect(stbl.get(0).value).to.equal("bye");
     });
   });
 
   describe("static#from()", () => {
-    // TODO:
+    context("stbl header and content are valid", () => {
+      it("should be cached", () => {
+        // TODO:
+      });
+  
+      it("should read empty stbl", () => {
+        // TODO:
+      });
+  
+      it("should read stbl with entries", () => {
+        // TODO:
+      });
+
+      it("should read stbl with special characters", () => {
+        // TODO:
+      });
+
+      it("should load identical entries as their own objects", () => {
+        // TODO:
+      });
+    });
+    
+    context("stbl header is valid, but content is invalid", () => {
+      it("should throw if ignoreErrors = false", () => {
+        // TODO:
+      });
+
+      it("should throw even if ignoreErrors = true", () => {
+        // TODO:
+      });
+
+      it("should return undefined if dontThrow = true", () => {
+        // TODO:
+      });
+    });
+
+    context("stbl header is invalid, but content is valid", () => {
+      it("should throw if ignoreErrors = false", () => {
+        // TODO:
+      });
+
+      it("should return the table content if ignoreErrors = true", () => {
+        // TODO:
+      });
+
+      it("should return undefined if dontThrow = true", () => {
+        // TODO:
+      });
+    });
   });
 
   //#endregion Initialization
