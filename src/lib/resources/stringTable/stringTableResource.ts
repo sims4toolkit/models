@@ -1,62 +1,52 @@
-import type { KeyStringPair, StringTableError } from "./shared";
-import type { SerializationOptions } from "../../shared";
-import { fnv32 } from "@s4tk/hashing";
-import Resource from "../resource";
-import { arraysAreEqual, removeFromArray } from "../../helpers";
+import type { KeyStringPair, StblHeader } from "./shared";
+import compare from "just-compare";
+import clone from "just-clone";
 import CacheableModel from "../../abstract/cacheableModel";
+import { MappedModel, MappedModelEntry } from "../../abstract/mappedModel";
+import { SerializationOptions } from "../../shared";
 import readStbl from "./serialization/readStbl";
 import writeStbl from "./serialization/writeStbl";
+import { arraysAreEqual } from "../../helpers";
+import { fnv32 } from "@s4tk/hashing";
 
 /**
  * Model for string table resources.
  */
-export default class StringTableResource extends Resource {
-  readonly variant = 'STBL';
-  private _nextId: number;
-  private _entries: StringEntry[];
+export default class StringTableResource extends MappedModel<number, string, StringEntry> {
+  private _header?: StblHeader;
 
   /**
-   * An array that contains the entries for this string table. Mutating this
-   * array and its contents is safe in terms of cacheing, however, you should
-   * not be pushing entries here yourself. Use the `add()` method, so that IDs
-   * are guaranteed to be unique.
+   * Meta information about this string table. You probably shouldn't edit this.
+   * No touchy. Hands off. Mine.
    */
-  get entries() { return this._entries; }
-  private set entries(entries: StringEntry[]) {
-    const owner = this._getCollectionOwner() as StringTableResource;
-    entries.forEach(entry => entry.owner = owner);
-    this._entries = this._getCollectionProxy(entries);
+  get header() { return this._header ??= {}; }
+  private set header(header: StblHeader) {
+    this.header = header ? this._getCollectionProxy(header) : header;
   }
-
-  /** Shorthand for `entries.length`. */
-  get length(): number { return this.entries.length; }
 
   //#region Initialization
 
-  /**
-   * Creates a new StringTableResource instance. This constructor is not
-   * considered to be a part of the public API. Please refer to `create()` and
-   * `from()` instead.
-   * 
-   * @param entries Entries for this string table
-   * @param buffer Initial buffer to cache
-   */
-  protected constructor(entries: KeyStringPair[] = [], buffer?: Buffer) {
-    super({ buffer });
-    this.entries = entries.map((entry, id) => {
-      return new StringEntry(id, entry.key, entry.value, this);
-    });
-    this._nextId = this.length;
+  protected constructor(header: StblHeader, entries: KeyStringPair[], buffer?: Buffer, owner?: CacheableModel) {
+    super(entries, { buffer, owner });
+    this.header = header;
   }
 
-  /**
-   * Creates and returns a new string table resource from the given entries. If
-   * no entries are provided, the string table is empty.
+   /**
+   * Creates a new StringTableResource instance from the given header and
+   * entries. Both arguments are optional, and if left out, will create an empty
+   * string table with default header values.
    * 
-   * @param entries Initial data for this string table 
+   * Arguments:
+   * - `header`: Values to use in the header. Empty by default.
+   * - `entries`: String entries to use. Empty by default.
+   * 
+   * @param args Arguments for creation
    */
-  static create(entries: KeyStringPair[] = []): StringTableResource {
-    return new StringTableResource(entries);
+  static create({ header = {}, entries = [] }: {
+    header?: StblHeader;
+    entries?: KeyStringPair[];
+  } = {}): StringTableResource {
+    return new StringTableResource(header, entries);
   }
 
   /**
@@ -68,7 +58,7 @@ export default class StringTableResource extends Resource {
   static from(buffer: Buffer, options?: SerializationOptions): StringTableResource {
     try {
       const dto = readStbl(buffer, options);
-      return new StringTableResource(dto.entries, buffer);
+      return new StringTableResource(dto.header, dto.entries, buffer);
     } catch (e) {
       if (options !== undefined && options.dontThrow) {
         return undefined;
@@ -78,271 +68,82 @@ export default class StringTableResource extends Resource {
     }
   }
 
-  /**
-   * Combines a variable number of string tables into one. Does not mutate the 
-   * orignal STBLs, just creates a new one.
-   * 
-   * @param stbls String tables to combine
-   */
-  static combine(...stbls: StringTableResource[]): StringTableResource {
-    const mergedStbl = StringTableResource.create();
-    stbls.forEach(stbl => {
-      stbl.entries.forEach(entry => {
-        mergedStbl.add(entry.key, entry.value);
-      });
-    });
-    return mergedStbl;
-  }
-
-  clone(): StringTableResource {
-    // entries will be cloned in the constructor, the buffer doesn't matter
-    const buffer = this.hasChanged ? undefined : this.buffer;
-    return new StringTableResource(this.entries, buffer);
-  }
-
   //#endregion Initialization
 
-  //#region Public Methods - CREATE
+  //#region Public Methods
 
   /**
-   * Creates an entry for the given key and string, adds it to the string table,
-   * and returns the entry that was created. If the given key is not a positive,
-   * 32-bit integer, or if it already exists in the table, an error is thrown.
+   * Creates a new entry from the given string, adds it to the string table,
+   * and returns it. If `toHash` is supplied, it will be hashed for the key. If
+   * not, then the string itself will be hashed.
    * 
-   * Options
-   * - `allowDuplicateKey`: If `true`, then the function will not throw when
-   * adding a key that already exists. (Default = `false`)
-   * 
-   * @param key Key of the string to add
-   * @param string String to add
-   * @param options Object containing options 
-   * @returns String entry that was added
-   * @throws If the key is not 32-bit or if it already exists
+   * @param value String to add to table
+   * @param toHash Optional string to hash for the key
+   * @returns The entry object that was created
    */
-  add(key: number, string: string, { allowDuplicateKey = false } = {}): StringEntry {
-    if (key < 0 || key > 0xFFFFFFFF)
-      throw new Error(`Tried to add key that is not a uint32: ${key}`);
-    if (!allowDuplicateKey && this.getByKey(key))
-      throw new Error(`Tried to add key that already exists: ${key}`);
-    const entry = new StringEntry(this._nextId++, key, string, this);
-    this.entries.push(entry);
-    return entry;
+  addAndHash(value: string, toHash?: string): StringEntry {
+    const key = fnv32(toHash ? toHash : value);
+    return this.add(key, value);
   }
 
-  /**
-   * Creates the key for the given string and adds it to the string table. If
-   * the key already exists, an exception will be thrown. The entry object that
-   * is created will be returned.
-   * 
-   * Options
-   * - `toHash`: If provided, this will be hashed to create the key. If not, 
-   * then the string itself will be hashed. (Default = `undefined`)
-   * - `allowDuplicateKey`: If true, then the function will not throw when
-   * adding a key that already exists. (Default = `false`)
-   * 
-   * @param string String to add to the string table
-   * @param options Object containing options 
-   * @returns String entry that was added
-   * @throws If the key already exists
-   */
-  addAndHash(string: string, { toHash, allowDuplicateKey = false }: {
-    toHash?: string;
-    allowDuplicateKey?: boolean;
-  } = {}): StringEntry {
-    return this.add(fnv32(toHash ?? string), string, { allowDuplicateKey });
+  clone(): CacheableModel {
+    const buffer = this.hasChanged ? undefined : this.buffer;
+    return new StringTableResource(clone(this.header), this.entries, buffer);
   }
-
-  /**
-   * Adds all entries from all given string tables into this one. Entries are
-   * cloned and are given new IDs relative to this table.
-   * 
-   * @param stbls String tables to add entries from
-   */
-  merge(...stbls: StringTableResource[]) {
-    stbls.forEach(stbl => {
-      stbl.entries.forEach(entry => {
-        this.add(entry.key, entry.value);
-      });
-    });
-  }
-
-  //#endregion Public Methods - CREATE
-
-  //#region Public Methods - READ
 
   equals(other: StringTableResource): boolean {
-    if (!super.equals(other)) return false;
-    return arraysAreEqual(this.entries, other.entries);
+    return compare(this.header, other?.header)
+      && arraysAreEqual(this.entries, other?.entries);
   }
 
-  /**
-   * Finds and returns any errors that are in this string table. Returns an
-   * empty array if there are no errors.
-   */
-  findErrors(): { error: StringTableError; entries: StringEntry[]; }[] {
-    const keyMap: { [key: number]: StringEntry[] } = {};
-    const stringMap: { [key: string]: StringEntry[] } = {};
-
-    this.entries.forEach(entry => {
-      if (keyMap[entry.key] === undefined) keyMap[entry.key] = [];
-      keyMap[entry.key].push(entry);
-      if (stringMap[entry.value] === undefined) stringMap[entry.value] = [];
-      stringMap[entry.value].push(entry);
-    });
-
-    const result: { error: StringTableError; entries: StringEntry[]; }[] = [];
-    for (const key in keyMap) {
-      if (keyMap[key].length > 1)
-        result.push({ error: 'Duplicate Keys', entries: keyMap[key] });
-    }
-    for (const string in stringMap) {
-      if (stringMap[string].length > 1)
-        result.push({ error: 'Duplicate Strings', entries: stringMap[string] });
-      if (string === '')
-        result.push({ error: 'Empty String', entries: stringMap[string] });
-    }
-    return result;
-  }
-
-  /**
-   * Finds and returns the index of the given entry.
-   * 
-   * @param entry Entry to find index of
-   */
-  findIndex(entry: StringEntry): number {
-    return this.entries.findIndex(e => e.id === entry.id);
-  }
-
-  /**
-   * Finds and returns the entry with the given ID.
-   * 
-   * @param id Id of entry to find
-   */
-  getById(id: number): StringEntry {
-    return this.entries.find(entry => entry.id === id);
-  }
-
-  /**
-   * Finds and returns the entry with the given key. If there is more than one
-   * entry with the key, the first is returned.
-   * 
-   * @param key Key of entry to find
-   */
-  getByKey(key: number): StringEntry {
-    return this.entries.find(entry => entry.key === key);
-  }
-
-  /**
-  * Returns all entries that match the given search criteria. By default, it
-  * will search for an exact, case-sensitive match.
-  * 
-  * Options
-  * - `caseSensitive`: Whether or not to check case. (Default = `true`)
-  * - `includeSubstrings`: Whether or not to search by substring rather than an
-  * exact match. (Default = `false`)
-  * 
-  * @param string String to search for
-  * @param options Object containing options
-  */
-  search(string: string, { caseSensitive = true, includeSubstrings = false }: {
-    caseSensitive?: boolean;
-    includeSubstrings?: boolean;
-  } = {}): StringEntry[] {
-    return this.entries.filter(entry => {
-      if (includeSubstrings) {
-        // substring
-        return caseSensitive ?
-          entry.value.includes(string) :
-          entry.value.toLowerCase().includes(string.toLowerCase());
-      } else {
-        // exact match
-        return caseSensitive ?
-          entry.value === string :
-          entry.value.toLowerCase() === string.toLowerCase();
-      }
-    });
-  }
-
-  //#endregion Public Methods - READ
-
-  //#region Public Methods - UPDATE
-
-  /**
-   * Sorts the entries in the string table using the provided function. If no
-   * function is given, they are sorted in ascending order by their string.
-   * 
-   * @param compareFn Function used to determine the order of the elements. It
-   * is expected to return a negative value if first argument is less than
-   * second argument, zero if they're equal and a positive value otherwise. If
-   * omitted, the elements are sorted in ascending, ASCII character order.
-   * [Copied from `Array.sort()`'s documentation]
-   */
-  sort(compareFn?: (a: StringEntry, b: StringEntry) => number) {
-    this.entries.sort(compareFn || ((a, b) => {
-      if (a.value < b.value) return -1;
-      if (a.value > b.value) return 1;
-      return 0;
-    }));
-    this.uncache();
-  }
-
-  //#endregion Public Methods - UPDATE
-
-  //#region Public Methods - DELETE
-
-  /**
-   * Removes any number of entries from this string table. If just removing one
-   * entry, consider calling its `delete()` method.
-   * 
-   * @param entries Entries to remove from this string table
-   */
-  remove(...entries: StringEntry[]) {
-    removeFromArray(entries, this.entries);
-  }
-
-  //#endregion Public Methods - DELETE
+  //#endregion Public Methods
 
   //#region Protected Methods
 
+  protected _getKeyIdentifier(key: number): string | number {
+    return key;
+  }
+
+  protected _makeEntry(key: number, value: string): StringEntry {
+    return new StringEntry(key, value, this);
+  }
+
   protected _serialize(): Buffer {
-    //@ts-expect-error
     return writeStbl(this);
   }
 
-  //#endregion Protected Methods
+  //#region Protected Methods
 }
 
 /**
  * An entry in a StringTableResource.
  */
-class StringEntry extends CacheableModel implements KeyStringPair {
+class StringEntry extends CacheableModel implements MappedModelEntry<number, string> {
   public owner?: StringTableResource;
+  private _key: number;
 
-  constructor(public readonly id: number, public key: number, public value: string, owner: StringTableResource) {
+  get key(): number { return this._key; }
+  set key(key: number) {
+    const old = this._key;
+    this._key = key;
+    this.owner?.onKeyUpdate(old, key);
+  }
+  
+  constructor(key: number, public value: string, owner?: StringTableResource) {
     super(owner);
-    this._watchProps('key', 'value');
+    this._key = key;
+    this._watchProps('value');
   }
 
-  clone(): StringEntry {
-    return new StringEntry(this.id, this.key, this.value, this.owner);
+  clone(): CacheableModel {
+    return new StringEntry(this.key, this.value);
   }
 
-  /**
-   * Removes this entry from the string table that owns it.
-   */
-  delete() {
-    this.owner?.remove(this);
-  }
-
-  /**
-   * Returns whether this entry is equal to another one.
-   * 
-   * @param other Other entry to check for equality
-   */
   equals(other: StringEntry): boolean {
-    if (!other) return false;
-    if (this.key !== other.key) return false;
-    if (this.value !== other.value) return false;
-    return true;
+    return this.keyEquals(other?.key) && this.value === other?.value;
+  }
+
+  keyEquals(key: number): boolean {
+    return this.key === key;
   }
 }
