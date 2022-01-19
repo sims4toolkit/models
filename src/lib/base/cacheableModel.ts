@@ -18,14 +18,14 @@ export default abstract class CacheableModel {
         const prev: any = target[property];
         const ref = Reflect.set(target, property, value);
         if (property === 'owner') target._onOwnerChange(prev);
-        if (target._cachedProps.includes(property)) target.uncache();
+        else if (target._cachedProps.includes(property)) target.uncache();
         return ref;
       },
       deleteProperty(target: CacheableModel, property: string) {
         const prev: any = target[property];
         const ref = Reflect.deleteProperty(target, property);
         if (property === 'owner') target._onOwnerChange(prev);
-        if (target._cachedProps.includes(property)) target.uncache();
+        else if (target._cachedProps.includes(property)) target.uncache();
         return ref;
       }
     });
@@ -36,9 +36,13 @@ export default abstract class CacheableModel {
   //#endregion Public Methods
 
   /**
-   * Returns a deep copy of this model, containing everything but the owner.
+   * Returns a deep copy of this model, containing all of the same public
+   * properties that this model has, except for its owner. Internal values (such
+   * as IDs) are not guaranteed to be preserved.
    */
   abstract clone(): CacheableModel;
+
+  // TODO: deepUncache()
 
   /**
    * Determines whether this model is equivalent to another object.
@@ -49,6 +53,7 @@ export default abstract class CacheableModel {
 
   /**
    * Uncaches this model and notifies its owner (if it has one) to do the same.
+   * Note that this will NOT uncache this object's children.
    */
   uncache() {
     this.owner?.uncache();
@@ -68,8 +73,7 @@ export default abstract class CacheableModel {
   }
 
   /**
-   * Returns a proxy that listens for changes in CachedCollections that this
-   * model contains.
+   * Returns a proxy that listens for changes in CachedCollections.
    * 
    * @param obj CachedCollection to get proxy for
    */
@@ -80,7 +84,7 @@ export default abstract class CacheableModel {
     //@ts-expect-error TS doesn't know about _isProxy
     if (obj._isProxy) return obj;
 
-    // can't use `this` within the Proxy traps or else it means something else
+    // can't use `this` within the Proxy traps
     const getOwner = () => this._getCollectionOwner();
 
     return new Proxy(obj, {
