@@ -1,8 +1,9 @@
 import CacheableModel from './cacheableModel';
 
 /**
- * A base for models that have a buffer that can be written to disk. The buffer
- * is cached until any changes are made to it or any of its dependents.
+ * Base class for models that have a buffer that can be written to disk. The
+ * buffer is cached until any changes are made to the model or any of its
+ * children.
  */
 export default abstract class WritableModel extends CacheableModel {
   private _cachedBuffer?: Buffer;
@@ -24,18 +25,12 @@ export default abstract class WritableModel extends CacheableModel {
     return this._cachedBuffer == undefined;
   }
 
-  /**
-   * Creates a new WritableModel. Arguments are given in an object because none
-   * are required and either may be supplied without the other.
-   * 
-   * @param arguments Arguments for construction 
-   */
-  protected constructor({ buffer, owner }: {
+  protected constructor(args?: {
     buffer?: Buffer;
     owner?: CacheableModel;
-  } = {}) {
-    super(owner);
-    this._cachedBuffer = buffer;
+  }) {
+    super(args?.owner);
+    this._cachedBuffer = args?.buffer;
   }
 
   uncache() {
