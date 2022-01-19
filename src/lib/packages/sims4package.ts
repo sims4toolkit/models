@@ -38,7 +38,8 @@ export default class Sims4Package extends MappedModel<ResourceKey, Resource, Res
 
   /**
    * Creates a new Sims4Package instance from the given header and entries. Both
-   * arguments are optional, and if left out, will create an empty package.
+   * arguments are optional, and if left out, will create an empty package with
+   * default header values.
    * 
    * Arguments:
    * - `header`: Values to use in the header of this package. Empty by default.
@@ -102,20 +103,19 @@ export default class Sims4Package extends MappedModel<ResourceKey, Resource, Res
  * compression of the buffer.
  */
 class ResourceEntry extends WritableModel implements MappedModelEntry<ResourceKey, Resource> {
-  public owner: Sims4Package;
+  public owner?: Sims4Package;
   private _key: ResourceKey;
   private _resource: Resource;
 
   get key(): ResourceKey { return this._key; }
   set key(key: ResourceKey) {
-    const owner = this._getCollectionOwner();
-    const onChange = (target: ResourceKey, property: string, previous: any) => {
+    const onChange = (owner: Sims4Package, target: ResourceKey, property: string, previous: any) => {
       const old = clone(target);
       old[property] = previous;
-      owner.onKeyUpdate(old, target);
+      owner?.onKeyUpdate(old, target);
     };
 
-    if (this._key) owner.onKeyUpdate(this._key, key);
+    if (this._key) this.owner?.onKeyUpdate(this._key, key);
     this._key = this._getCollectionProxy(key, onChange);
   }
 

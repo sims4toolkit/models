@@ -75,7 +75,7 @@ export default abstract class CacheableModel {
    */
   protected _getCollectionProxy<T extends CachedCollection>(
     obj: T, 
-    onChange?: (target: T, property: string | symbol, previous: any, current?: any) => void
+    onChange?: (owner: CacheableModel, target: T, property: string | symbol, previous: any, current?: any) => void
   ): T {
     //@ts-expect-error TS doesn't know about _isProxy
     if (obj._isProxy) return obj;
@@ -87,9 +87,9 @@ export default abstract class CacheableModel {
       set(target, property, value) {
         const previous = target[property];
         const ref = Reflect.set(target, property, value);
-        onChange?.(target, property, previous, value);
         if (property !== "owner") {
           const owner = getOwner();
+          onChange?.(owner, target, property, previous, value);
           if (value instanceof CacheableModel) value.owner = owner;
           owner?.uncache();
         }
@@ -102,8 +102,11 @@ export default abstract class CacheableModel {
       deleteProperty(target, property) {
         const previous = target[property];
         const ref = Reflect.deleteProperty(target, property);
-        onChange?.(target, property, previous);
-        getOwner()?.uncache();
+        if (property !== "owner") {
+          const owner = getOwner();
+          onChange?.(owner, target, property, previous);
+          owner?.uncache();
+        }
         return ref;
       }
     });

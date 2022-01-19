@@ -44,7 +44,7 @@ export default class StringTableResource extends Resource {
   protected constructor(entries: KeyStringPair[] = [], buffer?: Buffer) {
     super({ buffer });
     this.entries = entries.map((entry, id) => {
-      return new StringEntry(id, entry.key, entry.string, this);
+      return new StringEntry(id, entry.key, entry.value, this);
     });
     this._nextId = this.length;
   }
@@ -67,7 +67,8 @@ export default class StringTableResource extends Resource {
    */
   static from(buffer: Buffer, options?: SerializationOptions): StringTableResource {
     try {
-      return new StringTableResource(readStbl(buffer, options), buffer);
+      const dto = readStbl(buffer, options);
+      return new StringTableResource(dto.entries, buffer);
     } catch (e) {
       if (options !== undefined && options.dontThrow) {
         return undefined;
@@ -87,7 +88,7 @@ export default class StringTableResource extends Resource {
     const mergedStbl = StringTableResource.create();
     stbls.forEach(stbl => {
       stbl.entries.forEach(entry => {
-        mergedStbl.add(entry.key, entry.string);
+        mergedStbl.add(entry.key, entry.value);
       });
     });
     return mergedStbl;
@@ -160,7 +161,7 @@ export default class StringTableResource extends Resource {
   merge(...stbls: StringTableResource[]) {
     stbls.forEach(stbl => {
       stbl.entries.forEach(entry => {
-        this.add(entry.key, entry.string);
+        this.add(entry.key, entry.value);
       });
     });
   }
@@ -185,8 +186,8 @@ export default class StringTableResource extends Resource {
     this.entries.forEach(entry => {
       if (keyMap[entry.key] === undefined) keyMap[entry.key] = [];
       keyMap[entry.key].push(entry);
-      if (stringMap[entry.string] === undefined) stringMap[entry.string] = [];
-      stringMap[entry.string].push(entry);
+      if (stringMap[entry.value] === undefined) stringMap[entry.value] = [];
+      stringMap[entry.value].push(entry);
     });
 
     const result: { error: StringTableError; entries: StringEntry[]; }[] = [];
@@ -251,13 +252,13 @@ export default class StringTableResource extends Resource {
       if (includeSubstrings) {
         // substring
         return caseSensitive ?
-          entry.string.includes(string) :
-          entry.string.toLowerCase().includes(string.toLowerCase());
+          entry.value.includes(string) :
+          entry.value.toLowerCase().includes(string.toLowerCase());
       } else {
         // exact match
         return caseSensitive ?
-          entry.string === string :
-          entry.string.toLowerCase() === string.toLowerCase();
+          entry.value === string :
+          entry.value.toLowerCase() === string.toLowerCase();
       }
     });
   }
@@ -278,8 +279,8 @@ export default class StringTableResource extends Resource {
    */
   sort(compareFn?: (a: StringEntry, b: StringEntry) => number) {
     this.entries.sort(compareFn || ((a, b) => {
-      if (a.string < b.string) return -1;
-      if (a.string > b.string) return 1;
+      if (a.value < b.value) return -1;
+      if (a.value > b.value) return 1;
       return 0;
     }));
     this.uncache();
@@ -304,7 +305,8 @@ export default class StringTableResource extends Resource {
   //#region Protected Methods
 
   protected _serialize(): Buffer {
-    return writeStbl(this.entries);
+    //@ts-expect-error
+    return writeStbl(this);
   }
 
   //#endregion Protected Methods
@@ -316,13 +318,13 @@ export default class StringTableResource extends Resource {
 class StringEntry extends CacheableModel implements KeyStringPair {
   public owner?: StringTableResource;
 
-  constructor(public readonly id: number, public key: number, public string: string, owner: StringTableResource) {
+  constructor(public readonly id: number, public key: number, public value: string, owner: StringTableResource) {
     super(owner);
-    this._watchProps('key', 'string');
+    this._watchProps('key', 'value');
   }
 
   clone(): StringEntry {
-    return new StringEntry(this.id, this.key, this.string, this.owner);
+    return new StringEntry(this.id, this.key, this.value, this.owner);
   }
 
   /**
@@ -340,7 +342,7 @@ class StringEntry extends CacheableModel implements KeyStringPair {
   equals(other: StringEntry): boolean {
     if (!other) return false;
     if (this.key !== other.key) return false;
-    if (this.string !== other.string) return false;
+    if (this.value !== other.value) return false;
     return true;
   }
 }

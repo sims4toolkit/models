@@ -6,15 +6,13 @@ import WritableModel from "./writableModel";
  * when its key or value updates.
  */
 export interface MappedModelEntry<Key, Value> {
-  owner: MappedModel<Key, Value, MappedModelEntry<Key, Value>>;
+  owner?: MappedModel<Key, Value, MappedModelEntry<Key, Value>>;
 
   /** The key for this entry. */
-  get key(): Key;
-  set key(key: Key);
+  key: Key;
 
   /** The value of this entry. */
-  get value(): Value;
-  set value(value: Value);
+  value: Value;
 
   /**
    * Checks if the given key is equal to the one that this entry uses.
@@ -205,7 +203,7 @@ export abstract class MappedModel<Key, Value, Entry extends MappedModelEntry<Key
     this.uncache();
   }
 
-  // TODO: validate
+  // TODO: validate()
 
   //#endregion Public Methods
 
