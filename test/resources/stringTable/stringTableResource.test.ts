@@ -3,6 +3,7 @@ import * as path from "path";
 import { expect } from "chai";
 import { fnv32 } from "@s4tk/hashing";
 import { StringTableResource } from "../../../dst/api";
+import MockOwner from "../../mocks/mockOwner";
 
 //#region Helpers
 
@@ -275,6 +276,10 @@ describe("StringTableResource", () => {
     // TODO:
   });
 
+  describe("#findRepeatedKeys()", () => {
+    // TODO:
+  });
+
   describe("#get()", () => {
     // TODO:
   });
@@ -329,11 +334,19 @@ describe("StringTableResource", () => {
 
   describe("#uncache()", () => {
     it("should uncache the buffer", () => {
-      // TODO:
+      const stbl = getStbl("Normal");
+      expect(stbl.isCached).to.be.true;
+      stbl.uncache();
+      expect(stbl.isCached).to.be.false;
     });
 
     it("should notify the owner to uncache", () => {
-      // TODO:
+      const owner = new MockOwner();
+      const stbl = getStbl("Normal");
+      stbl.owner = owner;
+      expect(owner.cached).to.be.true;
+      stbl.uncache();
+      expect(owner.cached).to.be.false;
     });
 
     it("should reset the entries", () => {
@@ -346,7 +359,17 @@ describe("StringTableResource", () => {
   });
 
   describe("#validate()", () => {
-    // TODO:
+    it("should not throw if all entries are valid", () => {
+      // TODO:
+    });
+
+    it("should throw if at least one entry is not valid", () => {
+      // TODO:
+    });
+
+    it("should throw if there are multiple strings with the same key", () => {
+      // TODO:
+    });
   });
 
   //#endregion Methods

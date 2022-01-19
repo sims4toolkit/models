@@ -81,7 +81,10 @@ export default class StringTableResource extends PrimitiveMappedModel<string, St
   }
 
   validate(): void {
-    // TODO:
+    this.entries.forEach(entry => entry.validate());
+    const repeatedKeys = this.findRepeatedKeys();
+    if (repeatedKeys.length > 0)
+      throw new Error(`Repeated keys detected: ${repeatedKeys.map(key => this._getKeyIdentifier(key))}`)
   }
 
   //#endregion Public Methods

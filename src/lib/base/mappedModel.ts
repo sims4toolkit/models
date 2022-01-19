@@ -124,6 +124,30 @@ export abstract class MappedModel<Key, Value, Entry extends MappedModelEntry<Key
   }
 
   /**
+   * Finds all keys that belong to more than one entry and returns them in an
+   * array.
+   * 
+   * @returns Array of all repeated keys
+   */
+  findRepeatedKeys(): Key[] {
+    const keys: Key[] = [];
+
+    if (this._entryMap.size !== this._keyMap.size) {
+      const seenKeys = new Set();
+      this._entryMap.forEach(entry => {
+        const keyId = this._getKeyIdentifier(entry.key);
+        if (seenKeys.has(keyId)) {
+          keys.push(entry.key);
+        } else {
+          seenKeys.add(keyId);
+        }
+      });
+    }
+
+    return keys;
+  }
+
+  /**
    * Returns the entry that has the given ID, or undefined if there isn't one.
    * 
    * @param id ID of entry to retrieve
