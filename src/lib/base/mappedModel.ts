@@ -37,12 +37,14 @@ export abstract class MappedModel<Key, Value, Entry extends MappedModelEntry<Key
       this._entryMap.set(id, this._makeEntry(entry.key, entry.value));
       this._keyMap.set(this._getKeyIdentifier(entry.key), id);
     });
+
+    this._nextId = this.size;
   }
 
   //#region Overridden Public Methods
 
   uncache(): void {
-    delete this._cachedEntries;
+    this.resetEntries();
     super.uncache();
   }
 
@@ -60,6 +62,8 @@ export abstract class MappedModel<Key, Value, Entry extends MappedModelEntry<Key
    */
   add(key: Key, value: Value): Entry {
     const id = this._nextId++;
+    if (this._entryMap.has(id))
+      throw new Error(`Duplicated ID in mapped model: ${id}`);
     const entry = this._makeEntry(key, value);
     this._entryMap.set(id, entry);
     this._keyMap.set(this._getKeyIdentifier(key), id);
@@ -74,7 +78,7 @@ export abstract class MappedModel<Key, Value, Entry extends MappedModelEntry<Key
     if (this.size > 0) {
       this._entryMap.clear();
       this._keyMap.clear();
-      this._nextId = this.size;
+      this._nextId = 0;
       this.uncache();
     }
   }
@@ -179,6 +183,14 @@ export abstract class MappedModel<Key, Value, Entry extends MappedModelEntry<Key
     this._keyMap.delete(previousIdentifier);
     this._keyMap.set(this._getKeyIdentifier(current), id);
     this.uncache();
+  }
+
+  /**
+   * Resets the `entries` property of this model, so that a new array will be
+   * created the next time it is used.
+   */
+  resetEntries() {
+    delete this._cachedEntries;
   }
 
   /**

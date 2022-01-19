@@ -1,4 +1,4 @@
-import * as fs from "fs";
+/*import * as fs from "fs";
 import * as path from "path";
 import { expect } from "chai";
 import * as hashing from "@s4tk/hashing";
@@ -1482,3 +1482,4 @@ describe('StringTableResource', function() {
 
   //#endregion Serializing
 });
+*/

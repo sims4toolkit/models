@@ -23,7 +23,7 @@ export default class StringTableResource extends PrimitiveMappedModel<string, St
    */
   get header() { return this._header ??= {}; }
   private set header(header: StblHeader) {
-    this.header = header ? this._getCollectionProxy(header) : header;
+    this._header = header ? this._getCollectionProxy(header) : header;
   }
 
   //#region Initialization

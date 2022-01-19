@@ -433,10 +433,10 @@ describe("#LocString()", function() {
       ]
     });
 
-    expect(stbl).to.have.lengthOf(3);
-    expect(stbl.entries[0].string).to.equal('First');
-    expect(stbl.entries[1].string).to.equal('Second');
-    expect(stbl.entries[2].string).to.equal('Third');
+    expect(stbl.size).to.equal(3);
+    expect(stbl.entries[0].value).to.equal('First');
+    expect(stbl.entries[1].value).to.equal('Second');
+    expect(stbl.entries[2].value).to.equal('Third');
   });
 
   it('should hash the string if no alternative is given', function() {
@@ -486,10 +486,10 @@ describe("#getLocStringFn()", function() {
       ]
     });
 
-    expect(stbl).to.have.lengthOf(3);
-    expect(stbl.entries[0].string).to.equal('First');
-    expect(stbl.entries[1].string).to.equal('Second');
-    expect(stbl.entries[2].string).to.equal('Third');
+    expect(stbl.size).to.equal(3);
+    expect(stbl.entries[0].value).to.equal('First');
+    expect(stbl.entries[1].value).to.equal('Second');
+    expect(stbl.entries[2].value).to.equal('Third');
   });
 
   it('should hash the string if no alternative is given', function() {

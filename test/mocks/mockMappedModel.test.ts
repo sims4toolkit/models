@@ -25,7 +25,7 @@ describe("MockMappedModel", () => {
       const entries = model.entries;
       entries.splice(0, 1);
       expect(model.entries).to.equal(entries);
-      expect(model.entries).to.have.lengthOf(2);
+      expect(model.size).to.equal(2);
     });
 
     it("should be the same object when accessed more than once without changes", () => {
