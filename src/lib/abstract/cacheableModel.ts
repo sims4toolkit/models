@@ -73,7 +73,10 @@ export default abstract class CacheableModel {
    * 
    * @param obj CachedCollection to get proxy for
    */
-  protected _getCollectionProxy<T extends CachedCollection>(obj: T): T {
+  protected _getCollectionProxy<T extends CachedCollection>(
+    obj: T, 
+    onChange?: (target: T, property: string | symbol, previous: any, current?: any) => void
+  ): T {
     //@ts-expect-error TS doesn't know about _isProxy
     if (obj._isProxy) return obj;
 
@@ -82,7 +85,9 @@ export default abstract class CacheableModel {
 
     return new Proxy(obj, {
       set(target, property, value) {
+        const previous = target[property];
         const ref = Reflect.set(target, property, value);
+        onChange?.(target, property, previous, value);
         if (property !== "owner") {
           const owner = getOwner();
           if (value instanceof CacheableModel) value.owner = owner;
@@ -95,7 +100,9 @@ export default abstract class CacheableModel {
         return Reflect.get(target, property);
       },
       deleteProperty(target, property) {
+        const previous = target[property];
         const ref = Reflect.deleteProperty(target, property);
+        onChange?.(target, property, previous);
         getOwner()?.uncache();
         return ref;
       }

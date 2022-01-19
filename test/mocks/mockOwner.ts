@@ -10,6 +10,14 @@ export default class MockOwner extends CacheableModel {
     this._cached = true;
   }
 
+  clone(): CacheableModel {
+    throw new Error("Method not implemented.");
+  }
+  
+  equals(other: any): boolean {
+    throw new Error("Method not implemented.");
+  }
+
   uncache(): void {
     this._cached = false;
   }

@@ -321,6 +321,10 @@ class StringEntry extends CacheableModel implements KeyStringPair {
     this._watchProps('key', 'string');
   }
 
+  clone(): StringEntry {
+    return new StringEntry(this.id, this.key, this.string, this.owner);
+  }
+
   /**
    * Removes this entry from the string table that owns it.
    */
