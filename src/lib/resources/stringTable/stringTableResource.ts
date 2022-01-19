@@ -2,13 +2,13 @@ import type { KeyStringPair, StblHeader } from "./shared";
 import Resource from "../resource";
 import compare from "just-compare";
 import clone from "just-clone";
-import CacheableModel from "../../abstract/cacheableModel";
+import CacheableModel from "../../base/cacheableModel";
 import { SerializationOptions } from "../../shared";
 import readStbl from "./serialization/readStbl";
 import writeStbl from "./serialization/writeStbl";
 import { arraysAreEqual } from "../../helpers";
 import { fnv32 } from "@s4tk/hashing";
-import { PrimitiveEntry, PrimitiveMappedModel } from "../../abstract/primitiveMappedModel";
+import { PrimitiveEntry, PrimitiveMappedModel } from "../../base/primitiveMappedModel";
 
 /**
  * Model for string table resources.

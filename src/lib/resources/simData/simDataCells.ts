@@ -5,7 +5,7 @@ import { XmlElementNode, XmlNode, XmlValueNode } from "@s4tk/xml-dom";
 import { formatAsHexString } from "@s4tk/hashing/formatting";
 import { fnv32 } from "@s4tk/hashing";
 import { CellCloneOptions, CellEncodingOptions, CellToXmlOptions, ObjectCellRow } from "./shared";
-import CacheableModel from "../../abstract/cacheableModel";
+import CacheableModel from "../../base/cacheableModel";
 import { SimDataType, SimDataTypeUtils } from "./simDataTypes";
 import { arraysAreEqual, removeFromArray } from "../../helpers";
 
