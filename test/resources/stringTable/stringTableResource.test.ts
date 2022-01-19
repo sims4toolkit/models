@@ -31,11 +31,15 @@ describe("StringTableResource", () => {
   });
 
   describe("#hasChanged", () => {
-    // TODO:
+    // tested as part of other properties/methods
   });
 
   describe("#header", () => {
     // TODO:
+  });
+
+  describe("#isChanged", () => {
+    // tested as part of other properties/methods
   });
   
   describe("#owner", () => {
@@ -73,7 +77,9 @@ describe("StringTableResource", () => {
   //#region Initialization
 
   describe("static#create()", () => {
-    // TODO:
+    it("should not have a cached buffer", () => {
+      // TODO:
+    });
   });
 
   describe("static#from()", () => {
