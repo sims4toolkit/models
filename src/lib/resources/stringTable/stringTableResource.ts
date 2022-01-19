@@ -98,6 +98,10 @@ export default class StringTableResource extends PrimitiveMappedModel<string, St
       && arraysAreEqual(this.entries, other?.entries);
   }
 
+  validate(): void {
+    // TODO:
+  }
+
   //#endregion Public Methods
 
   //#region Protected Methods
@@ -123,5 +127,9 @@ class StringEntry extends PrimitiveEntry<string> {
 
   clone(): CacheableModel {
     return new StringEntry(this.key, this.value);
+  }
+
+  validate(): void {
+    // TODO:
   }
 }
