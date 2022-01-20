@@ -252,7 +252,7 @@ describe("StringTableResource", () => {
       expect(stbl.size).to.equal(1);
       const entry = stbl.get(0);
       expect(entry.key).to.equal(123);
-      expect(entry.key).to.equal("hi");
+      expect(entry.value).to.equal("hi");
     });
 
     it("should add the given entry to a table with entries", () => {
@@ -262,7 +262,7 @@ describe("StringTableResource", () => {
       expect(stbl.size).to.equal(4);
       const entry = stbl.get(3);
       expect(entry.key).to.equal(123);
-      expect(entry.key).to.equal("hi");
+      expect(entry.value).to.equal("hi");
     });
 
     it("should uncache the buffer", () => {
