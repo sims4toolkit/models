@@ -321,21 +321,38 @@ describe("StringTableResource", () => {
   describe("#delete()", () => {
     it("should delete the entry with the given ID", () => {
       const stbl = getStbl("Normal");
+      expect(stbl.has(1)).to.be.true;
+      stbl.delete(1);
+      expect(stbl.has(1)).to.be.false;
+    });
+
+    it("should uncache the buffer", () => {
+      const stbl = getStbl("Normal");
+      expect(stbl.isCached).to.be.true;
+      stbl.delete(1);
+      expect(stbl.isCached).to.be.false;
+    });
+
+    it("should remove the key from the key map", () => {
+      const stbl = getStbl("Normal");
       expect(stbl.hasKey(0xF098F4B5)).to.be.true;
       stbl.delete(1);
       expect(stbl.hasKey(0xF098F4B5)).to.be.false;
     });
 
-    it("should uncache the buffer", () => {
-      // TODO:
-    });
-
-    it("should remove the key from the key map", () => {
-      // TODO:
+    it("should update the ID in the key map if there is another entry with the same key", () => {
+      const stbl = getStbl("RepeatedStrings");
+      expect(stbl.getIdForKey(0x849FFEE6)).to.equal(4);
+      stbl.delete(4);
+      expect(stbl.getIdForKey(0x849FFEE6)).to.equal(5);
     });
 
     it("should reset the entries array", () => {
-      // TODO:
+      const stbl = getStbl("RepeatedStrings");
+      const entries = stbl.entries;
+      expect(entries).to.equal(stbl.entries);
+      stbl.delete(0);
+      expect(entries).to.not.equal(stbl.entries);
     });
   });
 
@@ -388,15 +405,23 @@ describe("StringTableResource", () => {
 
   describe("#get()", () => {
     it("should return the entry with the given ID", () => {
-      // TODO:
+      const stbl = getStbl("Normal");
+      const entry = stbl.get(1);
+      expect(entry.key).to.equal(0xF098F4B5);
+      expect(entry.value).to.equal("This is another string!");
     });
 
     it("should return the same item for the same ID even if one before it is removed", () => {
-      // TODO:
+      const stbl = getStbl("Normal");
+      stbl.delete(0);
+      const entry = stbl.get(1);
+      expect(entry.key).to.equal(0xF098F4B5);
+      expect(entry.value).to.equal("This is another string!");
     });
 
     it("should return undefined if the given ID doesn't exist", () => {
-      // TODO:
+      const stbl = getStbl("Normal");
+      expect(stbl.get(3)).to.be.undefined;
     });
   });
 
