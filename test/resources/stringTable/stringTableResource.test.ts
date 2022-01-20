@@ -28,7 +28,50 @@ describe("StringTableResource", () => {
   //#region Properties
 
   describe("#buffer", () => {
-    // TODO:
+    it("should serialize a stbl that is empty", () => {
+      const original = StringTableResource.create();
+      const stbl = StringTableResource.from(original.buffer);
+      expect(stbl).to.not.equal(original);
+      expect(stbl.size).to.equal(0);
+    });
+
+    it("should return the cached buffer if it wasn't changed", () => {
+      const buffer = getBuffer("Normal");
+      const stbl = StringTableResource.from(buffer);
+      expect(stbl.buffer).to.equal(buffer);
+    });
+
+    it("should serialize a stbl that wasn't changed, but was uncached", () => {
+      const buffer = getBuffer("Normal");
+      const stbl = StringTableResource.from(buffer);
+      stbl.uncache();
+      expect(stbl.buffer).to.not.equal(buffer);
+      expect(stbl.equals(getStbl("Normal"))).to.be.true;
+    });
+
+    it("should serialize a stbl that had entries added", () => {
+      const original = getStbl("Normal");
+      original.addAndHash("new string");
+      const stbl = StringTableResource.from(original.buffer);
+      expect(stbl).to.not.equal(original);
+      expect(stbl.equals(original)).to.be.true;
+    });
+
+    it("should serialize a stbl that had entries removed", () => {
+      const original = getStbl("Normal");
+      original.delete(0);
+      const stbl = StringTableResource.from(original.buffer);
+      expect(stbl).to.not.equal(original);
+      expect(stbl.equals(original)).to.be.true;
+    });
+
+    it("should serialize a stbl that had entries mutated", () => {
+      const original = getStbl("Normal");
+      original.get(0).value = "new string";
+      const stbl = StringTableResource.from(original.buffer);
+      expect(stbl).to.not.equal(original);
+      expect(stbl.equals(original)).to.be.true;
+    });
   });
 
   describe("#entries", () => {
