@@ -1,15 +1,14 @@
-import { deflateSync } from "zlib";
 import clone from "just-clone";
 import compare from "just-compare";
 import type Resource from "../resources/resource";
 import type CacheableModel from "../base/cacheableModel";
 import type { DbpfHeader, ResourceKey, ResourceKeyPair } from "./shared";
 import type { SerializationOptions } from "../shared";
-import WritableModel from "../base/writableModel";
-import { MappedModel, MappedModelEntry } from "../base/mappedModel";
+import { MappedModel } from "../base/mappedModel";
 import { arraysAreEqual } from "../helpers";
 import readDbpf from "./serialization/readDbpf";
 import writeDbpf from "./serialization/writeDbpf";
+import ResourceEntry from "./resourceEntry";
 
 /**
  * Model for a Sims 4 package file (also called a "Database Packed File", or
@@ -96,61 +95,4 @@ export default class Sims4Package extends MappedModel<ResourceKey, Resource, Res
   }
 
   //#endregion Protected Methods
-}
-
-/**
- * An entry for a resource in a package file. This entry has a key and handles
- * compression of the buffer.
- */
-class ResourceEntry extends WritableModel implements MappedModelEntry<ResourceKey, Resource> {
-  public owner?: Sims4Package;
-  private _key: ResourceKey;
-  private _resource: Resource;
-
-  get key(): ResourceKey { return this._key; }
-  set key(key: ResourceKey) {
-    const onChange = (owner: Sims4Package, target: ResourceKey, property: string, previous: any) => {
-      const old = clone(target);
-      old[property] = previous;
-      owner?._onKeyUpdate(old, target);
-    };
-
-    if (this._key) this.owner?._onKeyUpdate(this._key, key);
-    this._key = this._getCollectionProxy(key, onChange);
-  }
-
-  /** The resource in this entry. */
-  get value(): Resource { return this._resource; }
-  set value(resource: Resource) {
-    if (resource) resource.owner = this;
-    this._resource = resource;
-    this.uncache();
-  }
-  
-  constructor(key: ResourceKey, resource: Resource, owner?: Sims4Package) {
-    super({ owner });
-    this.key = key;
-    this.value = resource;
-    // key and value are watched manually in their setters
-  }
-
-  clone(): ResourceEntry {
-    return new ResourceEntry(clone(this.key), this.value.clone());
-  }
-
-  equals(other: ResourceEntry): boolean {
-    return this.keyEquals(other?.key) && this.value.equals(other?.value);
-  }
-
-  keyEquals(key: ResourceKey): boolean {
-    return compare(this.key, key);
-  }
-
-  protected _getCollectionOwner(): Sims4Package {
-    return this.owner;
-  }
-
-  protected _serialize(): Buffer {
-    return deflateSync(this.value.buffer);
-  }
 }

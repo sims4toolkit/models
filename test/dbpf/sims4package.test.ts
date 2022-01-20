@@ -4,7 +4,3 @@ import { expect } from "chai";
 describe("Sims4Package", () => {
   // TODO:
 });
-
-describe("ResourceEntry", () => {
-  // TODO:
-});
