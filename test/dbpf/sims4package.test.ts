@@ -14,10 +14,6 @@ describe("Sims4Package", () => {
 
   // #hasChanged tested by other tests
 
-  describe("#header", () => {
-    // TODO:
-  });
-
   // #isCached tested by other tests
 
   describe("#size", () => {

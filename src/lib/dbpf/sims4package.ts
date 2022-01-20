@@ -1,8 +1,6 @@
-import clone from "just-clone";
-import compare from "just-compare";
 import type Resource from "../resources/resource";
 import type CacheableModel from "../base/cacheableModel";
-import type { DbpfHeader, ResourceKey, ResourceKeyPair } from "./shared";
+import type { ResourceKey, ResourceKeyPair } from "./shared";
 import type { SerializationOptions } from "../shared";
 import { MappedModel } from "../base/mappedModel";
 import { arraysAreEqual } from "../helpers";
@@ -15,42 +13,20 @@ import ResourceEntry from "./resourceEntry";
  * DBPF for short).
  */
 export default class Sims4Package extends MappedModel<ResourceKey, Resource, ResourceEntry> {
-  private _header?: DbpfHeader;
-
-  /**
-   * Meta information about this package. WARNING: Editing either `fileVersion`
-   * or `userVersion` will not call `uncache()`. This must be done manually.
-   * Though, you shouldn't be editing these values anyways... so, if something
-   * goes wrong, it's on you, champ.
-   */
-  get header() { return this._header ??= {}; }
-  private set header(header: DbpfHeader) {
-    this.header = header ? this._getCollectionProxy(header) : header;
-  }
-
   //#region Initialization
 
-  protected constructor(header: DbpfHeader, entries: ResourceKeyPair[], buffer?: Buffer, owner?: CacheableModel) {
+  protected constructor(entries: ResourceKeyPair[], buffer?: Buffer, owner?: CacheableModel) {
     super(entries, { buffer, owner });
-    this.header = header;
   }
 
   /**
-   * Creates a new Sims4Package instance from the given header and entries. Both
-   * arguments are optional, and if left out, will create an empty package with
-   * default header values.
+   * Creates a new Sims4Package instance from the given entries. If none are
+   * provided, the package is empty by default.
    * 
-   * Arguments:
-   * - `header`: Values to use in the header of this package. Empty by default.
-   * - `entries`: Resource entries to use in this package. Empty by default.
-   * 
-   * @param args Arguments for creation
+   * @param entries Resource entries to use in this package. Empty by default.
    */
-  static create({ header = {}, entries = [] }: {
-    header?: DbpfHeader;
-    entries?: ResourceKeyPair[];
-  } = {}): Sims4Package {
-    return new Sims4Package(header, entries);
+  static create(entries: ResourceKeyPair[] = []): Sims4Package {
+    return new Sims4Package(entries);
   }
 
   /**
@@ -60,8 +36,7 @@ export default class Sims4Package extends MappedModel<ResourceKey, Resource, Res
    * @param options Options for reading the buffer
    */
   static from(buffer: Buffer, options?: SerializationOptions): Sims4Package {
-    const dto = readDbpf(buffer, options);
-    return new Sims4Package(dto.header, dto.entries, buffer);
+    return new Sims4Package(readDbpf(buffer, options), buffer);
   }
 
   //#endregion Initialization
@@ -70,12 +45,11 @@ export default class Sims4Package extends MappedModel<ResourceKey, Resource, Res
 
   clone(): Sims4Package {
     const buffer = this.hasChanged ? undefined : this.buffer;
-    return new Sims4Package(clone(this.header), this.entries, buffer);
+    return new Sims4Package(this.entries, buffer);
   }
 
   equals(other: Sims4Package): boolean {
-    return compare(this.header, other?.header)
-      && arraysAreEqual(this.entries, other?.entries);
+    return arraysAreEqual(this.entries, other?.entries);
   }
 
   //#endregion Public Methods
@@ -91,7 +65,7 @@ export default class Sims4Package extends MappedModel<ResourceKey, Resource, Res
   }
 
   protected _serialize(): Buffer {
-    return writeDbpf(this);
+    return writeDbpf(this.entries);
   }
 
   //#endregion Protected Methods
