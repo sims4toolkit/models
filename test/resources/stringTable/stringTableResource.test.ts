@@ -206,7 +206,7 @@ describe("StringTableResource", () => {
   });
 
   describe("static#from()", () => {
-    context("stbl header and content are valid", () => {
+    context("stbl content is valid", () => {
       it("should be cached", () => {
         const stbl = StringTableResource.from(getBuffer("Normal"));
         expect(stbl.hasChanged).to.be.false;
@@ -254,31 +254,37 @@ describe("StringTableResource", () => {
       });
     });
     
-    context("stbl header is valid, but content is invalid", () => {
+    context("stbl content is invalid", () => {
       it("should throw if ignoreErrors = false", () => {
-        // TODO:
+        const buffer = getBuffer("Corrupt");
+        expect(() => StringTableResource.from(buffer, { ignoreErrors: false })).to.throw();
       });
 
       it("should throw even if ignoreErrors = true", () => {
-        // TODO:
+        const buffer = getBuffer("Corrupt");
+        expect(() => StringTableResource.from(buffer, { ignoreErrors: true })).to.throw();
       });
 
       it("should return undefined if dontThrow = true", () => {
-        // TODO:
+        const buffer = getBuffer("Corrupt");
+        expect(StringTableResource.from(buffer, { dontThrow: true })).to.be.undefined;
       });
     });
 
-    context("stbl header is invalid, but content is valid", () => {
+    context("stbl header is invalid", () => {
       it("should throw if ignoreErrors = false", () => {
-        // TODO:
+        const buffer = getBuffer("CorruptHeader");
+        expect(() => StringTableResource.from(buffer, { ignoreErrors: false })).to.throw();
       });
 
-      it("should return the table content if ignoreErrors = true", () => {
-        // TODO:
+      it("should not throw if ignoreErrors = true", () => {
+        const buffer = getBuffer("CorruptHeader");
+        expect(() => StringTableResource.from(buffer, { ignoreErrors: true })).to.not.throw();
       });
 
       it("should return undefined if dontThrow = true", () => {
-        // TODO:
+        const buffer = getBuffer("CorruptHeader");
+        expect(StringTableResource.from(buffer, { dontThrow: true })).to.be.undefined;
       });
     });
   });
