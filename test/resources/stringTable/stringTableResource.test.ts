@@ -352,15 +352,27 @@ describe("StringTableResource", () => {
 
   describe("#getIdsForKey()", () => {
     it("should return an empty array if no entries have this key", () => {
-      // TODO:
+      const stbl = getStbl("Normal");
+      const ids = stbl.getIdsForKey(0);
+      expect(ids).to.be.an('Array').that.is.empty;
     });
 
     it("should return the ID for the given key", () => {
-      // TODO:
+      const stbl = getStbl("Normal");
+      const entry = stbl.get(1);
+      const ids = stbl.getIdsForKey(entry.key);
+      expect(ids).to.be.an('Array').with.lengthOf(1);
+      expect(ids[0]).to.equal(1);
     });
 
     it("should return all IDs for the given key", () => {
-      // TODO:
+      const stbl = getStbl("Normal");
+      const entry = stbl.get(0);
+      stbl.add(entry.key, entry.value);
+      const ids = stbl.getIdsForKey(entry.key);
+      expect(ids).to.be.an('Array').with.lengthOf(2);
+      expect(ids[0]).to.equal(0);
+      expect(ids[1]).to.equal(3);
     });
   });
 
@@ -428,15 +440,21 @@ describe("StringTableResource", () => {
 
   describe("#validate()", () => {
     it("should not throw if all entries are valid", () => {
-      // TODO:
+      const stbl = getStbl("Normal");
+      expect(() => stbl.validate()).to.not.throw();
     });
 
     it("should throw if at least one entry is not valid", () => {
-      // TODO:
+      const stbl = getStbl("Normal");
+      stbl.get(0).key = -1;
+      expect(() => stbl.validate()).to.throw();
     });
 
     it("should throw if there are multiple strings with the same key", () => {
-      // TODO:
+      const stbl = getStbl("Normal");
+      const entry = stbl.get(0);
+      stbl.add(entry.key, entry.value);
+      expect(() => stbl.validate()).to.throw();
     });
   });
 
