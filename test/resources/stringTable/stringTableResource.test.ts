@@ -315,7 +315,25 @@ describe("StringTableResource", () => {
   });
 
   describe("#clone()", () => {
-    // TODO:
+    it("should copy the entries", () => {
+      // TODO:
+    });
+
+    it("should not mutate the original", () => {
+      // TODO:
+    });
+
+    it("should not mutate the entries of the original", () => {
+      // TODO:
+    });
+
+    it("should not copy the owner", () => {
+      // TODO:
+    });
+
+    it("should set itself as the owner of the new entries", () => {
+      // TODO:
+    });
   });
 
   describe("#delete()", () => {
