@@ -293,19 +293,75 @@ describe("StringTableResource", () => {
   });
 
   describe("#get()", () => {
-    // TODO:
+    it("should return the entry with the given ID", () => {
+      // TODO:
+    });
+
+    it("should return the same item for the same ID even if one before it is removed", () => {
+      // TODO:
+    });
+
+    it("should return undefined if the given ID doesn't exist", () => {
+      // TODO:
+    });
   });
 
   describe("#getByKey()", () => {
-    // TODO:
+    it("should return the entry with the given key", () => {
+      // TODO:
+    });
+
+    it("should return an entry after adding it", () => {
+      // TODO:
+    });
+
+    it("should return the correct entry after changing its key", () => {
+      // TODO:
+    });
+
+    it("should return undefined after removing the entry", () => {
+      // TODO:
+    });
+
+    it("should return the first entry with the given if there are more than one", () => {
+      // TODO:
+    });
+
+    it("should return undefined if the given key doesn't exist", () => {
+      // TODO:
+    });
   });
 
   describe("#getIdForKey()", () => {
-    // TODO:
+    it("should return the ID for the given key", () => {
+      // TODO:
+    });
+
+    it("should return the first ID for the given key if there are more than one", () => {
+      // TODO:
+    });
+
+    it("should return undefined after the entry with the key is deleted", () => {
+      // TODO:
+    });
+
+    it("should return the ID for an entry after adding it", () => {
+      // TODO:
+    });
   });
 
   describe("#getIdsForKey()", () => {
-    // TODO:
+    it("should return an empty array if no entries have this key", () => {
+      // TODO:
+    });
+
+    it("should return the ID for the given key", () => {
+      // TODO:
+    });
+
+    it("should return all IDs for the given key", () => {
+      // TODO:
+    });
   });
 
   describe("#hasKey()", () => {
