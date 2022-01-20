@@ -35,7 +35,8 @@ export abstract class MappedModel<Key, Value, Entry extends MappedModelEntry<Key
 
     entries.forEach((entry, id) => {
       this._entryMap.set(id, this._makeEntry(entry.key, entry.value));
-      this._keyMap.set(this._getKeyIdentifier(entry.key), id);
+      const keyId = this._getKeyIdentifier(entry.key);
+      if (!this._keyMap.has(keyId)) this._keyMap.set(keyId, id);
     });
 
     this._nextId = this.size;
@@ -66,7 +67,8 @@ export abstract class MappedModel<Key, Value, Entry extends MappedModelEntry<Key
       throw new Error(`Duplicated ID in mapped model: ${id}`);
     const entry = this._makeEntry(key, value);
     this._entryMap.set(id, entry);
-    this._keyMap.set(this._getKeyIdentifier(key), id);
+    const keyId = this._getKeyIdentifier(key);
+    if (!this._keyMap.has(keyId)) this._keyMap.set(keyId, id);
     this.uncache();
     return entry;
   }
