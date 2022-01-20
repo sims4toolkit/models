@@ -257,7 +257,43 @@ describe("StringTableResource", () => {
   });
 
   describe("#clear()", () => {
-    // TODO:
+    it("should delete all entries", () => {
+      const stbl = getStbl("Normal");
+      expect(stbl.size).to.equal(3);
+      stbl.clear();
+      expect(stbl.size).to.equal(0);
+    });
+
+    it("should reset the key map", () => {
+      const stbl = getStbl("Normal");
+      const key = stbl.get(0).key;
+      expect(stbl.hasKey(key)).to.be.true;
+      stbl.clear();
+      expect(stbl.hasKey(key)).to.be.false;
+    });
+
+    it("should uncache the buffer", () => {
+      const stbl = getStbl("Normal");
+      expect(stbl.isCached).to.be.true;
+      stbl.clear();
+      expect(stbl.isCached).to.be.false;
+    });
+
+    it("should reset the entries property", () => {
+      const stbl = getStbl("Normal");
+      const entries = stbl.entries;
+      stbl.clear();
+      const newEntries = stbl.entries;
+      expect(newEntries).to.not.equal(entries);
+      expect(newEntries).to.be.an('Array').that.is.empty;
+    });
+
+    it("should reset the ID counter", () => {
+      const stbl = getStbl("Normal");
+      stbl.clear();
+      const entry = stbl.addAndHash("hi");
+      expect(stbl.getIdForKey(entry.key)).to.equal(0);
+    });
   });
 
   describe("#clone()", () => {
@@ -273,7 +309,25 @@ describe("StringTableResource", () => {
   });
 
   describe("#equals()", () => {
-    // TODO:
+    it("should return true if stbls have the same entries", () => {
+      const stbl = getStbl("Normal");
+      const other = stbl.clone();
+      expect(stbl.equals(other)).to.be.true;
+    });
+
+    it("should return false if an entry has a different key", () => {
+      const stbl = getStbl("Normal");
+      const other = stbl.clone();
+      other.get(0).key = 123;
+      expect(stbl.equals(other)).to.be.false;
+    });
+
+    it("should return false if an entry has a different value", () => {
+      const stbl = getStbl("Normal");
+      const other = stbl.clone();
+      other.get(0).value = "hi";
+      expect(stbl.equals(other)).to.be.false;
+    });
   });
 
   describe("#findRepeatedKeys()", () => {
