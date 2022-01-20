@@ -1,9 +1,15 @@
 import type Resource from "../../resources/resource";
 import type { SerializationOptions } from "../../shared";
 import type { ResourceKey, ResourceKeyPair } from "../shared";
+import { unzipSync } from "zlib";
 import { BinaryDecoder } from "@s4tk/encoding";
 import { makeList } from "../../helpers";
 import RawResource from "../../resources/generic/rawResource";
+import { BinaryResourceType, TuningResourceType } from "../../enums/resourceTypes";
+import StringTableResource from "../../resources/stringTable/stringTableResource";
+import SimDataResource from "../../resources/simData/simDataResource";
+import TuningResource from "../../resources/tuning/tuningResource";
+import XmlResource from "../../resources/generic/xmlResource";
 
 /**
  * Reads the given buffer as a DBPF and returns a DTO for it.
@@ -11,19 +17,12 @@ import RawResource from "../../resources/generic/rawResource";
  * @param buffer Buffer to read as a DBPF
  * @param options Options for reading DBPF
  */
-export default function readDbpf(buffer: Buffer, {
-  ignoreErrors = false,
-  loadRaw = false
-}: SerializationOptions = {}): ResourceKeyPair[] {
+export default function readDbpf(buffer: Buffer, options: SerializationOptions = {}): ResourceKeyPair[] {
   const decoder = new BinaryDecoder(buffer);
 
-  const header = readDbpfHeader(decoder, ignoreErrors);
+  const header = readDbpfHeader(decoder, options);
   decoder.seek(header.mnIndexRecordPosition || header.mnIndexRecordPositionLow);
   const flags = readDbpfFlags(decoder);
-
-  const getResourceFn: (entry: IndexEntry, buffer: Buffer) => Resource =
-    loadRaw ? (_, buffer) => RawResource.from(buffer)
-            : getResourceModel;
 
   const index = makeList<IndexEntry>(header.mnIndexRecordEntryCount, () => {
     const entry: Partial<IndexEntry> = {};
@@ -45,10 +44,9 @@ export default function readDbpf(buffer: Buffer, {
   return index.map(entry => {
     decoder.seek(entry.mnPosition);
     const buffer = decoder.slice(entry.mnSize);
-
     return {
       key: entry.key,
-      value: getResourceFn(entry, buffer)
+      value: getResource(entry, buffer, options)
     };
   });
 }
@@ -87,7 +85,7 @@ interface IndexEntry {
  * @param ignoreErrors Whether or not header errors should be ignored
  * @throws If ignoreErrors = false and something is wrong
  */
-function readDbpfHeader(decoder: BinaryDecoder, ignoreErrors: boolean): DbpfHeader {
+function readDbpfHeader(decoder: BinaryDecoder, { ignoreErrors = false }: SerializationOptions): DbpfHeader {
   const header: Partial<DbpfHeader> = {};
 
   if (ignoreErrors) {
@@ -138,6 +136,52 @@ function readDbpfFlags(decoder: BinaryDecoder): DbpfFlags {
   if (flags & 0b100) dbpfFlags.constantInstanceIdEx = decoder.uint32();
 
   return dbpfFlags;
+}
+
+/**
+ * Gets the correct resource model for the given entry.
+ * 
+ * @param entry Index entry header for this resource
+ * @param rawBuffer Buffer containing the resource's data
+ * @param options Options for serialization
+ * @returns Parsed model for the resource
+ */
+function getResource(entry: IndexEntry, rawBuffer: Buffer, options: SerializationOptions): Resource {
+  if (options.loadRaw) return RawResource.from(rawBuffer);
+
+  let buffer: Buffer;
+  if (entry.mnCompressionType) {
+    if (entry.mnCompressionType === 23106) {
+      buffer = unzipSync(rawBuffer);
+    } else {
+      return RawResource.from(rawBuffer, `Incompatible Compression: ${entry.mnCompressionType}`);
+    }
+  } else {
+    buffer = rawBuffer;
+  }
+
+  const { type } = entry.key;
+  if (type === BinaryResourceType.StringTable) {
+    return StringTableResource.from(buffer, options);
+  } else if (type === BinaryResourceType.SimData) {
+    return SimDataResource.from(buffer, options);
+  } else if (type in TuningResourceType) {
+    return TuningResource.from(buffer);
+  } else if (isXml(buffer)) {
+    return XmlResource.from(buffer);
+  } else {
+    return RawResource.from(buffer, `Unrecognized non-XML type: ${type}`);
+  }
+}
+
+/**
+ * Determines whether this buffer has an XML header.
+ * 
+ * @param buffer Buffer to check the contents of
+ * @returns True if XML header present, else false
+ */
+function isXml(buffer: Buffer): boolean {
+  return buffer.length >= 5 && buffer.slice(0, 5).toString('utf-8') === '<?xml';
 }
 
 //#endregion Helpers
