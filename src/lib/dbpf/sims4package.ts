@@ -36,7 +36,15 @@ export default class Sims4Package extends MappedModel<ResourceKey, Resource, Res
    * @param options Options for reading the buffer
    */
   static from(buffer: Buffer, options?: SerializationOptions): Sims4Package {
-    return new Sims4Package(readDbpf(buffer, options), buffer);
+    try {
+      return new Sims4Package(readDbpf(buffer, options), buffer);
+    } catch (e) {
+      if (options?.dontThrow) {
+        return undefined;
+      } else {
+        throw e;
+      }
+    }
   }
 
   //#endregion Initialization
