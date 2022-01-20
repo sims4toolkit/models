@@ -245,15 +245,33 @@ describe("StringTableResource", () => {
   //#region Methods
 
   describe("#add()", () => {
-    // TODO:
+    it("should add the given entry", () => {
+      // TODO:
+    });
+
+    it("should uncache the buffer", () => {
+      // TODO:
+    });
+
+    it("should add the key to the key map", () => {
+      // TODO:
+    });
+
+    it("should reset the entries array", () => {
+      // TODO:
+    });
   });
 
   describe("#addAll()", () => {
-    // TODO:
+    it("should add the given entries", () => {
+      // TODO:
+    });
   });
 
   describe("#addAndHash()", () => {
-    // TODO:
+    it("should add the given string with its fnv32 hash", () => {
+      // TODO:
+    });
   });
 
   describe("#clear()", () => {
@@ -301,11 +319,27 @@ describe("StringTableResource", () => {
   });
 
   describe("#delete()", () => {
-    // TODO:
+    it("should delete the entry with the given ID", () => {
+      // TODO:
+    });
+
+    it("should uncache the buffer", () => {
+      // TODO:
+    });
+
+    it("should remove the key from the key map", () => {
+      // TODO:
+    });
+
+    it("should reset the entries array", () => {
+      // TODO:
+    });
   });
 
   describe("#deleteByKey()", () => {
-    // TODO:
+    it("should delete the entry with the given key", () => {
+      // TODO:
+    });
   });
 
   describe("#equals()", () => {
@@ -362,45 +396,66 @@ describe("StringTableResource", () => {
 
   describe("#getByKey()", () => {
     it("should return the entry with the given key", () => {
-      // TODO:
+      const stbl = getStbl("Normal");
+      expect(stbl.getByKey(0x7E08629A).value).to.equal("This is a string.");
+      expect(stbl.getByKey(0xF098F4B5).value).to.equal("This is another string!");
+      expect(stbl.getByKey(0x8D6D117D).value).to.equal("And this, this is a third.");
     });
 
     it("should return an entry after adding it", () => {
-      // TODO:
+      const stbl = StringTableResource.create();
+      stbl.add(123, "hi");
+      expect(stbl.getByKey(123).value).to.equal("hi");
     });
 
     it("should return the correct entry after changing its key", () => {
-      // TODO:
+      const stbl = StringTableResource.create();
+      const entry = stbl.add(123, "hi");
+      entry.key = 456;
+      expect(stbl.getByKey(456).value).to.equal("hi");
     });
 
     it("should return undefined after removing the entry", () => {
-      // TODO:
+      const stbl = StringTableResource.create();
+      const entry = stbl.add(123, "hi");
+      entry.key = 456;
+      expect(stbl.getByKey(123)).to.be.undefined;
     });
 
-    it("should return the first entry with the given if there are more than one", () => {
-      // TODO:
+    it("should return the first entry with the given key if there are more than one", () => {
+      const stbl = getStbl("RepeatedStrings");
+      expect(stbl.getByKey(0x849FFEE6).value).to.equal("The next one has the same key.");
     });
 
     it("should return undefined if the given key doesn't exist", () => {
-      // TODO:
+      const stbl = getStbl("Normal");
+      expect(stbl.getByKey(0)).to.be.undefined;
     });
   });
 
   describe("#getIdForKey()", () => {
     it("should return the ID for the given key", () => {
-      // TODO:
+      const stbl = getStbl("Normal");
+      expect(stbl.getIdForKey(0x7E08629A)).to.equal(0);
+      expect(stbl.getIdForKey(0xF098F4B5)).to.equal(1);
+      expect(stbl.getIdForKey(0x8D6D117D)).to.equal(2);
     });
 
     it("should return the first ID for the given key if there are more than one", () => {
-      // TODO:
+      const stbl = getStbl("RepeatedStrings");
+      expect(stbl.getIdForKey(0x849FFEE6)).to.equal(4);
     });
 
     it("should return undefined after the entry with the key is deleted", () => {
-      // TODO:
+      const stbl = getStbl("Normal");
+      stbl.deleteByKey(0xF098F4B5);
+      expect(stbl.getIdForKey(0xF098F4B5)).to.be.undefined;
     });
 
     it("should return the ID for an entry after adding it", () => {
-      // TODO:
+      const stbl = StringTableResource.create();
+      stbl.add(123, "hi");
+      expect(stbl.getIdForKey(123)).to.equal(0);
     });
   });
 
@@ -453,6 +508,14 @@ describe("StringTableResource", () => {
       expect(stbl.hasKey(0x7E08629A)).to.be.true;
       stbl.deleteByKey(0x7E08629A);
       expect(stbl.hasKey(0x7E08629A)).to.be.false;
+    });
+
+    it("should return true after deleting an entry with the same key", () => {
+      const stbl = StringTableResource.create();
+      stbl.add(123, "hi");
+      stbl.add(123, "bye");
+      stbl.deleteByKey(123);
+      expect(stbl.hasKey(123)).to.be.true;
     });
   });
 

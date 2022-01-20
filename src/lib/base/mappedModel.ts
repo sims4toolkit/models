@@ -107,7 +107,15 @@ export abstract class MappedModel<Key, Value, Entry extends MappedModelEntry<Key
     
     if (entry) {
       this._entryMap.delete(id);
-      this._keyMap.delete(this._getKeyIdentifier(entry.key));
+
+      const ids = this.getIdsForKey(entry.key);
+      const keyId = this._getKeyIdentifier(entry.key);
+      if (ids.length === 0) {
+        this._keyMap.delete(keyId);
+      } else {
+        this._keyMap.set(keyId, ids[0]);
+      }
+      
       this.uncache();
       return true;
     } else {
