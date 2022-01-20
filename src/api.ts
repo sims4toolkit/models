@@ -1,5 +1,4 @@
 import Sims4Package from "./lib/dbpf/sims4package";
-import ResourceEntry from "./lib/dbpf/resourceEntry";
 import XmlResource from "./lib/resources/generic/xmlResource";
 import RawResource from "./lib/resources/generic/rawResource";
 import TuningResource from "./lib/resources/tuning/tuningResource";
@@ -14,7 +13,6 @@ import * as simDataTypes from "./lib/resources/simData/simDataTypes";
 export {
   // Models
   Sims4Package,
-  ResourceEntry,
   RawResource,
   XmlResource,
   TuningResource,
