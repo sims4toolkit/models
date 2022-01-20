@@ -245,32 +245,73 @@ describe("StringTableResource", () => {
   //#region Methods
 
   describe("#add()", () => {
-    it("should add the given entry", () => {
-      // TODO:
+    it("should add the given entry to an empty table", () => {
+      const stbl = StringTableResource.create();
+      expect(stbl.size).to.equal(0);
+      stbl.add(123, "hi");
+      expect(stbl.size).to.equal(1);
+      const entry = stbl.get(0);
+      expect(entry.key).to.equal(123);
+      expect(entry.key).to.equal("hi");
+    });
+
+    it("should add the given entry to a table with entries", () => {
+      const stbl = getStbl("Normal");
+      expect(stbl.size).to.equal(3);
+      stbl.add(123, "hi");
+      expect(stbl.size).to.equal(4);
+      const entry = stbl.get(3);
+      expect(entry.key).to.equal(123);
+      expect(entry.key).to.equal("hi");
     });
 
     it("should uncache the buffer", () => {
-      // TODO:
+      const stbl = getStbl("Normal");
+      expect(stbl.isCached).to.be.true;
+      stbl.add(123, "hi");
+      expect(stbl.isCached).to.be.false;
     });
 
     it("should add the key to the key map", () => {
-      // TODO:
+      const stbl = StringTableResource.create();
+      expect(stbl.hasKey(123)).to.be.false;
+      stbl.add(123, "hi");
+      expect(stbl.hasKey(123)).to.be.true;
     });
 
     it("should reset the entries array", () => {
-      // TODO:
+      const stbl = getStbl("Normal");
+      const entries = stbl.entries;
+      expect(entries).to.equal(stbl.entries);
+      stbl.add(123, "hi");
+      expect(entries).to.not.equal(stbl.entries);
     });
   });
 
   describe("#addAll()", () => {
     it("should add the given entries", () => {
-      // TODO:
+      const stbl = StringTableResource.create();
+      expect(stbl.size).to.equal(0);
+      stbl.addAll([
+        { key: 123, value: "hi" },
+        { key: 456, value: "bye" }
+      ]);
+      expect(stbl.size).to.equal(2);
+      const [ first, second ] = stbl.entries;
+      expect(first.key).to.equal(123);
+      expect(first.value).to.equal("hi");
+      expect(second.key).to.equal(456);
+      expect(second.value).to.equal("bye");
     });
   });
 
   describe("#addAndHash()", () => {
     it("should add the given string with its fnv32 hash", () => {
-      // TODO:
+      const stbl = StringTableResource.create();
+      expect(stbl.size).to.equal(0);
+      stbl.addAndHash("hello");
+      expect(stbl.size).to.equal(1);
+      expect(stbl.get(0).key).to.equal(fnv32("hello"));
     });
   });
 
