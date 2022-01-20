@@ -316,23 +316,64 @@ describe("StringTableResource", () => {
 
   describe("#clone()", () => {
     it("should copy the entries", () => {
-      // TODO:
+      const stbl = StringTableResource.create([
+        { key: 123, value: "hi" },
+        { key: 456, value: "bye" }
+      ]);
+
+      const clone = stbl.clone();
+
+      expect(clone.size).to.equal(2);
+      const [ first, second ] = clone.entries;
+      expect(first.key).to.equal(123);
+      expect(first.value).to.equal("hi");
+      expect(second.key).to.equal(456);
+      expect(second.value).to.equal("bye");
     });
 
     it("should not mutate the original", () => {
-      // TODO:
+      const stbl = StringTableResource.create([
+        { key: 123, value: "hi" },
+        { key: 456, value: "bye" }
+      ]);
+
+      const clone = stbl.clone();
+      clone.add(789, "yeehaw");
+      expect(clone.size).to.equal(3);
+      expect(stbl.size).to.equal(2);
     });
 
     it("should not mutate the entries of the original", () => {
-      // TODO:
+      const stbl = StringTableResource.create([
+        { key: 123, value: "hi" },
+        { key: 456, value: "bye" }
+      ]);
+
+      const clone = stbl.clone();
+      clone.getByKey(123).value = "hello";
+      expect(clone.getByKey(123).value).to.equal("hello");
+      expect(stbl.getByKey(123).value).to.equal("hi");
     });
 
     it("should not copy the owner", () => {
-      // TODO:
+      const owner = new MockOwner();
+      const stbl = StringTableResource.create();
+      stbl.owner = owner;
+      expect(stbl.owner).to.equal(owner);
+      const clone = stbl.clone();
+      expect(clone.owner).to.be.undefined;
     });
 
     it("should set itself as the owner of the new entries", () => {
-      // TODO:
+      const stbl = StringTableResource.create([
+        { key: 123, value: "hi" },
+        { key: 456, value: "bye" }
+      ]);
+
+      const clone = stbl.clone();
+      const [ first, second ] = clone.entries;
+      expect(first.owner).to.equal(clone);
+      expect(second.owner).to.equal(clone);
     });
   });
 
