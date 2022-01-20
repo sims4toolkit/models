@@ -320,7 +320,10 @@ describe("StringTableResource", () => {
 
   describe("#delete()", () => {
     it("should delete the entry with the given ID", () => {
-      // TODO:
+      const stbl = getStbl("Normal");
+      expect(stbl.hasKey(0xF098F4B5)).to.be.true;
+      stbl.delete(1);
+      expect(stbl.hasKey(0xF098F4B5)).to.be.false;
     });
 
     it("should uncache the buffer", () => {
@@ -338,7 +341,10 @@ describe("StringTableResource", () => {
 
   describe("#deleteByKey()", () => {
     it("should delete the entry with the given key", () => {
-      // TODO:
+      const stbl = getStbl("Normal");
+      expect(stbl.hasKey(0xF098F4B5)).to.be.true;
+      stbl.deleteByKey(0xF098F4B5);
+      expect(stbl.hasKey(0xF098F4B5)).to.be.false;
     });
   });
 
@@ -482,6 +488,32 @@ describe("StringTableResource", () => {
       expect(ids).to.be.an('Array').with.lengthOf(2);
       expect(ids[0]).to.equal(0);
       expect(ids[1]).to.equal(3);
+    });
+  });
+
+  describe("#has()", () => {
+    it("should return true if the ID is in the model", () => {
+      const stbl = getStbl("Normal");
+      expect(stbl.has(2)).to.be.true;
+    });
+
+    it("should return true if the ID was not in the model but was added", () => {
+      const stbl = getStbl("Normal");
+      expect(stbl.has(3)).to.be.false;
+      stbl.add(123, "hi");
+      expect(stbl.has(3)).to.be.true;
+    });
+
+    it("should return false if the ID is not in the model", () => {
+      const stbl = getStbl("Normal");
+      expect(stbl.has(4)).to.be.false;
+    });
+
+    it("should return false if the ID was in the model but was removed", () => {
+      const stbl = getStbl("Normal");
+      expect(stbl.has(1)).to.be.true;
+      stbl.delete(1);
+      expect(stbl.has(1)).to.be.false;
     });
   });
 

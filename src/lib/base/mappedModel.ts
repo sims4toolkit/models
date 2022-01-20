@@ -205,6 +205,16 @@ export abstract class MappedModel<Key, Value, Entry extends MappedModelEntry<Key
   }
 
   /**
+   * Checks whether this model has an entry with the given ID.
+   * 
+   * @param id ID to check
+   * @returns True if there is an entry with the given ID, false otherwise
+   */
+  has(id: number): boolean {
+    return this._entryMap.has(id);
+  }
+
+  /**
    * Checks whether this model has an entry with the given key.
    * 
    * @param key Key to check
