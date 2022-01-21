@@ -54,7 +54,7 @@ describe("Sims4Package", () => {
       const dbpf = getPackage("CompleteTrait");
       expect(dbpf.isCached).to.be.true;
       dbpf.entries.push(dbpf.get(0));
-      expect(dbpf.isCached).to.be.false;
+      expect(dbpf.isCached).to.be.true;
     });
 
     it("should be the same object when accessed more than once without changes", () => {

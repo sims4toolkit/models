@@ -114,7 +114,8 @@ class ResourceEntry extends WritableModel implements MappedModelEntry<ResourceKe
   constructor(key: ResourceKey, resource: Resource, owner?: Sims4Package) {
     super({ owner });
     this.key = key;
-    this.value = resource;
+    if (resource) resource.owner = this;
+    this._resource = resource;
     // key and value are watched manually in their setters
   }
 
