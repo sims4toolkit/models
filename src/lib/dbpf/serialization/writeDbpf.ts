@@ -22,8 +22,8 @@ export default function writeDbpf(entries: ResourceKeyPair[]): Buffer {
     entries.forEach(entry => {
       encoder.uint32(entry.key.type); // mType
       encoder.uint32(entry.key.group); // mGroup
-      encoder.uint32(Number((entry.key.instance & 0xFFFFFFFF00000000n) >> 32n)); // mInstanceEx
-      encoder.uint32(Number(entry.key.instance & 0x00000000FFFFFFFFn)); // mInstance
+      encoder.uint32(Number(entry.key.instance >> 32n)); // mInstanceEx
+      encoder.uint32(Number(entry.key.instance & 0xFFFFFFFFn)); // mInstance
       encoder.uint32(HEADER_BYTE_SIZE + recordOffset); // mnPosition
       recordOffset += entry.buffer.byteLength;
       encoder.uint32(entry.buffer.byteLength + 0x80000000); // mnSize + mbExtendedCompressionType
