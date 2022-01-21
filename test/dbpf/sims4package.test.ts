@@ -872,20 +872,33 @@ describe("ResourceEntry", () => {
   });
 
   describe("#equals()", () => {
-    it("should return true when key and value are the same", () => {
-      // TODO:
+    it("should return true when key and value are equal", () => {
+      const dbpf = Sims4Package.create();
+      const first = dbpf.add(getTestKey(), getTestTuning());
+      const second = dbpf.add(getTestKey(), getTestTuning());
+      expect(first.equals(second)).to.be.true;
     });
 
     it("should return false when key is different", () => {
-      // TODO:
+      const dbpf = Sims4Package.create();
+      const first = dbpf.add(getTestKey(), getTestTuning());
+      const secondKey = getTestKey();
+      secondKey.group++;
+      const second = dbpf.add(secondKey, getTestTuning());
+      expect(first.equals(second)).to.be.false;
     });
 
     it("should return false when value is different", () => {
-      // TODO:
+      const dbpf = Sims4Package.create();
+      const first = dbpf.add(getTestKey(), getTestTuning());
+      const second = dbpf.add(getTestKey(), TuningResource.create());
+      expect(first.equals(second)).to.be.false;
     });
 
     it("should return false when other is undefined", () => {
-      // TODO:
+      const dbpf = Sims4Package.create();
+      const entry = dbpf.add(getTestKey(), getTestTuning());
+      expect(entry.equals(undefined)).to.be.false;
     });
   });
 
