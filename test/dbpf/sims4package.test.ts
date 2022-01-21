@@ -1,6 +1,7 @@
 import fs from "fs";
 import path from "path";
 import { expect } from "chai";
+import compare from "just-compare";
 import type { ResourceKey } from "../../dst/lib/dbpf/shared";
 import { Sims4Package, TuningResource } from "../../dst/api";
 
@@ -58,19 +59,31 @@ describe("Sims4Package", () => {
     });
 
     it("should be the same object when accessed more than once without changes", () => {
-      // TODO:
+      const dbpf = getPackage("CompleteTrait");
+      const entries = dbpf.entries;
+      expect(entries).to.equal(dbpf.entries);
     });
 
     it("should be a new object when an entry is added", () => {
-      // TODO:
+      const dbpf = getPackage("CompleteTrait");
+      const entries = dbpf.entries;
+      const entry = dbpf.get(0);
+      dbpf.add(entry.key, entry.value);
+      expect(entries).to.not.equal(dbpf.entries);
     });
 
     it("should be a new object when an entry is deleted", () => {
-      // TODO:
+      const dbpf = getPackage("CompleteTrait");
+      const entries = dbpf.entries;
+      dbpf.delete(0);
+      expect(entries).to.not.equal(dbpf.entries);
     });
 
     it("should be a new object when an entry is mutated", () => {
-      // TODO:
+      const dbpf = getPackage("CompleteTrait");
+      const entries = dbpf.entries;
+      dbpf.get(0).key.group++;
+      expect(entries).to.not.equal(dbpf.entries);
     });
   });
 
@@ -140,7 +153,11 @@ describe("Sims4Package", () => {
         // TODO:
       });
 
-      it("should have cached contents", () => {
+      it("should have cached entries", () => {
+        // TODO:
+      });
+
+      it("should have cached resources within its entries", () => {
         // TODO:
       });
 
@@ -222,23 +239,55 @@ describe("Sims4Package", () => {
 
   describe("#add()", () => {
     it("should add the entry to an empty dbpf", () => {
-      // TODO:
+      const dbpf = Sims4Package.create();
+      expect(dbpf.size).to.equal(0);
+      const resource = TuningResource.create();
+      dbpf.add(testKey, resource);
+      expect(dbpf.size).to.equal(1);
+      expect(compare(dbpf.get(0).key, testKey)).to.be.true;
+      expect(dbpf.get(0).value).to.equal(resource);
     });
 
     it("should add the entry to a dbpf with entries", () => {
-      // TODO:
+      const dbpf = getPackage("CompleteTrait");
+      expect(dbpf.size).to.equal(4);
+      const resource = TuningResource.create();
+      dbpf.add(testKey, resource);
+      expect(dbpf.size).to.equal(5);
+      expect(compare(dbpf.get(4).key, testKey)).to.be.true;
+      expect(dbpf.get(4).value).to.equal(resource);
     });
 
     it("should add the key to the key map", () => {
-      // TODO:
+      const dbpf = Sims4Package.create();
+      expect(dbpf.hasKey(testKey)).to.be.false;
+      dbpf.add(testKey, TuningResource.create());
+      expect(dbpf.hasKey(testKey)).to.be.true;
     });
 
     it("should uncache the buffer", () => {
-      // TODO:
+      const dbpf = getPackage("CompleteTrait");
+      expect(dbpf.isCached).to.be.true;
+      dbpf.add(testKey, TuningResource.create());
+      expect(dbpf.isCached).to.be.false;
     });
 
     it("should not uncache other entries", () => {
-      // TODO:
+      const dbpf = getPackage("CompleteTrait");
+
+      dbpf.entries.forEach(entry => {
+        expect(entry.isCached).to.be.true;
+      });
+
+      dbpf.add(testKey, TuningResource.create());
+      
+      dbpf.entries.forEach(entry => {
+        if (entry.keyEquals(testKey)) {
+          expect(entry.isCached).to.be.false;
+        } else {
+          expect(entry.isCached).to.be.true;
+        }
+      });
     });
   });
 
