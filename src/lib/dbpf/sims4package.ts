@@ -2,7 +2,6 @@ import clone from "just-clone";
 import compare from "just-compare";
 import { deflateSync } from "zlib";
 import type Resource from "../resources/resource";
-import type CacheableModel from "../base/cacheableModel";
 import type { ResourceKey, ResourceKeyPair } from "./shared";
 import type { SerializationOptions } from "../shared";
 import { MappedModel, MappedModelEntry } from "../base/mappedModel";
@@ -18,8 +17,8 @@ import WritableModel from "../base/writableModel";
 export default class Sims4Package extends MappedModel<ResourceKey, Resource, ResourceEntry> {
   //#region Initialization
 
-  protected constructor(entries: ResourceKeyPair[], buffer?: Buffer, owner?: CacheableModel) {
-    super(entries, { buffer, owner });
+  protected constructor(entries: ResourceKeyPair[], buffer?: Buffer) {
+    super(entries, { buffer });
   }
 
   /**

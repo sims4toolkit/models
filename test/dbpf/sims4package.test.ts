@@ -339,15 +339,49 @@ describe("Sims4Package", () => {
   });
 
   describe("#clone()", () => {
-    // TODO:
+    it("should copy the entries", () => {
+      // TODO:
+    });
+
+    it("should not mutate the original", () => {
+      // TODO:
+    });
+
+    it("should not mutate the entries of the original", () => {
+      // TODO:
+    });
+
+    it("should set itself as the owner of the new entries", () => {
+      // TODO:
+    });
   });
 
   describe("#delete()", () => {
-    // TODO:
+    it("should delete the entry with the given ID", () => {
+      // TODO:
+    });
+
+    it("should uncache the buffer", () => {
+      // TODO:
+    });
+
+    it("should remove the key from the key map", () => {
+      // TODO:
+    });
+
+    it("should update the ID in the key map if there is another entry with the same key", () => {
+      // TODO:
+    });
+
+    it("should reset the entries array", () => {
+      // TODO:
+    });
   });
 
   describe("#deleteByKey()", () => {
-    // TODO:
+    it("should delete the entry with the given key", () => {
+      // TODO:
+    });
   });
 
   describe("#equals()", () => {
