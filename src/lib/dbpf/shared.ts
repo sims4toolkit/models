@@ -6,7 +6,7 @@ import type Resource from "../resources/resource";
 export interface ResourceKeyPair {
   key: ResourceKey;
   value: Resource;
-  buffer?: Buffer;
+  buffer?: Buffer; // compressed buffer
 }
 
 /**
