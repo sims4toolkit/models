@@ -363,31 +363,145 @@ describe("Sims4Package", () => {
   });
 
   describe("#getByKey()", () => {
-    // TODO:
+    it("should return the entry with the given key", () => {
+      // TODO:
+    });
+
+    it("should return an entry after adding it", () => {
+      // TODO:
+    });
+
+    it("should return the correct entry after changing its key", () => {
+      // TODO:
+    });
+
+    it("should return undefined after removing the entry", () => {
+      // TODO:
+    });
+
+    it("should return the first entry with the given key if there are more than one", () => {
+      // TODO:
+    });
+
+    it("should return undefined if the given key doesn't exist", () => {
+      // TODO:
+    });
+
+    it("should return the correct entry if there are more than one entry with this key, and the first was deleted", () => {
+      // TODO:
+    });
   });
 
   describe("#getIdForKey()", () => {
-    // TODO:
+    it("should return the ID for the given key", () => {
+      // TODO:
+    });
+
+    it("should return the ID for the given key, even if it's another instance", () => {
+      // TODO:
+    });
+
+    it("should return the first ID for the given key if there are more than one", () => {
+      // TODO:
+    });
+
+    it("should return undefined after the entry with the key is deleted", () => {
+      // TODO:
+    });
+
+    it("should return the ID for an entry after adding it", () => {
+      // TODO:
+    });
   });
 
   describe("#getIdsForKey()", () => {
-    // TODO:
+    it("should return an empty array if no entries have this key", () => {
+      // TODO:
+    });
+
+    it("should return the ID for the given key", () => {
+      // TODO:
+    });
+
+    it("should return the ID for the given key, even if it's another instance", () => {
+      // TODO:
+    });
+
+    it("should return all IDs for the given key", () => {
+      // TODO:
+    });
   });
 
   describe("#has()", () => {
-    // TODO:
+    it("should return true if the ID is in the model", () => {
+      // TODO:
+    });
+
+    it("should return true if the ID was not in the model but was added", () => {
+      // TODO:
+    });
+
+    it("should return false if the ID is not in the model", () => {
+      // TODO:
+    });
+
+    it("should return false if the ID was in the model but was removed", () => {
+      // TODO:
+    });
   });
 
   describe("#hasKey()", () => {
-    // TODO:
+    it("should return true if the key is in the model", () => {
+      // TODO:
+    });
+
+    it("should return true if a different instance, but identical, key is in the model", () => {
+      // TODO:
+    });
+
+    it("should return true if the key was not in the model but was added", () => {
+      // TODO:
+    });
+
+    it("should return false if the key is not in the model", () => {
+      // TODO:
+    });
+
+    it("should return false if the key was in the model but was removed", () => {
+      // TODO:
+    });
+
+    it("should return true if there are more than one entry with this key, and the first was deleted", () => {
+      // TODO:
+    });
   });
 
   describe("#resetEntries()", () => {
-    // TODO:
+    it("should force the entries to make a new list", () => {
+      // TODO:
+    });
   });
 
   describe("#uncache()", () => {
-    // TODO:
+    it("should uncache the buffer", () => {
+      // TODO:
+    });
+
+    it("should notify the owner to uncache", () => {
+      // TODO:
+    });
+
+    it("should reset the entries", () => {
+      // TODO:
+    });
+
+    it("should not uncache the entries", () => {
+      // TODO:
+    });
+
+    it("should not uncache the entries' resources", () => {
+      // TODO:
+    });
   });
 
   describe("#validate()", () => {

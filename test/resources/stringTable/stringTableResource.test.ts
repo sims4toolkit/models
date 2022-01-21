@@ -611,6 +611,17 @@ describe("StringTableResource", () => {
       const stbl = getStbl("Normal");
       expect(stbl.getByKey(0)).to.be.undefined;
     });
+
+    it("should return the correct entry if there are more than one entry with this key, and the first was deleted", () => {
+      const stbl = StringTableResource.create();
+      stbl.add(123, "hi");
+      stbl.add(123, "bye");
+      expect(stbl.getByKey(123).value).to.equal("hi");
+      stbl.deleteByKey(123);
+      expect(stbl.getByKey(123).value).to.equal("bye");
+      stbl.deleteByKey(123);
+      expect(stbl.getByKey(123)).to.be.undefined;
+    });
   });
 
   describe("#getIdForKey()", () => {
@@ -716,7 +727,7 @@ describe("StringTableResource", () => {
       expect(stbl.hasKey(0x7E08629A)).to.be.false;
     });
 
-    it("should return true after deleting an entry with the same key", () => {
+    it("should return true if there are more than one entry with this key, and the first was deleted", () => {
       const stbl = StringTableResource.create();
       stbl.add(123, "hi");
       stbl.add(123, "bye");
