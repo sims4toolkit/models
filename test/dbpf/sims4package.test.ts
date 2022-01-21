@@ -5,10 +5,11 @@ import { expect } from "chai";
 import compare from "just-compare";
 import type { ResourceKey } from "../../dst/lib/dbpf/shared";
 import { Sims4Package, StringTableResource, TuningResource } from "../../dst/api";
+import { TuningResourceType } from "../../dst/enum";
 
 //#region Constants
 
-const testKey: ResourceKey = { type: 123, group: 456, instance: 789n };
+const testKey: ResourceKey = { type: TuningResourceType.Trait, group: 456, instance: 789n };
 
 //#endregion Constants
 
@@ -40,19 +41,34 @@ describe("Sims4Package", () => {
 
   describe("#buffer", () => {
     it("should serialize a dbpf that is empty", () => {
-      // TODO:
+      const original = Sims4Package.create();
+      const dbpf = Sims4Package.from(original.buffer);
+      expect(dbpf.size).to.equal(0);
     });
 
     it("should return the cached buffer if it wasn't changed", () => {
-      // TODO:
+      const buffer = getBuffer("Trait");
+      const dbpf = Sims4Package.from(buffer);
+      expect(dbpf.buffer).to.equal(buffer);
     });
 
     it("should serialize a dbpf that wasn't changed, but was uncached", () => {
-      // TODO:
+      const buffer = getBuffer("Trait");
+      const original = Sims4Package.from(buffer);
+      original.uncache();
+      expect(original.buffer).to.not.equal(buffer);
+      const dbpf = Sims4Package.from(original.buffer);
+      expect(dbpf.equals(original)).to.be.true;
     });
 
     it("should serialize a dbpf that had entries added", () => {
-      // TODO:
+      const original = getPackage("Trait");
+      expect(original.size).to.equal(2);
+      original.add(testKey, getTestTuning());
+      const dbpf = Sims4Package.from(original.buffer);
+      expect(dbpf.size).to.equal(3);
+      expect(dbpf.get(2).keyEquals(testKey)).to.be.true;
+      expect(dbpf.get(2).value.equals(getTestTuning())).to.be.true;
     });
 
     it("should serialize a dbpf that had entries removed", () => {
