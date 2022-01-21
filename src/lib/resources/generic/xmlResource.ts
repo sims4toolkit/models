@@ -78,13 +78,6 @@ export default class XmlResource extends Resource {
     this._dom = dom;
   }
 
-  clone(): XmlResource {
-    return new XmlResource({
-      content: this.content,
-      dom: this.dom.clone()
-    });
-  }
-
   /**
    * Creates a new XML resource with the given content. If no content is
    * given, the tuning resource is blank.
@@ -112,6 +105,15 @@ export default class XmlResource extends Resource {
   }
 
   //#endregion Initialization
+
+  //#region Public Methods
+
+  clone(): XmlResource {
+    return new XmlResource({
+      content: this.content,
+      dom: this.dom.clone()
+    });
+  }
 
   equals(other: XmlResource): boolean {
     if (!super.equals(other)) return false;
@@ -143,7 +145,22 @@ export default class XmlResource extends Resource {
     this.uncache();
   }
 
+  validate(): void {
+    try {
+      this.content;
+      this.dom;
+    } catch (e) {
+      throw new Error(`Expected XML model to have a valid DOM:\n${e}`);
+    }
+  }
+
+  //#endregion Public Methods
+
+  //#region Protected Methods
+
   protected _serialize(): Buffer {
     return Buffer.from(this.content, 'utf-8');
   }
+
+  //#endregion Protected Methods
 }
