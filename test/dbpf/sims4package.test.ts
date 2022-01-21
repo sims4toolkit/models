@@ -367,19 +367,51 @@ describe("Sims4Package", () => {
 
   describe("#clone()", () => {
     it("should copy the entries", () => {
-      // TODO:
+      const dbpf = getPackage("Trait");
+      expect(dbpf.size).to.equal(2);
+      const clone = dbpf.clone();
+      expect(clone.size).to.equal(2);
+      const [ simdata, tuning ] = clone.entries;
+      expect(simdata.value.variant).to.equal("DATA");
+      expect(simdata.equals(dbpf.get(0))).to.be.true;
+      expect(tuning.value.variant).to.equal("XML");
+      expect(tuning.equals(dbpf.get(1))).to.be.true;
     });
 
     it("should not mutate the original", () => {
-      // TODO:
+      const dbpf = getPackage("Trait");
+      expect(dbpf.size).to.equal(2);
+      const clone = dbpf.clone();
+      expect(clone.size).to.equal(2);
+      clone.add(testKey, getTestTuning());
+      expect(clone.size).to.equal(3);
+      expect(dbpf.size).to.equal(2);
     });
 
-    it("should not mutate the entries of the original", () => {
-      // TODO:
+    it("should not mutate the original entries", () => {
+      const dbpf = getPackage("Trait");
+      const clone = dbpf.clone();
+      clone.get(0).value = getTestTuning();
+      expect(clone.get(0).value.variant).to.equal("XML");
+      expect(dbpf.get(0).value.variant).to.equal("DATA");
+    });
+
+    it("should not mutate the original resources", () => {
+      const dbpf = getPackage("Trait");
+      const clone = dbpf.clone();
+      const cloneTuning = clone.get(1).value as TuningResource;
+      cloneTuning.content = "";
+      const dbpfTuning = dbpf.get(1).value as TuningResource;
+      expect(cloneTuning.content).to.equal("");
+      expect(dbpfTuning.content).to.not.equal("");
     });
 
     it("should set itself as the owner of the new entries", () => {
-      // TODO:
+      const dbpf = getPackage("Trait");
+      const clone = dbpf.clone();
+      clone.entries.forEach(entry => {
+        expect(entry.owner).to.equal(clone);
+      });
     });
   });
 
@@ -632,19 +664,35 @@ describe("ResourceEntry", () => {
 
   describe("#key", () => {
     it("should uncache the dbpf when set", () => {
-      // TODO:
+      const dbpf = getPackage("Trait");
+      const entry = dbpf.get(0);
+      expect(dbpf.isCached).to.be.true;
+      entry.key = testKey;
+      expect(dbpf.isCached).to.be.false;
     });
 
     it("should uncache the dbpf when mutated", () => {
-      // TODO:
+      const dbpf = getPackage("Trait");
+      const entry = dbpf.get(0);
+      expect(dbpf.isCached).to.be.true;
+      entry.key.group = 0x80000000;
+      expect(dbpf.isCached).to.be.false;
     });
 
     it("should not uncache the entry when mutated", () => {
-      // TODO:
+      const dbpf = getPackage("Trait");
+      const entry = dbpf.get(0);
+      expect(entry.isCached).to.be.true;
+      entry.key.group = 0x80000000;
+      expect(entry.isCached).to.be.true;
     });
 
     it("should not uncache the entry's resource when mutated", () => {
-      // TODO:
+      const dbpf = getPackage("Trait");
+      const entry = dbpf.get(0);
+      expect(entry.value.isCached).to.be.true;
+      entry.key.group = 0x80000000;
+      expect(entry.value.isCached).to.be.true;
     });
   });
 
@@ -652,19 +700,35 @@ describe("ResourceEntry", () => {
 
   describe("#value", () => {
     it("should uncache the dbpf when set", () => {
-      // TODO:
+      const dbpf = getPackage("Trait");
+      const entry = dbpf.get(1);
+      expect(dbpf.isCached).to.be.true;
+      entry.value = getTestTuning();
+      expect(dbpf.isCached).to.be.false;
     });
 
     it("should uncache the dbpf when mutated", () => {
-      // TODO:
+      const dbpf = getPackage("Trait");
+      const entry = dbpf.get(1);
+      expect(dbpf.isCached).to.be.true;
+      (entry.value as TuningResource).content = "";
+      expect(dbpf.isCached).to.be.false;
     });
 
     it("should uncache the entry when mutated", () => {
-      // TODO:
+      const dbpf = getPackage("Trait");
+      const entry = dbpf.get(1);
+      expect(entry.isCached).to.be.true;
+      (entry.value as TuningResource).content = "";
+      expect(entry.isCached).to.be.false;
     });
 
     it("should uncache the entry's resource when mutated", () => {
-      // TODO:
+      const dbpf = getPackage("Trait");
+      const entry = dbpf.get(1);
+      expect(entry.value.isCached).to.be.true;
+      (entry.value as TuningResource).content = "";
+      expect(entry.value.isCached).to.be.false;
     });
   });
 
@@ -674,15 +738,37 @@ describe("ResourceEntry", () => {
 
   describe("#clone()", () => {
     it("should return an entry that is equal", () => {
-      // TODO:
+      const dbpf = getPackage("Trait");
+      const entry = dbpf.get(0);
+      const clone = entry.clone();
+      expect(clone.value.variant).to.equal("DATA");
+      expect(clone.equals(dbpf.get(0))).to.be.true;
     });
 
-    it("should not mutate the original", () => {
-      // TODO:
+    it("should not mutate the original key", () => {
+      const dbpf = getPackage("Trait");
+      const tuningEntry = dbpf.get(1);
+      const cloneEntry = tuningEntry.clone();
+      cloneEntry.key.group = 0x80000000;
+      expect(tuningEntry.key.group).to.equal(0);
+      expect(cloneEntry.key.group).to.equal(0x80000000);
+    });
+
+    it("should not mutate the original resource", () => {
+      const dbpf = getPackage("Trait");
+      const tuningEntry = dbpf.get(1);
+      const cloneEntry = tuningEntry.clone();
+      (cloneEntry.value as TuningResource).content = "";
+      expect((cloneEntry.value as TuningResource).content).to.equal("");
+      expect((tuningEntry.value as TuningResource).content).to.not.equal("");
     });
 
     it("should not copy the owner", () => {
-      // TODO:
+      const dbpf = getPackage("Trait");
+      const simdataEntry = dbpf.get(0);
+      const clone = simdataEntry.clone();
+      expect(simdataEntry.owner).to.equal(dbpf);
+      expect(clone.owner).to.be.undefined;
     });
   });
 

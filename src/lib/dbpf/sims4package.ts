@@ -55,7 +55,8 @@ export default class Sims4Package extends MappedModel<ResourceKey, Resource, Res
 
   clone(): Sims4Package {
     const buffer = this.hasChanged ? undefined : this.buffer;
-    return new Sims4Package(this.entries, buffer);
+    const entryClones = this.entries.map(entry => entry.clone());
+    return new Sims4Package(entryClones, buffer);
   }
 
   equals(other: Sims4Package): boolean {
