@@ -48,7 +48,8 @@ export default function readDbpf(buffer: Buffer, options: SerializationOptions =
     const buffer = decoder.slice(entry.mnSize);
     return {
       key: entry.key,
-      value: getResource(entry, buffer, options)
+      value: getResource(entry, buffer, options),
+      buffer
     };
   });
 }
@@ -147,9 +148,8 @@ function readDbpfFlags(decoder: BinaryDecoder): DbpfFlags {
  * @returns Parsed model for the resource
  */
 function getResource(entry: IndexEntry, rawBuffer: Buffer, options: SerializationOptions): Resource {
-  if (options.loadRaw) return RawResource.from(rawBuffer);
-
   let buffer: Buffer;
+
   if (entry.mnCompressionType) {
     if (entry.mnCompressionType === ZLIB_COMPRESSION) {
       buffer = unzipSync(rawBuffer);
@@ -160,7 +160,10 @@ function getResource(entry: IndexEntry, rawBuffer: Buffer, options: Serializatio
     buffer = rawBuffer;
   }
 
+  if (options.loadRaw) return RawResource.from(buffer);
+
   const { type } = entry.key;
+
   if (type === BinaryResourceType.StringTable) {
     return StringTableResource.from(buffer, options);
   } else if (type === BinaryResourceType.SimData) {

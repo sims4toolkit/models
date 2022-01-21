@@ -71,8 +71,8 @@ export default class Sims4Package extends MappedModel<ResourceKey, Resource, Res
     return `${key.type}_${key.group}_${key.instance}`;
   }
 
-  protected _makeEntry(key: ResourceKey, value: Resource): ResourceEntry {
-    return new ResourceEntry(key, value, this);
+  protected _makeEntry(key: ResourceKey, value: Resource, dto?: ResourceKeyPair): ResourceEntry {
+    return new ResourceEntry(key, value, dto?.buffer, this);
   }
 
   protected _serialize(): Buffer {
@@ -111,8 +111,8 @@ class ResourceEntry extends WritableModel implements MappedModelEntry<ResourceKe
     this.uncache();
   }
   
-  constructor(key: ResourceKey, resource: Resource, owner?: Sims4Package) {
-    super({ owner });
+  constructor(key: ResourceKey, resource: Resource, buffer?: Buffer, owner?: Sims4Package) {
+    super({ owner, buffer });
     this.key = key;
     if (resource) resource.owner = this;
     this._resource = resource;

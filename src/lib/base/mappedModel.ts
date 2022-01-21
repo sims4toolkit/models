@@ -34,7 +34,7 @@ export abstract class MappedModel<Key, Value, Entry extends MappedModelEntry<Key
     this._keyMap = new Map();
 
     entries.forEach((entry, id) => {
-      this._entryMap.set(id, this._makeEntry(entry.key, entry.value));
+      this._entryMap.set(id, this._makeEntry(entry.key, entry.value, entry));
       const keyId = this._getKeyIdentifier(entry.key);
       if (!this._keyMap.has(keyId)) this._keyMap.set(keyId, id);
     });
@@ -263,8 +263,9 @@ export abstract class MappedModel<Key, Value, Entry extends MappedModelEntry<Key
    * 
    * @param key Key of entry
    * @param value Value of entry
+   * @param dto Optional DTO that is being used to create this entry
    */
-  protected abstract _makeEntry(key: Key, value: Value): Entry;
+  protected abstract _makeEntry(key: Key, value: Value, dto?: any): Entry;
 
   //#endregion Protected Methods
 }
