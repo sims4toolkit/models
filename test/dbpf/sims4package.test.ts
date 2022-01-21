@@ -530,21 +530,40 @@ describe("Sims4Package", () => {
 
   describe("#deleteByKey()", () => {
     it("should delete the entry with the given key", () => {
-      // TODO:
+      const dbpf = getPackage("CompleteTrait");
+      expect(dbpf.size).to.equal(4);
+      const key = { type: 0x545AC67A, group: 0x005FDD0C, instance: 0x97297134D57FE219n };
+      expect(dbpf.getByKey(key).value.variant).to.equal("DATA");
+      dbpf.deleteByKey(key);
+      expect(dbpf.size).to.equal(3);
+      expect(dbpf.getByKey(key)).to.be.undefined;
     });
   });
 
   describe("#equals()", () => {
     it("should return true if dbpfs have the same entries", () => {
-      // TODO:
+      const dbpf = getPackage("CompleteTrait");
+      const other = dbpf.clone();
+      expect(dbpf.equals(other)).to.be.true;
     });
 
     it("should return false if an entry has a different key", () => {
-      // TODO:
+      const dbpf = getPackage("CompleteTrait");
+      const other = dbpf.clone();
+      other.get(0).key.group++;
+      expect(dbpf.equals(other)).to.be.false;
     });
 
     it("should return false if an entry has a different value", () => {
-      // TODO:
+      const dbpf = getPackage("CompleteTrait");
+      const other = dbpf.clone();
+      other.get(2).value = getTestTuning();
+      expect(dbpf.equals(other)).to.be.false;
+    });
+
+    it("should return false if other is undefined", () => {
+      const dbpf = getPackage("CompleteTrait");
+      expect(dbpf.equals(undefined)).to.be.false;
     });
   });
 
@@ -560,15 +579,27 @@ describe("Sims4Package", () => {
 
   describe("#get()", () => {
     it("should return the entry with the given ID", () => {
-      // TODO:
+      const dbpf = getPackage("CompleteTrait");
+      const image = dbpf.get(0);
+      expect(image.value.variant).to.equal("RAW");
+      const simdata = dbpf.get(1);
+      expect(simdata.value.variant).to.equal("DATA");
+      const tuning = dbpf.get(2);
+      expect(tuning.value.variant).to.equal("XML");
+      const stbl = dbpf.get(3);
+      expect(stbl.value.variant).to.equal("STBL");
     });
 
     it("should return the same item for the same ID even if one before it is removed", () => {
-      // TODO:
+      const dbpf = getPackage("Trait");
+      const tuning = dbpf.get(1);
+      dbpf.delete(0);
+      expect(tuning).to.equal(dbpf.get(1));
     });
 
     it("should return undefined if the given ID doesn't exist", () => {
-      // TODO:
+      const dbpf = getPackage("Trait");
+      expect(dbpf.get(2)).to.be.undefined;
     });
   });
 
@@ -644,19 +675,27 @@ describe("Sims4Package", () => {
 
   describe("#has()", () => {
     it("should return true if the ID is in the model", () => {
-      // TODO:
+      const dbpf = getPackage("Trait");
+      expect(dbpf.has(0)).to.be.true;
     });
 
     it("should return true if the ID was not in the model but was added", () => {
-      // TODO:
+      const dbpf = getPackage("Trait");
+      expect(dbpf.has(2)).to.be.false;
+      dbpf.add(getTestKey(), getTestTuning());
+      expect(dbpf.has(2)).to.be.true;
     });
 
     it("should return false if the ID is not in the model", () => {
-      // TODO:
+      const dbpf = getPackage("Trait");
+      expect(dbpf.has(2)).to.be.false;
     });
 
     it("should return false if the ID was in the model but was removed", () => {
-      // TODO:
+      const dbpf = getPackage("Trait");
+      expect(dbpf.has(1)).to.be.true;
+      dbpf.delete(1);
+      expect(dbpf.has(1)).to.be.false;
     });
   });
 
@@ -688,29 +727,44 @@ describe("Sims4Package", () => {
 
   describe("#resetEntries()", () => {
     it("should force the entries to make a new list", () => {
-      // TODO:
+      const dbpf = getPackage("Trait");
+      const entries = dbpf.entries;
+      expect(entries).to.equal(dbpf.entries);
+      dbpf.resetEntries();
+      expect(entries).to.not.equal(dbpf.entries);
     });
   });
 
   describe("#uncache()", () => {
     it("should uncache the buffer", () => {
-      // TODO:
-    });
-
-    it("should notify the owner to uncache", () => {
-      // TODO:
+      const dbpf = getPackage("Trait");
+      expect(dbpf.isCached).to.be.true;
+      dbpf.uncache();
+      expect(dbpf.isCached).to.be.false;
     });
 
     it("should reset the entries", () => {
-      // TODO:
+      const dbpf = getPackage("Trait");
+      const entries = dbpf.entries;
+      expect(entries).to.equal(dbpf.entries);
+      dbpf.uncache();
+      expect(entries).to.not.equal(dbpf.entries);
     });
 
     it("should not uncache the entries", () => {
-      // TODO:
+      const dbpf = getPackage("Trait");
+      dbpf.uncache();
+      dbpf.entries.forEach(entry => {
+        expect(entry.isCached).to.be.true;
+      });
     });
 
     it("should not uncache the entries' resources", () => {
-      // TODO:
+      const dbpf = getPackage("Trait");
+      dbpf.uncache();
+      dbpf.entries.forEach(entry => {
+        expect(entry.value.isCached).to.be.true;
+      });
     });
   });
 

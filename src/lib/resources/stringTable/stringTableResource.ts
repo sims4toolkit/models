@@ -12,7 +12,7 @@ import { PrimitiveEntry, PrimitiveMappedModel } from "../../base/primitiveMapped
  * Model for string table resources.
  */
 export default class StringTableResource extends PrimitiveMappedModel<string, StringEntry> implements Resource {
-  readonly variant: 'STBL';
+  readonly variant = 'STBL';
 
   //#region Initialization
 

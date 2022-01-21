@@ -20,6 +20,8 @@ export abstract class PrimitiveEntry<Value> extends CacheableModel implements Ma
 
   get key(): number { return this._key; }
   set key(key: number) {
+    if (Number.isNaN(key))
+      throw new Error(`Expected entry have a number key, but got ${key}`);
     const previous = this._key;
     this._key = key;
     this.owner?._onKeyUpdate(previous, key);

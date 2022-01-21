@@ -239,20 +239,18 @@ export abstract class MappedModel<Key, Value, Entry extends MappedModelEntry<Key
    */
   _onKeyUpdate(previous: Key, current: Key) {
     const previousIdentifier = this._getKeyIdentifier(previous);
-    const currentIdentifier = this._getKeyIdentifier(current);
+    const currentId = this._keyMap.get(previousIdentifier);
 
-    if (this._keyMap.has(previousIdentifier)) {
-      const ids = this.getIdsForKey(previous);
-      if (ids.length === 0) {
-        this._keyMap.delete(previousIdentifier);
-      } else {
-        this._keyMap.set(previousIdentifier, ids[0]);
-      }
+    const ids = this.getIdsForKey(previous);
+    if (ids.length === 0) {
+      this._keyMap.delete(previousIdentifier);
+    } else {
+      this._keyMap.set(previousIdentifier, ids[0]);
     }
-
+    
+    const currentIdentifier = this._getKeyIdentifier(current);
     if (!this._keyMap.has(currentIdentifier)) {
-      const id = this._keyMap.get(previousIdentifier);
-      this._keyMap.set(currentIdentifier, id);
+      this._keyMap.set(currentIdentifier, currentId);
     }
 
     this.uncache();

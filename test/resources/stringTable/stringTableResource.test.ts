@@ -166,6 +166,13 @@ describe("StringTableResource", () => {
     });
   });
 
+  describe("#variant", () => {
+    it("should be STBL", () => {
+      const stbl = getStbl("Normal");
+      expect(stbl.variant).to.equal("STBL");
+    });
+  });
+
   //#endregion Properties
 
   //#region Initialization
