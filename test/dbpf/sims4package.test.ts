@@ -38,15 +38,23 @@ describe("Sims4Package", () => {
 
   describe("#entries", () => {
     it("should return entries in an array", () => {
-      // TODO:
+      const dbpf = getPackage("CompleteTrait");
+      const entries = dbpf.entries;
+      expect(entries).to.be.an('Array').with.lengthOf(4);
     });
 
     it("should not mutate the internal map", () => {
-      // TODO:
+      const dbpf = getPackage("CompleteTrait");
+      expect(dbpf.size).to.equal(4);
+      dbpf.entries.push(dbpf.get(0));
+      expect(dbpf.size).to.equal(4);
     });
 
     it("should not uncache the model when mutated", () => {
-      // TODO:
+      const dbpf = getPackage("CompleteTrait");
+      expect(dbpf.isCached).to.be.true;
+      dbpf.entries.push(dbpf.get(0));
+      expect(dbpf.isCached).to.be.false;
     });
 
     it("should be the same object when accessed more than once without changes", () => {
