@@ -1,5 +1,33 @@
-import { Sims4Package } from "../../dst/api";
+import fs from "fs";
+import path from "path";
 import { expect } from "chai";
+import type { ResourceKey } from "../../dst/lib/dbpf/shared";
+import { Sims4Package, TuningResource } from "../../dst/api";
+
+//#region Constants
+
+const testKey: ResourceKey = { type: 123, group: 456, instance: 789n };
+
+//#endregion Constants
+
+//#region Helpers
+
+const cachedBuffers: { [key: string]: Buffer; } = {};
+
+function getBuffer(filename: string): Buffer {
+  if (!cachedBuffers[filename]) {
+    const filepath = path.resolve(__dirname, `../data/packages/${filename}.package`);
+    cachedBuffers[filename] = fs.readFileSync(filepath);
+  }
+
+  return cachedBuffers[filename];
+}
+
+function getPackage(filename: string): Sims4Package {
+  return Sims4Package.from(getBuffer(filename));
+}
+
+//#endregion Helpers
 
 describe("Sims4Package", () => {
   //#region Properties
@@ -17,7 +45,29 @@ describe("Sims4Package", () => {
   // #isCached tested by other tests
 
   describe("#size", () => {
-    // TODO:
+    it("should return 0 when the dbpf is empty", () => {
+      const dbpf = getPackage("Empty");
+      expect(dbpf.size).to.equal(0);
+    });
+
+    it("should return the number of entries in the dbpf", () => {
+      const dbpf = getPackage("CompleteTrait");
+      expect(dbpf.size).to.equal(4);
+    });
+
+    it("should increase by 1 after adding an entry", () => {
+      const dbpf = getPackage("CompleteTrait");
+      expect(dbpf.size).to.equal(4);
+      dbpf.add(testKey, TuningResource.create());
+      expect(dbpf.size).to.equal(5);
+    });
+
+    it("should decrease by 1 after deleting an entry", () => {
+      const dbpf = getPackage("CompleteTrait");
+      expect(dbpf.size).to.equal(4);
+      dbpf.delete(0);
+      expect(dbpf.size).to.equal(3);
+    });
   });
 
   //#endregion Properties
@@ -29,7 +79,55 @@ describe("Sims4Package", () => {
   });
 
   describe("static#from()", () => {
-    // TODO:
+    context("dbpf is valid", () => {
+      it("should be cached", () => {
+        // TODO:
+      });
+
+      it("should read empty dbpf", () => {
+        // TODO:
+      });
+
+      it("should read dbpf with entries", () => {
+        // TODO:
+      });
+
+      it("should have cached contents", () => {
+        // TODO:
+      });
+
+      it("should read tuning resource correctly", () => {
+        // TODO:
+      });
+
+      it("should read stbl resource correctly", () => {
+        // TODO:
+      });
+
+      it("should read simdata resource correctly", () => {
+        // TODO:
+      });
+
+      it("should read raw resource correctly", () => {
+        // TODO:
+      });
+
+      it("should read other xml resource correctly", () => {
+        // TODO:
+      });
+
+      it("should load all contents as raw if told to", () => {
+        // TODO:
+      });
+    });
+
+    context("dbpf header is invalid", () => {
+      // TODO:
+    });
+
+    context("dbpf content is invalid", () => {
+      // TODO:
+    });
   });
 
   //#endregion Initialization

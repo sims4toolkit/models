@@ -26,11 +26,13 @@ export default function readDbpf(buffer: Buffer, options: SerializationOptions =
 
   const index = makeList<IndexEntry>(header.mnIndexRecordEntryCount, () => {
     const entry: Partial<IndexEntry> = {};
-    entry.key.type = flags.constantTypeId ?? decoder.uint32();
-    entry.key.group = flags.constantGroupId ?? decoder.uint32();
+    const key: Partial<ResourceKey> = {};
+    key.type = flags.constantTypeId ?? decoder.uint32();
+    key.group = flags.constantGroupId ?? decoder.uint32();
     const mInstanceEx = flags.constantInstanceIdEx ?? decoder.uint32();
     const mInstance = decoder.uint32();
-    entry.key.instance = (BigInt(mInstanceEx) << 32n) + BigInt(mInstance);
+    key.instance = (BigInt(mInstanceEx) << 32n) + BigInt(mInstance);
+    entry.key = key as ResourceKey;
     entry.mnPosition = decoder.uint32();
     const sizeAndCompression = decoder.uint32();
     entry.mnSize = sizeAndCompression & 0x7FFFFFFF; // 31 bits
