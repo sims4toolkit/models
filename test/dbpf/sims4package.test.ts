@@ -484,23 +484,47 @@ describe("Sims4Package", () => {
 
   describe("#delete()", () => {
     it("should delete the entry with the given ID", () => {
-      // TODO:
+      const dbpf = getPackage("Trait");
+      const key = dbpf.get(0).key;
+      expect(dbpf.size).to.equal(2);
+      expect(dbpf.getByKey(key)).to.not.be.undefined;
+      dbpf.delete(0);
+      expect(dbpf.size).to.equal(1);
+      expect(dbpf.getByKey(key)).to.be.undefined;
     });
 
     it("should uncache the buffer", () => {
-      // TODO:
+      const dbpf = getPackage("Trait");
+      expect(dbpf.isCached).to.be.true;
+      dbpf.delete(0);
+      expect(dbpf.isCached).to.be.false;
     });
 
     it("should remove the key from the key map", () => {
-      // TODO:
+      const dbpf = getPackage("Trait");
+      const key = dbpf.get(0).key;
+      expect(dbpf.hasKey(key)).to.be.true;
+      dbpf.delete(0);
+      expect(dbpf.hasKey(key)).to.be.false;
     });
 
     it("should update the ID in the key map if there is another entry with the same key", () => {
-      // TODO:
+      const dbpf = getPackage("Trait");
+      const key = dbpf.get(0).key;
+      dbpf.get(1).key = key;
+      expect(dbpf.hasKey(key)).to.be.true;
+      expect(dbpf.getIdForKey(key)).to.equal(0);
+      dbpf.delete(0);
+      expect(dbpf.hasKey(key)).to.be.true;
+      expect(dbpf.getIdForKey(key)).to.equal(1);
     });
 
     it("should reset the entries array", () => {
-      // TODO:
+      const dbpf = getPackage("Trait");
+      const entries = dbpf.entries;
+      expect(entries).to.equal(dbpf.entries);
+      dbpf.delete(0);
+      expect(entries).to.not.equal(dbpf.entries);
     });
   });
 

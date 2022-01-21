@@ -239,9 +239,22 @@ export abstract class MappedModel<Key, Value, Entry extends MappedModelEntry<Key
    */
   _onKeyUpdate(previous: Key, current: Key) {
     const previousIdentifier = this._getKeyIdentifier(previous);
-    const id = this._keyMap.get(previousIdentifier);
-    this._keyMap.delete(previousIdentifier);
-    this._keyMap.set(this._getKeyIdentifier(current), id);
+    const currentIdentifier = this._getKeyIdentifier(current);
+
+    if (this._keyMap.has(previousIdentifier)) {
+      const ids = this.getIdsForKey(previous);
+      if (ids.length === 0) {
+        this._keyMap.delete(previousIdentifier);
+      } else {
+        this._keyMap.set(previousIdentifier, ids[0]);
+      }
+    }
+
+    if (!this._keyMap.has(currentIdentifier)) {
+      const id = this._keyMap.get(previousIdentifier);
+      this._keyMap.set(currentIdentifier, id);
+    }
+
     this.uncache();
   }
 
@@ -251,6 +264,22 @@ export abstract class MappedModel<Key, Value, Entry extends MappedModelEntry<Key
    */
   resetEntries() {
     delete this._cachedEntries;
+  }
+
+  /**
+   * Resets the key map (i.e. the object that maps entry keys to their unique
+   * IDs) of this model to guarantee that all keys are mapped to the ID of the
+   * first entry they appear in. This function should not ever have to be used,
+   * but is supplied in case the key map ever falls out of sync after editing /
+   * deleting a lot of entries. If you find yourself having to use this method,
+   * please report why here: https://github.com/sims4toolkit/models/issues
+   */
+  resetKeyMap() {
+    this._keyMap.clear();
+    for (const [ id, entry ] of this._entryMap) {
+      const keyIdentifier = this._getKeyIdentifier(entry.key);
+      if (!this._keyMap.has(keyIdentifier)) this._keyMap.set(keyIdentifier, id);
+    }
   }
 
   //#endregion Public Methods
