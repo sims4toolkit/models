@@ -1,6 +1,6 @@
 import type Resource from "../../resources/resource";
 import type { SerializationOptions } from "../../shared";
-import type { ResourceKey, ResourceKeyPair } from "../shared";
+import { ResourceKey, ResourceKeyPair, ZLIB_COMPRESSION } from "../shared";
 import { unzipSync } from "zlib";
 import { BinaryDecoder } from "@s4tk/encoding";
 import { makeList } from "../../helpers";
@@ -56,7 +56,6 @@ export default function readDbpf(buffer: Buffer, options: SerializationOptions =
 interface DbpfHeader {
   mnIndexRecordEntryCount: number;
   mnIndexRecordPositionLow: number;
-  mnIndexRecordSize: number;
   mnIndexRecordPosition: bigint;
 }
 
@@ -102,8 +101,7 @@ function readDbpfHeader(decoder: BinaryDecoder, { ignoreErrors = false }: Serial
   decoder.skip(24); // mnUserVersion through unused2 don't affect anything
   header.mnIndexRecordEntryCount = decoder.uint32();
   header.mnIndexRecordPositionLow = decoder.uint32();
-  header.mnIndexRecordSize = decoder.uint32();
-  decoder.skip(12); // unused3 has no affect
+  decoder.skip(16); // mnIndexRecordSize & unused3 has no affect
 
   if (ignoreErrors) {
     decoder.skip(4);
@@ -151,7 +149,7 @@ function getResource(entry: IndexEntry, rawBuffer: Buffer, options: Serializatio
 
   let buffer: Buffer;
   if (entry.mnCompressionType) {
-    if (entry.mnCompressionType === 23106) {
+    if (entry.mnCompressionType === ZLIB_COMPRESSION) {
       buffer = unzipSync(rawBuffer);
     } else {
       return RawResource.from(rawBuffer, `Incompatible Compression: ${entry.mnCompressionType}`);
