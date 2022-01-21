@@ -34,7 +34,29 @@ describe("Sims4Package", () => {
   //#region Properties
 
   describe("#buffer", () => {
-    // TODO:
+    it("should serialize a dbpf that is empty", () => {
+      // TODO:
+    });
+
+    it("should return the cached buffer if it wasn't changed", () => {
+      // TODO:
+    });
+
+    it("should serialize a dbpf that wasn't changed, but was uncached", () => {
+      // TODO:
+    });
+
+    it("should serialize a dbpf that had entries added", () => {
+      // TODO:
+    });
+
+    it("should serialize a dbpf that had entries removed", () => {
+      // TODO:
+    });
+
+    it("should serialize a dbpf that had entries mutated", () => {
+      // TODO:
+    });
   });
 
   describe("#entries", () => {
