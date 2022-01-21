@@ -6,6 +6,7 @@ import compare from "just-compare";
 import type { ResourceKey } from "../../dst/lib/dbpf/shared";
 import { Sims4Package, StringTableResource, TuningResource } from "../../dst/api";
 import { TuningResourceType } from "../../dst/enum";
+import { inspect } from "util";
 
 //#region Helpers
 
@@ -543,7 +544,7 @@ describe("Sims4Package", () => {
   describe("#equals()", () => {
     it("should return true if dbpfs have the same entries", () => {
       const dbpf = getPackage("CompleteTrait");
-      const other = dbpf.clone();
+      const other = dbpf.clone();      
       expect(dbpf.equals(other)).to.be.true;
     });
 

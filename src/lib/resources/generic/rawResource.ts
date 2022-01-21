@@ -31,7 +31,7 @@ export default class RawResource extends Resource {
   }
 
   clone(): RawResource {
-    return RawResource.from(this.buffer);
+    return RawResource.from(this.buffer, this.reason);
   }
 
   equals(other: RawResource): boolean {
