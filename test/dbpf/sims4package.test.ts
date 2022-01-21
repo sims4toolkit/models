@@ -37,7 +37,33 @@ describe("Sims4Package", () => {
   });
 
   describe("#entries", () => {
-    // TODO:
+    it("should return entries in an array", () => {
+      // TODO:
+    });
+
+    it("should not mutate the internal map", () => {
+      // TODO:
+    });
+
+    it("should not uncache the model when mutated", () => {
+      // TODO:
+    });
+
+    it("should be the same object when accessed more than once without changes", () => {
+      // TODO:
+    });
+
+    it("should be a new object when an entry is added", () => {
+      // TODO:
+    });
+
+    it("should be a new object when an entry is deleted", () => {
+      // TODO:
+    });
+
+    it("should be a new object when an entry is mutated", () => {
+      // TODO:
+    });
   });
 
   // #hasChanged tested by other tests
@@ -187,15 +213,72 @@ describe("Sims4Package", () => {
   //#region Public Methods
 
   describe("#add()", () => {
-    // TODO:
+    it("should add the entry to an empty dbpf", () => {
+      // TODO:
+    });
+
+    it("should add the entry to a dbpf with entries", () => {
+      // TODO:
+    });
+
+    it("should add the key to the key map", () => {
+      // TODO:
+    });
+
+    it("should uncache the buffer", () => {
+      // TODO:
+    });
+
+    it("should not uncache other entries", () => {
+      // TODO:
+    });
   });
 
   describe("#addAll()", () => {
-    // TODO:
+    it("should add the given entries", () => {
+      // TODO:
+    });
   });
 
   describe("#clear()", () => {
-    // TODO:
+    it("should delete all entries", () => {
+      const dbpf = getPackage("CompleteTrait");
+      expect(dbpf.size).to.equal(4);
+      dbpf.clear();
+      expect(dbpf.size).to.equal(0);
+    });
+
+    it("should reset the key map", () => {
+      const dbpf = getPackage("CompleteTrait");
+      const key = dbpf.get(0).key;
+      expect(dbpf.hasKey(key)).to.be.true;
+      dbpf.clear();
+      expect(dbpf.hasKey(key)).to.be.false;
+    });
+
+    it("should uncache the buffer", () => {
+      const dbpf = getPackage("CompleteTrait");
+      expect(dbpf.isCached).to.be.true;
+      dbpf.clear();
+      expect(dbpf.isCached).to.be.false;
+    });
+
+    it("should reset the entries property", () => {
+      const dbpf = getPackage("CompleteTrait");
+      const entries = dbpf.entries;
+      dbpf.clear();
+      const newEntries = dbpf.entries;
+      expect(newEntries).to.not.equal(entries);
+      expect(newEntries).to.be.an('Array').that.is.empty;
+    });
+
+    it("should reset the ID counter", () => {
+      const dbpf = getPackage("CompleteTrait");
+      const entry = dbpf.get(3);
+      dbpf.clear();
+      dbpf.add(entry.key, entry.value);
+      expect(dbpf.getIdForKey(entry.key)).to.equal(0);
+    });
   });
 
   describe("#clone()", () => {
