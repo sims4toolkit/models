@@ -22,13 +22,14 @@ export default function writeDbpf(entries: ResourceKeyPair[]): Buffer {
     entries.forEach(entry => {
       encoder.uint32(entry.key.type); // mType
       encoder.uint32(entry.key.group); // mGroup
-      encoder.uint64(entry.key.instance); // mInstanceEx + mInstance FIXME: is there other bit math to do here?
+      encoder.uint32(Number((entry.key.instance & 0xFFFFFFFF00000000n) >> 32n)); // mInstanceEx
+      encoder.uint32(Number(entry.key.instance & 0x00000000FFFFFFFFn)); // mInstance
       encoder.uint32(HEADER_BYTE_SIZE + recordOffset); // mnPosition
       recordOffset += entry.buffer.byteLength;
       encoder.uint32(entry.buffer.byteLength + 0x80000000); // mnSize + mbExtendedCompressionType
       encoder.uint32(entry.value.buffer.byteLength); // mnSizeDecompressed
       encoder.uint16(ZLIB_COMPRESSION); // mnCompressionType
-      encoder.uint16(1); // mnCommitted FIXME: is this always 1?
+      encoder.uint16(1); // mnCommitted // NOTE: is this always 1?
     });
 
     return buffer;
