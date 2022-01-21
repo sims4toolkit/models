@@ -71,11 +71,25 @@ describe("Sims4Package", () => {
     });
 
     it("should serialize a dbpf that had entries removed", () => {
-      // TODO:
+      const original = getPackage("Trait");
+      expect(original.size).to.equal(2);
+      original.delete(0);
+      const dbpf = Sims4Package.from(original.buffer);
+      expect(dbpf.size).to.equal(1);
+      const tuning = dbpf.get(0).value as TuningResource;
+      expect(tuning.variant).to.equal("XML");
+      expect(tuning.root.name).to.equal("frankkulak_LB:trait_SimlishNative");
     });
 
     it("should serialize a dbpf that had entries mutated", () => {
-      // TODO:
+      const original = getPackage("Trait");
+      expect(original.size).to.equal(2);
+      original.delete(0);
+      const dbpf = Sims4Package.from(original.buffer);
+      expect(dbpf.size).to.equal(1);
+      const tuning = dbpf.get(0).value as TuningResource;
+      expect(tuning.variant).to.equal("XML");
+      expect(tuning.root.name).to.equal("frankkulak_LB:trait_SimlishNative");
     });
   });
 
@@ -166,19 +180,33 @@ describe("Sims4Package", () => {
 
   describe("static#create()", () => {
     it("should create an empty dbpf if given list is empty", () => {
-      // TODO:
+      const dbpf = Sims4Package.create();
+      expect(dbpf.size).to.equal(0);
     });
 
     it("should create entries from the ones that are given", () => {
-      // TODO:
+      const dbpf = Sims4Package.create([
+        { key: getTestKey(), value: getTestTuning() }
+      ]);
+
+      expect(dbpf.size).to.equal(1);
+      const entry = dbpf.get(0);
+      expect(entry.keyEquals(getTestKey())).to.be.true;
+      expect(entry.value.equals(getTestTuning())).to.be.true;
     });
 
     it("should assign itself as the owner of the given entries", () => {
-      // TODO:
+      const dbpf = Sims4Package.create([
+        { key: getTestKey(), value: getTestTuning() }
+      ]);
+
+      const entry = dbpf.get(0);
+      expect(entry.owner).to.equal(dbpf);
     });
 
     it("should not be cached", () => {
-      // TODO:
+      const dbpf = Sims4Package.create();
+      expect(dbpf.isCached).to.be.false;
     });
   });
 
@@ -341,7 +369,24 @@ describe("Sims4Package", () => {
 
   describe("#addAll()", () => {
     it("should add the given entries", () => {
-      // TODO:
+      const dbpf = Sims4Package.create();
+
+      expect(dbpf.size).to.equal(0);
+
+      dbpf.addAll([
+        {
+          key: { type: 123, group: 456, instance: 789n },
+          value: getTestTuning()
+        },
+        {
+          key: { type: 321, group: 654, instance: 987n },
+          value: StringTableResource.create([ { key: 1, value: "hi" } ])
+        }
+      ]);
+
+      expect(dbpf.size).to.equal(2);
+      expect(dbpf.get(0).key.type).to.equal(123);
+      expect(dbpf.get(1).key.type).to.equal(321);
     });
   });
 
