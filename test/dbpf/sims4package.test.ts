@@ -342,10 +342,6 @@ describe("Sims4Package", () => {
     // TODO:
   });
 
-  describe("#equals()", () => {
-    // TODO:
-  });
-
   describe("#delete()", () => {
     // TODO:
   });
@@ -354,12 +350,42 @@ describe("Sims4Package", () => {
     // TODO:
   });
 
+  describe("#equals()", () => {
+    it("should return true if dbpfs have the same entries", () => {
+      // TODO:
+    });
+
+    it("should return false if an entry has a different key", () => {
+      // TODO:
+    });
+
+    it("should return false if an entry has a different value", () => {
+      // TODO:
+    });
+  });
+
   describe("#findRepeatedKeys()", () => {
-    // TODO:
+    it("should be empty when there are no repeated keys", () => {
+      // TODO:
+    });
+
+    it("should return all keys that are repeated", () => {
+      // TODO:
+    });
   });
 
   describe("#get()", () => {
-    // TODO:
+    it("should return the entry with the given ID", () => {
+      // TODO:
+    });
+
+    it("should return the same item for the same ID even if one before it is removed", () => {
+      // TODO:
+    });
+
+    it("should return undefined if the given ID doesn't exist", () => {
+      // TODO:
+    });
   });
 
   describe("#getByKey()", () => {
