@@ -49,6 +49,13 @@ export abstract class MappedModel<Key, Value, Entry extends MappedModelEntry<Key
     super.uncache();
   }
 
+  validate(): void {
+    this.entries.forEach(entry => entry.validate());
+    const repeatedKeys = this.findRepeatedKeys();
+    if (repeatedKeys.length > 0)
+      throw new Error(`Repeated keys detected: ${repeatedKeys.map(key => this._getKeyIdentifier(key))}`)
+  }
+
   //#endregion Overridden Public Methods
 
   //#region Public Methods
@@ -290,4 +297,13 @@ export interface MappedModelEntry<Key, Value> {
    * @returns True if the keys are equal, false otherwise
    */
   keyEquals(key: Key): boolean;
+
+  /**
+   * Verifies that this entry is valid. If it isn't, a detailed exception is
+   * thrown to explain what is wrong. If nothing is wrong, no exception is
+   * thrown.
+   * 
+   * @throws If this model is invalid
+   */
+  validate(): void;
 }
