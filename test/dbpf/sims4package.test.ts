@@ -7,12 +7,6 @@ import type { ResourceKey } from "../../dst/lib/dbpf/shared";
 import { Sims4Package, StringTableResource, TuningResource } from "../../dst/api";
 import { TuningResourceType } from "../../dst/enum";
 
-//#region Constants
-
-const testKey: ResourceKey = { type: TuningResourceType.Trait, group: 456, instance: 789n };
-
-//#endregion Constants
-
 //#region Helpers
 
 const cachedBuffers: { [key: string]: Buffer; } = {};
@@ -32,6 +26,10 @@ function getPackage(filename: string): Sims4Package {
 
 function getTestTuning(): TuningResource {
   return TuningResource.create({ content: `<I n="something">\n  <T n="value">50</T>\n</I>` });
+}
+
+function getTestKey(): ResourceKey {
+  return { type: TuningResourceType.Trait, group: 456, instance: 789n };
 }
 
 //#endregion Helpers
@@ -64,6 +62,7 @@ describe("Sims4Package", () => {
     it("should serialize a dbpf that had entries added", () => {
       const original = getPackage("Trait");
       expect(original.size).to.equal(2);
+      const testKey = getTestKey();
       original.add(testKey, getTestTuning());
       const dbpf = Sims4Package.from(original.buffer);
       expect(dbpf.size).to.equal(3);
@@ -148,6 +147,7 @@ describe("Sims4Package", () => {
     it("should increase by 1 after adding an entry", () => {
       const dbpf = getPackage("CompleteTrait");
       expect(dbpf.size).to.equal(4);
+      const testKey = getTestKey();
       dbpf.add(testKey, TuningResource.create());
       expect(dbpf.size).to.equal(5);
     });
@@ -285,6 +285,7 @@ describe("Sims4Package", () => {
       const dbpf = Sims4Package.create();
       expect(dbpf.size).to.equal(0);
       const resource = TuningResource.create();
+      const testKey = getTestKey();
       dbpf.add(testKey, resource);
       expect(dbpf.size).to.equal(1);
       expect(compare(dbpf.get(0).key, testKey)).to.be.true;
@@ -295,6 +296,7 @@ describe("Sims4Package", () => {
       const dbpf = getPackage("CompleteTrait");
       expect(dbpf.size).to.equal(4);
       const resource = TuningResource.create();
+      const testKey = getTestKey();
       dbpf.add(testKey, resource);
       expect(dbpf.size).to.equal(5);
       expect(compare(dbpf.get(4).key, testKey)).to.be.true;
@@ -303,6 +305,7 @@ describe("Sims4Package", () => {
 
     it("should add the key to the key map", () => {
       const dbpf = Sims4Package.create();
+      const testKey = getTestKey();
       expect(dbpf.hasKey(testKey)).to.be.false;
       dbpf.add(testKey, TuningResource.create());
       expect(dbpf.hasKey(testKey)).to.be.true;
@@ -311,6 +314,7 @@ describe("Sims4Package", () => {
     it("should uncache the buffer", () => {
       const dbpf = getPackage("CompleteTrait");
       expect(dbpf.isCached).to.be.true;
+      const testKey = getTestKey();
       dbpf.add(testKey, TuningResource.create());
       expect(dbpf.isCached).to.be.false;
     });
@@ -322,6 +326,7 @@ describe("Sims4Package", () => {
         expect(entry.isCached).to.be.true;
       });
 
+      const testKey = getTestKey();
       dbpf.add(testKey, TuningResource.create());
       
       dbpf.entries.forEach(entry => {
@@ -399,6 +404,7 @@ describe("Sims4Package", () => {
       expect(dbpf.size).to.equal(2);
       const clone = dbpf.clone();
       expect(clone.size).to.equal(2);
+      const testKey = getTestKey();
       clone.add(testKey, getTestTuning());
       expect(clone.size).to.equal(3);
       expect(dbpf.size).to.equal(2);
@@ -726,6 +732,7 @@ describe("ResourceEntry", () => {
     it("should serialize and compress the contained resource", () => {
       const tuning = getTestTuning();
       const dbpf = Sims4Package.create();
+      const testKey = getTestKey();
       const entry = dbpf.add(testKey, tuning);
       const unzipped = unzipSync(entry.buffer).toString();
       expect(unzipped).to.equal(tuning.content);
@@ -734,6 +741,7 @@ describe("ResourceEntry", () => {
     it("should return the cached buffer if it wasn't changed", () => {
       const tuning = getTestTuning();
       const dbpf = Sims4Package.create();
+      const testKey = getTestKey();
       const entry = dbpf.add(testKey, tuning);
       const buffer = entry.buffer;
       expect(buffer).to.equal(entry.buffer);
@@ -742,6 +750,7 @@ describe("ResourceEntry", () => {
     it("should return a new buffer if it was changed", () => {
       const tuning = getTestTuning();
       const dbpf = Sims4Package.create();
+      const testKey = getTestKey();
       const entry = dbpf.add(testKey, tuning);
       const buffer = entry.buffer;
       (entry.value as TuningResource).content = "";
@@ -756,6 +765,7 @@ describe("ResourceEntry", () => {
       const dbpf = getPackage("Trait");
       const entry = dbpf.get(0);
       expect(dbpf.isCached).to.be.true;
+      const testKey = getTestKey();
       entry.key = testKey;
       expect(dbpf.isCached).to.be.false;
     });
@@ -881,23 +891,80 @@ describe("ResourceEntry", () => {
 
   describe("#keyEquals()", () => {
     it("should return true when key is the same object", () => {
-      // TODO:
+      const dbpf = Sims4Package.create();
+
+      const key = {
+        type: 123,
+        group: 456,
+        instance: 789n
+      };
+
+      const entry = dbpf.add(key, TuningResource.create());
+      expect(entry.keyEquals(key)).to.be.true;
     });
 
     it("should return true when key is a different object, but identical", () => {
-      // TODO:
+      const dbpf = Sims4Package.create();
+
+      const entry = dbpf.add({
+        type: 123,
+        group: 456,
+        instance: 789n
+      }, TuningResource.create());
+
+      expect(entry.keyEquals({
+        type: 123,
+        group: 456,
+        instance: 789n
+      })).to.be.true;
     });
 
     it("should return false when keys have different type", () => {
-      // TODO:
+      const dbpf = Sims4Package.create();
+
+      const entry = dbpf.add({
+        type: 123,
+        group: 456,
+        instance: 789n
+      }, TuningResource.create());
+
+      expect(entry.keyEquals({
+        type: 0,
+        group: 456,
+        instance: 789n
+      })).to.be.false;
     });
 
     it("should return false when keys have different group", () => {
-      // TODO:
+      const dbpf = Sims4Package.create();
+
+      const entry = dbpf.add({
+        type: 123,
+        group: 456,
+        instance: 789n
+      }, TuningResource.create());
+
+      expect(entry.keyEquals({
+        type: 123,
+        group: 0,
+        instance: 789n
+      })).to.be.false;
     });
 
     it("should return false when keys have different instance", () => {
-      // TODO:
+      const dbpf = Sims4Package.create();
+
+      const entry = dbpf.add({
+        type: 123,
+        group: 456,
+        instance: 789n
+      }, TuningResource.create());
+
+      expect(entry.keyEquals({
+        type: 123,
+        group: 456,
+        instance: 0n
+      })).to.be.false;
     });
   });
 
