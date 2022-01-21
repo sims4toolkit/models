@@ -624,7 +624,80 @@ describe("Sims4Package", () => {
   });
 
   describe("#validate()", () => {
-    // TODO:
+    it("should not throw if all entries are valid", () => {
+      const dbpf = Sims4Package.create([
+        {
+          key: {
+            type: 123,
+            group: 456,
+            instance: 789n
+          },
+          value: getTestTuning()
+        },
+        {
+          key: {
+            type: 321,
+            group: 654,
+            instance: 987n
+          },
+          value: StringTableResource.create([
+            { key: 1, value: "hi" }
+          ])
+        }
+      ]);
+
+      expect(() => dbpf.validate()).to.not.throw();
+    });
+
+    it("should throw if at least one entry is not valid", () => {
+      const dbpf = Sims4Package.create([
+        {
+          key: {
+            type: -1,
+            group: 456,
+            instance: 789n
+          },
+          value: getTestTuning()
+        },
+        {
+          key: {
+            type: 321,
+            group: 654,
+            instance: 987n
+          },
+          value: StringTableResource.create([
+            { key: 1, value: "hi" }
+          ])
+        }
+      ]);
+
+      expect(() => dbpf.validate()).to.throw();
+    });
+
+    it("should throw if there are multiple entries with the same key", () => {
+      const dbpf = Sims4Package.create([
+        {
+          key: {
+            type: 123,
+            group: 456,
+            instance: 789n
+          },
+          value: getTestTuning()
+        },
+        {
+          key: {
+            type: 123,
+            group: 456,
+            instance: 789n
+          },
+          value: StringTableResource.create([
+            { key: 1, value: "hi" }
+          ])
+        }
+      ]);
+
+      expect(() => dbpf.validate()).to.throw();
+    });
   });
 
   //#endregion Public Methods
