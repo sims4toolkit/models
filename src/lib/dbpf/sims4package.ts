@@ -131,6 +131,16 @@ class ResourceEntry extends WritableModel implements MappedModelEntry<ResourceKe
     return compare(this.key, key);
   }
 
+  validate(): void {
+    if (this.key.type < 0 || this.key.type > 0xFFFFFFFF)
+      throw new Error(`Expected type to be a UInt32, got ${this.key.type}`);
+    if (this.key.group < 0 || this.key.group > 0xFFFFFFFF)
+      throw new Error(`Expected group to be a UInt32, got ${this.key.group}`);
+    if (this.key.instance < 0n || this.key.instance > 0xFFFFFFFFFFFFFFFFn)
+      throw new Error(`Expected instance to be a UInt64, got ${this.key.instance}`);
+    this.value.validate();
+  }
+
   protected _getCollectionOwner(): Sims4Package {
     return this.owner;
   }

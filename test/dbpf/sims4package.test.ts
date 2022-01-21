@@ -4,7 +4,7 @@ import { unzipSync } from "zlib";
 import { expect } from "chai";
 import compare from "just-compare";
 import type { ResourceKey } from "../../dst/lib/dbpf/shared";
-import { Sims4Package, TuningResource } from "../../dst/api";
+import { Sims4Package, StringTableResource, TuningResource } from "../../dst/api";
 
 //#region Constants
 
@@ -831,36 +831,116 @@ describe("ResourceEntry", () => {
   });
 
   describe("#validate()", () => {
-    it("should not throw when key and string are valid", () => {
-      // TODO:
+    it("should not throw when key and resource are valid", () => {
+      const dbpf = Sims4Package.create();
+
+      const entry = dbpf.add({
+        type: 0,
+        group: 0,
+        instance: 0n
+      }, StringTableResource.create([
+        { key: 1, value: "hi" }
+      ]));
+
+      expect(() => entry.validate()).to.not.throw();
     });
 
     it("should throw if key type is negative", () => {
-      // TODO:
+      const dbpf = Sims4Package.create();
+
+      const entry = dbpf.add({
+        type: -1,
+        group: 0,
+        instance: 0n
+      }, StringTableResource.create([
+        { key: 1, value: "hi" }
+      ]));
+
+      expect(() => entry.validate()).to.throw();
     });
 
     it("should throw if key group is negative", () => {
-      // TODO:
+      const dbpf = Sims4Package.create();
+
+      const entry = dbpf.add({
+        type: 0,
+        group: -1,
+        instance: 0n
+      }, StringTableResource.create([
+        { key: 1, value: "hi" }
+      ]));
+
+      expect(() => entry.validate()).to.throw();
     });
 
     it("should throw if key instance is negative", () => {
-      // TODO:
+      const dbpf = Sims4Package.create();
+
+      const entry = dbpf.add({
+        type: 0,
+        group: 0,
+        instance: -1n
+      }, StringTableResource.create([
+        { key: 1, value: "hi" }
+      ]));
+
+      expect(() => entry.validate()).to.throw();
     });
 
     it("should throw if key type is > 32 bit", () => {
-      // TODO:
+      const dbpf = Sims4Package.create();
+
+      const entry = dbpf.add({
+        type: 0x800000000,
+        group: 0,
+        instance: 0n
+      }, StringTableResource.create([
+        { key: 1, value: "hi" }
+      ]));
+
+      expect(() => entry.validate()).to.throw();
     });
 
     it("should throw if key group is > 32 bit", () => {
-      // TODO:
+      const dbpf = Sims4Package.create();
+
+      const entry = dbpf.add({
+        type: 0,
+        group: 0x800000000,
+        instance: 0n
+      }, StringTableResource.create([
+        { key: 1, value: "hi" }
+      ]));
+
+      expect(() => entry.validate()).to.throw();
     });
 
     it("should throw if key instance is > 64 bit", () => {
-      // TODO:
+      const dbpf = Sims4Package.create();
+
+      const entry = dbpf.add({
+        type: 0,
+        group: 0,
+        instance: 0x80000000000000000n
+      }, StringTableResource.create([
+        { key: 1, value: "hi" }
+      ]));
+
+      expect(() => entry.validate()).to.throw();
     });
 
     it("should throw if contained resource is invalid", () => {
-      // TODO:
+      const dbpf = Sims4Package.create();
+
+      const entry = dbpf.add({
+        type: 0,
+        group: 0,
+        instance: 0x80000000000000000n
+      }, StringTableResource.create([
+        { key: -1, value: "hi" }
+      ]));
+
+      expect(() => entry.validate()).to.throw();
     });
   });
 
