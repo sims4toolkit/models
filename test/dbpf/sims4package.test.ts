@@ -75,7 +75,21 @@ describe("Sims4Package", () => {
   //#region Initialization
 
   describe("static#create()", () => {
-    // TODO:
+    it("should create an empty dbpf if given list is empty", () => {
+      // TODO:
+    });
+
+    it("should create entries from the ones that are given", () => {
+      // TODO:
+    });
+
+    it("should assign itself as the owner of the given entries", () => {
+      // TODO:
+    });
+
+    it("should not be cached", () => {
+      // TODO:
+    });
   });
 
   describe("static#from()", () => {
@@ -122,11 +136,49 @@ describe("Sims4Package", () => {
     });
 
     context("dbpf header is invalid", () => {
-      // TODO:
+      it("should throw if ignoreErrors = false", () => {
+        // TODO:
+      });
+
+      it("should not throw if ignoreErrors = true", () => {
+        // TODO:
+      });
+
+      it("should return return a regular DBPF", () => {
+        // TODO:
+      });
     });
 
     context("dbpf content is invalid", () => {
-      // TODO:
+      it("should throw if ignoreErrors = false", () => {
+        // TODO:
+      });
+
+      it("should throw even if ignoreErrors = true", () => {
+        // TODO:
+      });
+
+      it("should return undefined if dontThrow = true", () => {
+        // TODO:
+      });
+    });
+
+    context("inner resource content is invalid", () => {
+      it("should throw if ignoreErrors = false", () => {
+        // TODO:
+      });
+
+      it("should throw even if ignoreErrors = true", () => {
+        // TODO:
+      });
+
+      it("should contain an undefined resource if dontThrow = true", () => {
+        // TODO:
+      });
+
+      it("should return a regular DBPF if loading as raw", () => {
+        // TODO:
+      });
     });
   });
 
