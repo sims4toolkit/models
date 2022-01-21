@@ -970,19 +970,38 @@ describe("ResourceEntry", () => {
 
   describe("#uncache()", () => {
     it("should uncache the owning dbpf", () => {
-      // TODO:
+      const dbpf = getPackage("Trait");
+      const entry = dbpf.get(0);
+      expect(dbpf.isCached).to.be.true;
+      entry.uncache();
+      expect(dbpf.isCached).to.be.false;
     });
 
     it("should reset the compressed buffer", () => {
-      // TODO:
+      const dbpf = getPackage("Trait");
+      const entry = dbpf.get(0);
+      const buffer = entry.buffer;
+      expect(entry.buffer).to.equal(buffer);
+      entry.uncache();
+      expect(entry.buffer).to.not.equal(buffer);
     });
 
     it("should not uncache other entries in the dbpf", () => {
-      // TODO:
+      const dbpf = getPackage("Trait");
+      const [ simdata, tuning ] = dbpf.entries;
+      expect(tuning.isCached).to.be.true;
+      expect(tuning.isCached).to.be.true;
+      simdata.uncache();
+      expect(simdata.isCached).to.be.false;
+      expect(tuning.isCached).to.be.true;
     });
 
     it("should not uncache the contained resource", () => {
-      // TODO:
+      const dbpf = getPackage("Trait");
+      const [ simdata ] = dbpf.entries;
+      expect(simdata.value.isCached).to.be.true;
+      simdata.uncache();
+      expect(simdata.value.isCached).to.be.true;
     });
   });
 
