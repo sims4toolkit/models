@@ -1,5 +1,6 @@
 import fs from "fs";
 import path from "path";
+import { unzipSync } from "zlib";
 import { expect } from "chai";
 import compare from "just-compare";
 import type { ResourceKey } from "../../dst/lib/dbpf/shared";
@@ -26,6 +27,10 @@ function getBuffer(filename: string): Buffer {
 
 function getPackage(filename: string): Sims4Package {
   return Sims4Package.from(getBuffer(filename));
+}
+
+function getTestTuning(): TuningResource {
+  return TuningResource.create({ content: `<I n="something">\n  <T n="value">50</T>\n</I>` });
 }
 
 //#endregion Helpers
@@ -598,11 +603,28 @@ describe("ResourceEntry", () => {
 
   describe("#buffer", () => {
     it("should serialize and compress the contained resource", () => {
-      // TODO:
+      const tuning = getTestTuning();
+      const dbpf = Sims4Package.create();
+      const entry = dbpf.add(testKey, tuning);
+      const unzipped = unzipSync(entry.buffer).toString();
+      expect(unzipped).to.equal(tuning.content);
     });
 
     it("should return the cached buffer if it wasn't changed", () => {
-      // TODO:
+      const tuning = getTestTuning();
+      const dbpf = Sims4Package.create();
+      const entry = dbpf.add(testKey, tuning);
+      const buffer = entry.buffer;
+      expect(buffer).to.equal(entry.buffer);
+    });
+
+    it("should return a new buffer if it was changed", () => {
+      const tuning = getTestTuning();
+      const dbpf = Sims4Package.create();
+      const entry = dbpf.add(testKey, tuning);
+      const buffer = entry.buffer;
+      (entry.value as TuningResource).content = "";
+      expect(buffer).to.not.equal(entry.buffer);
     });
   });
 
