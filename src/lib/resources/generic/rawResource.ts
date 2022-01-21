@@ -18,6 +18,8 @@ export default class RawResource extends Resource {
     return this._reason;
   }
 
+  //#region Initialization
+
   /**
    * Creates a new RawResource instance. This constructor is not considered to
    * be a part of the public API. Please refer to `from()` instead.
@@ -30,6 +32,21 @@ export default class RawResource extends Resource {
     this._reason = reason;
   }
 
+  /**
+   * Creates a new RawResource from the given buffer. This is functionally the
+   * same as the constructor, but is provided for parity with the other resource
+   * types.
+   * 
+   * @param buffer Buffer to create a raw resource from
+   */
+  static from(buffer: Buffer, reason?: string): RawResource {
+    return new RawResource(buffer, reason);
+  }
+
+  //#endregion Initialization
+
+  //#region Public Methods
+
   clone(): RawResource {
     return RawResource.from(this.buffer, this.reason);
   }
@@ -41,21 +58,17 @@ export default class RawResource extends Resource {
   }
 
   uncache() {
-    // intentionally blank because this resource cannot be uncached
+    // intentionally blank because this resource cannot be uncached -- the
+    // buffer is the only thing that meaningfully defines this resource
   }
+
+  //#endregion Public Methods
+
+  //#region Protected Methods
 
   protected _serialize(): Buffer {
     throw new Error("Cannot serialize a raw resource.");
   }
 
-  /**
-   * Creates a new RawResource from the given buffer. This is functionally the
-   * same as the constructor, but is provided for parity with the other resource
-   * types.
-   * 
-   * @param buffer Buffer to create a raw resource from
-   */
-  static from(buffer: Buffer, reason?: string): RawResource {
-    return new RawResource(buffer, reason);
-  }
+  //#endregion Protected Methods
 }
