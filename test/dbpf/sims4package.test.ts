@@ -5,7 +5,7 @@ import { expect } from "chai";
 import compare from "just-compare";
 import type { ResourceKey } from "../../dst/lib/dbpf/shared";
 import { Sims4Package, StringTableResource, TuningResource } from "../../dst/api";
-import { TuningResourceType } from "../../dst/enum";
+import { TuningResourceType } from "../../dst/enums";
 import { inspect } from "util";
 
 //#region Helpers
@@ -570,11 +570,20 @@ describe("Sims4Package", () => {
 
   describe("#findRepeatedKeys()", () => {
     it("should be empty when there are no repeated keys", () => {
-      // TODO:
+      const dbpf = getPackage("CompleteTrait");
+      expect(dbpf.findRepeatedKeys()).to.be.an('Array').that.is.empty;
     });
 
     it("should return all keys that are repeated", () => {
-      // TODO:
+      const dbpf = getPackage("CompleteTrait");
+      const first = dbpf.get(0);
+      const third = dbpf.get(2);
+      dbpf.add(first.key, first.value);
+      dbpf.add(third.key, third.value);
+      const repeats = dbpf.findRepeatedKeys();
+      expect(repeats).to.be.an('Array').with.lengthOf(2);
+      expect(compare(repeats[0], first.key)).to.be.true;
+      expect(compare(repeats[1], third.key)).to.be.true;
     });
   });
 
@@ -606,31 +615,97 @@ describe("Sims4Package", () => {
 
   describe("#getByKey()", () => {
     it("should return the entry with the given key", () => {
-      // TODO:
+      const dbpf = getPackage("CompleteTrait");
+      const entry = dbpf.getByKey({
+        type: 0xCB5FDDC7,
+        group: 0,
+        instance: 0x97297134D57FE219n
+      });
+
+      expect(entry.value.variant).to.equal("XML");
     });
 
     it("should return an entry after adding it", () => {
-      // TODO:
+      const dbpf = Sims4Package.create();
+      const key = {
+        type: 0xCB5FDDC7,
+        group: 0,
+        instance: 0x97297134D57FE219n
+      };
+
+      expect(dbpf.getByKey(key)).to.be.undefined;
+      dbpf.add(key, getTestTuning());
+      expect(dbpf.getByKey(key).value.variant).to.equal("XML");
     });
 
     it("should return the correct entry after changing its key", () => {
-      // TODO:
+      const dbpf = getPackage("CompleteTrait");
+
+      const entry = dbpf.getByKey({
+        type: 0x545AC67A,
+        group: 0x005FDD0C,
+        instance: 0x97297134D57FE219n
+      });
+
+      entry.key.group = 0;
+
+      expect(dbpf.getByKey({
+        type: 0x545AC67A,
+        group: 0x005FDD0C,
+        instance: 0x97297134D57FE219n
+      })).to.be.undefined;
+
+      expect(dbpf.getByKey({
+        type: 0x545AC67A,
+        group: 0,
+        instance: 0x97297134D57FE219n
+      })).to.equal(entry);
     });
 
     it("should return undefined after removing the entry", () => {
-      // TODO:
+      const dbpf = getPackage("CompleteTrait");
+
+      const key = {
+        type: 0x545AC67A,
+        group: 0x005FDD0C,
+        instance: 0x97297134D57FE219n
+      };
+
+      expect(dbpf.getByKey(key).value.variant).to.equal("DATA");
+      dbpf.deleteByKey(key);
+      expect(dbpf.getByKey(key)).to.be.undefined;
     });
 
     it("should return the first entry with the given key if there are more than one", () => {
-      // TODO:
+      const key = getTestKey();
+
+      const dbpf = Sims4Package.create([
+        { key, value: TuningResource.create({ content: "a" }) },
+        { key, value: TuningResource.create({ content: "b" }) },
+      ]);
+
+      expect((dbpf.getByKey(key).value as TuningResource).content).to.equal("a");
     });
 
     it("should return undefined if the given key doesn't exist", () => {
-      // TODO:
+      const dbpf = getPackage("CompleteTrait");
+      expect(dbpf.getByKey({
+        type: 0,
+        group: 0,
+        instance: 0n
+      })).to.be.undefined;
     });
 
     it("should return the correct entry if there are more than one entry with this key, and the first was deleted", () => {
-      // TODO:
+      const key = getTestKey();
+
+      const dbpf = Sims4Package.create([
+        { key, value: TuningResource.create({ content: "a" }) },
+        { key, value: TuningResource.create({ content: "b" }) },
+      ]);
+
+      dbpf.delete(0);
+      expect((dbpf.getByKey(key).value as TuningResource).content).to.equal("b");
     });
   });
 
