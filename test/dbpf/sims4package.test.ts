@@ -764,19 +764,24 @@ describe("Sims4Package", () => {
 
   describe("#getIdsForKey()", () => {
     it("should return an empty array if no entries have this key", () => {
-      // TODO:
+      const dbpf = getPackage("Trait");
+      expect(dbpf.getIdsForKey(getTestKey())).to.be.an('Array').that.is.empty;
     });
 
     it("should return the ID for the given key", () => {
-      // TODO:
-    });
-
-    it("should return the ID for the given key, even if it's another instance", () => {
-      // TODO:
+      const dbpf = getPackage("Trait");
+      const ids = dbpf.getIdsForKey(dbpf.get(1).key);
+      expect(ids).to.be.an('Array').with.lengthOf(1);
+      expect(ids[0]).to.equal(1);
     });
 
     it("should return all IDs for the given key", () => {
-      // TODO:
+      const dbpf = getPackage("Trait");
+      dbpf.addAll(dbpf.entries);
+      const ids = dbpf.getIdsForKey(dbpf.get(0).key);
+      expect(ids).to.be.an('Array').with.lengthOf(2);
+      expect(ids[0]).to.equal(0);
+      expect(ids[1]).to.equal(2);
     });
   });
 
