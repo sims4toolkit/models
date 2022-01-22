@@ -5,7 +5,7 @@ import { expect } from "chai";
 import compare from "just-compare";
 import clone from "just-clone";
 import type { ResourceKey } from "../../dst/lib/dbpf/shared";
-import { Sims4Package, StringTableResource, TuningResource } from "../../dst/api";
+import { RawResource, SimDataResource, Sims4Package, StringTableResource, TuningResource } from "../../dst/api";
 import { TuningResourceType } from "../../dst/enums";
 
 //#region Helpers
@@ -214,39 +214,87 @@ describe("Sims4Package", () => {
   describe("static#from()", () => {
     context("dbpf is valid", () => {
       it("should be cached", () => {
-        // TODO:
+        const dbpf = getPackage("CompleteTrait");
+        expect(dbpf.isCached).to.be.true;
       });
 
       it("should read empty dbpf", () => {
-        // TODO:
+        const dbpf = getPackage("Empty");
+        expect(dbpf.size).to.equal(0);
       });
 
       it("should read dbpf with entries", () => {
-        // TODO:
+        const dbpf = getPackage("CompleteTrait");
+        expect(dbpf.size).to.equal(4);
       });
 
       it("should have cached entries", () => {
-        // TODO:
+        const dbpf = getPackage("CompleteTrait");
+        dbpf.entries.forEach(entry => {
+          expect(entry.isCached).to.be.true;
+        });
       });
 
       it("should have cached resources within its entries", () => {
-        // TODO:
+        const dbpf = getPackage("CompleteTrait");
+        dbpf.entries.forEach(entry => {
+          expect(entry.value.isCached).to.be.true;
+        });
       });
 
       it("should read tuning resource correctly", () => {
-        // TODO:
+        const dbpf = getPackage("CompleteTrait");
+        const entry = dbpf.get(2);
+        const key = entry.key;
+        const tuning = entry.value as TuningResource;
+        expect(compare(key, {
+          type: 0xCB5FDDC7,
+          group: 0,
+          instance: 0x97297134D57FE219n
+        })).to.be.true;
+        expect(tuning.root.name).to.equal("frankkulak_LB:trait_SimlishNative");
+        expect(tuning.root.children[1].innerValue).to.equal("0x4EB3C46C");
       });
 
       it("should read stbl resource correctly", () => {
-        // TODO:
+        const dbpf = getPackage("CompleteTrait");
+        const entry = dbpf.get(3);
+        const key = entry.key;
+        const stbl = entry.value as StringTableResource;
+        expect(compare(key, {
+          type: 0x220557DA,
+          group: 0x80000000,
+          instance: 0x0020097334286DF8n
+        })).to.be.true;
+        expect(stbl.size).to.equal(2);
+        expect(stbl.get(0).value).to.equal("Simlish Native");
       });
 
       it("should read simdata resource correctly", () => {
-        // TODO:
+        const dbpf = getPackage("CompleteTrait");
+        const entry = dbpf.get(1);
+        const key = entry.key;
+        const simdata = entry.value as SimDataResource;
+        expect(compare(key, {
+          type: 0x545AC67A,
+          group: 0x005FDD0C,
+          instance: 0x97297134D57FE219n
+        })).to.be.true;
+        expect(simdata.instance.name).to.equal("frankkulak_LB:trait_SimlishNative");
+        expect(simdata.props.display_name.asAny.value).to.equal(0x4EB3C46C);
       });
 
       it("should read raw resource correctly", () => {
-        // TODO:
+        const dbpf = getPackage("CompleteTrait");
+        const entry = dbpf.get(0);
+        const key = entry.key;
+        const image = entry.value as RawResource;
+        expect(compare(key, {
+          type: 0x00B2D882,
+          group: 0,
+          instance: 0x0B3417C01CCD98FEn
+        })).to.be.true;
+        expect(image.variant).to.equal("RAW");
       });
 
       it("should read other xml resource correctly", () => {
