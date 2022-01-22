@@ -22,10 +22,14 @@ export interface ResourceKey {
  * Options to use when extracting files from a DBPF buffer.
  */
 export interface ExtractionOptions {
+  /** Whether or not to extract simdata. False by default. */
   simData?: boolean;
+
+  /** Whether or not to extract string tables. False by default. */
   stringTables?: boolean;
+
+  /** Whether or not to extract tuning. True by default. */
   tuning?: boolean;
-  organize?: boolean;
 }
 
 export const ZLIB_COMPRESSION = 23106;

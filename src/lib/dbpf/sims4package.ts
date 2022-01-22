@@ -37,7 +37,7 @@ export default class Sims4Package extends MappedModel<ResourceKey, Resource, Res
    * @param buffer Buffer to read as DBPF and extract files from
    * @param options Extraction options
    */
-  static extract(buffer: Buffer, options?: ExtractionOptions): ResourceKeyPair[] {
+  static extract(buffer: Buffer, options: ExtractionOptions = {}): ResourceKeyPair[] {
     return readDbpf(buffer, undefined, options);
   }
 

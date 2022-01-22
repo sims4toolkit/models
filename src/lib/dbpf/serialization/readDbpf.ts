@@ -10,6 +10,7 @@ import StringTableResource from "../../resources/stringTable/stringTableResource
 import SimDataResource from "../../resources/simData/simDataResource";
 import TuningResource from "../../resources/tuning/tuningResource";
 import XmlResource from "../../resources/generic/xmlResource";
+import { formatResourceType } from "@s4tk/hashing/formatting";
 
 /**
  * Reads the given buffer as a DBPF and returns a DTO for it.
@@ -23,15 +24,22 @@ export default function readDbpf(buffer: Buffer, options: SerializationOptions =
   const header = readDbpfHeader(decoder, options);
   decoder.seek(header.mnIndexRecordPosition || header.mnIndexRecordPositionLow);
   const flags = readDbpfFlags(decoder);
+  if (flags.constantTypeId && !shouldReadType(flags.constantTypeId, extractionOptions)) return [];
 
   const index = makeList<IndexEntry>(header.mnIndexRecordEntryCount, () => {
-    const entry: Partial<IndexEntry> = {};
     const key: Partial<ResourceKey> = {};
     key.type = flags.constantTypeId ?? decoder.uint32();
+
+    if (!shouldReadType(key.type, extractionOptions)) {
+      decoder.skip(28); // remaining bytes for this index entry
+      return;
+    }
+
     key.group = flags.constantGroupId ?? decoder.uint32();
     const mInstanceEx = flags.constantInstanceIdEx ?? decoder.uint32();
     const mInstance = decoder.uint32();
     key.instance = (BigInt(mInstanceEx) << 32n) + BigInt(mInstance);
+    const entry: Partial<IndexEntry> = {};
     entry.key = key as ResourceKey;
     entry.mnPosition = decoder.uint32();
     const sizeAndCompression = decoder.uint32();
@@ -41,16 +49,17 @@ export default function readDbpf(buffer: Buffer, options: SerializationOptions =
     if (isCompressed) entry.mnCompressionType = decoder.uint16();
     decoder.skip(2); // mnCommitted (uint16; 2 bytes)
     return entry as IndexEntry;
-  });
+  }, true); // true to skip nulls/undefineds
 
-  return index.map(entry => {
-    decoder.seek(entry.mnPosition);
-    const buffer = decoder.slice(entry.mnSize);
-    return {
-      key: entry.key,
-      value: getResource(entry, buffer, options),
-      buffer
+  return index.map(indexEntry => {
+    decoder.seek(indexEntry.mnPosition);
+    const buffer = decoder.slice(indexEntry.mnSize);
+    const entry: ResourceKeyPair = {
+      key: indexEntry.key,
+      value: getResource(indexEntry, buffer, options)
     };
+    if (!extractionOptions) entry.buffer = buffer;
+    return entry;
   });
 }
 
@@ -185,6 +194,25 @@ function getResource(entry: IndexEntry, rawBuffer: Buffer, options: Serializatio
  */
 function isXml(buffer: Buffer): boolean {
   return buffer.length >= 5 && buffer.slice(0, 5).toString('utf-8') === '<?xml';
+}
+
+/**
+ * Determines whether the given type should be read.
+ * 
+ * @param type Type to check
+ * @param extractionOptions Options for extraction
+ */
+function shouldReadType(type: number, extractionOptions?: ExtractionOptions): boolean {
+  if (!extractionOptions) return true;
+
+  switch (type) {
+    case BinaryResourceType.SimData:
+      return extractionOptions.simData ?? false;
+    case BinaryResourceType.StringTable:
+      return extractionOptions.stringTables ?? false;
+    default:
+      return (extractionOptions.tuning ?? true) && (type in TuningResourceType);
+  }
 }
 
 //#endregion Helpers
