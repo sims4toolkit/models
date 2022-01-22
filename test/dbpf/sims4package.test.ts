@@ -5,7 +5,7 @@ import { expect } from "chai";
 import compare from "just-compare";
 import clone from "just-clone";
 import type { ResourceKey } from "../../dst/lib/dbpf/shared";
-import { RawResource, SimDataResource, Sims4Package, StringTableResource, TuningResource } from "../../dst/api";
+import { RawResource, SimDataResource, Sims4Package, StringTableResource, TuningResource, XmlResource } from "../../dst/api";
 import { TuningResourceType } from "../../dst/enums";
 
 //#region Helpers
@@ -298,57 +298,58 @@ describe("Sims4Package", () => {
       });
 
       it("should read other xml resource correctly", () => {
-        // TODO:
+        const dbpf = getPackage("Animation");
+        const entry = dbpf.get(0);
+        const key = entry.key;
+        const animation = entry.value as XmlResource;
+        expect(compare(key, {
+          type: 0x02D5DF13,
+          group: 0,
+          instance: 0x2C6BFE4373B9990En
+        })).to.be.true;
+        expect(animation.variant).to.equal("XML");
+        expect(animation.root.tag).to.equal("ASM");
+        expect(animation.root.children[1].attributes.name).to.equal("utensil");
       });
 
       it("should load all contents as raw if told to", () => {
-        // TODO:
+        const dbpf = Sims4Package.from(getBuffer("CompleteTrait"), {
+          loadRaw: true
+        });
+
+        dbpf.entries.forEach(entry => {
+          expect(entry.value.variant).to.equal("RAW");
+        });
       });
     });
 
     context("dbpf header is invalid", () => {
       it("should throw if ignoreErrors = false", () => {
-        // TODO:
+        expect(() => Sims4Package.from(getBuffer("CorruptHeader"), { ignoreErrors: false })).to.throw();
       });
 
       it("should not throw if ignoreErrors = true", () => {
-        // TODO:
+        expect(() => Sims4Package.from(getBuffer("CorruptHeader"), { ignoreErrors: true })).to.not.throw();
       });
 
-      it("should return return a regular DBPF", () => {
-        // TODO:
+      it("should return a regular DBPF if ignoreErrors = true", () => {
+        const dbpf = Sims4Package.from(getBuffer("CorruptHeader"), { ignoreErrors: true });
+        expect(dbpf.size).to.equal(2);
       });
     });
 
     context("dbpf content is invalid", () => {
       it("should throw if ignoreErrors = false", () => {
-        // TODO:
+        expect(() => Sims4Package.from(getBuffer("Corrupt"), { ignoreErrors: false })).to.throw();
       });
 
       it("should throw even if ignoreErrors = true", () => {
-        // TODO:
+        expect(() => Sims4Package.from(getBuffer("Corrupt"), { ignoreErrors: true })).to.throw();
       });
 
       it("should return undefined if dontThrow = true", () => {
-        // TODO:
-      });
-    });
-
-    context("inner resource content is invalid", () => {
-      it("should throw if ignoreErrors = false", () => {
-        // TODO:
-      });
-
-      it("should throw even if ignoreErrors = true", () => {
-        // TODO:
-      });
-
-      it("should contain an undefined resource if dontThrow = true", () => {
-        // TODO:
-      });
-
-      it("should return a regular DBPF if loading as raw", () => {
-        // TODO:
+        const dbpf = Sims4Package.from(getBuffer("Corrupt"), { dontThrow: true });
+        expect(dbpf).to.be.undefined;
       });
     });
   });
