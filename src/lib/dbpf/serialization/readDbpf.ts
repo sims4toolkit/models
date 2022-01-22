@@ -1,6 +1,6 @@
 import type Resource from "../../resources/resource";
 import type { SerializationOptions } from "../../shared";
-import { ResourceKey, ResourceKeyPair, ZLIB_COMPRESSION } from "../shared";
+import { ExtractionOptions, ResourceKey, ResourceKeyPair, ZLIB_COMPRESSION } from "../shared";
 import { unzipSync } from "zlib";
 import { BinaryDecoder } from "@s4tk/encoding";
 import { makeList } from "../../helpers";
@@ -17,7 +17,7 @@ import XmlResource from "../../resources/generic/xmlResource";
  * @param buffer Buffer to read as a DBPF
  * @param options Options for reading DBPF
  */
-export default function readDbpf(buffer: Buffer, options: SerializationOptions = {}): ResourceKeyPair[] {
+export default function readDbpf(buffer: Buffer, options: SerializationOptions = {}, extractionOptions?: ExtractionOptions): ResourceKeyPair[] {
   const decoder = new BinaryDecoder(buffer);
 
   const header = readDbpfHeader(decoder, options);
