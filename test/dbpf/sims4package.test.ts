@@ -711,23 +711,54 @@ describe("Sims4Package", () => {
 
   describe("#getIdForKey()", () => {
     it("should return the ID for the given key", () => {
-      // TODO:
-    });
-
-    it("should return the ID for the given key, even if it's another instance", () => {
-      // TODO:
+      const dbpf = getPackage("CompleteTrait");
+      expect(dbpf.getIdForKey({
+        type: 0xCB5FDDC7,
+        group: 0,
+        instance: 0x97297134D57FE219n
+      })).to.equal(2);
     });
 
     it("should return the first ID for the given key if there are more than one", () => {
-      // TODO:
+      const key = getTestKey();
+
+      const dbpf = Sims4Package.create([
+        { key, value: TuningResource.create({ content: "a" }) },
+        { key, value: TuningResource.create({ content: "b" }) },
+      ]);
+
+      expect(dbpf.getIdForKey(key)).to.equal(0);
     });
 
     it("should return undefined after the entry with the key is deleted", () => {
-      // TODO:
+      const dbpf = getPackage("CompleteTrait");
+
+      expect(dbpf.getIdForKey({
+        type: 0xCB5FDDC7,
+        group: 0,
+        instance: 0x97297134D57FE219n
+      })).to.not.be.undefined;
+
+      dbpf.delete(2);
+
+      expect(dbpf.getIdForKey({
+        type: 0xCB5FDDC7,
+        group: 0,
+        instance: 0x97297134D57FE219n
+      })).to.be.undefined;
     });
 
     it("should return the ID for an entry after adding it", () => {
-      // TODO:
+      const dbpf = Sims4Package.create();
+      const key = {
+        type: 0xCB5FDDC7,
+        group: 0,
+        instance: 0x97297134D57FE219n
+      };
+
+      expect(dbpf.getIdForKey(key)).to.be.undefined;
+      dbpf.add(key, getTestTuning());
+      expect(dbpf.getIdForKey(key)).to.equal(0);
     });
   });
 
