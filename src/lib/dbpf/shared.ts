@@ -18,4 +18,14 @@ export interface ResourceKey {
   instance: bigint;
 }
 
+/**
+ * Options to use when extracting files from a DBPF buffer.
+ */
+export interface ExtractionOptions {
+  simData?: boolean;
+  stringTables?: boolean;
+  tuning?: boolean;
+  organize?: boolean;
+}
+
 export const ZLIB_COMPRESSION = 23106;
