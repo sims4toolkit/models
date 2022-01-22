@@ -3,10 +3,10 @@ import path from "path";
 import { unzipSync } from "zlib";
 import { expect } from "chai";
 import compare from "just-compare";
+import clone from "just-clone";
 import type { ResourceKey } from "../../dst/lib/dbpf/shared";
 import { Sims4Package, StringTableResource, TuningResource } from "../../dst/api";
 import { TuningResourceType } from "../../dst/enums";
-import { inspect } from "util";
 
 //#region Helpers
 
@@ -813,27 +813,47 @@ describe("Sims4Package", () => {
 
   describe("#hasKey()", () => {
     it("should return true if the key is in the model", () => {
-      // TODO:
+      const dbpf = getPackage("CompleteTrait");
+      expect(dbpf.hasKey(dbpf.get(0).key)).to.be.true;
     });
 
     it("should return true if a different instance, but identical, key is in the model", () => {
-      // TODO:
+      const dbpf = getPackage("CompleteTrait");
+      expect(dbpf.hasKey(clone(dbpf.get(0).key))).to.be.true;
     });
 
     it("should return true if the key was not in the model but was added", () => {
-      // TODO:
+      const dbpf = getPackage("CompleteTrait");
+      const key = getTestKey();
+      expect(dbpf.hasKey(key)).to.be.false;
+      dbpf.add(key, getTestTuning());
+      expect(dbpf.hasKey(key)).to.be.true;
     });
 
     it("should return false if the key is not in the model", () => {
-      // TODO:
+      const dbpf = getPackage("CompleteTrait");
+      expect(dbpf.hasKey(getTestKey())).to.be.false;
     });
 
     it("should return false if the key was in the model but was removed", () => {
-      // TODO:
+      const dbpf = getPackage("CompleteTrait");
+      const key = dbpf.get(0).key;
+      expect(dbpf.hasKey(key)).to.be.true;
+      dbpf.delete(0);
+      expect(dbpf.hasKey(key)).to.be.false;
     });
 
     it("should return true if there are more than one entry with this key, and the first was deleted", () => {
-      // TODO:
+      const key = getTestKey();
+
+      const dbpf = Sims4Package.create([
+        { key, value: TuningResource.create({ content: "a" }) },
+        { key, value: TuningResource.create({ content: "b" }) },
+      ]);
+
+      expect(dbpf.hasKey(key)).to.be.true;
+      dbpf.deleteByKey(key);
+      expect(dbpf.hasKey(key)).to.be.true;
     });
   });
 
