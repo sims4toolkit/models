@@ -58,7 +58,7 @@ export default class RawResource extends Resource {
   }
 
   isXml(): boolean {
-    return this.buffer.slice(0, 5).toString() === "<?xml";
+    return this.buffer.length >= 5 && this.buffer.slice(0, 5).toString() === "<?xml";
   }
 
   uncache() {
