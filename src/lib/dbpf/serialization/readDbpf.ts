@@ -63,9 +63,11 @@ export function readTuningTypes(buffer: Buffer, baseMap?: Map<number, string>): 
       if (resource.isXml()) {
         const tuning = TuningResource.from(resource.buffer);
         const typeName = tuning.root.attributes.i;
-        map.set(indexEntry.key.type, typeName);
+        if (typeName) map.set(indexEntry.key.type, typeName);
       }
-    } catch (e) {}
+    } catch (e) {
+      // intentionally blank -- just skip it if it cannot be parsed
+    }
   });
 
   return map;
