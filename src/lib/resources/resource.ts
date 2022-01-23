@@ -20,4 +20,11 @@ export default abstract class Resource extends WritableModel {
   equals(other: Resource): boolean {
     return other && this.variant === other.variant;
   }
+
+  /**
+   * Returns true if this resource contains XML.
+   */
+  isXml(): boolean {
+    return false;
+  }
 }

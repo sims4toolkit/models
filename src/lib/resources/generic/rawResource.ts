@@ -57,6 +57,10 @@ export default class RawResource extends Resource {
     return this.plainText === other.plainText;
   }
 
+  isXml(): boolean {
+    return this.buffer.slice(0, 5).toString() === "<?xml";
+  }
+
   uncache() {
     // intentionally blank because this resource cannot be uncached -- the
     // buffer is the only thing that meaningfully defines this resource

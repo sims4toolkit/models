@@ -80,6 +80,10 @@ export default class StringTableResource extends PrimitiveMappedModel<string, St
     return arraysAreEqual(this.entries, other?.entries);
   }
 
+  isXml(): boolean {
+    return false;
+  }
+
   //#endregion Public Methods
 
   //#region Protected Methods

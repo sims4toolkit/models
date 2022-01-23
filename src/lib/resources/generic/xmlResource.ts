@@ -119,6 +119,10 @@ export default class XmlResource extends Resource {
     if (!super.equals(other)) return false;
     return this.content === other.content;
   }
+
+  isXml(): boolean {
+    return true;
+  }
   
   /**
    * Accepts a callback function to which the DOM is passed as an argument, so

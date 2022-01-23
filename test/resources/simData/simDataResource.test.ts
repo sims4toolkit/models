@@ -839,6 +839,13 @@ describe("SimDataResource", () => {
     });
   });
 
+  describe("#isXml()", () => {
+    it("should return false", () => {
+      const simdata = SimDataResource.create();
+      expect(simdata.isXml()).to.be.false;
+    });
+  });
+
   describe("#removeInstances()", () => {
     it("should remove the one instance that is given", () => {
       const simdata = getSimDataFromBinary("two_instances");

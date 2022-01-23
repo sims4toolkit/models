@@ -743,6 +743,13 @@ describe("StringTableResource", () => {
     });
   });
 
+  describe("#isXml()", () => {
+    it("should return false", () => {
+      const stbl = StringTableResource.create();
+      expect(stbl.isXml()).to.be.false;
+    });
+  });
+
   describe("#resetEntries()", () => {
     it("should force the entries to make a new list", () => {
       const stbl = getStbl("Normal");

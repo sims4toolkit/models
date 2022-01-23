@@ -440,6 +440,13 @@ describe('TuningResource', function() {
     });
   });
 
+  describe("#isXml()", () => {
+    it("should return true", () => {
+      const tuning = TuningResource.create();
+      expect(tuning.isXml()).to.be.true;
+    });
+  });
+
   describe('#updateDom()', function() {
     it('should uncache the buffer', function() {
       const tun = TuningResource.from(Buffer.from("<T>50</T>"));
