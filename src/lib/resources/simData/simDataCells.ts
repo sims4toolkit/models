@@ -118,7 +118,7 @@ export abstract class Cell extends CacheableModel {
   //#region Static Methods
 
   /*
-    FIXME: These static methods should be included here, but TS does not support
+    TODO: These static methods should be included here, but TS does not support
     abstract static methods. This feature request is tracked here:
 
     https://github.com/microsoft/TypeScript/issues/34516
