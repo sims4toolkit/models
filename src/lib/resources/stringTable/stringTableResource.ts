@@ -103,6 +103,13 @@ export default class StringTableResource extends PrimitiveMappedModel<string, St
  * An entry in a StringTableResource.
  */
 class StringEntry extends PrimitiveEntry<string> {
+  /** Alias for `this.value` for readability. */
+  get string(): string { return this.value; }
+  set string(string: string) {
+    this.value = string;
+    this.uncache();
+  }
+
   constructor(key: number, value: string, owner?: StringTableResource) {
     super(key, value, owner);
   }

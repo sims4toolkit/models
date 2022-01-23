@@ -1136,6 +1136,34 @@ describe("ResourceEntry", () => {
 
   // #isCached tested by other tests
 
+  describe("#resource", () => {
+    it("should return the value of this entry", () => {
+      const dbpf = Sims4Package.create();
+      const tuning = getTestTuning();
+      const entry = dbpf.add(getTestKey(), tuning);
+      expect(entry.value).to.equal(tuning);
+      expect(entry.resource).to.equal(tuning);
+    });
+
+    it("should set the value of this entry", () => {
+      const dbpf = Sims4Package.create();
+      const tuning = getTestTuning();
+      const entry = dbpf.add(getTestKey(), tuning);
+      expect(entry.value).to.equal(tuning);
+      const newTuning = getTestTuning();
+      entry.resource = newTuning;
+      expect(entry.value).to.not.equal(tuning);
+      expect(entry.value).to.equal(newTuning);
+    });
+
+    it("should uncache the stbl when set", () => {
+      const dbpf = getPackage("Trait");
+      expect(dbpf.isCached).to.be.true;
+      dbpf.get(0).resource = getTestTuning();
+      expect(dbpf.isCached).to.be.false;
+    });
+  });
+
   describe("#value", () => {
     it("should uncache the dbpf when set", () => {
       const dbpf = getPackage("Trait");

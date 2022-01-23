@@ -120,6 +120,10 @@ class ResourceEntry extends WritableModel implements MappedModelEntry<ResourceKe
     this._resource = resource;
     this.uncache();
   }
+
+  /** Alias for `this.value` for readability. */
+  get resource(): Resource { return this.value; }
+  set resource(resource: Resource) { this.value = resource; }
   
   constructor(key: ResourceKey, resource: Resource, buffer?: Buffer, owner?: Sims4Package) {
     super({ owner, buffer });

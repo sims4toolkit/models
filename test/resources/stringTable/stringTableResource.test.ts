@@ -829,6 +829,30 @@ describe("StringEntry", () => {
     });
   });
 
+  describe("#string", () => {
+    it("should return the value of this entry", () => {
+      const stbl = StringTableResource.create();
+      const entry = stbl.addAndHash("hi");
+      expect(entry.value).to.equal("hi");
+      expect(entry.string).to.equal("hi");
+    });
+
+    it("should set the value of this entry", () => {
+      const stbl = StringTableResource.create();
+      const entry = stbl.addAndHash("hi");
+      expect(entry.value).to.equal("hi");
+      entry.string = "bye";
+      expect(entry.value).to.equal("bye");
+    });
+
+    it("should uncache the stbl when set", () => {
+      const stbl = getStbl("Normal");
+      expect(stbl.isCached).to.be.true;
+      stbl.get(0).string = "new";
+      expect(stbl.isCached).to.be.false;
+    });
+  });
+
   describe("#value", () => {
     it("should uncache the stbl when set", () => {
       const stbl = getStbl("Normal");
