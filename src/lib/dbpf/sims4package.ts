@@ -2,7 +2,7 @@ import clone from "just-clone";
 import compare from "just-compare";
 import { deflateSync } from "zlib";
 import type Resource from "../resources/resource";
-import type { ExtractionOptions, ResourceKey, ResourceKeyPair } from "./shared";
+import type { ResourceKey, ResourceKeyPair } from "./shared";
 import type { SerializationOptions } from "../shared";
 import { MappedModel, MappedModelEntry } from "../base/mappedModel";
 import { arraysAreEqual } from "../helpers";
@@ -29,16 +29,6 @@ export default class Sims4Package extends MappedModel<ResourceKey, Resource, Res
    */
   static create(entries: ResourceKeyPair[] = []): Sims4Package {
     return new Sims4Package(entries);
-  }
-
-  /**
-   * Extracts files from the given buffer without building a DBPF.
-   * 
-   * @param buffer Buffer to read as DBPF and extract files from
-   * @param options Extraction options
-   */
-  static extract(buffer: Buffer, options: ExtractionOptions = {}): ResourceKeyPair[] {
-    return readDbpf(buffer, undefined, options);
   }
 
   /**

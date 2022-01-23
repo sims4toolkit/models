@@ -1,6 +1,6 @@
 import type Resource from "../../resources/resource";
 import type { SerializationOptions } from "../../shared";
-import { ExtractionOptions, ResourceKey, ResourceKeyPair, ZLIB_COMPRESSION } from "../shared";
+import { ResourceKey, ResourceKeyPair, ZLIB_COMPRESSION } from "../shared";
 import { unzipSync } from "zlib";
 import { BinaryDecoder } from "@s4tk/encoding";
 import { makeList } from "../../helpers";
@@ -17,26 +17,16 @@ import XmlResource from "../../resources/generic/xmlResource";
  * @param buffer Buffer to read as a DBPF
  * @param options Options for reading DBPF
  */
-export default function readDbpf(buffer: Buffer, options: SerializationOptions = {}, extractionOptions?: ExtractionOptions): ResourceKeyPair[] {
+export default function readDbpf(buffer: Buffer, options: SerializationOptions = {}): ResourceKeyPair[] {
   const decoder = new BinaryDecoder(buffer);
 
   const header = readDbpfHeader(decoder, options);
   decoder.seek(header.mnIndexRecordPosition || header.mnIndexRecordPositionLow);
   const flags = readDbpfFlags(decoder);
-  if (flags.constantTypeId && !shouldReadType(flags.constantTypeId, extractionOptions)) return [];
-  let bytesToSkip = 20;
-  if (flags.constantGroupId) bytesToSkip += 4;
-  if (flags.constantInstanceIdEx) bytesToSkip += 4;
 
   const index = makeList<IndexEntry>(header.mnIndexRecordEntryCount, () => {
     const key: Partial<ResourceKey> = {};
     key.type = flags.constantTypeId ?? decoder.uint32();
-
-    if (!shouldReadType(key.type, extractionOptions)) {
-      decoder.skip(bytesToSkip); // remaining bytes for this index entry
-      return;
-    }
-
     key.group = flags.constantGroupId ?? decoder.uint32();
     const mInstanceEx = flags.constantInstanceIdEx ?? decoder.uint32();
     const mInstance = decoder.uint32();
@@ -56,12 +46,11 @@ export default function readDbpf(buffer: Buffer, options: SerializationOptions =
   return index.map(indexEntry => {
     decoder.seek(indexEntry.mnPosition);
     const buffer = decoder.slice(indexEntry.mnSize);
-    const entry: ResourceKeyPair = {
+    return {
       key: indexEntry.key,
-      value: getResource(indexEntry, buffer, options)
+      value: getResource(indexEntry, buffer, options),
+      buffer
     };
-    if (!extractionOptions) entry.buffer = buffer;
-    return entry;
   });
 }
 
@@ -196,25 +185,6 @@ function getResource(entry: IndexEntry, rawBuffer: Buffer, options: Serializatio
  */
 function isXml(buffer: Buffer): boolean {
   return buffer.length >= 5 && buffer.slice(0, 5).toString('utf-8') === '<?xml';
-}
-
-/**
- * Determines whether the given type should be read.
- * 
- * @param type Type to check
- * @param extractionOptions Options for extraction
- */
-function shouldReadType(type: number, extractionOptions?: ExtractionOptions): boolean {
-  if (!extractionOptions) return true;
-
-  switch (type) {
-    case BinaryResourceType.SimData:
-      return extractionOptions.simData ?? false;
-    case BinaryResourceType.StringTable:
-      return extractionOptions.stringTables ?? false;
-    default:
-      return (extractionOptions.tuning ?? true) && (type in TuningResourceType);
-  }
 }
 
 //#endregion Helpers

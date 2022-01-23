@@ -211,41 +211,6 @@ describe("Sims4Package", () => {
     });
   });
 
-  describe("static#extract()", () => {
-    it("should only extract tuning if no options are passed", () => {
-      const entries = Sims4Package.extract(getBuffer("CompleteTrait"));
-      expect(entries).to.be.an('Array').with.lengthOf(1);
-      expect(entries[0].value.variant).to.equal("XML");
-    });
-
-    it("should extract tuning and simdata if simdata === true", () => {
-      const entries = Sims4Package.extract(getBuffer("CompleteTrait"), {
-        simData: true
-      });
-
-      expect(entries).to.be.an('Array').with.lengthOf(2);
-      expect(entries[0].value.variant).to.equal("DATA");
-      expect(entries[1].value.variant).to.equal("XML");
-    });
-
-    it("should extract stbls if stringTables === true", () => {
-      const entries = Sims4Package.extract(getBuffer("CompleteTrait"), {
-        stringTables: true,
-        tuning: false
-      });
-
-      expect(entries).to.be.an('Array').with.lengthOf(1);
-      expect(entries[0].value.variant).to.equal("STBL");
-    });
-
-    it("should not have a cached compressed buffer", () => {
-      const entries = Sims4Package.extract(getBuffer("CompleteTrait"));
-      entries.forEach(entry => {
-        expect(entry.buffer).to.be.undefined;
-      });
-    });
-  });
-
   describe("static#from()", () => {
     context("dbpf is valid", () => {
       it("should be cached", () => {
