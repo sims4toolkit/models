@@ -10,7 +10,6 @@ import StringTableResource from "../../resources/stringTable/stringTableResource
 import SimDataResource from "../../resources/simData/simDataResource";
 import TuningResource from "../../resources/tuning/tuningResource";
 import XmlResource from "../../resources/generic/xmlResource";
-import { formatResourceType } from "@s4tk/hashing/formatting";
 
 /**
  * Reads the given buffer as a DBPF and returns a DTO for it.
@@ -25,13 +24,16 @@ export default function readDbpf(buffer: Buffer, options: SerializationOptions =
   decoder.seek(header.mnIndexRecordPosition || header.mnIndexRecordPositionLow);
   const flags = readDbpfFlags(decoder);
   if (flags.constantTypeId && !shouldReadType(flags.constantTypeId, extractionOptions)) return [];
+  let bytesToSkip = 20;
+  if (flags.constantGroupId) bytesToSkip += 4;
+  if (flags.constantInstanceIdEx) bytesToSkip += 4;
 
   const index = makeList<IndexEntry>(header.mnIndexRecordEntryCount, () => {
     const key: Partial<ResourceKey> = {};
     key.type = flags.constantTypeId ?? decoder.uint32();
 
     if (!shouldReadType(key.type, extractionOptions)) {
-      decoder.skip(28); // remaining bytes for this index entry
+      decoder.skip(bytesToSkip); // remaining bytes for this index entry
       return;
     }
 
