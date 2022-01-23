@@ -19,39 +19,56 @@ import XmlResource from "../../resources/generic/xmlResource";
  */
 export default function readDbpf(buffer: Buffer, options: SerializationOptions = {}): ResourceKeyPair[] {
   const decoder = new BinaryDecoder(buffer);
-
   const header = readDbpfHeader(decoder, options);
   decoder.seek(header.mnIndexRecordPosition || header.mnIndexRecordPositionLow);
   const flags = readDbpfFlags(decoder);
-
-  const index = makeList<IndexEntry>(header.mnIndexRecordEntryCount, () => {
-    const key: Partial<ResourceKey> = {};
-    key.type = flags.constantTypeId ?? decoder.uint32();
-    key.group = flags.constantGroupId ?? decoder.uint32();
-    const mInstanceEx = flags.constantInstanceIdEx ?? decoder.uint32();
-    const mInstance = decoder.uint32();
-    key.instance = (BigInt(mInstanceEx) << 32n) + BigInt(mInstance);
-    const entry: Partial<IndexEntry> = {};
-    entry.key = key as ResourceKey;
-    entry.mnPosition = decoder.uint32();
-    const sizeAndCompression = decoder.uint32();
-    entry.mnSize = sizeAndCompression & 0x7FFFFFFF; // 31 bits
-    const isCompressed = (sizeAndCompression >>> 31) === 1; // mbExtendedCompressionType; 1 bit
-    decoder.skip(4); // mnSizeDecompressed (uint32; 4 bytes)
-    if (isCompressed) entry.mnCompressionType = decoder.uint16();
-    decoder.skip(2); // mnCommitted (uint16; 2 bytes)
-    return entry as IndexEntry;
-  }, true); // true to skip nulls/undefineds
-
+  const index = readDbpfIndex(decoder, header, flags);
   return index.map(indexEntry => {
     decoder.seek(indexEntry.mnPosition);
-    const buffer = decoder.slice(indexEntry.mnSize);
+    const compressedBuffer = decoder.slice(indexEntry.mnSize);
     return {
       key: indexEntry.key,
-      value: getResource(indexEntry, buffer, options),
-      buffer
+      value: getResource(indexEntry, compressedBuffer, options),
+      buffer: compressedBuffer
     };
   });
+}
+
+/**
+ * Reads the given buffer as a DBPF to extract unique tuning types from. Types
+ * are returned in a map (and mutated in the given map, if applicable) from
+ * their hash to their name.
+ * 
+ * @param buffer Buffer of DBPF to read types from
+ * @param baseMap Map to add type hash/name pairs to
+ */
+export function readTuningTypes(buffer: Buffer, baseMap?: Map<number, string>): Map<number, string> {
+  const decoder = new BinaryDecoder(buffer);
+  const header = readDbpfHeader(decoder, { ignoreErrors: true });
+  decoder.seek(header.mnIndexRecordPosition || header.mnIndexRecordPositionLow);
+  const flags = readDbpfFlags(decoder);
+
+  const map: Map<number, string> = baseMap ?? new Map();
+  const index = readDbpfIndex(decoder, header, flags, (type: number) => {
+    if (map.has(type)) return false;
+    map.set(type, null);
+    return true;
+  });
+
+  index.forEach(indexEntry => {
+    try {
+      decoder.seek(indexEntry.mnPosition);
+      const compressedBuffer = decoder.slice(indexEntry.mnSize);
+      const resource = getResource(indexEntry, compressedBuffer, { loadRaw: true }) as RawResource;
+      if (resource.isXml()) {
+        const tuning = TuningResource.from(resource.buffer);
+        const typeName = tuning.root.attributes.i;
+        map.set(indexEntry.key.type, typeName);
+      }
+    } catch (e) {}
+  });
+
+  return map;
 }
 
 //#region Types & Interfaces
@@ -137,6 +154,45 @@ function readDbpfFlags(decoder: BinaryDecoder): DbpfFlags {
   if (flags & 0b100) dbpfFlags.constantInstanceIdEx = decoder.uint32();
 
   return dbpfFlags;
+}
+
+/**
+ * Reads the index entries from the given decoder, only including those that
+ * pass the type filter.
+ * 
+ * @param decoder Decoder to read DBPF index from
+ * @param header Header of DBPF that is being read
+ * @param flags Flags of DBPF that is being read
+ * @param typeFilter Optional function to filter out resources of certain types
+ */
+function readDbpfIndex(decoder: BinaryDecoder, header: DbpfHeader, flags: DbpfFlags, typeFilter?: (type: number) => boolean): IndexEntry[] {
+  let bytesToSkip = 20;
+  if (!flags.constantGroupId) bytesToSkip += 4;
+  if (!flags.constantInstanceIdEx) bytesToSkip += 4;
+
+  return makeList<IndexEntry>(header.mnIndexRecordEntryCount, () => {
+    const key: Partial<ResourceKey> = {};
+    key.type = flags.constantTypeId ?? decoder.uint32();
+
+    if (typeFilter && !typeFilter(key.type)) {
+      decoder.skip(bytesToSkip);
+      return;
+    }
+
+    key.group = flags.constantGroupId ?? decoder.uint32();
+    const mInstanceEx = flags.constantInstanceIdEx ?? decoder.uint32();
+    const mInstance = decoder.uint32();
+    key.instance = (BigInt(mInstanceEx) << 32n) + BigInt(mInstance);
+    const entry: Partial<IndexEntry> = { key: key as ResourceKey };
+    entry.mnPosition = decoder.uint32();
+    const sizeAndCompression = decoder.uint32();
+    entry.mnSize = sizeAndCompression & 0x7FFFFFFF; // 31 bits
+    const isCompressed = (sizeAndCompression >>> 31) === 1; // mbExtendedCompressionType; 1 bit
+    decoder.skip(4); // mnSizeDecompressed (uint32; 4 bytes)
+    if (isCompressed) entry.mnCompressionType = decoder.uint16();
+    decoder.skip(2); // mnCommitted (uint16; 2 bytes)
+    return entry as IndexEntry;
+  }, true); // true to skip nulls/undefineds
 }
 
 /**

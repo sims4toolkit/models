@@ -2,6 +2,7 @@
  * Types for binary files.
  */
 export enum BinaryResourceType {
+  DstImage = 0x00B2D882,
   SimData = 0x545AC67A,
   StringTable = 0x220557DA,
 }

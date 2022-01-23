@@ -6,7 +6,7 @@ import type { ResourceKey, ResourceKeyPair } from "./shared";
 import type { SerializationOptions } from "../shared";
 import { MappedModel, MappedModelEntry } from "../base/mappedModel";
 import { arraysAreEqual } from "../helpers";
-import readDbpf from "./serialization/readDbpf";
+import readDbpf, { readTuningTypes } from "./serialization/readDbpf";
 import writeDbpf from "./serialization/writeDbpf";
 import WritableModel from "../base/writableModel";
 
@@ -29,6 +29,18 @@ export default class Sims4Package extends MappedModel<ResourceKey, Resource, Res
    */
   static create(entries: ResourceKeyPair[] = []): Sims4Package {
     return new Sims4Package(entries);
+  }
+
+  /**
+   * Reads the given buffer as a DBPF to extract unique tuning types from. Types
+   * are returned in a map (and mutated in the given map, if applicable) from
+   * their hash to their name.
+   * 
+   * @param buffer Buffer of DBPF to read types from
+   * @param baseMap Map to add type hash/name pairs to
+   */
+  static determineTuningTypes(buffer: Buffer, baseMap?: Map<number, string>): Map<number, string> {
+    return readTuningTypes(buffer, baseMap);
   }
 
   /**
