@@ -1,5 +1,5 @@
 import Resource from "../resource";
-import { BinaryTuningDto } from "./shared";
+import { BinaryTuningDto } from "./types";
 
 /**
  * TODO:
