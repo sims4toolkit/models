@@ -1,7 +1,7 @@
 {
   "name": "@s4tk/models",
   "version": "0.1.0",
-  "description": "Reads and writes all of the models required by S4TK, including package files, tuning, SimData, and string tables.",
+  "description": "Models for reading and writing package files and the resources they contain.",
   "repository": {
     "type": "git",
     "url": "https://github.com/sims4toolkit/models.git"
