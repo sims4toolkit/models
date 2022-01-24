@@ -3,13 +3,12 @@ import type { SerializationOptions } from "../../shared";
 import { ResourceKey, ResourceKeyPair, ZLIB_COMPRESSION } from "../shared";
 import { unzipSync } from "zlib";
 import { BinaryDecoder } from "@s4tk/encoding";
-import { makeList } from "../../utils/helpers";
+import { bufferContainsXml, makeList } from "../../utils/helpers";
 import RawResource from "../../resources/generic/rawResource";
 import { BinaryResourceType } from "../../enums/binary-resources";
 import { TuningResourceType } from "../../enums/tuning-resources";
 import StringTableResource from "../../resources/stbl/stbl-resource";
 import SimDataResource from "../../resources/simData/simDataResource";
-import TuningResource from "../../resources/tuning/tuningResource";
 import XmlResource from "../../resources/generic/xmlResource";
 
 /**
@@ -88,8 +87,8 @@ export function readTuningTypes(buffer: Buffer, baseMap?: Map<number, string>): 
       const compressedBuffer = decoder.slice(indexEntry.mnSize);
       const resource = getResource(indexEntry, compressedBuffer, { loadRaw: true }) as RawResource;
       if (resource.isXml()) {
-        const tuning = TuningResource.from(resource.buffer);
-        const typeName = tuning.root.attributes.i;
+        const xml = XmlResource.from(resource.buffer);
+        const typeName = xml.root.attributes.i;
         if (typeName) map.set(indexEntry.key.type, typeName);
       }
     } catch (e) {
@@ -253,23 +252,11 @@ function getResource(entry: IndexEntry, rawBuffer: Buffer, options: Serializatio
     return StringTableResource.from(buffer, options);
   } else if (type === BinaryResourceType.SimData) {
     return SimDataResource.from(buffer, options);
-  } else if (type in TuningResourceType) {
-    return TuningResource.from(buffer);
-  } else if (isXml(buffer)) {
+  } else if ((type in TuningResourceType) || bufferContainsXml(buffer)) {
     return XmlResource.from(buffer);
   } else {
     return RawResource.from(buffer, `Unrecognized non-XML type: ${type}`);
   }
-}
-
-/**
- * Determines whether this buffer has an XML header.
- * 
- * @param buffer Buffer to check the contents of
- * @returns True if XML header present, else false
- */
-function isXml(buffer: Buffer): boolean {
-  return buffer.length >= 5 && buffer.slice(0, 5).toString('utf-8') === '<?xml';
 }
 
 //#endregion Helpers

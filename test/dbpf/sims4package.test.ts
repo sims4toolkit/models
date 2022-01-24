@@ -6,7 +6,7 @@ import compare from "just-compare";
 import clone from "just-clone";
 import { formatResourceType } from "@s4tk/hashing/formatting";
 import type { ResourceKey } from "../../dst/lib/dbpf/shared";
-import { RawResource, SimDataResource, Sims4Package, StringTableResource, TuningResource, XmlResource } from "../../dst/api";
+import { RawResource, SimDataResource, Sims4Package, StringTableResource, XmlResource } from "../../dst/api";
 import { TuningResourceType } from "../../dst/enums";
 
 //#region Helpers
@@ -26,8 +26,8 @@ function getPackage(filename: string): Sims4Package {
   return Sims4Package.from(getBuffer(filename));
 }
 
-function getTestTuning(): TuningResource {
-  return TuningResource.create({ content: `<I n="something">\n  <T n="value">50</T>\n</I>` });
+function getTestTuning(): XmlResource {
+  return XmlResource.create({ content: `<I n="something">\n  <T n="value">50</T>\n</I>` });
 }
 
 function getTestKey(): ResourceKey {
@@ -78,7 +78,7 @@ describe("Sims4Package", () => {
       original.delete(0);
       const dbpf = Sims4Package.from(original.buffer);
       expect(dbpf.size).to.equal(1);
-      const tuning = dbpf.get(0).value as TuningResource;
+      const tuning = dbpf.get(0).value as XmlResource;
       expect(tuning.variant).to.equal("XML");
       expect(tuning.root.name).to.equal("frankkulak_LB:trait_SimlishNative");
     });
@@ -89,7 +89,7 @@ describe("Sims4Package", () => {
       original.delete(0);
       const dbpf = Sims4Package.from(original.buffer);
       expect(dbpf.size).to.equal(1);
-      const tuning = dbpf.get(0).value as TuningResource;
+      const tuning = dbpf.get(0).value as XmlResource;
       expect(tuning.variant).to.equal("XML");
       expect(tuning.root.name).to.equal("frankkulak_LB:trait_SimlishNative");
     });
@@ -164,7 +164,7 @@ describe("Sims4Package", () => {
       const dbpf = getPackage("CompleteTrait");
       expect(dbpf.size).to.equal(4);
       const testKey = getTestKey();
-      dbpf.add(testKey, TuningResource.create());
+      dbpf.add(testKey, XmlResource.create());
       expect(dbpf.size).to.equal(5);
     });
 
@@ -274,7 +274,7 @@ describe("Sims4Package", () => {
         const dbpf = getPackage("CompleteTrait");
         const entry = dbpf.get(2);
         const key = entry.key;
-        const tuning = entry.value as TuningResource;
+        const tuning = entry.value as XmlResource;
         expect(compare(key, {
           type: 0xCB5FDDC7,
           group: 0,
@@ -390,7 +390,7 @@ describe("Sims4Package", () => {
     it("should add the entry to an empty dbpf", () => {
       const dbpf = Sims4Package.create();
       expect(dbpf.size).to.equal(0);
-      const resource = TuningResource.create();
+      const resource = XmlResource.create();
       const testKey = getTestKey();
       dbpf.add(testKey, resource);
       expect(dbpf.size).to.equal(1);
@@ -401,7 +401,7 @@ describe("Sims4Package", () => {
     it("should add the entry to a dbpf with entries", () => {
       const dbpf = getPackage("CompleteTrait");
       expect(dbpf.size).to.equal(4);
-      const resource = TuningResource.create();
+      const resource = XmlResource.create();
       const testKey = getTestKey();
       dbpf.add(testKey, resource);
       expect(dbpf.size).to.equal(5);
@@ -413,7 +413,7 @@ describe("Sims4Package", () => {
       const dbpf = Sims4Package.create();
       const testKey = getTestKey();
       expect(dbpf.hasKey(testKey)).to.be.false;
-      dbpf.add(testKey, TuningResource.create());
+      dbpf.add(testKey, XmlResource.create());
       expect(dbpf.hasKey(testKey)).to.be.true;
     });
 
@@ -421,7 +421,7 @@ describe("Sims4Package", () => {
       const dbpf = getPackage("CompleteTrait");
       expect(dbpf.isCached).to.be.true;
       const testKey = getTestKey();
-      dbpf.add(testKey, TuningResource.create());
+      dbpf.add(testKey, XmlResource.create());
       expect(dbpf.isCached).to.be.false;
     });
 
@@ -433,7 +433,7 @@ describe("Sims4Package", () => {
       });
 
       const testKey = getTestKey();
-      dbpf.add(testKey, TuningResource.create());
+      dbpf.add(testKey, XmlResource.create());
       
       dbpf.entries.forEach(entry => {
         if (entry.keyEquals(testKey)) {
@@ -544,9 +544,9 @@ describe("Sims4Package", () => {
     it("should not mutate the original resources", () => {
       const dbpf = getPackage("Trait");
       const clone = dbpf.clone();
-      const cloneTuning = clone.get(1).value as TuningResource;
+      const cloneTuning = clone.get(1).value as XmlResource;
       cloneTuning.content = "";
-      const dbpfTuning = dbpf.get(1).value as TuningResource;
+      const dbpfTuning = dbpf.get(1).value as XmlResource;
       expect(cloneTuning.content).to.equal("");
       expect(dbpfTuning.content).to.not.equal("");
     });
@@ -757,11 +757,11 @@ describe("Sims4Package", () => {
       const key = getTestKey();
 
       const dbpf = Sims4Package.create([
-        { key, value: TuningResource.create({ content: "a" }) },
-        { key, value: TuningResource.create({ content: "b" }) },
+        { key, value: XmlResource.create({ content: "a" }) },
+        { key, value: XmlResource.create({ content: "b" }) },
       ]);
 
-      expect((dbpf.getByKey(key).value as TuningResource).content).to.equal("a");
+      expect((dbpf.getByKey(key).value as XmlResource).content).to.equal("a");
     });
 
     it("should return undefined if the given key doesn't exist", () => {
@@ -777,12 +777,12 @@ describe("Sims4Package", () => {
       const key = getTestKey();
 
       const dbpf = Sims4Package.create([
-        { key, value: TuningResource.create({ content: "a" }) },
-        { key, value: TuningResource.create({ content: "b" }) },
+        { key, value: XmlResource.create({ content: "a" }) },
+        { key, value: XmlResource.create({ content: "b" }) },
       ]);
 
       dbpf.delete(0);
-      expect((dbpf.getByKey(key).value as TuningResource).content).to.equal("b");
+      expect((dbpf.getByKey(key).value as XmlResource).content).to.equal("b");
     });
   });
 
@@ -800,8 +800,8 @@ describe("Sims4Package", () => {
       const key = getTestKey();
 
       const dbpf = Sims4Package.create([
-        { key, value: TuningResource.create({ content: "a" }) },
-        { key, value: TuningResource.create({ content: "b" }) },
+        { key, value: XmlResource.create({ content: "a" }) },
+        { key, value: XmlResource.create({ content: "b" }) },
       ]);
 
       expect(dbpf.getIdForKey(key)).to.equal(0);
@@ -924,8 +924,8 @@ describe("Sims4Package", () => {
       const key = getTestKey();
 
       const dbpf = Sims4Package.create([
-        { key, value: TuningResource.create({ content: "a" }) },
-        { key, value: TuningResource.create({ content: "b" }) },
+        { key, value: XmlResource.create({ content: "a" }) },
+        { key, value: XmlResource.create({ content: "b" }) },
       ]);
 
       expect(dbpf.hasKey(key)).to.be.true;
@@ -1085,7 +1085,7 @@ describe("ResourceEntry", () => {
       const testKey = getTestKey();
       const entry = dbpf.add(testKey, tuning);
       const buffer = entry.buffer;
-      (entry.value as TuningResource).content = "";
+      (entry.value as XmlResource).content = "";
       expect(buffer).to.not.equal(entry.buffer);
     });
   });
@@ -1170,7 +1170,7 @@ describe("ResourceEntry", () => {
       const dbpf = getPackage("Trait");
       const entry = dbpf.get(1);
       expect(dbpf.isCached).to.be.true;
-      (entry.value as TuningResource).content = "";
+      (entry.value as XmlResource).content = "";
       expect(dbpf.isCached).to.be.false;
     });
 
@@ -1178,7 +1178,7 @@ describe("ResourceEntry", () => {
       const dbpf = getPackage("Trait");
       const entry = dbpf.get(1);
       expect(entry.isCached).to.be.true;
-      (entry.value as TuningResource).content = "";
+      (entry.value as XmlResource).content = "";
       expect(entry.isCached).to.be.false;
     });
 
@@ -1186,7 +1186,7 @@ describe("ResourceEntry", () => {
       const dbpf = getPackage("Trait");
       const entry = dbpf.get(1);
       expect(entry.value.isCached).to.be.true;
-      (entry.value as TuningResource).content = "";
+      (entry.value as XmlResource).content = "";
       expect(entry.value.isCached).to.be.false;
     });
   });
@@ -1217,9 +1217,9 @@ describe("ResourceEntry", () => {
       const dbpf = getPackage("Trait");
       const tuningEntry = dbpf.get(1);
       const cloneEntry = tuningEntry.clone();
-      (cloneEntry.value as TuningResource).content = "";
-      expect((cloneEntry.value as TuningResource).content).to.equal("");
-      expect((tuningEntry.value as TuningResource).content).to.not.equal("");
+      (cloneEntry.value as XmlResource).content = "";
+      expect((cloneEntry.value as XmlResource).content).to.equal("");
+      expect((tuningEntry.value as XmlResource).content).to.not.equal("");
     });
 
     it("should not copy the owner", () => {
@@ -1251,7 +1251,7 @@ describe("ResourceEntry", () => {
     it("should return false when value is different", () => {
       const dbpf = Sims4Package.create();
       const first = dbpf.add(getTestKey(), getTestTuning());
-      const second = dbpf.add(getTestKey(), TuningResource.create());
+      const second = dbpf.add(getTestKey(), XmlResource.create());
       expect(first.equals(second)).to.be.false;
     });
 
@@ -1272,7 +1272,7 @@ describe("ResourceEntry", () => {
         instance: 789n
       };
 
-      const entry = dbpf.add(key, TuningResource.create());
+      const entry = dbpf.add(key, XmlResource.create());
       expect(entry.keyEquals(key)).to.be.true;
     });
 
@@ -1283,7 +1283,7 @@ describe("ResourceEntry", () => {
         type: 123,
         group: 456,
         instance: 789n
-      }, TuningResource.create());
+      }, XmlResource.create());
 
       expect(entry.keyEquals({
         type: 123,
@@ -1299,7 +1299,7 @@ describe("ResourceEntry", () => {
         type: 123,
         group: 456,
         instance: 789n
-      }, TuningResource.create());
+      }, XmlResource.create());
 
       expect(entry.keyEquals({
         type: 0,
@@ -1315,7 +1315,7 @@ describe("ResourceEntry", () => {
         type: 123,
         group: 456,
         instance: 789n
-      }, TuningResource.create());
+      }, XmlResource.create());
 
       expect(entry.keyEquals({
         type: 123,
@@ -1331,7 +1331,7 @@ describe("ResourceEntry", () => {
         type: 123,
         group: 456,
         instance: 789n
-      }, TuningResource.create());
+      }, XmlResource.create());
 
       expect(entry.keyEquals({
         type: 123,

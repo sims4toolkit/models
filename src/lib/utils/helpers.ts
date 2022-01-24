@@ -49,3 +49,15 @@ export function arraysAreEqual(arr1: Equalable[], arr2: any[]): boolean {
   if (arr1.length !== arr2?.length) return false;
   return arr1.every(a => arr2.some(b => a.equals(b)));
 }
+
+/**
+ * Checks the given buffer and returns whether or not it contains XML content.
+ * This is determined by the presence of an XML header, so it will return false
+ * for XML files that do not have a header.
+ * 
+ * @param buffer Buffer to check contens of
+ * @returns True if this buffer contains XML, false otherwise
+ */
+export function bufferContainsXml(buffer: Buffer): boolean {
+  return buffer.length >= 5 && buffer.slice(0, 5).toString('utf-8') === '<?xml';
+}

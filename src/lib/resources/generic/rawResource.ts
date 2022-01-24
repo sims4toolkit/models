@@ -1,4 +1,5 @@
 import Resource from '../resource';
+import { bufferContainsXml } from '../../utils/helpers';
 
 /**
  * Model for resources that have intentionally not been parsed.
@@ -58,7 +59,7 @@ export default class RawResource extends Resource {
   }
 
   isXml(): boolean {
-    return this.buffer.length >= 5 && this.buffer.slice(0, 5).toString() === "<?xml";
+    return bufferContainsXml(this.buffer);
   }
 
   uncache() {
