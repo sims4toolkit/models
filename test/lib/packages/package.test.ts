@@ -211,33 +211,6 @@ describe("Sims4Package", () => {
     });
   });
 
-  describe("static#determineTuningTypes()", () => {
-    it("should have one mapping for each unique file type", () => {
-      const map = Sims4Package.determineTuningTypes(getBuffer("CompleteTrait"));
-      expect(map.size).to.equal(4);
-    });
-
-    it("should not include one type more than once", () => {
-      const map = Sims4Package.determineTuningTypes(getBuffer("SimDataPairs"));
-      expect(map.size).to.equal(5); // 4 tuning types + simdata
-    });
-
-    it("should return null for non-tuning types", () => {
-      const map = Sims4Package.determineTuningTypes(getBuffer("CompleteTrait"));
-      expect(map.get(0x00B2D882)).to.be.null;
-      expect(map.get(0x545AC67A)).to.be.null;
-      expect(map.get(0x220557DA)).to.be.null;
-    });
-
-    it("should return the type name for each tuning type", () => {
-      const map = Sims4Package.determineTuningTypes(getBuffer("SimDataPairs"));
-      expect(map.get(0x6017E896)).to.equal("buff");
-      expect(map.get(0xCB5FDDC7)).to.equal("trait");
-      expect(map.get(0xBA7B60B8)).to.equal("mood");
-      expect(map.get(0xDE1EF8FB)).to.equal("lot_decoration_preset");
-    });
-  });
-
   describe("static#from()", () => {
     context("dbpf is valid", () => {
       it("should be cached", () => {
