@@ -5,7 +5,7 @@ import type Resource from "../resources/resource";
 import type { ResourceKey, ResourceKeyPair } from "./shared";
 import type { SerializationOptions } from "../shared";
 import { MappedModel, MappedModelEntry } from "../base/mappedModel";
-import { arraysAreEqual } from "../helpers";
+import { arraysAreEqual } from "../utils/helpers";
 import readDbpf, { readTuningTypes, extractFiles } from "./serialization/readDbpf";
 import writeDbpf from "./serialization/writeDbpf";
 import WritableModel from "../base/writableModel";

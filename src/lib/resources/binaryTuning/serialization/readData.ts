@@ -6,7 +6,7 @@
 */
 
 import { BinaryDecoder } from "@s4tk/encoding";
-import { makeList } from "../../../helpers";
+import { makeList } from "../../../utils/helpers";
 import { SimDataType, SimDataTypeUtils } from "../../simData/simDataTypes";
 import { BinaryTuningDto, Named, Row, Schema, SchemaColumn, StringTable, TableData, TableInfo } from "../shared";
 

@@ -7,7 +7,7 @@ import { fnv32 } from "@s4tk/hashing";
 import { CellCloneOptions, CellEncodingOptions, CellToXmlOptions, ObjectCellRow } from "./shared";
 import CacheableModel from "../../base/cacheableModel";
 import { SimDataType, SimDataTypeUtils } from "./simDataTypes";
-import { arraysAreEqual, removeFromArray } from "../../helpers";
+import { arraysAreEqual, removeFromArray } from "../../utils/helpers";
 
 type PrimitiveType = boolean | number | bigint | string;
 

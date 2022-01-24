@@ -1,7 +1,7 @@
 import type { SerializationOptions } from "../../../shared";
 import { BinaryDecoder } from "@s4tk/encoding";
 import { ObjectCellRow, RELOFFSET_NULL, SimDataDto } from "../shared";
-import { makeList } from "../../../helpers";
+import { makeList } from "../../../utils/helpers";
 import { SimDataSchema, SimDataSchemaColumn, SimDataInstance } from "../simDataFragments";
 import { SimDataType, SimDataRecursiveType } from "../simDataTypes";
 import * as cells from "../simDataCells";

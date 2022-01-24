@@ -2,7 +2,7 @@ import type { SerializationOptions } from "../../shared";
 import { XmlDocumentNode, XmlElementNode, XmlNode } from "@s4tk/xml-dom";
 import { formatAsHexString } from "@s4tk/hashing/formatting";
 import Resource from "../resource";
-import { arraysAreEqual, removeFromArray } from "../../helpers";
+import { arraysAreEqual, removeFromArray } from "../../utils/helpers";
 import { SimDataInstance, SimDataSchema } from "./simDataFragments";
 import { SimDataDto, SUPPORTED_VERSION } from "./shared";
 import readData from "./serialization/readData";

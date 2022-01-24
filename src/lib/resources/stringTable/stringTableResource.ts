@@ -4,7 +4,7 @@ import CacheableModel from "../../base/cacheableModel";
 import { SerializationOptions } from "../../shared";
 import readStbl from "./serialization/readStbl";
 import writeStbl from "./serialization/writeStbl";
-import { arraysAreEqual } from "../../helpers";
+import { arraysAreEqual } from "../../utils/helpers";
 import { fnv32 } from "@s4tk/hashing";
 import { PrimitiveEntry, PrimitiveMappedModel } from "../../base/primitiveMappedModel";
 

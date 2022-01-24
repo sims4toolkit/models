@@ -3,7 +3,7 @@ import type { SerializationOptions } from "../../shared";
 import { ResourceKey, ResourceKeyPair, ZLIB_COMPRESSION } from "../shared";
 import { unzipSync } from "zlib";
 import { BinaryDecoder } from "@s4tk/encoding";
-import { makeList } from "../../helpers";
+import { makeList } from "../../utils/helpers";
 import RawResource from "../../resources/generic/rawResource";
 import { BinaryResourceType } from "../../enums/binary-resources";
 import { TuningResourceType } from "../../enums/tuning-resources";
