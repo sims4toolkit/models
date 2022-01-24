@@ -60,45 +60,6 @@ export function extractFiles(buffer: Buffer, typeFilter?: (type: number) => bool
   });
 }
 
-/**
- * Reads the given buffer as a DBPF to extract unique tuning types from. Types
- * are returned in a map (and mutated in the given map, if applicable) from
- * their hash to their name.
- * 
- * @param buffer Buffer of DBPF to read types from
- * @param baseMap Map to add type hash/name pairs to
- */
-export function readTuningTypes(buffer: Buffer, baseMap?: Map<number, string>): Map<number, string> {
-  const decoder = new BinaryDecoder(buffer);
-  const header = readDbpfHeader(decoder, { ignoreErrors: true });
-  decoder.seek(header.mnIndexRecordPosition || header.mnIndexRecordPositionLow);
-  const flags = readDbpfFlags(decoder);
-
-  const map: Map<number, string> = baseMap ?? new Map();
-  const index = readDbpfIndex(decoder, header, flags, (type: number) => {
-    if (map.has(type)) return false;
-    map.set(type, null);
-    return true;
-  });
-
-  index.forEach(indexEntry => {
-    try {
-      decoder.seek(indexEntry.mnPosition);
-      const compressedBuffer = decoder.slice(indexEntry.mnSize);
-      const resource = getResource(indexEntry, compressedBuffer, { loadRaw: true }) as RawResource;
-      if (resource.isXml()) {
-        const xml = XmlResource.from(resource.buffer);
-        const typeName = xml.root.attributes.i;
-        if (typeName) map.set(indexEntry.key.type, typeName);
-      }
-    } catch (e) {
-      // intentionally blank -- just skip it if it cannot be parsed
-    }
-  });
-
-  return map;
-}
-
 //#region Types & Interfaces
 
 interface DbpfHeader {
