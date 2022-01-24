@@ -7,7 +7,7 @@ import { makeList } from "../../utils/helpers";
 import RawResource from "../../resources/generic/rawResource";
 import { BinaryResourceType } from "../../enums/binary-resources";
 import { TuningResourceType } from "../../enums/tuning-resources";
-import StringTableResource from "../../resources/stringTable/stringTableResource";
+import StringTableResource from "../../resources/stbl/stbl-resource";
 import SimDataResource from "../../resources/simData/simDataResource";
 import TuningResource from "../../resources/tuning/tuningResource";
 import XmlResource from "../../resources/generic/xmlResource";

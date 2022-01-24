@@ -3,7 +3,7 @@ import XmlResource from "./lib/resources/generic/xmlResource";
 import RawResource from "./lib/resources/generic/rawResource";
 import TuningResource from "./lib/resources/tuning/tuningResource";
 import SimDataResource from "./lib/resources/simData/simDataResource";
-import StringTableResource from "./lib/resources/stringTable/stringTableResource";
+import StringTableResource from "./lib/resources/stbl/stbl-resource";
 import * as tunables from "./lib/resources/tuning/tunables";
 import * as simDataCells from "./lib/resources/simData/simDataCells";
 import * as simDataFragments from "./lib/resources/simData/simDataFragments";
