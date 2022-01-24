@@ -1,9 +1,9 @@
 import { expect } from "chai";
-import { simDataCells, simDataTypes } from "../../../dst/models";
+import { simDataCells, simDataTypes } from "../../../../dst/models";
 import * as hashing from "@s4tk/hashing";
 import { BinaryDecoder, BinaryEncoder } from "@s4tk/encoding";
 import * as xmlDom from "@s4tk/xml-dom";
-import MockOwner from "../../mocks/mockOwner";
+import MockOwner from "../../../mocks/mock-owner";
 
 const cells = simDataCells;
 const { fnv32 } = hashing;

@@ -1,8 +1,8 @@
 import fs from "fs";
 import path from "path";
 import { expect } from "chai";
-import { simDataCells, simDataFragments, SimDataResource, simDataTypes } from "../../../dst/models";
-import MockOwner from "../../mocks/mockOwner";
+import { simDataCells, simDataFragments, SimDataResource, simDataTypes } from "../../../../dst/models";
+import MockOwner from "../../../mocks/mock-owner";
 
 const { SimDataType } = simDataTypes;
 const { SimDataSchema, SimDataSchemaColumn, SimDataInstance } = simDataFragments;
@@ -15,7 +15,7 @@ function getBuffer(filename: string) {
     return cachedBuffers[filename];
   } else {
     const folder = filename.split('.')[1] === "xml" ? "xml" : "binary";
-    const filepath = path.resolve(__dirname, `../../data/simdatas/${folder}/${filename}`);
+    const filepath = path.resolve(__dirname, `../../../data/simdatas/${folder}/${filename}`);
     const buffer = fs.readFileSync(filepath);
     cachedBuffers[filename] = buffer;
     return buffer;

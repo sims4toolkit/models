@@ -1,5 +1,5 @@
 import { expect } from "chai";
-import MockOwner from "./mockOwner";
+import MockOwner from "./mock-owner";
 
 describe("MockOwner", function() {
   it("should be cached when initialized", () => {

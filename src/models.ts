@@ -1,11 +1,11 @@
 import Sims4Package from "./lib/dbpf/sims4package";
 import XmlResource from "./lib/resources/xml/xml-resource";
 import RawResource from "./lib/resources/generic/rawResource";
-import SimDataResource from "./lib/resources/simData/simDataResource";
+import SimDataResource from "./lib/resources/simdata/simDataResource";
 import StringTableResource from "./lib/resources/stbl/stbl-resource";
-import * as simDataCells from "./lib/resources/simData/simDataCells";
-import * as simDataFragments from "./lib/resources/simData/simDataFragments";
-import * as simDataTypes from "./lib/resources/simData/simDataTypes";
+import * as simDataCells from "./lib/resources/simdata/simDataCells";
+import * as simDataFragments from "./lib/resources/simdata/simDataFragments";
+import * as simDataTypes from "./lib/resources/simdata/simDataTypes";
 
 
 export {

@@ -2,8 +2,8 @@ import * as fs from "fs";
 import * as path from "path";
 import { expect } from "chai";
 import { fnv32 } from "@s4tk/hashing";
-import { StringTableResource } from "../../../dst/models";
-import MockOwner from "../../mocks/mockOwner";
+import { StringTableResource } from "../../../../dst/models";
+import MockOwner from "../../../mocks/mock-owner";
 
 //#region Helpers
 
@@ -11,7 +11,7 @@ const cachedBuffers: { [key: string]: Buffer; } = {};
 
 function getBuffer(filename: string): Buffer {
   if (!cachedBuffers[filename]) {
-    const filepath = path.resolve(__dirname, `../../data/stbls/${filename}.stbl`);
+    const filepath = path.resolve(__dirname, `../../../data/stbls/${filename}.stbl`);
     cachedBuffers[filename] = fs.readFileSync(filepath);
   }
 
