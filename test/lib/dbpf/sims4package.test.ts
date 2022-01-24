@@ -4,7 +4,7 @@ import { unzipSync } from "zlib";
 import { expect } from "chai";
 import compare from "just-compare";
 import clone from "just-clone";
-import type { ResourceKey } from "../../../dst/lib/dbpf/shared";
+import type { ResourceKey } from "../../../dst/lib/packages/shared";
 import { RawResource, SimDataResource, Sims4Package, StringTableResource, XmlResource } from "../../../dst/models";
 import { TuningResourceType } from "../../../dst/enums";
 
