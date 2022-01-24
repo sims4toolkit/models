@@ -2,7 +2,7 @@ import Resource from '../resource';
 import { bufferContainsXml } from '../../utils/helpers';
 
 /**
- * Model for resources that have intentionally not been parsed.
+ * Model for resources that have not been parsed.
  */
 export default class RawResource extends Resource {
   readonly variant = 'RAW';
