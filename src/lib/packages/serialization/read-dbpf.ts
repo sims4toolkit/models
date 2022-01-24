@@ -55,8 +55,7 @@ export function extractFiles(buffer: Buffer, typeFilter?: (type: number) => bool
     const compressedBuffer = decoder.slice(indexEntry.mnSize);
     return {
       key: indexEntry.key,
-      value: getResource(indexEntry, compressedBuffer, { loadRaw: true }),
-      buffer: compressedBuffer
+      value: getResource(indexEntry, compressedBuffer, { loadRaw: true })
     };
   });
 }
