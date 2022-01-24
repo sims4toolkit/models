@@ -1,15 +1,15 @@
 import type { KeyStringPair } from "./shared";
-import Resource from "../resource";
+import { fnv32 } from "@s4tk/hashing";
 import CacheableModel from "../../base/cacheableModel";
+import { PrimitiveEntry, PrimitiveMappedModel } from "../../base/primitiveMappedModel";
+import Resource from "../resource";
+import { arraysAreEqual } from "../../utils/helpers";
 import { SerializationOptions } from "../../shared";
 import readStbl from "./serialization/read-stbl";
 import writeStbl from "./serialization/write-stbl";
-import { arraysAreEqual } from "../../utils/helpers";
-import { fnv32 } from "@s4tk/hashing";
-import { PrimitiveEntry, PrimitiveMappedModel } from "../../base/primitiveMappedModel";
 
 /**
- * Model for string table resources.
+ * Model for string table (STBL) resources.
  */
 export default class StringTableResource extends PrimitiveMappedModel<string, StringEntry> implements Resource {
   readonly variant = 'STBL';
@@ -21,22 +21,17 @@ export default class StringTableResource extends PrimitiveMappedModel<string, St
   }
 
    /**
-   * Creates a new StringTableResource instance from the given header and
-   * entries. Both arguments are optional, and if left out, will create an empty
-   * string table with default header values.
+   * Creates a new StringTableResource instance with the given entries, if any.
+   * If no entries are provided, an empty STBL is created.
    * 
-   * Arguments:
-   * - `header`: Values to use in the header. Empty by default.
-   * - `entries`: String entries to use. Empty by default.
-   * 
-   * @param args Arguments for creation
+   * @param entries Optional entries to create STBL with
    */
   static create(entries: KeyStringPair[] = []): StringTableResource {
     return new StringTableResource(entries);
   }
 
   /**
-   * Returns a new String Table that was read from the given buffer.
+   * Reads the given buffer as a StringTableResource instance and returns it.
    * 
    * @param buffer Buffer to read as a string table
    * @param options Options to configure for reading a STBL resource
