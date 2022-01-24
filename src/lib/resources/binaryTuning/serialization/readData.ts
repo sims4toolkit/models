@@ -1,13 +1,19 @@
+/*
+  Adapted from the Sims 4 DATA binary template, provided at the link below
+  (in the post from August 2018).
+
+  https://forums.thesims.com/en_US/discussion/826671/binary-tuning-sim-data-resource-0x545ac67a-and-0x62e94d38
+*/
+
 import { BinaryDecoder } from "@s4tk/encoding";
 import { makeList } from "../../../helpers";
 import { SimDataType, SimDataTypeUtils } from "../../simData/simDataTypes";
 import { BinaryTuningDto, Named, Row, Schema, SchemaColumn, StringTable, TableData, TableInfo } from "../shared";
 
 /**
- * TODO:
+ * Reads a buffer as a DATA file, returning its contents in an object.
  * 
- * @param buffer TODO:
- * @returns TODO:
+ * @param buffer Buffer to read as a DATA file
  */
 export default function readData(buffer: Buffer): BinaryTuningDto {
   const decoder = new BinaryDecoder(buffer);
@@ -81,7 +87,7 @@ export default function readData(buffer: Buffer): BinaryTuningDto {
     schemaEndPos = decoder.tell();
 
     decoder.seek(schema.startof_mnColumnOffset + schema.mnColumnOffset);
-    for (j = 0; j < schema.mnNumColumns; ++j) { // FIXME: mSchema[i]?
+    for (j = 0; j < schema.mnNumColumns; ++j) {
       schema.mColumn.push(structSchemaColumn());
     }
 
@@ -173,7 +179,6 @@ export default function readData(buffer: Buffer): BinaryTuningDto {
       mTypeHash: decoder.uint32()
     }
   }
-
 
   // Read a single data field with the given type code.
   function readDataType(typeCode: SimDataType): any {
