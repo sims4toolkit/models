@@ -1,7 +1,7 @@
 /**
  * High bits to set for specific locales for String Table instances.
  */
-export enum StringTableLocale {
+enum StringTableLocale {
   English = 0x00,
   ChineseSimplified = 0x01,
   ChineseTraditional = 0x02,
@@ -21,3 +21,6 @@ export enum StringTableLocale {
   Spanish = 0x13,
   Swedish = 0x15,
 }
+
+// `export default enum` not supported by TS
+export default StringTableLocale;
