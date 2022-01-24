@@ -3,10 +3,11 @@ import { XmlDocumentNode, XmlElementNode, XmlNode } from "@s4tk/xml-dom";
 import { formatAsHexString } from "@s4tk/hashing/formatting";
 import Resource from "../resource";
 import { arraysAreEqual, removeFromArray } from "../../utils/helpers";
-import { SimDataInstance, SimDataSchema } from "./simDataFragments";
-import { SimDataDto, SUPPORTED_VERSION } from "./shared";
-import readData from "./serialization/readData";
-import writeData from "./serialization/writeData";
+import { SimDataInstance, SimDataSchema } from "./fragments";
+import { SimDataDto } from "./types";
+import { SUPPORTED_VERSION } from "./constants";
+import readData from "./serialization/read-data";
+import writeData from "./serialization/write-data";
 
 /**
  * A resource for SimData (binary tuning). SimDatas are essentially mini

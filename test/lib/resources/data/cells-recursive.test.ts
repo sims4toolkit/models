@@ -1,12 +1,8 @@
 import { expect } from "chai";
 import { XmlElementNode, XmlValueNode } from "@s4tk/xml-dom";
 import { BinaryEncoder } from "@s4tk/encoding";
-import { simDataCells, simDataFragments, simDataTypes } from "../../../../dst/models";
+import { cells, SimDataType, SimDataSchema, SimDataSchemaColumn } from "../../../../dst/simdata";
 import MockOwner from "../../../mocks/mock-owner";
-
-const cells = simDataCells;
-const { SimDataSchema, SimDataSchemaColumn } = simDataFragments;
-const { SimDataType } = simDataTypes;
 
 //#region Helpers
 
@@ -20,7 +16,7 @@ const nestedObjectSchema = new SimDataSchema("NestedObject", 0x12, [
   new SimDataSchemaColumn("obj", SimDataType.Object, 0)
 ]);
 
-function newValidObjectCell(): simDataCells.ObjectCell {
+function newValidObjectCell(): cells.ObjectCell {
   return new cells.ObjectCell(testSchema, {
     boolean: new cells.BooleanCell(true),
     uint32: new cells.NumberCell(SimDataType.UInt32, 15),
@@ -103,7 +99,7 @@ describe("ObjectCell", () => {
         boolean: new cells.BooleanCell(true)
       }, owner);
       expect(owner.cached).to.be.true;
-      (cell.row.boolean as simDataCells.BooleanCell).value = false
+      (cell.row.boolean as cells.BooleanCell).value = false
       expect(owner.cached).to.be.false;
     });
 
@@ -730,7 +726,7 @@ describe("ObjectCell", () => {
       const cell = cells.ObjectCell.fromXmlNode(parent, [testSchema, nestedObjectSchema]);
 
       expect(cell.rowLength).to.equal(1);
-      const child: simDataCells.ObjectCell = cell.row.obj.asAny;
+      const child: cells.ObjectCell = cell.row.obj.asAny;
       expect(child.rowLength).to.equal(3);
       expect(child.row.boolean?.asAny.value).to.equal(true);
       expect(child.row.uint32?.asAny.value).to.equal(15);
@@ -771,7 +767,7 @@ describe("VectorCell", () => {
   describe("#children", () => {
     it("should uncache the owner when pushed", () => {
       const owner = new MockOwner();
-      const cell = new cells.VectorCell<simDataCells.BooleanCell>([], owner);
+      const cell = new cells.VectorCell<cells.BooleanCell>([], owner);
       expect(owner.cached).to.be.true;
       cell.children.push(new cells.BooleanCell(true));
       expect(owner.cached).to.be.false;
@@ -779,7 +775,7 @@ describe("VectorCell", () => {
 
     it("should set the owner of a child that is pushed", () => {
       const owner = new MockOwner();
-      const cell = new cells.VectorCell<simDataCells.BooleanCell>([], owner);
+      const cell = new cells.VectorCell<cells.BooleanCell>([], owner);
       const child = new cells.BooleanCell(true);
       cell.children.push(child);
       expect(child.owner).to.equal(owner);
@@ -787,7 +783,7 @@ describe("VectorCell", () => {
 
     it("should uncache the owner when spliced", () => {
       const owner = new MockOwner();
-      const cell = new cells.VectorCell<simDataCells.BooleanCell>([
+      const cell = new cells.VectorCell<cells.BooleanCell>([
         new cells.BooleanCell(true)
       ], owner);
       expect(owner.cached).to.be.true;
@@ -797,7 +793,7 @@ describe("VectorCell", () => {
 
     it("should uncache the owner when a child is mutated", () => {
       const owner = new MockOwner();
-      const cell = new cells.VectorCell<simDataCells.BooleanCell>([
+      const cell = new cells.VectorCell<cells.BooleanCell>([
         new cells.BooleanCell(true)
       ], owner);
       expect(owner.cached).to.be.true;
@@ -807,7 +803,7 @@ describe("VectorCell", () => {
 
     it("should uncache the owner when a child is set", () => {
       const owner = new MockOwner();
-      const cell = new cells.VectorCell<simDataCells.BooleanCell>([
+      const cell = new cells.VectorCell<cells.BooleanCell>([
         new cells.BooleanCell(true)
       ], owner);
       expect(owner.cached).to.be.true;
@@ -817,7 +813,7 @@ describe("VectorCell", () => {
 
     it("should set the owner of a child that is set", () => {
       const owner = new MockOwner();
-      const cell = new cells.VectorCell<simDataCells.BooleanCell>([
+      const cell = new cells.VectorCell<cells.BooleanCell>([
         new cells.BooleanCell(true)
       ], owner);
       const child = new cells.BooleanCell(false);
@@ -827,7 +823,7 @@ describe("VectorCell", () => {
 
     it("should not uncache the owner when a child is retrieved", () => {
       const owner = new MockOwner();
-      const cell = new cells.VectorCell<simDataCells.BooleanCell>([
+      const cell = new cells.VectorCell<cells.BooleanCell>([
         new cells.BooleanCell(true)
       ], owner);
       expect(owner.cached).to.be.true;
@@ -837,7 +833,7 @@ describe("VectorCell", () => {
 
     it("should uncache the owner when sorted", () => {
       const owner = new MockOwner();
-      const cell = new cells.VectorCell<simDataCells.NumberCell>([
+      const cell = new cells.VectorCell<cells.NumberCell>([
         new cells.NumberCell(SimDataType.UInt32, 2),
         new cells.NumberCell(SimDataType.UInt32, 1)
       ], owner);
@@ -849,7 +845,7 @@ describe("VectorCell", () => {
 
   describe("#childType", () => {
     it("should return the data type of the first child", () => {
-      const cell = new cells.VectorCell<simDataCells.BooleanCell>([
+      const cell = new cells.VectorCell<cells.BooleanCell>([
         cells.BooleanCell.getDefault()
       ]);
       expect(cell.childType).to.equal(SimDataType.Boolean);
@@ -868,14 +864,14 @@ describe("VectorCell", () => {
     });
 
     it("should return the number of children in the array", () => {
-      const cell = new cells.VectorCell<simDataCells.BooleanCell>([
+      const cell = new cells.VectorCell<cells.BooleanCell>([
         cells.BooleanCell.getDefault()
       ]);
       expect(cell.length).to.equal(1);
     });
 
     it("should return the correct number after adding a child", () => {
-      const cell = new cells.VectorCell<simDataCells.BooleanCell>([
+      const cell = new cells.VectorCell<cells.BooleanCell>([
         cells.BooleanCell.getDefault()
       ]);
       cell.children.push(cells.BooleanCell.getDefault());
@@ -883,7 +879,7 @@ describe("VectorCell", () => {
     });
 
     it("should return the correct number after deleting a child", () => {
-      const cell = new cells.VectorCell<simDataCells.BooleanCell>([
+      const cell = new cells.VectorCell<cells.BooleanCell>([
         cells.BooleanCell.getDefault(),
         cells.BooleanCell.getDefault()
       ]);
@@ -897,7 +893,7 @@ describe("VectorCell", () => {
       const owner = new MockOwner();
       const child1 = cells.BooleanCell.getDefault();
       const child2 = cells.BooleanCell.getDefault();
-      const cell = new cells.VectorCell<simDataCells.BooleanCell>([
+      const cell = new cells.VectorCell<cells.BooleanCell>([
         child1,
         child2
       ], owner);
@@ -923,7 +919,7 @@ describe("VectorCell", () => {
       const owner = new MockOwner();
       const child1 = cells.BooleanCell.getDefault();
       const child2 = cells.BooleanCell.getDefault();
-      const cell = new cells.VectorCell<simDataCells.BooleanCell>([
+      const cell = new cells.VectorCell<cells.BooleanCell>([
         child1,
         child2
       ], owner);
@@ -934,7 +930,7 @@ describe("VectorCell", () => {
     it("should contain the given children", () => {
       const child1 = cells.BooleanCell.getDefault();
       const child2 = cells.BooleanCell.getDefault();
-      const cell = new cells.VectorCell<simDataCells.BooleanCell>([
+      const cell = new cells.VectorCell<cells.BooleanCell>([
         child1,
         child2
       ]);
@@ -957,14 +953,14 @@ describe("VectorCell", () => {
 
   describe("#addClones()", () => {
     it("should add the given children", () => {
-      const cell = cells.VectorCell.getDefault<simDataCells.BooleanCell>();
+      const cell = cells.VectorCell.getDefault<cells.BooleanCell>();
       cell.addClones(new cells.BooleanCell(true));
       expect(cell.length).to.equal(1);
       expect(cell.children[0].value).to.be.true;
     });
 
     it("should not mutate the original children (they should be clones)", () => {
-      const cell = cells.VectorCell.getDefault<simDataCells.BooleanCell>();
+      const cell = cells.VectorCell.getDefault<cells.BooleanCell>();
       const child = new cells.BooleanCell(true);
       cell.addClones(child);
       const childClone = cell.children[0];
@@ -1151,7 +1147,7 @@ describe("VectorCell", () => {
 
   describe("#equals()", () => {
     it("should return true when vectors are the same", () => {
-      const cell = new cells.VectorCell<simDataCells.BooleanCell>([
+      const cell = new cells.VectorCell<cells.BooleanCell>([
         new cells.BooleanCell(true),
         new cells.BooleanCell(false),
       ]);
@@ -1160,7 +1156,7 @@ describe("VectorCell", () => {
     });
 
     it("should return false when there is a different number of children", () => {
-      const cell = new cells.VectorCell<simDataCells.BooleanCell>([
+      const cell = new cells.VectorCell<cells.BooleanCell>([
         new cells.BooleanCell(true),
         new cells.BooleanCell(false),
       ]);
@@ -1171,7 +1167,7 @@ describe("VectorCell", () => {
     });
 
     it("should return false when there is a different child", () => {
-      const cell = new cells.VectorCell<simDataCells.BooleanCell>([
+      const cell = new cells.VectorCell<cells.BooleanCell>([
         new cells.BooleanCell(true),
         new cells.BooleanCell(false),
       ]);
@@ -1182,7 +1178,7 @@ describe("VectorCell", () => {
     });
 
     it("should return false when the other is undefined", () => {
-      const cell = new cells.VectorCell<simDataCells.BooleanCell>([
+      const cell = new cells.VectorCell<cells.BooleanCell>([
         new cells.BooleanCell(true),
         new cells.BooleanCell(false),
       ]);
@@ -1342,7 +1338,7 @@ describe("VectorCell", () => {
     });
 
     it("should read children correctly", () => {
-      const cell = cells.VectorCell.fromXmlNode<simDataCells.BooleanCell>(validNode);
+      const cell = cells.VectorCell.fromXmlNode<cells.BooleanCell>(validNode);
       expect(cell.children).to.have.lengthOf(2);
       const [ child1, child2 ] = cell.children;
       expect(child1.dataType).to.equal(SimDataType.Boolean);
@@ -1375,7 +1371,7 @@ describe("VectorCell", () => {
         ]
       });
 
-      const cell = cells.VectorCell.fromXmlNode<simDataCells.VectorCell<simDataCells.NumberCell>>(node);
+      const cell = cells.VectorCell.fromXmlNode<cells.VectorCell<cells.NumberCell>>(node);
       expect(cell.childType).to.equal(SimDataType.Vector);
       expect(cell.length).to.equal(1);
       const single = cell.children[0].children[0];
@@ -1408,7 +1404,7 @@ describe("VectorCell", () => {
         ]
       });
 
-      const cell = cells.VectorCell.fromXmlNode<simDataCells.VariantCell<simDataCells.NumberCell>>(node);
+      const cell = cells.VectorCell.fromXmlNode<cells.VariantCell<cells.NumberCell>>(node);
       expect(cell.childType).to.equal(SimDataType.Variant);
       expect(cell.length).to.equal(1);
       const single = cell.children[0].child;
@@ -1459,7 +1455,7 @@ describe("VectorCell", () => {
         ]
       });
 
-      const cell = cells.VectorCell.fromXmlNode<simDataCells.ObjectCell>(node, [testSchema]);
+      const cell = cells.VectorCell.fromXmlNode<cells.ObjectCell>(node, [testSchema]);
       expect(cell.length).to.equal(1);
       const obj = cell.children[0];
       expect(obj.rowLength).to.equal(3);
@@ -1733,26 +1729,26 @@ describe("VariantCell", () => {
 
   describe("#equals()", () => {
     it("should return true when variants are the same", () => {
-      const cell = new cells.VariantCell<simDataCells.BooleanCell>(0x12, new cells.BooleanCell(true));
+      const cell = new cells.VariantCell<cells.BooleanCell>(0x12, new cells.BooleanCell(true));
       expect(cell.equals(cell.clone())).to.be.true;
     });
 
     it("should return false when there is a different type hash", () => {
-      const cell = new cells.VariantCell<simDataCells.BooleanCell>(0x12, new cells.BooleanCell(true));
+      const cell = new cells.VariantCell<cells.BooleanCell>(0x12, new cells.BooleanCell(true));
       const other = cell.clone();
       other.typeHash = 0x23;
       expect(cell.equals(other)).to.be.false;
     });
 
     it("should return false when there is a different child", () => {
-      const cell = new cells.VariantCell<simDataCells.BooleanCell>(0x12, new cells.BooleanCell(true));
+      const cell = new cells.VariantCell<cells.BooleanCell>(0x12, new cells.BooleanCell(true));
       const other = cell.clone();
       other.child.asAny.value = false;
       expect(cell.equals(other)).to.be.false;
     });
 
     it("should return false when the other is undefined", () => {
-      const cell = new cells.VariantCell<simDataCells.BooleanCell>(0x12, new cells.BooleanCell(true));
+      const cell = new cells.VariantCell<cells.BooleanCell>(0x12, new cells.BooleanCell(true));
       expect(cell.equals(undefined)).to.be.false;
     });
   });
@@ -1912,7 +1908,7 @@ describe("VariantCell", () => {
     });
 
     it("should read primitive child correctly", () => {
-      const cell = cells.VariantCell.fromXmlNode<simDataCells.BooleanCell>(validNode);
+      const cell = cells.VariantCell.fromXmlNode<cells.BooleanCell>(validNode);
       expect(cell.child.dataType).to.equal(SimDataType.Boolean);
       expect(cell.child.value).to.be.true;
     });
@@ -1944,7 +1940,7 @@ describe("VariantCell", () => {
         ]
       });
 
-      const cell = cells.VariantCell.fromXmlNode<simDataCells.VectorCell<simDataCells.BooleanCell>>(node);
+      const cell = cells.VariantCell.fromXmlNode<cells.VectorCell<cells.BooleanCell>>(node);
       expect(cell.typeHash).to.equal(0x12345678);
       expect(cell.child.length).to.equal(1);
       expect(cell.child.children[0].dataType).to.equal(SimDataType.Boolean);
@@ -1964,7 +1960,7 @@ describe("VariantCell", () => {
         ]
       });
 
-      const cell = cells.VariantCell.fromXmlNode<simDataCells.VariantCell<simDataCells.BooleanCell>>(node);
+      const cell = cells.VariantCell.fromXmlNode<cells.VariantCell<cells.BooleanCell>>(node);
       expect(cell.typeHash).to.equal(0x00001234);
       expect(cell.child.typeHash).to.equal(0x12345678);
       expect(cell.child.child.dataType).to.equal(SimDataType.Boolean);
@@ -2009,7 +2005,7 @@ describe("VariantCell", () => {
         ]
       });
 
-      const cell = cells.VariantCell.fromXmlNode<simDataCells.ObjectCell>(node, [testSchema]);
+      const cell = cells.VariantCell.fromXmlNode<cells.ObjectCell>(node, [testSchema]);
       expect(cell.child.rowLength).to.equal(3);
       expect(cell.child.row.boolean.asAny.value).to.equal(true);
       expect(cell.child.row.uint32.asAny.value).to.equal(15);

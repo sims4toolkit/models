@@ -1,9 +1,10 @@
 import { BinaryEncoder } from "@s4tk/encoding";
 import { formatAsHexString } from "@s4tk/hashing/formatting";
 import { fnv32 } from "@s4tk/hashing";
-import { SimDataDto, HEADER_SIZE, TABLE_HEADER_OFFSET, RELOFFSET_NULL, NO_NAME_HASH, SUPPORTED_VERSION, CellEncodingOptions } from "../shared";
-import { SimDataType, SimDataTypeUtils } from "../simDataTypes";
-import * as cells from "../simDataCells";
+import { SimDataDto, CellEncodingOptions } from "../types";
+import { HEADER_SIZE, TABLE_HEADER_OFFSET, RELOFFSET_NULL, NO_NAME_HASH, SUPPORTED_VERSION } from "../constants";
+import { SimDataType, SimDataTypeUtils } from "../data-types";
+import * as cells from "../cells";
 
 // FIXME: there could potentially be an issue with padding when writing booleans,
 // for an example use the scenario role that chip sent

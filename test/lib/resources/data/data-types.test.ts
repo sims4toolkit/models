@@ -1,6 +1,6 @@
 import { expect } from "chai";
-import { simDataTypes } from "../../../../dst/models";
-const { SimDataType, SimDataTypeUtils } = simDataTypes;
+import { SimDataType } from "../../../../dst/simdata";
+import { SimDataTypeUtils } from "../../../../dst/lib/resources/data/data-types";
 
 describe("SimDataTypeUtils", () => {
   describe("#parseNumber()", () => {

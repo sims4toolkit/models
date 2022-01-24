@@ -1,10 +1,10 @@
-import type SimDataResource from "./simDataResource";
-import type { ObjectCellRow, CellCloneOptions } from "./shared";
+import type SimDataResource from "./simdata-resource";
+import type { ObjectCellRow, CellCloneOptions } from "./types";
 import { XmlElementNode, XmlNode } from "@s4tk/xml-dom";
 import { formatAsHexString } from "@s4tk/hashing/formatting";
-import { ObjectCell } from "./simDataCells";
+import { ObjectCell } from "./cells";
 import CacheableModel from "../../base/cacheable-model";
-import { SimDataType, SimDataTypeUtils } from "./simDataTypes";
+import { SimDataType, SimDataTypeUtils } from "./data-types";
 import { arraysAreEqual, removeFromArray } from "../../utils/helpers";
 
 /**

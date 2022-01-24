@@ -1,10 +1,11 @@
 import type { SerializationOptions } from "../../../shared";
 import { BinaryDecoder } from "@s4tk/encoding";
-import { ObjectCellRow, RELOFFSET_NULL, SimDataDto } from "../shared";
+import { ObjectCellRow, SimDataDto } from "../types";
 import { makeList } from "../../../utils/helpers";
-import { SimDataSchema, SimDataSchemaColumn, SimDataInstance } from "../simDataFragments";
-import { SimDataType, SimDataRecursiveType } from "../simDataTypes";
-import * as cells from "../simDataCells";
+import { SimDataSchema, SimDataSchemaColumn, SimDataInstance } from "../fragments";
+import { SimDataType, SimDataRecursiveType } from "../data-types";
+import * as cells from "../cells";
+import { RELOFFSET_NULL } from "../constants";
 
 //#region Interfaces
 

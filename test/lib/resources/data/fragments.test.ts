@@ -1,11 +1,7 @@
 import { XmlDocumentNode } from "@s4tk/xml-dom";
 import { expect } from "chai";
-import { simDataFragments, simDataTypes, simDataCells } from "../../../../dst/models";
+import { SimDataSchema, SimDataSchemaColumn, SimDataInstance, SimDataType, cells } from "../../../../dst/simdata";
 import MockOwner from "../../../mocks/mock-owner";
-
-const { SimDataSchema, SimDataSchemaColumn, SimDataInstance } = simDataFragments;
-const { SimDataType } = simDataTypes;
-const cells = simDataCells;
 
 const testSchema = new SimDataSchema("TestSchema", 0x1234, [
   new SimDataSchemaColumn("boolean", SimDataType.Boolean, 0),
@@ -14,7 +10,7 @@ const testSchema = new SimDataSchema("TestSchema", 0x1234, [
 ]);
 
 describe("SimDataSchema", () => {
-  function expectOwnerToUncache(fn: (schema: simDataFragments.SimDataSchema) => void) {
+  function expectOwnerToUncache(fn: (schema: SimDataSchema) => void) {
     const schema = testSchema.clone();
     const owner = new MockOwner();
     schema.owner = owner;
@@ -418,7 +414,7 @@ describe("SimDataSchema", () => {
 });
 
 describe("SimDataSchemaColumn", () => {
-  function expectOwnerToUncache(fn: (column: simDataFragments.SimDataSchemaColumn) => void) {
+  function expectOwnerToUncache(fn: (column: SimDataSchemaColumn) => void) {
     const owner = new MockOwner();
     const column = new SimDataSchemaColumn("boolean", SimDataType.Boolean, 0, owner);
     expect(owner.cached).to.be.true;
