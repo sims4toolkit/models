@@ -49,19 +49,3 @@ export function arraysAreEqual(arr1: Equalable[], arr2: any[]): boolean {
   if (arr1.length !== arr2?.length) return false;
   return arr1.every(a => arr2.some(b => a.equals(b)));
 }
-
-/**
- * Checks if the two given objects contain the same contents, as dictacted by
- * the first object's children's `equals()` methods.
- * 
- * @param obj1 First object to check
- * @param obj2 Second object to check
- */
-export function objectsAreEqual(obj1: { [key: string]: Equalable }, obj2: { [key: string]: any }): boolean {
-  if (Object.keys(obj1).length !== Object.keys(obj2).length) return false;
-  for (const key in obj1) {
-    const value = obj1[key];
-    if (!value.equals(obj2[key])) return false;
-  }
-  return true;
-}
