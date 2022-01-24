@@ -1,6 +1,5 @@
-import type { XmlNode } from "@s4tk/xml-dom";
-import type StringTableResource from "../stbl/stbl-resource";
-import { XmlElementNode, XmlCommentNode, XmlValueNode } from "@s4tk/xml-dom";
+import type StringTableResource from "../resources/stbl/stbl-resource";
+import { XmlNode, XmlElementNode, XmlCommentNode, XmlValueNode } from "@s4tk/xml-dom";
 import { formatStringKey } from "@s4tk/hashing/formatting";
 
 //#region Types

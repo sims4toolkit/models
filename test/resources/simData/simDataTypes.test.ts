@@ -1,5 +1,5 @@
 import { expect } from "chai";
-import { simDataTypes } from "../../../dst/api";
+import { simDataTypes } from "../../../dst/models";
 const { SimDataType, SimDataTypeUtils } = simDataTypes;
 
 describe("SimDataTypeUtils", () => {

@@ -6,7 +6,7 @@ import compare from "just-compare";
 import clone from "just-clone";
 import { formatResourceType } from "@s4tk/hashing/formatting";
 import type { ResourceKey } from "../../dst/lib/dbpf/shared";
-import { RawResource, SimDataResource, Sims4Package, StringTableResource, XmlResource } from "../../dst/api";
+import { RawResource, SimDataResource, Sims4Package, StringTableResource, XmlResource } from "../../dst/models";
 import { TuningResourceType } from "../../dst/enums";
 
 //#region Helpers

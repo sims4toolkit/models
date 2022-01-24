@@ -1,5 +1,5 @@
 import { expect } from "chai";
-import { simDataCells, simDataTypes } from "../../../dst/api";
+import { simDataCells, simDataTypes } from "../../../dst/models";
 import * as hashing from "@s4tk/hashing";
 import { BinaryDecoder, BinaryEncoder } from "@s4tk/encoding";
 import * as xmlDom from "@s4tk/xml-dom";

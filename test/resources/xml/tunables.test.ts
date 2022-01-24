@@ -1,8 +1,8 @@
 import { expect } from "chai";
 import { fnv32 } from "@s4tk/hashing";
 import { formatStringKey } from "@s4tk/hashing/formatting";
-import { StringTableResource, tunables } from "../../../dst/api";
-const { I, M, T, E, L, U, V, C, Comment, LocString, getLocStringFn } = tunables;
+import { StringTableResource } from "../../../dst/models";
+import { I, M, T, E, L, U, V, C, Comment, LocString, getLocStringFn } from "../../../dst/tunables";
 
 describe("#I()", function() {
   it("should create a node with a <I> tag", function() {

@@ -1,7 +1,7 @@
 import fs from "fs";
 import path from "path";
 import { expect } from "chai";
-import { simDataCells, simDataFragments, SimDataResource, simDataTypes } from "../../../dst/api";
+import { simDataCells, simDataFragments, SimDataResource, simDataTypes } from "../../../dst/models";
 import MockOwner from "../../mocks/mockOwner";
 
 const { SimDataType } = simDataTypes;

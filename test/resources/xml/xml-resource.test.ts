@@ -2,7 +2,8 @@ import * as fs from "fs";
 import * as path from "path";
 import { expect } from "chai";
 import { XmlDocumentNode } from "@s4tk/xml-dom";
-import { XmlResource, tunables } from '../../../dst/api';
+import { XmlResource } from '../../../dst/models';
+import * as tunables from "../../../dst/tunables";
 
 const XML_DECLARATION = '<?xml version="1.0" encoding="utf-8"?>';
 

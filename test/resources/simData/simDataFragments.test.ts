@@ -1,6 +1,6 @@
 import { XmlDocumentNode } from "@s4tk/xml-dom";
 import { expect } from "chai";
-import { simDataFragments, simDataTypes, simDataCells } from "../../../dst/api";
+import { simDataFragments, simDataTypes, simDataCells } from "../../../dst/models";
 import MockOwner from "../../mocks/mockOwner";
 
 const { SimDataSchema, SimDataSchemaColumn, SimDataInstance } = simDataFragments;

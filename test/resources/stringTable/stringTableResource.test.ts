@@ -2,7 +2,7 @@ import * as fs from "fs";
 import * as path from "path";
 import { expect } from "chai";
 import { fnv32 } from "@s4tk/hashing";
-import { StringTableResource } from "../../../dst/api";
+import { StringTableResource } from "../../../dst/models";
 import MockOwner from "../../mocks/mockOwner";
 
 //#region Helpers

@@ -3,7 +3,6 @@ import XmlResource from "./lib/resources/xml/xml-resource";
 import RawResource from "./lib/resources/generic/rawResource";
 import SimDataResource from "./lib/resources/simData/simDataResource";
 import StringTableResource from "./lib/resources/stbl/stbl-resource";
-import * as tunables from "./lib/resources/tuning/tunables";
 import * as simDataCells from "./lib/resources/simData/simDataCells";
 import * as simDataFragments from "./lib/resources/simData/simDataFragments";
 import * as simDataTypes from "./lib/resources/simData/simDataTypes";
@@ -20,6 +19,4 @@ export {
   simDataCells,
   simDataFragments,
   simDataTypes,
-  // Modules
-  tunables,
 }
