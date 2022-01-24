@@ -9,7 +9,7 @@ import { BinaryResourceType } from "../../enums/binary-resources";
 import { TuningResourceType } from "../../enums/tuning-resources";
 import StringTableResource from "../../resources/stbl/stbl-resource";
 import SimDataResource from "../../resources/simData/simDataResource";
-import XmlResource from "../../resources/generic/xmlResource";
+import XmlResource from "../../resources/xml/xml-resource";
 
 /**
  * Reads the given buffer as a DBPF and returns a DTO for it.

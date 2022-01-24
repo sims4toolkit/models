@@ -1,5 +1,5 @@
 import Sims4Package from "./lib/dbpf/sims4package";
-import XmlResource from "./lib/resources/generic/xmlResource";
+import XmlResource from "./lib/resources/xml/xml-resource";
 import RawResource from "./lib/resources/generic/rawResource";
 import SimDataResource from "./lib/resources/simData/simDataResource";
 import StringTableResource from "./lib/resources/stbl/stbl-resource";
