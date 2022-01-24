@@ -3,7 +3,7 @@ import type { ObjectCellRow, CellCloneOptions } from "./shared";
 import { XmlElementNode, XmlNode } from "@s4tk/xml-dom";
 import { formatAsHexString } from "@s4tk/hashing/formatting";
 import { ObjectCell } from "./simDataCells";
-import CacheableModel from "../../base/cacheableModel";
+import CacheableModel from "../../base/cacheable-model";
 import { SimDataType, SimDataTypeUtils } from "./simDataTypes";
 import { arraysAreEqual, removeFromArray } from "../../utils/helpers";
 

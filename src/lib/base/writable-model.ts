@@ -1,4 +1,4 @@
-import CacheableModel from './cacheableModel';
+import CacheableModel from './cacheable-model';
 
 /**
  * Base class for models that have a buffer that can be written to disk. The

@@ -1,4 +1,4 @@
-import WritableModel from "../base/writableModel";
+import WritableModel from "../base/writable-model";
 
 type ResourceVariant = 'RAW' | 'XML' | 'DATA' | 'STBL';
 

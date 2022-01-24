@@ -1,5 +1,5 @@
-import type CacheableModel from "./cacheableModel";
-import WritableModel from "./writableModel";
+import type CacheableModel from "./cacheable-model";
+import WritableModel from "./writable-model";
 
 /**
  * A base for writable models that contain mapped data.

@@ -1,5 +1,5 @@
-import CacheableModel from "./cacheableModel";
-import { MappedModel, MappedModelEntry } from "./mappedModel";
+import CacheableModel from "./cacheable-model";
+import { MappedModel, MappedModelEntry } from "./mapped-model";
 
 /**
  * A mapped model that uses numbers for keys and some other primitive type for

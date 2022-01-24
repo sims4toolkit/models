@@ -4,11 +4,11 @@ import { deflateSync } from "zlib";
 import type Resource from "../resources/resource";
 import type { ResourceKey, ResourceKeyPair } from "./shared";
 import type { SerializationOptions } from "../shared";
-import { MappedModel, MappedModelEntry } from "../base/mappedModel";
+import { MappedModel, MappedModelEntry } from "../base/mapped-model";
 import { arraysAreEqual } from "../utils/helpers";
 import readDbpf, { readTuningTypes, extractFiles } from "./serialization/read-dbpf";
 import writeDbpf from "./serialization/write-dbpf";
-import WritableModel from "../base/writableModel";
+import WritableModel from "../base/writable-model";
 
 /**
  * Model for a Sims 4 package file (also called a "Database Packed File", or

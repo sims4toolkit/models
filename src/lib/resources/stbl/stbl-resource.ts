@@ -1,7 +1,7 @@
 import type { KeyStringPair } from "./shared";
 import { fnv32 } from "@s4tk/hashing";
-import CacheableModel from "../../base/cacheableModel";
-import { PrimitiveEntry, PrimitiveMappedModel } from "../../base/primitiveMappedModel";
+import CacheableModel from "../../base/cacheable-model";
+import { PrimitiveEntry, PrimitiveMappedModel } from "../../base/primitive-mapped-model";
 import Resource from "../resource";
 import { arraysAreEqual } from "../../utils/helpers";
 import { SerializationOptions } from "../../shared";
