@@ -3,7 +3,7 @@ import { fnv32 } from "@s4tk/hashing";
 import CacheableModel from "../../base/cacheable-model";
 import { PrimitiveEntry, PrimitiveMappedModel } from "../../base/primitive-mapped-model";
 import Resource from "../resource";
-import { arraysAreEqual } from "../../utils/helpers";
+import { arraysAreEqual } from "../../common/helpers";
 import { SerializationOptions } from "../../shared";
 import readStbl from "./serialization/read-stbl";
 import writeStbl from "./serialization/write-stbl";

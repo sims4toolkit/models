@@ -1,5 +1,5 @@
 import Resource from '../resource';
-import { bufferContainsXml } from '../../utils/helpers';
+import { bufferContainsXml } from '../../common/helpers';
 
 /**
  * Model for resources that have not been parsed.

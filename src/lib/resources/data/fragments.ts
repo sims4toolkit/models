@@ -5,7 +5,7 @@ import { formatAsHexString } from "@s4tk/hashing/formatting";
 import { ObjectCell } from "./cells";
 import CacheableModel from "../../base/cacheable-model";
 import { SimDataType, SimDataTypeUtils } from "./data-types";
-import { arraysAreEqual, removeFromArray } from "../../utils/helpers";
+import { arraysAreEqual, removeFromArray } from "../../common/helpers";
 
 /**
  * A schema that objects in a SimData can follow.
