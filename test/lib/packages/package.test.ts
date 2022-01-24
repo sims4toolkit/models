@@ -5,7 +5,7 @@ import { expect } from "chai";
 import compare from "just-compare";
 import clone from "just-clone";
 import type { ResourceKey } from "../../../dst/lib/packages/types";
-import { RawResource, SimDataResource, Sims4Package, StringTableResource, XmlResource } from "../../../dst/models";
+import { Package, RawResource, SimDataResource, StringTableResource, XmlResource } from "../../../dst/models";
 import { TuningResourceType } from "../../../dst/enums";
 
 //#region Helpers
@@ -21,8 +21,8 @@ function getBuffer(filename: string): Buffer {
   return cachedBuffers[filename];
 }
 
-function getPackage(filename: string): Sims4Package {
-  return Sims4Package.from(getBuffer(filename));
+function getPackage(filename: string): Package {
+  return Package.from(getBuffer(filename));
 }
 
 function getTestTuning(): XmlResource {
@@ -40,23 +40,23 @@ describe("Sims4Package", () => {
 
   describe("#buffer", () => {
     it("should serialize a dbpf that is empty", () => {
-      const original = Sims4Package.create();
-      const dbpf = Sims4Package.from(original.buffer);
+      const original = Package.create();
+      const dbpf = Package.from(original.buffer);
       expect(dbpf.size).to.equal(0);
     });
 
     it("should return the cached buffer if it wasn't changed", () => {
       const buffer = getBuffer("Trait");
-      const dbpf = Sims4Package.from(buffer);
+      const dbpf = Package.from(buffer);
       expect(dbpf.buffer).to.equal(buffer);
     });
 
     it("should serialize a dbpf that wasn't changed, but was uncached", () => {
       const buffer = getBuffer("Trait");
-      const original = Sims4Package.from(buffer);
+      const original = Package.from(buffer);
       original.uncache();
       expect(original.buffer).to.not.equal(buffer);
-      const dbpf = Sims4Package.from(original.buffer);
+      const dbpf = Package.from(original.buffer);
       expect(dbpf.equals(original)).to.be.true;
     });
 
@@ -65,7 +65,7 @@ describe("Sims4Package", () => {
       expect(original.size).to.equal(2);
       const testKey = getTestKey();
       original.add(testKey, getTestTuning());
-      const dbpf = Sims4Package.from(original.buffer);
+      const dbpf = Package.from(original.buffer);
       expect(dbpf.size).to.equal(3);
       expect(dbpf.get(2).keyEquals(testKey)).to.be.true;
       expect(dbpf.get(2).value.equals(getTestTuning())).to.be.true;
@@ -75,7 +75,7 @@ describe("Sims4Package", () => {
       const original = getPackage("Trait");
       expect(original.size).to.equal(2);
       original.delete(0);
-      const dbpf = Sims4Package.from(original.buffer);
+      const dbpf = Package.from(original.buffer);
       expect(dbpf.size).to.equal(1);
       const tuning = dbpf.get(0).value as XmlResource;
       expect(tuning.variant).to.equal("XML");
@@ -86,7 +86,7 @@ describe("Sims4Package", () => {
       const original = getPackage("Trait");
       expect(original.size).to.equal(2);
       original.delete(0);
-      const dbpf = Sims4Package.from(original.buffer);
+      const dbpf = Package.from(original.buffer);
       expect(dbpf.size).to.equal(1);
       const tuning = dbpf.get(0).value as XmlResource;
       expect(tuning.variant).to.equal("XML");
@@ -181,12 +181,12 @@ describe("Sims4Package", () => {
 
   describe("static#create()", () => {
     it("should create an empty dbpf if given list is empty", () => {
-      const dbpf = Sims4Package.create();
+      const dbpf = Package.create();
       expect(dbpf.size).to.equal(0);
     });
 
     it("should create entries from the ones that are given", () => {
-      const dbpf = Sims4Package.create([
+      const dbpf = Package.create([
         { key: getTestKey(), value: getTestTuning() }
       ]);
 
@@ -197,7 +197,7 @@ describe("Sims4Package", () => {
     });
 
     it("should assign itself as the owner of the given entries", () => {
-      const dbpf = Sims4Package.create([
+      const dbpf = Package.create([
         { key: getTestKey(), value: getTestTuning() }
       ]);
 
@@ -206,7 +206,7 @@ describe("Sims4Package", () => {
     });
 
     it("should not be cached", () => {
-      const dbpf = Sims4Package.create();
+      const dbpf = Package.create();
       expect(dbpf.isCached).to.be.false;
     });
   });
@@ -313,7 +313,7 @@ describe("Sims4Package", () => {
       });
 
       it("should load all contents as raw if told to", () => {
-        const dbpf = Sims4Package.from(getBuffer("CompleteTrait"), {
+        const dbpf = Package.from(getBuffer("CompleteTrait"), {
           loadRaw: true
         });
 
@@ -325,30 +325,30 @@ describe("Sims4Package", () => {
 
     context("dbpf header is invalid", () => {
       it("should throw if ignoreErrors = false", () => {
-        expect(() => Sims4Package.from(getBuffer("CorruptHeader"), { ignoreErrors: false })).to.throw();
+        expect(() => Package.from(getBuffer("CorruptHeader"), { ignoreErrors: false })).to.throw();
       });
 
       it("should not throw if ignoreErrors = true", () => {
-        expect(() => Sims4Package.from(getBuffer("CorruptHeader"), { ignoreErrors: true })).to.not.throw();
+        expect(() => Package.from(getBuffer("CorruptHeader"), { ignoreErrors: true })).to.not.throw();
       });
 
       it("should return a regular DBPF if ignoreErrors = true", () => {
-        const dbpf = Sims4Package.from(getBuffer("CorruptHeader"), { ignoreErrors: true });
+        const dbpf = Package.from(getBuffer("CorruptHeader"), { ignoreErrors: true });
         expect(dbpf.size).to.equal(2);
       });
     });
 
     context("dbpf content is invalid", () => {
       it("should throw if ignoreErrors = false", () => {
-        expect(() => Sims4Package.from(getBuffer("Corrupt"), { ignoreErrors: false })).to.throw();
+        expect(() => Package.from(getBuffer("Corrupt"), { ignoreErrors: false })).to.throw();
       });
 
       it("should throw even if ignoreErrors = true", () => {
-        expect(() => Sims4Package.from(getBuffer("Corrupt"), { ignoreErrors: true })).to.throw();
+        expect(() => Package.from(getBuffer("Corrupt"), { ignoreErrors: true })).to.throw();
       });
 
       it("should return undefined if dontThrow = true", () => {
-        const dbpf = Sims4Package.from(getBuffer("Corrupt"), { dontThrow: true });
+        const dbpf = Package.from(getBuffer("Corrupt"), { dontThrow: true });
         expect(dbpf).to.be.undefined;
       });
     });
@@ -360,7 +360,7 @@ describe("Sims4Package", () => {
 
   describe("#add()", () => {
     it("should add the entry to an empty dbpf", () => {
-      const dbpf = Sims4Package.create();
+      const dbpf = Package.create();
       expect(dbpf.size).to.equal(0);
       const resource = XmlResource.create();
       const testKey = getTestKey();
@@ -382,7 +382,7 @@ describe("Sims4Package", () => {
     });
 
     it("should add the key to the key map", () => {
-      const dbpf = Sims4Package.create();
+      const dbpf = Package.create();
       const testKey = getTestKey();
       expect(dbpf.hasKey(testKey)).to.be.false;
       dbpf.add(testKey, XmlResource.create());
@@ -419,7 +419,7 @@ describe("Sims4Package", () => {
 
   describe("#addAll()", () => {
     it("should add the given entries", () => {
-      const dbpf = Sims4Package.create();
+      const dbpf = Package.create();
 
       expect(dbpf.size).to.equal(0);
 
@@ -675,7 +675,7 @@ describe("Sims4Package", () => {
     });
 
     it("should return an entry after adding it", () => {
-      const dbpf = Sims4Package.create();
+      const dbpf = Package.create();
       const key = {
         type: 0xCB5FDDC7,
         group: 0,
@@ -728,7 +728,7 @@ describe("Sims4Package", () => {
     it("should return the first entry with the given key if there are more than one", () => {
       const key = getTestKey();
 
-      const dbpf = Sims4Package.create([
+      const dbpf = Package.create([
         { key, value: XmlResource.create({ content: "a" }) },
         { key, value: XmlResource.create({ content: "b" }) },
       ]);
@@ -748,7 +748,7 @@ describe("Sims4Package", () => {
     it("should return the correct entry if there are more than one entry with this key, and the first was deleted", () => {
       const key = getTestKey();
 
-      const dbpf = Sims4Package.create([
+      const dbpf = Package.create([
         { key, value: XmlResource.create({ content: "a" }) },
         { key, value: XmlResource.create({ content: "b" }) },
       ]);
@@ -771,7 +771,7 @@ describe("Sims4Package", () => {
     it("should return the first ID for the given key if there are more than one", () => {
       const key = getTestKey();
 
-      const dbpf = Sims4Package.create([
+      const dbpf = Package.create([
         { key, value: XmlResource.create({ content: "a" }) },
         { key, value: XmlResource.create({ content: "b" }) },
       ]);
@@ -798,7 +798,7 @@ describe("Sims4Package", () => {
     });
 
     it("should return the ID for an entry after adding it", () => {
-      const dbpf = Sims4Package.create();
+      const dbpf = Package.create();
       const key = {
         type: 0xCB5FDDC7,
         group: 0,
@@ -895,7 +895,7 @@ describe("Sims4Package", () => {
     it("should return true if there are more than one entry with this key, and the first was deleted", () => {
       const key = getTestKey();
 
-      const dbpf = Sims4Package.create([
+      const dbpf = Package.create([
         { key, value: XmlResource.create({ content: "a" }) },
         { key, value: XmlResource.create({ content: "b" }) },
       ]);
@@ -951,7 +951,7 @@ describe("Sims4Package", () => {
 
   describe("#validate()", () => {
     it("should not throw if all entries are valid", () => {
-      const dbpf = Sims4Package.create([
+      const dbpf = Package.create([
         {
           key: {
             type: 123,
@@ -976,7 +976,7 @@ describe("Sims4Package", () => {
     });
 
     it("should throw if at least one entry is not valid", () => {
-      const dbpf = Sims4Package.create([
+      const dbpf = Package.create([
         {
           key: {
             type: -1,
@@ -1001,7 +1001,7 @@ describe("Sims4Package", () => {
     });
 
     it("should throw if there are multiple entries with the same key", () => {
-      const dbpf = Sims4Package.create([
+      const dbpf = Package.create([
         {
           key: {
             type: 123,
@@ -1035,7 +1035,7 @@ describe("ResourceEntry", () => {
   describe("#buffer", () => {
     it("should serialize and compress the contained resource", () => {
       const tuning = getTestTuning();
-      const dbpf = Sims4Package.create();
+      const dbpf = Package.create();
       const testKey = getTestKey();
       const entry = dbpf.add(testKey, tuning);
       const unzipped = unzipSync(entry.buffer).toString();
@@ -1044,7 +1044,7 @@ describe("ResourceEntry", () => {
 
     it("should return the cached buffer if it wasn't changed", () => {
       const tuning = getTestTuning();
-      const dbpf = Sims4Package.create();
+      const dbpf = Package.create();
       const testKey = getTestKey();
       const entry = dbpf.add(testKey, tuning);
       const buffer = entry.buffer;
@@ -1053,7 +1053,7 @@ describe("ResourceEntry", () => {
 
     it("should return a new buffer if it was changed", () => {
       const tuning = getTestTuning();
-      const dbpf = Sims4Package.create();
+      const dbpf = Package.create();
       const testKey = getTestKey();
       const entry = dbpf.add(testKey, tuning);
       const buffer = entry.buffer;
@@ -1103,7 +1103,7 @@ describe("ResourceEntry", () => {
 
   describe("#resource", () => {
     it("should return the value of this entry", () => {
-      const dbpf = Sims4Package.create();
+      const dbpf = Package.create();
       const tuning = getTestTuning();
       const entry = dbpf.add(getTestKey(), tuning);
       expect(entry.value).to.equal(tuning);
@@ -1111,7 +1111,7 @@ describe("ResourceEntry", () => {
     });
 
     it("should set the value of this entry", () => {
-      const dbpf = Sims4Package.create();
+      const dbpf = Package.create();
       const tuning = getTestTuning();
       const entry = dbpf.add(getTestKey(), tuning);
       expect(entry.value).to.equal(tuning);
@@ -1205,14 +1205,14 @@ describe("ResourceEntry", () => {
 
   describe("#equals()", () => {
     it("should return true when key and value are equal", () => {
-      const dbpf = Sims4Package.create();
+      const dbpf = Package.create();
       const first = dbpf.add(getTestKey(), getTestTuning());
       const second = dbpf.add(getTestKey(), getTestTuning());
       expect(first.equals(second)).to.be.true;
     });
 
     it("should return false when key is different", () => {
-      const dbpf = Sims4Package.create();
+      const dbpf = Package.create();
       const first = dbpf.add(getTestKey(), getTestTuning());
       const secondKey = getTestKey();
       secondKey.group++;
@@ -1221,14 +1221,14 @@ describe("ResourceEntry", () => {
     });
 
     it("should return false when value is different", () => {
-      const dbpf = Sims4Package.create();
+      const dbpf = Package.create();
       const first = dbpf.add(getTestKey(), getTestTuning());
       const second = dbpf.add(getTestKey(), XmlResource.create());
       expect(first.equals(second)).to.be.false;
     });
 
     it("should return false when other is undefined", () => {
-      const dbpf = Sims4Package.create();
+      const dbpf = Package.create();
       const entry = dbpf.add(getTestKey(), getTestTuning());
       expect(entry.equals(undefined)).to.be.false;
     });
@@ -1236,7 +1236,7 @@ describe("ResourceEntry", () => {
 
   describe("#keyEquals()", () => {
     it("should return true when key is the same object", () => {
-      const dbpf = Sims4Package.create();
+      const dbpf = Package.create();
 
       const key = {
         type: 123,
@@ -1249,7 +1249,7 @@ describe("ResourceEntry", () => {
     });
 
     it("should return true when key is a different object, but identical", () => {
-      const dbpf = Sims4Package.create();
+      const dbpf = Package.create();
 
       const entry = dbpf.add({
         type: 123,
@@ -1265,7 +1265,7 @@ describe("ResourceEntry", () => {
     });
 
     it("should return false when keys have different type", () => {
-      const dbpf = Sims4Package.create();
+      const dbpf = Package.create();
 
       const entry = dbpf.add({
         type: 123,
@@ -1281,7 +1281,7 @@ describe("ResourceEntry", () => {
     });
 
     it("should return false when keys have different group", () => {
-      const dbpf = Sims4Package.create();
+      const dbpf = Package.create();
 
       const entry = dbpf.add({
         type: 123,
@@ -1297,7 +1297,7 @@ describe("ResourceEntry", () => {
     });
 
     it("should return false when keys have different instance", () => {
-      const dbpf = Sims4Package.create();
+      const dbpf = Package.create();
 
       const entry = dbpf.add({
         type: 123,
@@ -1352,7 +1352,7 @@ describe("ResourceEntry", () => {
 
   describe("#validate()", () => {
     it("should not throw when key and resource are valid", () => {
-      const dbpf = Sims4Package.create();
+      const dbpf = Package.create();
 
       const entry = dbpf.add({
         type: 0,
@@ -1366,7 +1366,7 @@ describe("ResourceEntry", () => {
     });
 
     it("should throw if key type is negative", () => {
-      const dbpf = Sims4Package.create();
+      const dbpf = Package.create();
 
       const entry = dbpf.add({
         type: -1,
@@ -1380,7 +1380,7 @@ describe("ResourceEntry", () => {
     });
 
     it("should throw if key group is negative", () => {
-      const dbpf = Sims4Package.create();
+      const dbpf = Package.create();
 
       const entry = dbpf.add({
         type: 0,
@@ -1394,7 +1394,7 @@ describe("ResourceEntry", () => {
     });
 
     it("should throw if key instance is negative", () => {
-      const dbpf = Sims4Package.create();
+      const dbpf = Package.create();
 
       const entry = dbpf.add({
         type: 0,
@@ -1408,7 +1408,7 @@ describe("ResourceEntry", () => {
     });
 
     it("should throw if key type is > 32 bit", () => {
-      const dbpf = Sims4Package.create();
+      const dbpf = Package.create();
 
       const entry = dbpf.add({
         type: 0x800000000,
@@ -1422,7 +1422,7 @@ describe("ResourceEntry", () => {
     });
 
     it("should throw if key group is > 32 bit", () => {
-      const dbpf = Sims4Package.create();
+      const dbpf = Package.create();
 
       const entry = dbpf.add({
         type: 0,
@@ -1436,7 +1436,7 @@ describe("ResourceEntry", () => {
     });
 
     it("should throw if key instance is > 64 bit", () => {
-      const dbpf = Sims4Package.create();
+      const dbpf = Package.create();
 
       const entry = dbpf.add({
         type: 0,
@@ -1450,7 +1450,7 @@ describe("ResourceEntry", () => {
     });
 
     it("should throw if contained resource is invalid", () => {
-      const dbpf = Sims4Package.create();
+      const dbpf = Package.create();
 
       const entry = dbpf.add({
         type: 0,
