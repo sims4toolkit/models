@@ -4,7 +4,7 @@ import CacheableModel from "../../base/cacheable-model";
 import { PrimitiveEntry, PrimitiveMappedModel } from "../../base/primitive-mapped-model";
 import Resource from "../resource";
 import { arraysAreEqual } from "../../common/helpers";
-import { SerializationOptions } from "../../shared";
+import { FileReadingOptions } from "../../common/options";
 import readStbl from "./serialization/read-stbl";
 import writeStbl from "./serialization/write-stbl";
 
@@ -36,7 +36,7 @@ export default class StringTableResource extends PrimitiveMappedModel<string, St
    * @param buffer Buffer to read as a string table
    * @param options Options to configure for reading a STBL resource
    */
-  static from(buffer: Buffer, options?: SerializationOptions): StringTableResource {
+  static from(buffer: Buffer, options?: FileReadingOptions): StringTableResource {
     try {
       return new StringTableResource(readStbl(buffer, options), buffer);
     } catch (e) {

@@ -1,5 +1,5 @@
 import type Resource from "../../resources/resource";
-import type { SerializationOptions } from "../../shared";
+import type { FileReadingOptions } from "../../common/options";
 import type { ResourceKeyPair, ResourceKey } from "../types";
 import { ZLIB_COMPRESSION } from "../constants";
 import { unzipSync } from "zlib";
@@ -18,7 +18,7 @@ import XmlResource from "../../resources/xml/xml-resource";
  * @param buffer Buffer to read as a DBPF
  * @param options Options for reading DBPF
  */
-export default function readDbpf(buffer: Buffer, options: SerializationOptions = {}): ResourceKeyPair[] {
+export default function readDbpf(buffer: Buffer, options: FileReadingOptions = {}): ResourceKeyPair[] {
   const decoder = new BinaryDecoder(buffer);
   const header = readDbpfHeader(decoder, options);
   decoder.seek(header.mnIndexRecordPosition || header.mnIndexRecordPositionLow);
@@ -93,7 +93,7 @@ interface IndexEntry {
  * @param ignoreErrors Whether or not header errors should be ignored
  * @throws If ignoreErrors = false and something is wrong
  */
-function readDbpfHeader(decoder: BinaryDecoder, { ignoreErrors = false }: SerializationOptions): DbpfHeader {
+function readDbpfHeader(decoder: BinaryDecoder, { ignoreErrors = false }: FileReadingOptions): DbpfHeader {
   const header: Partial<DbpfHeader> = {};
 
   if (ignoreErrors) {
@@ -192,7 +192,7 @@ function readDbpfIndex(decoder: BinaryDecoder, header: DbpfHeader, flags: DbpfFl
  * @param options Options for serialization
  * @returns Parsed model for the resource
  */
-function getResource(entry: IndexEntry, rawBuffer: Buffer, options: SerializationOptions): Resource {
+function getResource(entry: IndexEntry, rawBuffer: Buffer, options: FileReadingOptions): Resource {
   let buffer: Buffer;
 
   if (entry.mnCompressionType) {

@@ -1,4 +1,4 @@
-import type { SerializationOptions } from "../../../shared";
+import type { FileReadingOptions } from "../../../common/options";
 import { BinaryDecoder } from "@s4tk/encoding";
 import { ObjectCellRow, SimDataDto } from "../types";
 import { makeList } from "../../../common/helpers";
@@ -184,7 +184,7 @@ function readSchema(decoder: BinaryDecoder): BinarySchema {
  * @param buffer Buffer to read
  * @param options Options for reading
  */
-export default function readData(buffer: Buffer, options?: SerializationOptions): SimDataDto {
+export default function readData(buffer: Buffer, options?: FileReadingOptions): SimDataDto {
   const decoder = new BinaryDecoder(buffer);
   const throwErrors = options === undefined || !options.ignoreErrors;
 

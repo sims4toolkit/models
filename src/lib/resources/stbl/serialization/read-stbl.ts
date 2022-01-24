@@ -1,5 +1,5 @@
 import type { KeyStringPair } from "../shared";
-import type { SerializationOptions } from "../../../shared";
+import type { FileReadingOptions } from "../../../common/options";
 import { BinaryDecoder } from "@s4tk/encoding";
 
 /**
@@ -8,7 +8,7 @@ import { BinaryDecoder } from "@s4tk/encoding";
  * @param buffer Buffer to read as a STBL
  * @param options Options to configure
  */
-export default function readStbl(buffer: Buffer, options?: SerializationOptions): KeyStringPair[] {
+export default function readStbl(buffer: Buffer, options?: FileReadingOptions): KeyStringPair[] {
   const decoder = new BinaryDecoder(buffer);
 
   if (options === undefined || !options.ignoreErrors) {

@@ -1,4 +1,4 @@
-import type { SerializationOptions } from "../../shared";
+import type { FileReadingOptions } from "../../common/options";
 import { XmlDocumentNode, XmlElementNode, XmlNode } from "@s4tk/xml-dom";
 import { formatAsHexString } from "@s4tk/hashing/formatting";
 import Resource from "../resource";
@@ -104,7 +104,7 @@ export default class SimDataResource extends Resource implements SimDataDto {
    * @param buffer Buffer to read
    * @param options Options to configure
    */
-  static from(buffer: Buffer, options?: SerializationOptions): SimDataResource {
+  static from(buffer: Buffer, options?: FileReadingOptions): SimDataResource {
     try {
       const { version, unused, schemas, instances } = readData(buffer, options);
       return new SimDataResource(version, unused, schemas, instances, buffer);

@@ -1,7 +1,7 @@
 /**
- * Options for reading a resource from its binary form.
+ * Options to configure when reading a file.
  */
-export interface SerializationOptions {
+export interface FileReadingOptions {
   /**
    * If `true`, then non-critical errors will be ignored, and parsing will
    * continue until termination or a fatal error. This is `false` by default.

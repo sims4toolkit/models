@@ -1,6 +1,6 @@
 import type Resource from "../resources/resource";
 import type { ResourceKey, ResourceKeyPair } from "./types";
-import type { SerializationOptions } from "../shared";
+import type { FileReadingOptions } from "../common/options";
 import { MappedModel } from "../base/mapped-model";
 import { arraysAreEqual } from "../common/helpers";
 import readDbpf, { extractFiles } from "./serialization/read-dbpf";
@@ -47,7 +47,7 @@ export default class Package extends MappedModel<ResourceKey, Resource, Resource
    * @param buffer Buffer to read as a package
    * @param options Options for reading the buffer
    */
-  static from(buffer: Buffer, options?: SerializationOptions): Package {
+  static from(buffer: Buffer, options?: FileReadingOptions): Package {
     try {
       return new Package(readDbpf(buffer, options), buffer);
     } catch (e) {
