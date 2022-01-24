@@ -10,6 +10,8 @@ import { makeList } from "../../../helpers";
 import { SimDataType, SimDataTypeUtils } from "../../simData/simDataTypes";
 import { BinaryTuningDto, Named, Row, Schema, SchemaColumn, StringTable, TableData, TableInfo } from "../shared";
 
+const RELOFFSET_NULL = -0x80000000;
+
 /**
  * Reads a buffer as a DATA file, returning its contents in an object.
  * 
@@ -17,10 +19,6 @@ import { BinaryTuningDto, Named, Row, Schema, SchemaColumn, StringTable, TableDa
  */
 export default function readData(buffer: Buffer): BinaryTuningDto {
   const decoder = new BinaryDecoder(buffer);
-
-  // Zero can be a valid offset, so use 0x8000000 to represent
-  // a NULL relative offset.
-  const RELOFFSET_NULL = (-0x7FFFFFFF) - 1;
 
   // Iteration variables
   let i: number, j: number, k: number;
@@ -223,9 +221,8 @@ export default function readData(buffer: Buffer): BinaryTuningDto {
   const mnVersion = decoder.uint32();
   if(mnVersion < 0x100 || mnVersion > 0x101) {
     // Base Game shipped with version 0x100
-    throw new Error(`Unknown version`);
+    throw new Error(`Unknown version ${mnVersion}`);
   }
-
 
   // Offset of table header data
   const nTableHeaderPos = decoder.tell();
@@ -321,16 +318,16 @@ export default function readData(buffer: Buffer): BinaryTuningDto {
           function structRow(): Row {
             // Read each column.  The order of column data does not match the column
             // order (columns are sorted by name hash).
-            const mValue: any[] = [];
+            const row: Row = {};
             for (k = 0; k < mSchema[schemaIndex].mnNumColumns; ++k) {
               schemaColumnName = readNamed(mSchema[schemaIndex].mColumn[k]);
               decoder.seek(rowStart + mSchema[schemaIndex].mColumn[k].mnOffset);
-              mValue.push(readDataType(mSchema[schemaIndex].mColumn[k].mnDataType));
+              row[schemaColumnName] = readDataType(mSchema[schemaIndex].mColumn[k].mnDataType);
               columnAlignment = SimDataTypeUtils.getAlignment(mTable[i].mnDataType);
               if (columnAlignment > alignment)
                 alignment = columnAlignment;
             }
-            return { mValue };
+            return row;
           }
 
           // Reading the rows will modify the file position.  We need to save the current row start

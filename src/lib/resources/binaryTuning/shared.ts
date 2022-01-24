@@ -36,7 +36,7 @@ export interface StringTable {
 }
 
 export interface Row {
-  mValue: any[]
+  [key: string]: any;
 }
 
 export interface TableData {
