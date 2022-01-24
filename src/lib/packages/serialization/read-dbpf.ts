@@ -1,6 +1,7 @@
 import type Resource from "../../resources/resource";
 import type { SerializationOptions } from "../../shared";
-import { ResourceKey, ResourceKeyPair, ZLIB_COMPRESSION } from "../shared";
+import type { ResourceKeyPair, ResourceKey } from "../types";
+import { ZLIB_COMPRESSION } from "../constants";
 import { unzipSync } from "zlib";
 import { BinaryDecoder } from "@s4tk/encoding";
 import { bufferContainsXml, makeList } from "../../utils/helpers";

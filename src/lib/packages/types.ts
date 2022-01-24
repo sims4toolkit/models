@@ -17,5 +17,3 @@ export interface ResourceKey {
   group: number;
   instance: bigint;
 }
-
-export const ZLIB_COMPRESSION = 23106;

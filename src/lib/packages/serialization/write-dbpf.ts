@@ -1,4 +1,5 @@
-import { ResourceKeyPair, ZLIB_COMPRESSION } from "../shared";
+import type { ResourceKeyPair } from "../types";
+import { ZLIB_COMPRESSION } from "../constants";
 import { BinaryEncoder } from "@s4tk/encoding";
 
 const HEADER_BYTE_SIZE = 96;

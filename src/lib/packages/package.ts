@@ -2,7 +2,7 @@ import clone from "just-clone";
 import compare from "just-compare";
 import { deflateSync } from "zlib";
 import type Resource from "../resources/resource";
-import type { ResourceKey, ResourceKeyPair } from "./shared";
+import type { ResourceKey, ResourceKeyPair } from "./types";
 import type { SerializationOptions } from "../shared";
 import { MappedModel, MappedModelEntry } from "../base/mapped-model";
 import { arraysAreEqual } from "../utils/helpers";
