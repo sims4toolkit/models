@@ -6,7 +6,7 @@ import type { ResourceKey, ResourceKeyPair } from "./shared";
 import type { SerializationOptions } from "../shared";
 import { MappedModel, MappedModelEntry } from "../base/mappedModel";
 import { arraysAreEqual } from "../helpers";
-import readDbpf, { readTuningTypes } from "./serialization/readDbpf";
+import readDbpf, { readTuningTypes, extractFiles } from "./serialization/readDbpf";
 import writeDbpf from "./serialization/writeDbpf";
 import WritableModel from "../base/writableModel";
 
@@ -41,6 +41,19 @@ export default class Sims4Package extends MappedModel<ResourceKey, Resource, Res
    */
   static determineTuningTypes(buffer: Buffer, baseMap?: Map<number, string>): Map<number, string> {
     return readTuningTypes(buffer, baseMap);
+  }
+
+  /**
+   * Reads the given buffer as a DBPF and extracts resources from it according
+   * to the given type filter function. If no function is given, all resources
+   * types are extracted (which would take a very, very, very long time).
+   * 
+   * @param buffer Buffer to extract resources from
+   * @param typeFilter Optional function to filter resources by (it should
+   * accept a resource type, which is a number, and return either true or false)
+   */
+  static extractFiles(buffer: Buffer, typeFilter?: (type: number) => boolean): ResourceKeyPair[] {
+    return extractFiles(buffer, typeFilter);
   }
 
   /**

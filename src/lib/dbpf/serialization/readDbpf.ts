@@ -35,6 +35,32 @@ export default function readDbpf(buffer: Buffer, options: SerializationOptions =
 }
 
 /**
+ * Reads the given buffer as a DBPF and extracts resources from it according
+ * to the given type filter function. If no function is given, all resources
+ * types are extracted (which would take a very, very, very long time).
+ * 
+ * @param buffer Buffer to extract resources from
+ * @param typeFilter Optional function to filter resources by (it should
+ * accept a resource type, which is a number, and return either true or false)
+ */
+export function extractFiles(buffer: Buffer, typeFilter?: (type: number) => boolean): ResourceKeyPair[] {
+  const decoder = new BinaryDecoder(buffer);
+  const header = readDbpfHeader(decoder, { ignoreErrors: true });
+  decoder.seek(header.mnIndexRecordPosition || header.mnIndexRecordPositionLow);
+  const flags = readDbpfFlags(decoder);
+  const index = readDbpfIndex(decoder, header, flags, typeFilter);
+  return index.map(indexEntry => {
+    decoder.seek(indexEntry.mnPosition);
+    const compressedBuffer = decoder.slice(indexEntry.mnSize);
+    return {
+      key: indexEntry.key,
+      value: getResource(indexEntry, compressedBuffer, { loadRaw: true }),
+      buffer: compressedBuffer
+    };
+  });
+}
+
+/**
  * Reads the given buffer as a DBPF to extract unique tuning types from. Types
  * are returned in a map (and mutated in the given map, if applicable) from
  * their hash to their name.
@@ -169,8 +195,8 @@ function readDbpfFlags(decoder: BinaryDecoder): DbpfFlags {
  */
 function readDbpfIndex(decoder: BinaryDecoder, header: DbpfHeader, flags: DbpfFlags, typeFilter?: (type: number) => boolean): IndexEntry[] {
   let bytesToSkip = 20;
-  if (!flags.constantGroupId) bytesToSkip += 4;
-  if (!flags.constantInstanceIdEx) bytesToSkip += 4;
+  if (flags.constantGroupId == undefined) bytesToSkip += 4;
+  if (flags.constantInstanceIdEx == undefined) bytesToSkip += 4;
 
   return makeList<IndexEntry>(header.mnIndexRecordEntryCount, () => {
     const key: Partial<ResourceKey> = {};
