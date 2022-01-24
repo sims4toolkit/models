@@ -5,7 +5,7 @@ import { ZLIB_COMPRESSION } from "../constants";
 import { unzipSync } from "zlib";
 import { BinaryDecoder } from "@s4tk/encoding";
 import { bufferContainsXml, makeList } from "../../utils/helpers";
-import RawResource from "../../resources/generic/rawResource";
+import RawResource from "../../resources/raw/raw-resource";
 import BinaryResourceType from "../../enums/binary-resources";
 import TuningResourceType from "../../enums/tuning-resources";
 import StringTableResource from "../../resources/stbl/stbl-resource";

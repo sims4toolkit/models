@@ -1,6 +1,6 @@
 import Sims4Package from "./lib/packages/package";
 import XmlResource from "./lib/resources/xml/xml-resource";
-import RawResource from "./lib/resources/generic/rawResource";
+import RawResource from "./lib/resources/raw/raw-resource";
 import SimDataResource from "./lib/resources/simdata/simDataResource";
 import StringTableResource from "./lib/resources/stbl/stbl-resource";
 import * as simDataCells from "./lib/resources/simdata/simDataCells";
