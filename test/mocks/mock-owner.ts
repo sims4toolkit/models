@@ -1,6 +1,6 @@
-import CacheableModel from "../../dst/lib/base/cacheable-model";
+import ApiModelBase from "../../dst/lib/base/api-model-base";
 
-export default class MockOwner extends CacheableModel {
+export default class MockOwner extends ApiModelBase {
   private _cached: boolean;
 
   get cached() { return this._cached; }
@@ -10,7 +10,7 @@ export default class MockOwner extends CacheableModel {
     this._cached = true;
   }
 
-  clone(): CacheableModel {
+  clone(): ApiModelBase {
     throw new Error("Method not implemented.");
   }
   

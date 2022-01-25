@@ -6,22 +6,22 @@ type CachedCollection = { [key: string]: any; } | any[];
  * that can be cached. They may have an owning model that needs to be notified
  * when they are changed.
  */
-export default abstract class CacheableModel {
+export default abstract class ApiModelBase {
   private _cachedProps: string[] = [];
   private _proxy: any;
 
-  protected constructor(public owner?: CacheableModel) {
+  protected constructor(public owner?: ApiModelBase) {
     this._cachedProps = [];
 
     this._proxy = new Proxy(this, {
-      set(target: CacheableModel, property: string, value: any) {
+      set(target: ApiModelBase, property: string, value: any) {
         const prev: any = target[property];
         const ref = Reflect.set(target, property, value);
         if (property === 'owner') target._onOwnerChange(prev);
         if (target._cachedProps.includes(property)) target.uncache();
         return ref;
       },
-      deleteProperty(target: CacheableModel, property: string) {
+      deleteProperty(target: ApiModelBase, property: string) {
         const prev: any = target[property];
         const ref = Reflect.deleteProperty(target, property);
         if (property === 'owner') target._onOwnerChange(prev);
@@ -40,7 +40,7 @@ export default abstract class CacheableModel {
    * properties that this model has, except for its owner. Internal values (such
    * as IDs) are not guaranteed to be preserved.
    */
-  abstract clone(): CacheableModel;
+  abstract clone(): ApiModelBase;
 
   /**
    * Determines whether this model is equivalent to another object.
@@ -75,7 +75,7 @@ export default abstract class CacheableModel {
    * default, the owner is `this`. This function is necessary to avoid using
    * `this` in proxy traps.
    */
-  protected _getCollectionOwner(): CacheableModel {
+  protected _getCollectionOwner(): ApiModelBase {
     return this._proxy;
   }
 
@@ -86,7 +86,7 @@ export default abstract class CacheableModel {
    */
   protected _getCollectionProxy<T extends CachedCollection>(
     obj: T, 
-    onChange?: (owner: CacheableModel, target: T, property: string | symbol, previous: any, current?: any) => void
+    onChange?: (owner: ApiModelBase, target: T, property: string | symbol, previous: any, current?: any) => void
   ): T {
     //@ts-expect-error TS doesn't know about _isProxy
     if (obj._isProxy) return obj;
@@ -101,7 +101,7 @@ export default abstract class CacheableModel {
         if (property !== "owner") {
           const owner = getOwner();
           onChange?.(owner, target, property, previous, value);
-          if (value instanceof CacheableModel) value.owner = owner;
+          if (value instanceof ApiModelBase) value.owner = owner;
           owner?.uncache();
         }
         return ref;
@@ -128,21 +128,21 @@ export default abstract class CacheableModel {
    * 
    * @param child The child that was added
    */
-  protected _onChildAdd(child: CacheableModel) {}
+  protected _onChildAdd(child: ApiModelBase) {}
 
   /**
    * Called when an object removed this one as its owner.
    * 
    * @param child The child that was removed
    */
-  protected _onChildRemove(child: CacheableModel) {}
+  protected _onChildRemove(child: ApiModelBase) {}
 
   /**
    * Called after setting the owner of this model.
    * 
    * @param previousOwner The previous owner of this model
    */
-  protected _onOwnerChange(previousOwner: CacheableModel) {
+  protected _onOwnerChange(previousOwner: ApiModelBase) {
     if (previousOwner === this.owner) return;
     previousOwner?._onChildRemove(this);
     this.owner?._onChildAdd(this);

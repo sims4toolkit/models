@@ -1,11 +1,11 @@
-import CacheableModel from './cacheable-model';
+import ApiModelBase from './api-model-base';
 
 /**
  * Base class for models that have a buffer that can be written to disk. The
  * buffer is cached until any changes are made to the model or any of its
  * children.
  */
-export default abstract class WritableModel extends CacheableModel {
+export default abstract class WritableModel extends ApiModelBase {
   private _cachedBuffer?: Buffer;
 
   /**
@@ -35,7 +35,7 @@ export default abstract class WritableModel extends CacheableModel {
 
   protected constructor(args?: {
     buffer?: Buffer;
-    owner?: CacheableModel;
+    owner?: ApiModelBase;
   }) {
     super(args?.owner);
     this._cachedBuffer = args?.buffer;

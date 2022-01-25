@@ -5,7 +5,7 @@ import { XmlElementNode, XmlNode, XmlValueNode } from "@s4tk/xml-dom";
 import { formatAsHexString } from "@s4tk/hashing/formatting";
 import { fnv32 } from "@s4tk/hashing";
 import { CellCloneOptions, CellEncodingOptions, CellToXmlOptions, ObjectCellRow } from "./types";
-import CacheableModel from "../../base/cacheable-model";
+import ApiModelBase from "../../base/api-model-base";
 import { SimDataType, SimDataTypeUtils } from "./data-types";
 import { arraysAreEqual, removeFromArray } from "../../common/helpers";
 
@@ -16,7 +16,7 @@ type PrimitiveType = boolean | number | bigint | string;
 /**
  * A value that appears in a SimData table.
  */
-export abstract class Cell extends CacheableModel {
+export abstract class Cell extends ApiModelBase {
   /**
    * Returns this cell casted as an `any`, to make accessing properties from an
    * object row less tedious if using TypeScript. This is of no use to those
@@ -24,7 +24,7 @@ export abstract class Cell extends CacheableModel {
    */
   get asAny(): any { return this; }
 
-  constructor(public readonly dataType: SimDataType, owner?: CacheableModel) {
+  constructor(public readonly dataType: SimDataType, owner?: ApiModelBase) {
     super(owner);
   }
 
@@ -186,7 +186,7 @@ export abstract class Cell extends CacheableModel {
  * number, bigint, string, boolean, or another cell.
  */
 abstract class PrimitiveValueCell<T extends PrimitiveType> extends Cell {
-  constructor(dataType: SimDataType, public value: T, owner?: CacheableModel) {
+  constructor(dataType: SimDataType, public value: T, owner?: ApiModelBase) {
     super(dataType, owner);
     this._watchProps('value');
   }
@@ -214,7 +214,7 @@ abstract class PrimitiveValueCell<T extends PrimitiveType> extends Cell {
  * A SimData cell that contains a collection of other cells.
  */
 abstract class MultiValueCell extends Cell {
-  protected _getCollectionOwner(): CacheableModel {
+  protected _getCollectionOwner(): ApiModelBase {
     return this.owner;
   }
 }
@@ -228,7 +228,7 @@ abstract class FloatVectorCell extends Cell {
   public x: number;
   public y: number;
 
-  constructor(dataType: SimDataFloatVector, x: number, y: number, owner?: CacheableModel) {
+  constructor(dataType: SimDataFloatVector, x: number, y: number, owner?: ApiModelBase) {
     super(dataType, owner);
     this.x = x ?? 0;
     this.y = y ?? 0;
@@ -289,7 +289,7 @@ abstract class FloatVectorCell extends Cell {
 export class BooleanCell extends PrimitiveValueCell<boolean> {
   readonly dataType: SimDataType.Boolean;
 
-  constructor(value: boolean, owner?: CacheableModel) {
+  constructor(value: boolean, owner?: ApiModelBase) {
     super(SimDataType.Boolean, value ?? false, owner);
   }
 
@@ -349,7 +349,7 @@ export class BooleanCell extends PrimitiveValueCell<boolean> {
 export class TextCell extends PrimitiveValueCell<string> {
   readonly dataType: SimDataText;
 
-  constructor(dataType: SimDataText, value: string, owner?: CacheableModel) {
+  constructor(dataType: SimDataText, value: string, owner?: ApiModelBase) {
     super(dataType, value ?? "", owner);
   }
 
@@ -451,7 +451,7 @@ export class TextCell extends PrimitiveValueCell<string> {
 export class NumberCell extends PrimitiveValueCell<number> {
   readonly dataType: SimDataNumber;
 
-  constructor(dataType: SimDataNumber, value: number, owner?: CacheableModel) {
+  constructor(dataType: SimDataNumber, value: number, owner?: ApiModelBase) {
     super(dataType, value ?? 0, owner);
   }
   
@@ -574,7 +574,7 @@ export class NumberCell extends PrimitiveValueCell<number> {
 export class BigIntCell extends PrimitiveValueCell<bigint> {
   readonly dataType: SimDataBigInt;
 
-  constructor(dataType: SimDataBigInt, value: bigint, owner?: CacheableModel) {
+  constructor(dataType: SimDataBigInt, value: bigint, owner?: ApiModelBase) {
     super(dataType, value, owner);
   }
 
@@ -667,7 +667,7 @@ export class BigIntCell extends PrimitiveValueCell<bigint> {
 export class ResourceKeyCell extends Cell {
   readonly dataType: SimDataType.ResourceKey;
 
-  constructor(public type: number, public group: number, public instance: bigint, owner?: CacheableModel) {
+  constructor(public type: number, public group: number, public instance: bigint, owner?: ApiModelBase) {
     super(SimDataType.ResourceKey, owner);
     this._watchProps('type', 'group', 'instance');
   }
@@ -771,7 +771,7 @@ export class ResourceKeyCell extends Cell {
 export class Float2Cell extends FloatVectorCell {
   readonly dataType: SimDataType.Float2;
 
-  constructor(x: number, y: number, owner?: CacheableModel) {
+  constructor(x: number, y: number, owner?: ApiModelBase) {
     super(SimDataType.Float2, x, y, owner);
   }
 
@@ -817,7 +817,7 @@ export class Float3Cell extends FloatVectorCell {
   readonly dataType: SimDataType.Float3;
   public z: number;
 
-  constructor(x: number, y: number, z: number, owner?: CacheableModel) {
+  constructor(x: number, y: number, z: number, owner?: ApiModelBase) {
     super(SimDataType.Float3, x, y, owner);
     this.z = z ?? 0;
     this._floatNames.push('z');
@@ -867,7 +867,7 @@ export class Float4Cell extends FloatVectorCell {
   public z: number;
   public w: number;
 
-  constructor(x: number, y: number, z: number, w: number, owner?: CacheableModel) {
+  constructor(x: number, y: number, z: number, w: number, owner?: ApiModelBase) {
     super(SimDataType.Float4, x, y, owner);
     this.z = z ?? 0;
     this.w = w ?? 0;
@@ -934,7 +934,7 @@ export class ObjectCell extends MultiValueCell {
   /** Shorthand for `this.schema.columns.length`. */
   get schemaLength() { return this.schema.columns.length; }
 
-  constructor(public schema: SimDataSchema, row: ObjectCellRow, owner?: CacheableModel) {
+  constructor(public schema: SimDataSchema, row: ObjectCellRow, owner?: ApiModelBase) {
     super(SimDataType.Object, owner);
     this.row = row ?? {};
     this._watchProps('schema');
@@ -1007,7 +1007,7 @@ export class ObjectCell extends MultiValueCell {
 
   //#region Protected Methods
 
-  protected _onOwnerChange(previousOwner: CacheableModel): void {
+  protected _onOwnerChange(previousOwner: ApiModelBase): void {
     for (const column in this.row) this.row[column].owner = this.owner;
     super._onOwnerChange(previousOwner);
   }
@@ -1116,7 +1116,7 @@ export class VectorCell<T extends Cell = Cell> extends MultiValueCell {
    */
   get childType() { return this.children[0]?.dataType; }
 
-  constructor(children: T[], owner?: CacheableModel) {
+  constructor(children: T[], owner?: ApiModelBase) {
     super(SimDataType.Vector, owner);
     this.children = children ?? [];
   }
@@ -1165,7 +1165,7 @@ export class VectorCell<T extends Cell = Cell> extends MultiValueCell {
     }
   }
 
-  protected _onOwnerChange(previousOwner: CacheableModel): void {
+  protected _onOwnerChange(previousOwner: ApiModelBase): void {
     this.children.forEach(child => child.owner = this._getCollectionOwner());
     super._onOwnerChange(previousOwner);
   }
@@ -1261,7 +1261,7 @@ export class VariantCell<T extends Cell = Cell> extends Cell {
   /** Gets the data type of this cell's child, if it has one. */
   get childType(): SimDataType { return this.child?.dataType; }
 
-  constructor(public typeHash: number, child: T, owner?: CacheableModel) {
+  constructor(public typeHash: number, child: T, owner?: ApiModelBase) {
     super(SimDataType.Variant, owner);
     this.child = child;
     this._watchProps('typeHash', 'child');
@@ -1325,7 +1325,7 @@ export class VariantCell<T extends Cell = Cell> extends Cell {
     }
   }
 
-  protected _onOwnerChange(previousOwner: CacheableModel): void {
+  protected _onOwnerChange(previousOwner: ApiModelBase): void {
     if (this.child) this.child.owner = this.owner;
     super._onOwnerChange(previousOwner);
   }

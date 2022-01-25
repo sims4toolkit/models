@@ -1,6 +1,6 @@
 import type { KeyStringPair } from "./shared";
 import { fnv32 } from "@s4tk/hashing";
-import CacheableModel from "../../base/cacheable-model";
+import ApiModelBase from "../../base/api-model-base";
 import { PrimitiveEntry, PrimitiveMappedModel } from "../../base/primitive-mapped-model";
 import Resource from "../resource";
 import { arraysAreEqual } from "../../common/helpers";
@@ -16,7 +16,7 @@ export default class StringTableResource extends PrimitiveMappedModel<string, St
 
   //#region Initialization
 
-  protected constructor(entries: KeyStringPair[], buffer?: Buffer, owner?: CacheableModel) {
+  protected constructor(entries: KeyStringPair[], buffer?: Buffer, owner?: ApiModelBase) {
     super(entries, { buffer, owner });
   }
 

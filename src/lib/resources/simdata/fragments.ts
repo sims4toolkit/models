@@ -3,14 +3,14 @@ import type { ObjectCellRow, CellCloneOptions } from "./types";
 import { XmlElementNode, XmlNode } from "@s4tk/xml-dom";
 import { formatAsHexString } from "@s4tk/hashing/formatting";
 import { ObjectCell } from "./cells";
-import CacheableModel from "../../base/cacheable-model";
+import ApiModelBase from "../../base/api-model-base";
 import { SimDataType, SimDataTypeUtils } from "./data-types";
 import { arraysAreEqual, removeFromArray } from "../../common/helpers";
 
 /**
  * A schema that objects in a SimData can follow.
  */
-export class SimDataSchema extends CacheableModel {
+export class SimDataSchema extends ApiModelBase {
   private _columns: SimDataSchemaColumn[];
 
   /**
@@ -24,13 +24,13 @@ export class SimDataSchema extends CacheableModel {
     this._columns = this._getCollectionProxy(columns);
   }
 
-  constructor(public name: string, public hash: number, columns: SimDataSchemaColumn[], owner?: CacheableModel) {
+  constructor(public name: string, public hash: number, columns: SimDataSchemaColumn[], owner?: ApiModelBase) {
     super(owner);
     this.columns = columns ?? [];
     this._watchProps('name', 'hash');
   }
 
-  protected _getCollectionOwner(): CacheableModel {
+  protected _getCollectionOwner(): ApiModelBase {
     return this.owner;
   }
 
@@ -96,7 +96,7 @@ export class SimDataSchema extends CacheableModel {
     });
   }
 
-  protected _onOwnerChange(previousOwner: CacheableModel): void {
+  protected _onOwnerChange(previousOwner: ApiModelBase): void {
     this.columns.forEach(column => column.owner = this._getCollectionOwner());
     super._onOwnerChange(previousOwner);
   }
@@ -128,8 +128,8 @@ export class SimDataSchema extends CacheableModel {
 /**
  * A column in a SimData schema.
  */
-export class SimDataSchemaColumn extends CacheableModel {
-  constructor(public name: string, public type: SimDataType, public flags: number, owner?: CacheableModel) {
+export class SimDataSchemaColumn extends ApiModelBase {
+  constructor(public name: string, public type: SimDataType, public flags: number, owner?: ApiModelBase) {
     super(owner);
     this._watchProps('name', 'type', 'flags');
   }
@@ -195,7 +195,7 @@ export class SimDataSchemaColumn extends CacheableModel {
  * a SimData XML, so these are the models that users are familiar with.
  */
 export class SimDataInstance extends ObjectCell {
-  constructor(public name: string, schema: SimDataSchema, row: ObjectCellRow, owner?: CacheableModel) {
+  constructor(public name: string, schema: SimDataSchema, row: ObjectCellRow, owner?: ApiModelBase) {
     super(schema, row, owner);
     this._watchProps('name');
   }
@@ -235,7 +235,7 @@ export class SimDataInstance extends ObjectCell {
    * @param source ObjectCell to base this instance off of
    */
   static fromObjectCell(name: string, source: ObjectCell): SimDataInstance {
-    return new SimDataInstance(name, source.schema, source.row, source.owner as SimDataResource);
+    return new SimDataInstance(name, source.schema, source.row, source.owner);
   }
 
   /**

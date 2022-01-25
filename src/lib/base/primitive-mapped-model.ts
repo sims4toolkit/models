@@ -1,4 +1,4 @@
-import CacheableModel from "./cacheable-model";
+import ApiModelBase from "./api-model-base";
 import { MappedModel, MappedModelEntry } from "./mapped-model";
 
 /**
@@ -14,7 +14,7 @@ export abstract class PrimitiveMappedModel<Value, Entry extends PrimitiveEntry<V
 /**
  * An entry in a PrimitiveMappedModel.
  */
-export abstract class PrimitiveEntry<Value> extends CacheableModel implements MappedModelEntry<number, Value> {
+export abstract class PrimitiveEntry<Value> extends ApiModelBase implements MappedModelEntry<number, Value> {
   public owner?: PrimitiveMappedModel<Value, PrimitiveEntry<Value>>;
   private _key: number;
 
