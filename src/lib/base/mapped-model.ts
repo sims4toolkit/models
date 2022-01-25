@@ -15,7 +15,7 @@ export abstract class MappedModel<Key, Value, Entry extends MappedModelEntry<Key
    * will not update the model, but mutating individual entries will.
    */
   get entries(): Entry[] {
-    return this._cachedEntries ??= [...this._entryMap.values()];
+    return this._cachedEntries ??= Array.from(this._entryMap.values());
   }
 
   /**
