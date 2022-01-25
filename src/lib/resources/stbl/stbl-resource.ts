@@ -37,15 +37,7 @@ export default class StringTableResource extends PrimitiveMappedModel<string, St
    * @param options Options to configure for reading a STBL resource
    */
   static from(buffer: Buffer, options?: FileReadingOptions): StringTableResource {
-    try {
-      return new StringTableResource(readStbl(buffer, options), buffer);
-    } catch (e) {
-      if (options !== undefined && options.dontThrow) {
-        return undefined;
-      } else {
-        throw e;
-      }
-    }
+    return new StringTableResource(readStbl(buffer, options), buffer);
   }
 
   //#endregion Initialization

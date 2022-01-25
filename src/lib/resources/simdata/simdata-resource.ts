@@ -105,16 +105,8 @@ export default class SimDataResource extends Resource implements SimDataDto {
    * @param options Options to configure
    */
   static from(buffer: Buffer, options?: FileReadingOptions): SimDataResource {
-    try {
-      const { version, unused, schemas, instances } = readData(buffer, options);
-      return new SimDataResource(version, unused, schemas, instances, buffer);
-    } catch (e) {
-      if (options !== undefined && options.dontThrow) {
-        return undefined;
-      } else {
-        throw e;
-      }
-    }
+    const { version, unused, schemas, instances } = readData(buffer, options);
+    return new SimDataResource(version, unused, schemas, instances, buffer);
   }
 
   /**

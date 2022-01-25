@@ -48,15 +48,7 @@ export default class Package extends MappedModel<ResourceKey, Resource, Resource
    * @param options Options for reading the buffer
    */
   static from(buffer: Buffer, options?: FileReadingOptions): Package {
-    try {
-      return new Package(readDbpf(buffer, options), buffer);
-    } catch (e) {
-      if (options?.dontThrow) {
-        return undefined;
-      } else {
-        throw e;
-      }
-    }
+    return new Package(readDbpf(buffer, options), buffer);
   }
 
   //#endregion Initialization
