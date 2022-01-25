@@ -346,11 +346,6 @@ describe("Sims4Package", () => {
       it("should throw even if ignoreErrors = true", () => {
         expect(() => Package.from(getBuffer("Corrupt"), { ignoreErrors: true })).to.throw();
       });
-
-      it("should return undefined if dontThrow = true", () => {
-        const dbpf = Package.from(getBuffer("Corrupt"), { dontThrow: true });
-        expect(dbpf).to.be.undefined;
-      });
     });
   });
 

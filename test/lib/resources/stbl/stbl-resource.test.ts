@@ -271,11 +271,6 @@ describe("StringTableResource", () => {
         const buffer = getBuffer("Corrupt");
         expect(() => StringTableResource.from(buffer, { ignoreErrors: true })).to.throw();
       });
-
-      it("should return undefined if dontThrow = true", () => {
-        const buffer = getBuffer("Corrupt");
-        expect(StringTableResource.from(buffer, { dontThrow: true })).to.be.undefined;
-      });
     });
 
     context("stbl header is invalid", () => {
@@ -287,11 +282,6 @@ describe("StringTableResource", () => {
       it("should not throw if ignoreErrors = true", () => {
         const buffer = getBuffer("CorruptHeader");
         expect(() => StringTableResource.from(buffer, { ignoreErrors: true })).to.not.throw();
-      });
-
-      it("should return undefined if dontThrow = true", () => {
-        const buffer = getBuffer("CorruptHeader");
-        expect(StringTableResource.from(buffer, { dontThrow: true })).to.be.undefined;
       });
     });
   });
