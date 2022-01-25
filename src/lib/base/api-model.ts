@@ -7,25 +7,23 @@ type CachedCollection = { [key: string]: any; } | any[];
  * model when anything in the child has changed.
  */
 export default abstract class ApiModelBase {
-  private _watchedProps: string[];
+  private _watchedProps?: string[];
   private _proxy: any;
 
   protected constructor(public owner?: ApiModelBase) {
-    this._watchedProps = [];
-
     this._proxy = new Proxy(this, {
       set(target: ApiModelBase, property: string, value: any) {
         const prev: any = target[property];
         const ref = Reflect.set(target, property, value);
         if (property === 'owner') target._onOwnerChange(prev);
-        if (target._watchedProps.includes(property)) target.uncache();
+        if (target._watchedProps?.includes(property)) target.uncache();
         return ref;
       },
       deleteProperty(target: ApiModelBase, property: string) {
         const prev: any = target[property];
         const ref = Reflect.deleteProperty(target, property);
         if (property === 'owner') target._onOwnerChange(prev);
-        if (target._watchedProps.includes(property)) target.uncache();
+        if (target._watchedProps?.includes(property)) target.uncache();
         return ref;
       }
     });
@@ -153,6 +151,7 @@ export default abstract class ApiModelBase {
    * @param propNames Names of props that should be watched for changes
    */
   protected _watchProps(...propNames: string[]) {
+    this._watchedProps ??= [];
     this._watchedProps.push(...propNames);
   }
 
