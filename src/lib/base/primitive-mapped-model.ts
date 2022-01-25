@@ -1,4 +1,4 @@
-import ApiModelBase from "./api-model-base";
+import ApiModelBase from "./api-model";
 import { MappedModel, MappedModelEntry } from "./mapped-model";
 
 /**

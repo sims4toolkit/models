@@ -1,4 +1,4 @@
-import ApiModelBase from "../../dst/lib/base/api-model-base";
+import ApiModelBase from "../../dst/lib/base/api-model";
 
 export default class MockOwner extends ApiModelBase {
   private _cached: boolean;

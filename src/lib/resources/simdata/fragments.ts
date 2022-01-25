@@ -3,7 +3,7 @@ import type { ObjectCellRow, CellCloneOptions } from "./types";
 import { XmlElementNode, XmlNode } from "@s4tk/xml-dom";
 import { formatAsHexString } from "@s4tk/hashing/formatting";
 import { ObjectCell } from "./cells";
-import ApiModelBase from "../../base/api-model-base";
+import ApiModelBase from "../../base/api-model";
 import { SimDataType, SimDataTypeUtils } from "./data-types";
 import { arraysAreEqual, removeFromArray } from "../../common/helpers";
 

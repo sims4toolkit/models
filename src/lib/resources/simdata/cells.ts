@@ -5,7 +5,7 @@ import { XmlElementNode, XmlNode, XmlValueNode } from "@s4tk/xml-dom";
 import { formatAsHexString } from "@s4tk/hashing/formatting";
 import { fnv32 } from "@s4tk/hashing";
 import { CellCloneOptions, CellEncodingOptions, CellToXmlOptions, ObjectCellRow } from "./types";
-import ApiModelBase from "../../base/api-model-base";
+import ApiModelBase from "../../base/api-model";
 import { SimDataType, SimDataTypeUtils } from "./data-types";
 import { arraysAreEqual, removeFromArray } from "../../common/helpers";
 

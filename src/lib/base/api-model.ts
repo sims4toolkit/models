@@ -1,31 +1,31 @@
-/** An object or array that can be cached within a cacheable model. */
+/** An object or array to listen for changes in within an ApiModelBase. */
 type CachedCollection = { [key: string]: any; } | any[];
 
 /**
- * Base class for models that either can be cached or are part of another model
- * that can be cached. They may have an owning model that needs to be notified
- * when they are changed.
+ * Base class for all other models in the API. This model covers functionality
+ * for parent-child (or owner-child) relationships, and notifying the owning
+ * model when anything in the child has changed.
  */
 export default abstract class ApiModelBase {
-  private _cachedProps: string[] = [];
+  private _watchedProps: string[];
   private _proxy: any;
 
   protected constructor(public owner?: ApiModelBase) {
-    this._cachedProps = [];
+    this._watchedProps = [];
 
     this._proxy = new Proxy(this, {
       set(target: ApiModelBase, property: string, value: any) {
         const prev: any = target[property];
         const ref = Reflect.set(target, property, value);
         if (property === 'owner') target._onOwnerChange(prev);
-        if (target._cachedProps.includes(property)) target.uncache();
+        if (target._watchedProps.includes(property)) target.uncache();
         return ref;
       },
       deleteProperty(target: ApiModelBase, property: string) {
         const prev: any = target[property];
         const ref = Reflect.deleteProperty(target, property);
         if (property === 'owner') target._onOwnerChange(prev);
-        if (target._cachedProps.includes(property)) target.uncache();
+        if (target._watchedProps.includes(property)) target.uncache();
         return ref;
       }
     });
@@ -36,9 +36,9 @@ export default abstract class ApiModelBase {
   //#endregion Public Methods
 
   /**
-   * Returns a deep copy of this model, containing all of the same public
-   * properties that this model has, except for its owner. Internal values (such
-   * as IDs) are not guaranteed to be preserved.
+   * Returns a deep copy of this model with the same public properties (except
+   * for its owner). Internal or private values are not guaranteed to be
+   * preserved.
    */
   abstract clone(): ApiModelBase;
 
@@ -71,9 +71,7 @@ export default abstract class ApiModelBase {
   //#region Protected Methods
 
   /**
-   * Returns the owner to use for collections that this model contains. By
-   * default, the owner is `this`. This function is necessary to avoid using
-   * `this` in proxy traps.
+   * Returns the owner to use for collections that this model contains.
    */
   protected _getCollectionOwner(): ApiModelBase {
     return this._proxy;
@@ -155,7 +153,7 @@ export default abstract class ApiModelBase {
    * @param propNames Names of props that should be watched for changes
    */
   protected _watchProps(...propNames: string[]) {
-    this._cachedProps.push(...propNames);
+    this._watchedProps.push(...propNames);
   }
 
   //#endregion Protected Methods

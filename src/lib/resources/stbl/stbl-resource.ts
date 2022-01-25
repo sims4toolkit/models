@@ -1,6 +1,6 @@
 import type { KeyStringPair } from "./shared";
 import { fnv32 } from "@s4tk/hashing";
-import ApiModelBase from "../../base/api-model-base";
+import ApiModelBase from "../../base/api-model";
 import { PrimitiveEntry, PrimitiveMappedModel } from "../../base/primitive-mapped-model";
 import Resource from "../resource";
 import { arraysAreEqual } from "../../common/helpers";

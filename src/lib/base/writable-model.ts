@@ -1,4 +1,4 @@
-import ApiModelBase from './api-model-base';
+import ApiModelBase from './api-model';
 
 /**
  * Base class for models that have a buffer that can be written to disk. The

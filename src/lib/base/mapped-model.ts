@@ -1,4 +1,4 @@
-import type ApiModelBase from "./api-model-base";
+import type ApiModelBase from "./api-model";
 import WritableModel from "./writable-model";
 
 /**
