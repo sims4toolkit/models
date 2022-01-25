@@ -12,7 +12,7 @@ export interface FileReadingOptions {
    * actively being edited, or when a small subset of resources are being
    * edited within it.
    */
-  dontCacheCompressedBuffer: boolean;
+  dontCacheCompressedBuffer?: boolean;
 
   /**
    * If true, then the decompressed buffer for a resource will not be cached.
@@ -21,7 +21,7 @@ export interface FileReadingOptions {
    * This is recommended when loading packages or resources in read-only mode,
    * so as to reduce the memory load.
    */
-  dontCacheResource: boolean;
+  dontCacheResource?: boolean;
 
   /**
    * If true, models that cannot be read will be `undefined`, rather than
