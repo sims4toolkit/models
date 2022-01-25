@@ -7,7 +7,7 @@
 
 import { BinaryDecoder } from "@s4tk/encoding";
 import { makeList } from "../../../common/helpers";
-import { SimDataType, SimDataTypeUtils } from "../../data/data-types";
+import { SimDataType, SimDataTypeUtils } from "../../simdata/data-types";
 import { BinaryTuningDto, Named, Row, Schema, SchemaColumn, StringTable, TableData, TableInfo } from "../types";
 
 const RELOFFSET_NULL = -0x80000000;

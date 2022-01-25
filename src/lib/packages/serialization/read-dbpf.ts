@@ -9,7 +9,7 @@ import RawResource from "../../resources/raw/raw-resource";
 import BinaryResourceType from "../../enums/binary-resources";
 import TuningResourceType from "../../enums/tuning-resources";
 import StringTableResource from "../../resources/stbl/stbl-resource";
-import SimDataResource from "../../resources/data/simdata-resource";
+import SimDataResource from "../../resources/simdata/simdata-resource";
 import XmlResource from "../../resources/xml/xml-resource";
 
 /**
