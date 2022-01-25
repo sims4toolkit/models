@@ -44,7 +44,7 @@ describe("StringTableResource", () => {
     it("should serialize a stbl that wasn't changed, but was uncached", () => {
       const buffer = getBuffer("Normal");
       const stbl = StringTableResource.from(buffer);
-      stbl.uncache();
+      stbl.onChange();
       expect(stbl.buffer).to.not.equal(buffer);
       expect(stbl.equals(getStbl("Normal"))).to.be.true;
     });
@@ -750,11 +750,11 @@ describe("StringTableResource", () => {
     });
   });
 
-  describe("#uncache()", () => {
+  describe("#onChange()", () => {
     it("should uncache the buffer", () => {
       const stbl = getStbl("Normal");
       expect(stbl.isCached).to.be.true;
-      stbl.uncache();
+      stbl.onChange();
       expect(stbl.isCached).to.be.false;
     });
 
@@ -763,7 +763,7 @@ describe("StringTableResource", () => {
       const stbl = getStbl("Normal");
       stbl.owner = owner;
       expect(owner.cached).to.be.true;
-      stbl.uncache();
+      stbl.onChange();
       expect(owner.cached).to.be.false;
     });
 
@@ -771,7 +771,7 @@ describe("StringTableResource", () => {
       const stbl = getStbl("Normal");
       const entries = stbl.entries;
       expect(entries).to.equal(stbl.entries);
-      stbl.uncache();
+      stbl.onChange();
       expect(entries).to.not.equal(stbl.entries);
     });
   });
@@ -920,11 +920,11 @@ describe("StringEntry", () => {
     });
   });
 
-  describe("#uncache()", () => {
+  describe("#onChange()", () => {
     it("should uncache the owning stbl", () => {
       const stbl = getStbl("Normal");
       expect(stbl.isCached).to.be.true;
-      stbl.get(0).uncache();
+      stbl.get(0).onChange();
       expect(stbl.isCached).to.be.false;
     });
   });

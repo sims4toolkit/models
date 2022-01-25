@@ -21,7 +21,7 @@ export default class XmlResource extends Resource {
   set content(content: string) {
     this._content = content;
     delete this._dom;
-    this.uncache();
+    this.onChange();
   }
 
   /**
@@ -41,7 +41,7 @@ export default class XmlResource extends Resource {
   set dom(dom: XmlDocumentNode) {
     this._dom = dom;
     this._content = undefined;
-    this.uncache();
+    this.onChange();
   }
 
   /**
@@ -133,7 +133,7 @@ export default class XmlResource extends Resource {
   updateDom(fn: (dom: XmlDocumentNode) => void) {
     fn(this.dom);
     delete this._content;
-    this.uncache();
+    this.onChange();
   }
 
   /**
@@ -146,7 +146,7 @@ export default class XmlResource extends Resource {
   updateRoot(fn: (root: XmlNode) => void) {
     fn(this.root);
     delete this._content;
-    this.uncache();
+    this.onChange();
   }
 
   validate(): void {

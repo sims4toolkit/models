@@ -44,9 +44,9 @@ export abstract class MappedModel<Key, Value, Entry extends MappedModelEntry<Key
 
   //#region Overridden Public Methods
 
-  uncache(): void {
+  onChange(): void {
     this.resetEntries();
-    super.uncache();
+    super.onChange();
   }
 
   validate(): void {
@@ -76,7 +76,7 @@ export abstract class MappedModel<Key, Value, Entry extends MappedModelEntry<Key
     this._entryMap.set(id, entry);
     const keyId = this._getKeyIdentifier(key);
     if (!this._keyMap.has(keyId)) this._keyMap.set(keyId, id);
-    this.uncache();
+    this.onChange();
     return entry;
   }
 
@@ -99,7 +99,7 @@ export abstract class MappedModel<Key, Value, Entry extends MappedModelEntry<Key
       this._entryMap.clear();
       this._keyMap.clear();
       this._nextId = 0;
-      this.uncache();
+      this.onChange();
     }
   }
 
@@ -123,7 +123,7 @@ export abstract class MappedModel<Key, Value, Entry extends MappedModelEntry<Key
         this._keyMap.set(keyId, ids[0]);
       }
       
-      this.uncache();
+      this.onChange();
       return true;
     } else {
       return false;
@@ -253,7 +253,7 @@ export abstract class MappedModel<Key, Value, Entry extends MappedModelEntry<Key
       this._keyMap.set(currentIdentifier, currentId);
     }
 
-    this.uncache();
+    this.onChange();
   }
 
   /**

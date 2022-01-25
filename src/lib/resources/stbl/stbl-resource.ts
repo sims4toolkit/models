@@ -94,7 +94,7 @@ class StringEntry extends PrimitiveEntry<string> {
   get string(): string { return this.value; }
   set string(string: string) {
     this.value = string;
-    this.uncache();
+    this.onChange();
   }
 
   constructor(key: number, value: string, owner?: StringTableResource) {

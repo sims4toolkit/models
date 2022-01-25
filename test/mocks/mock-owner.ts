@@ -18,7 +18,7 @@ export default class MockOwner extends ApiModelBase {
     throw new Error("Method not implemented.");
   }
 
-  uncache(): void {
+  onChange(): void {
     this._cached = false;
   }
 }

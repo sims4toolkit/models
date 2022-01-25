@@ -54,7 +54,7 @@ describe("Sims4Package", () => {
     it("should serialize a dbpf that wasn't changed, but was uncached", () => {
       const buffer = getBuffer("Trait");
       const original = Package.from(buffer);
-      original.uncache();
+      original.onChange();
       expect(original.buffer).to.not.equal(buffer);
       const dbpf = Package.from(original.buffer);
       expect(dbpf.equals(original)).to.be.true;
@@ -911,11 +911,11 @@ describe("Sims4Package", () => {
     });
   });
 
-  describe("#uncache()", () => {
+  describe("#onChange()", () => {
     it("should uncache the buffer", () => {
       const dbpf = getPackage("Trait");
       expect(dbpf.isCached).to.be.true;
-      dbpf.uncache();
+      dbpf.onChange();
       expect(dbpf.isCached).to.be.false;
     });
 
@@ -923,13 +923,13 @@ describe("Sims4Package", () => {
       const dbpf = getPackage("Trait");
       const entries = dbpf.entries;
       expect(entries).to.equal(dbpf.entries);
-      dbpf.uncache();
+      dbpf.onChange();
       expect(entries).to.not.equal(dbpf.entries);
     });
 
     it("should not uncache the entries", () => {
       const dbpf = getPackage("Trait");
-      dbpf.uncache();
+      dbpf.onChange();
       dbpf.entries.forEach(entry => {
         expect(entry.isCached).to.be.true;
       });
@@ -937,7 +937,7 @@ describe("Sims4Package", () => {
 
     it("should not uncache the entries' resources", () => {
       const dbpf = getPackage("Trait");
-      dbpf.uncache();
+      dbpf.onChange();
       dbpf.entries.forEach(entry => {
         expect(entry.value.isCached).to.be.true;
       });
@@ -1308,12 +1308,12 @@ describe("ResourceEntry", () => {
     });
   });
 
-  describe("#uncache()", () => {
+  describe("#onChange()", () => {
     it("should uncache the owning dbpf", () => {
       const dbpf = getPackage("Trait");
       const entry = dbpf.get(0);
       expect(dbpf.isCached).to.be.true;
-      entry.uncache();
+      entry.onChange();
       expect(dbpf.isCached).to.be.false;
     });
 
@@ -1322,7 +1322,7 @@ describe("ResourceEntry", () => {
       const entry = dbpf.get(0);
       const buffer = entry.buffer;
       expect(entry.buffer).to.equal(buffer);
-      entry.uncache();
+      entry.onChange();
       expect(entry.buffer).to.not.equal(buffer);
     });
 
@@ -1331,7 +1331,7 @@ describe("ResourceEntry", () => {
       const [ simdata, tuning ] = dbpf.entries;
       expect(tuning.isCached).to.be.true;
       expect(tuning.isCached).to.be.true;
-      simdata.uncache();
+      simdata.onChange();
       expect(simdata.isCached).to.be.false;
       expect(tuning.isCached).to.be.true;
     });
@@ -1340,7 +1340,7 @@ describe("ResourceEntry", () => {
       const dbpf = getPackage("Trait");
       const [ simdata ] = dbpf.entries;
       expect(simdata.value.isCached).to.be.true;
-      simdata.uncache();
+      simdata.onChange();
       expect(simdata.value.isCached).to.be.true;
     });
   });

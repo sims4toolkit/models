@@ -502,11 +502,11 @@ describe('XmlResource', function() {
     });
   });
 
-  describe('#uncache()', function() {
+  describe('#onChange()', function() {
     it('should uncache the buffer', function() {
       const tun = XmlResource.from(Buffer.from("Hello"));
       expect(tun.hasChanged).to.be.false;
-      tun.uncache();
+      tun.onChange();
       expect(tun.hasChanged).to.be.true;
     });
   });

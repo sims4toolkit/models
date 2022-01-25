@@ -11,7 +11,7 @@ export default abstract class WritableModel extends ApiModelBase {
   /**
    * The buffer for this model. The cached buffer will be used, if available,
    * otherwise it will be serialized. To force the model to re-serialize (i.e.
-   * throw out the cache and generate a new buffer), call `uncache()` first.
+   * throw out the cache and generate a new buffer), call `onChange()` first.
    */
   get buffer(): Buffer {
     return this._cachedBuffer ??= this._serialize();
@@ -41,9 +41,9 @@ export default abstract class WritableModel extends ApiModelBase {
     this._cachedBuffer = args?.buffer;
   }
 
-  uncache() {
+  onChange() {
     delete this._cachedBuffer;
-    super.uncache();
+    super.onChange();
   }
 
   /** Returns a newly serialized buffer for this model. */

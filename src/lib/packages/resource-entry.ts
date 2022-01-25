@@ -33,7 +33,7 @@ export default class ResourceEntry extends WritableModel implements MappedModelE
   set value(resource: Resource) {
     if (resource) resource.owner = this;
     this._resource = resource;
-    this.uncache();
+    this.onChange();
   }
 
   /** Alias for `this.value` for readability. */

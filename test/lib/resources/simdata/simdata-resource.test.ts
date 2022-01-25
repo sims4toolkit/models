@@ -75,7 +75,7 @@ describe("SimDataResource", () => {
   describe("#buffer", () => {
     function testReserialization(filename: string) {
       const original = SimDataResource.fromXml(getBuffer(filename));
-      original.uncache();
+      original.onChange();
       const simdata = SimDataResource.from(original.buffer);
       expect(simdata.equals(original)).to.be.true;
     }
@@ -936,11 +936,11 @@ describe("SimDataResource", () => {
     });
   });
 
-  describe("#uncache()", () => {
+  describe("#onChange()", () => {
     it("should reset the buffer", () => {
       const simdata = getSimDataFromBinary("buff");
       expect(simdata.hasChanged).to.be.false;
-      simdata.uncache();
+      simdata.onChange();
       expect(simdata.hasChanged).to.be.true;
     });
 
@@ -949,7 +949,7 @@ describe("SimDataResource", () => {
       const simdata = getSimDataFromBinary("buff");
       simdata.owner = owner;
       expect(owner.cached).to.be.true;
-      simdata.uncache();
+      simdata.onChange();
       expect(owner.cached).to.be.false;
     });
   });

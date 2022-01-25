@@ -16,14 +16,14 @@ export default abstract class ApiModelBase {
         const prev: any = target[property];
         const ref = Reflect.set(target, property, value);
         if (property === 'owner') target._onOwnerChange(prev);
-        if (target._watchedProps?.includes(property)) target.uncache();
+        if (target._watchedProps?.includes(property)) target.onChange();
         return ref;
       },
       deleteProperty(target: ApiModelBase, property: string) {
         const prev: any = target[property];
         const ref = Reflect.deleteProperty(target, property);
         if (property === 'owner') target._onOwnerChange(prev);
-        if (target._watchedProps?.includes(property)) target.uncache();
+        if (target._watchedProps?.includes(property)) target.onChange();
         return ref;
       }
     });
@@ -51,8 +51,8 @@ export default abstract class ApiModelBase {
    * Uncaches this model and notifies its owner (if it has one) to do the same.
    * Note that this will NOT uncache this object's children.
    */
-  uncache() {
-    this.owner?.uncache();
+  onChange() {
+    this.owner?.onChange();
   }
 
   /**
@@ -98,7 +98,7 @@ export default abstract class ApiModelBase {
           const owner = getOwner();
           onChange?.(owner, target, property, previous, value);
           if (value instanceof ApiModelBase) value.owner = owner;
-          owner?.uncache();
+          owner?.onChange();
         }
         return ref;
       },
@@ -112,7 +112,7 @@ export default abstract class ApiModelBase {
         if (property !== "owner") {
           const owner = getOwner();
           onChange?.(owner, target, property, previous);
-          owner?.uncache();
+          owner?.onChange();
         }
         return ref;
       }

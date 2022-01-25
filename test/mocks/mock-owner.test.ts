@@ -7,9 +7,9 @@ describe("MockOwner", function() {
     expect(owner.cached).to.be.true;
   });
 
-  it("should be uncached when uncache() is called", () => {
+  it("should be uncached when onChange() is called", () => {
     const owner = new MockOwner();
-    owner.uncache();
+    owner.onChange();
     expect(owner.cached).to.be.false;
   });
 });

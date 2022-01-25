@@ -62,7 +62,7 @@ export default class RawResource extends Resource {
     return bufferContainsXml(this.buffer);
   }
 
-  uncache() {
+  onChange() {
     // intentionally blank because this resource cannot be uncached -- the
     // buffer is the only thing that meaningfully defines this resource
   }

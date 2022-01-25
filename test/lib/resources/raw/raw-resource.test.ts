@@ -93,12 +93,12 @@ describe('RawResource', function() {
     });
   });
 
-  describe('#uncache()', function() {
+  describe('#onChange()', function() {
     it('should do nothing', function() {
       const raw = getRAW("hello");
       expect(raw.plainText).to.equal("hello");
       expect(raw.buffer.toString()).to.equal("hello");
-      expect(() => raw.uncache()).to.not.throw();
+      expect(() => raw.onChange()).to.not.throw();
       expect(raw.plainText).to.equal("hello");
       expect(raw.buffer.toString()).to.equal("hello");
     });
