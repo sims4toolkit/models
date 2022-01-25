@@ -4,12 +4,8 @@
 export interface FileReadingOptions {  
   /**
    * (For binary files only) If true, non-critical errors will be ignored while
-   * reading the file(s). False by default.
-   * 
-   * Note that this option does NOT prevent exceptions from being thrown. Its
-   * purpose is to ignore negligible errors, such as an incorrect file version
-   * or an issue with the file header. Critical errors, such as missing data or
-   * incorrect data type, will still cause an exception.
+   * reading the file(s), and an exception will only be thrown when it is
+   * totally unavoidable. False by default.
    */
   ignoreErrors?: boolean;
 
@@ -21,12 +17,12 @@ export interface FileReadingOptions {
 
   /**
    * (For packages only) If true, then all resources in the package will be
-   * loaded as a raw resource (i.e. just a buffer) rather than being fully
-   * parsed into its respective model. False by default.
+   * loaded raw (i.e. just a buffer) rather than being fully parsed into its
+   * respective model. False by default.
    * 
-   * This is recommended when extracting files from packages, so that fully
-   * parsed models are not needlessly created. If there is a need for fully
-   * parsed models, consider using the `saveBuffer` option instead.
+   * This is recommended when parsed models are not required while extracting
+   * files from packages. If parsed models are required, consider using the
+   * `saveBuffer` option instead.
    */
   loadRaw?: boolean;
 
@@ -36,9 +32,8 @@ export interface FileReadingOptions {
    * option, as it is their only defining feature. False by default.
    * 
    * This is recommended when parsed models are required while extracting files
-   * from packages. If there is no need to parse the models and just the buffers
-   * are needed, consider using the `loadRaw` option instead so that time is not
-   * wasted parsing models.
+   * from packages. If parsed models are not required, consider using the
+   * `loadRaw` option instead, so that models are not needlessly created.
    */
   saveBuffer?: boolean;
 
@@ -47,7 +42,7 @@ export interface FileReadingOptions {
    * be saved on its resource entry. False by default.
    * 
    * This is recommended when editing a subset of the resources in a package and
-   * then writing it back to disk.
+   * then writing it back to disk as a complete package.
    */
   saveCompressedBuffer?: boolean;
 }
