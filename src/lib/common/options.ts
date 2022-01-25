@@ -3,6 +3,33 @@
  */
 export interface FileReadingOptions {
   /**
+   * (For packages only) If true, then the compressed buffer for a resource will
+   * not be cached in the resource entry. False by default.
+   * 
+   * This is recommended when loading packages in read-only mode, or while
+   * extracting resources from packages, so as to reduce the memory load.
+   * Cacheing the compressed buffer is only worthwhile when a package is
+   * actively being edited, or when a small subset of resources are being
+   * edited within it.
+   */
+  dontCacheCompressedBuffer: boolean;
+
+  /**
+   * If true, then the decompressed buffer for a resource will not be cached.
+   * False by default.
+   * 
+   * This is recommended when loading packages or resources in read-only mode,
+   * so as to reduce the memory load.
+   */
+  dontCacheResource: boolean;
+
+  /**
+   * If true, models that cannot be read will be `undefined`, rather than
+   * throwing an exception. False by default.
+   */
+  dontThrow?: boolean;
+  
+  /**
    * If true, non-critical errors will be ignored while reading the file. False
    * by default.
    * 
@@ -12,12 +39,6 @@ export interface FileReadingOptions {
    * a binary file, will still cause an exception.
    */
   ignoreErrors?: boolean;
-
-  /**
-   * If true, models that cannot be read will be `undefined`, rather than
-   * throwing an exception. False by default.
-   */
-  dontThrow?: boolean;
 
   /**
    * (For packages only) If true, then all resources in the package will be
