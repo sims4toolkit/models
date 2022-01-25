@@ -48,8 +48,7 @@ export default abstract class ApiModelBase {
   abstract equals(other: any): boolean;
 
   /**
-   * Uncaches this model and notifies its owner (if it has one) to do the same.
-   * Note that this will NOT uncache this object's children.
+   * Notifies this model and its owner that one of its values has been changed.
    */
   onChange() {
     this.owner?.onChange();
@@ -78,19 +77,19 @@ export default abstract class ApiModelBase {
   /**
    * Returns a proxy that listens for changes in CachedCollections.
    * 
-   * @param obj CachedCollection to get proxy for
+   * @param collection CachedCollection to get proxy for
    */
   protected _getCollectionProxy<T extends CachedCollection>(
-    obj: T, 
+    collection: T, 
     onChange?: (owner: ApiModelBase, target: T, property: string | symbol, previous: any, current?: any) => void
   ): T {
     //@ts-expect-error TS doesn't know about _isProxy
-    if (obj._isProxy) return obj;
+    if (collection._isProxy) return collection;
 
     // can't use `this` within the Proxy traps
     const getOwner = () => this._getCollectionOwner();
 
-    return new Proxy(obj, {
+    return new Proxy(collection, {
       set(target, property, value) {
         const previous = target[property];
         const ref = Reflect.set(target, property, value);
@@ -151,8 +150,7 @@ export default abstract class ApiModelBase {
    * @param propNames Names of props that should be watched for changes
    */
   protected _watchProps(...propNames: string[]) {
-    this._watchedProps ??= [];
-    this._watchedProps.push(...propNames);
+    (this._watchedProps ??= []).push(...propNames);
   }
 
   //#endregion Protected Methods
