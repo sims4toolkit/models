@@ -59,6 +59,18 @@ describe('RawResource', function() {
     });
   });
 
+  describe("#saveBuffer", () => {
+    it("should be true", () => {
+      const raw = RawResource.from(Buffer.from("hello"));
+      expect(raw.saveBuffer).to.be.true;
+    });
+
+    it("should throw when set to false", () => {
+      const raw = RawResource.from(Buffer.from("hello"));
+      expect(() => raw.saveBuffer = false).to.throw()
+    });
+  });
+
   describe('#clone()', function() {
     it('should create another raw resource with the same content', function () {
       const raw = getRAW("hello");
@@ -83,6 +95,15 @@ describe('RawResource', function() {
       expect(() => raw.onChange()).to.not.throw();
       expect(raw.plainText).to.equal("hello");
       expect(raw.buffer.toString()).to.equal("hello");
+    });
+
+    it('should not uncache the buffer', function() {
+      const buffer = Buffer.from("hello");
+      const raw = RawResource.from(buffer);
+      expect(raw.isCached).to.be.true;
+      raw.onChange();
+      expect(raw.isCached).to.be.true;
+      expect(buffer).to.equal(raw.buffer);
     });
   });
 });
