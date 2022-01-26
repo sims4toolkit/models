@@ -64,9 +64,9 @@ describe('XmlResource', function() {
       it("should uncache the buffer", function() {
         const buffer = Buffer.from("hi");
         const tun = XmlResource.from(buffer);
-        expect(tun.hasChanged).to.be.false;
+        expect(tun.isCached).to.be.true;
         tun.content = "hello";
-        expect(tun.hasChanged).to.be.true;
+        expect(tun.isCached).to.be.false;
       });
 
       it("should reset the DOM", function() {
@@ -105,10 +105,10 @@ describe('XmlResource', function() {
 
       it("should not reset the content or uncache the buffer when mutated", function() {
         const tun = XmlResource.from(Buffer.from("<T>50</T>"));
-        expect(tun.hasChanged).to.be.false;
+        expect(tun.isCached).to.be.true;
         expect(tun.content).to.equal("<T>50</T>");
         tun.dom.child.innerValue = 25;
-        expect(tun.hasChanged).to.be.false;
+        expect(tun.isCached).to.be.true;
         expect(tun.content).to.equal("<T>50</T>");
       });
     });
@@ -123,9 +123,9 @@ describe('XmlResource', function() {
 
       it("should uncache the buffer", function() {
         const tun = XmlResource.from(Buffer.from("<T>50</T>"));
-        expect(tun.hasChanged).to.be.false;
+        expect(tun.isCached).to.be.true;
         tun.dom = XmlDocumentNode.from("<T>25</T>");
-        expect(tun.hasChanged).to.be.true;
+        expect(tun.isCached).to.be.false;
       });
 
       it("should reset the content", function() {
@@ -168,9 +168,9 @@ describe('XmlResource', function() {
 
       it("should uncache the buffer", function() {
         const tun = XmlResource.from(Buffer.from("<T>50</T>"));
-        expect(tun.hasChanged).to.be.false;
+        expect(tun.isCached).to.be.true;
         tun.root = tunables.E({ value: "VALUE" });
-        expect(tun.hasChanged).to.be.true;
+        expect(tun.isCached).to.be.false;
       });
 
       it("should reset the content", function() {
@@ -179,52 +179,6 @@ describe('XmlResource', function() {
         expect(tun.content).to.equal(`${XML_DECLARATION}\n<T>50</T>`);
         tun.root = tunables.E({ value: "VALUE" });
         expect(tun.content).to.equal(`${XML_DECLARATION}\n<E>VALUE</E>`);
-      });
-    });
-  });
-
-  describe('#hasChanged', function() {
-    context('getting', function() {
-      it("should return true after being created", function() {
-        const tun = XmlResource.create();
-        expect(tun.hasChanged).to.be.true;
-      });
-
-      it("should return false after being loaded from a buffer", function() {
-        const tun = XmlResource.from(Buffer.from("hi"));
-        expect(tun.hasChanged).to.be.false;
-      });
-
-      it("should return true after content is changed", function() {
-        const tun = XmlResource.from(Buffer.from("hi"));
-        expect(tun.hasChanged).to.be.false;
-        tun.content = "hello";
-        expect(tun.hasChanged).to.be.true;
-      });
-
-      it("should return true after DOM is changed in updateDom", function() {
-        const tun = XmlResource.from(Buffer.from("<T>Hi</T>"));
-        expect(tun.hasChanged).to.be.false;
-        tun.updateDom(dom => {
-          dom.child.innerValue = "Bye";
-        });
-        expect(tun.hasChanged).to.be.true;
-      });
-
-      it("should return false after DOM is mutated unsafely", function() {
-        const tun = XmlResource.from(Buffer.from("<T>Hi</T>"));
-        expect(tun.hasChanged).to.be.false;
-        tun.dom.child.innerValue = "Bye";
-        expect(tun.hasChanged).to.be.false;
-      });
-    });
-
-    context('setting', function() {
-      it("should throw", function() {
-        const tun = XmlResource.create({ content: "<I/>" });
-        expect(tun.hasChanged).to.be.true;
-        //@ts-expect-error Error is entire point of test
-        expect(() => tun.hasChanged = false).to.throw();
       });
     });
   });
@@ -278,9 +232,9 @@ describe('XmlResource', function() {
 
     it("should not transfer the buffer to the clone", function() {
       const tun = XmlResource.from(Buffer.from("hello"));
-      expect(tun.hasChanged).to.be.false;
+      expect(tun.isCached).to.be.true;
       const clone = tun.clone()
-      expect(clone.hasChanged).to.be.true;
+      expect(clone.isCached).to.be.false;
     });
 
     it("should not mutate the original's content", function() {
@@ -293,9 +247,9 @@ describe('XmlResource', function() {
 
     it("should not uncache the original's buffer", function() {
       const tun = XmlResource.from(Buffer.from("hello"));
-      expect(tun.hasChanged).to.be.false;
+      expect(tun.isCached).to.be.true;
       tun.clone()
-      expect(tun.hasChanged).to.be.false;
+      expect(tun.isCached).to.be.true;
     });
 
     it("should not mutate the original's DOM", function() {
@@ -378,7 +332,7 @@ describe('XmlResource', function() {
 
     it("should immediately cache the buffer", function() {
       const tun = XmlResource.from(Buffer.from("Hello"));
-      expect(tun.hasChanged).to.be.false;
+      expect(tun.isCached).to.be.true;
     });
 
     it('should be able to handle real files', function() {
@@ -451,11 +405,11 @@ describe('XmlResource', function() {
   describe('#updateDom()', function() {
     it('should uncache the buffer', function() {
       const tun = XmlResource.from(Buffer.from("<T>50</T>"));
-      expect(tun.hasChanged).to.be.false;
+      expect(tun.isCached).to.be.true;
       tun.updateDom(dom => {
         dom.child.innerValue = 25;
       });
-      expect(tun.hasChanged).to.be.true;
+      expect(tun.isCached).to.be.false;
     });
 
     it('should update the DOM', function() {
@@ -478,11 +432,11 @@ describe('XmlResource', function() {
   describe('#updateRoot()', function() {
     it('should uncache the buffer', function() {
       const tun = XmlResource.from(Buffer.from("<T>50</T>"));
-      expect(tun.hasChanged).to.be.false;
+      expect(tun.isCached).to.be.true;
       tun.updateRoot(root => {
         root.innerValue = 25;
       });
-      expect(tun.hasChanged).to.be.true;
+      expect(tun.isCached).to.be.false;
     });
 
     it('should update the root', function() {
@@ -505,9 +459,9 @@ describe('XmlResource', function() {
   describe('#onChange()', function() {
     it('should uncache the buffer', function() {
       const tun = XmlResource.from(Buffer.from("Hello"));
-      expect(tun.hasChanged).to.be.false;
+      expect(tun.isCached).to.be.true;
       tun.onChange();
-      expect(tun.hasChanged).to.be.true;
+      expect(tun.isCached).to.be.false;
     });
   });
 

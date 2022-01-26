@@ -56,7 +56,7 @@ export default class Package extends MappedModel<ResourceKey, Resource, Resource
   //#region Public Methods
 
   clone(): Package {
-    const buffer = this.hasChanged ? undefined : this.buffer;
+    const buffer = this.isCached ? this.buffer : undefined;
     const entryClones = this.entries.map(entry => entry.clone());
     return new Package(entryClones, buffer);
   }

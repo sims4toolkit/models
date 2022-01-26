@@ -59,7 +59,7 @@ export default class StringTableResource extends PrimitiveMappedModel<string, St
   }
 
   clone(): StringTableResource {
-    const buffer = this.hasChanged ? undefined : this.buffer;
+    const buffer = this.isCached ? this.buffer : undefined;
     return new StringTableResource(this.entries, buffer);
   }
 

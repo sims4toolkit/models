@@ -132,13 +132,7 @@ describe("StringTableResource", () => {
     });
   });
 
-  describe("#hasChanged", () => {
-    // tested as part of other properties/methods
-  });
-
-  describe("#isChanged", () => {
-    // tested as part of other properties/methods
-  });
+  // #isChanged tested as part of other properties/methods
 
   describe("#size", () => {
     it("should return 0 when the stbl is empty", () => {
@@ -216,7 +210,6 @@ describe("StringTableResource", () => {
     context("stbl content is valid", () => {
       it("should be cached", () => {
         const stbl = StringTableResource.from(getBuffer("Normal"));
-        expect(stbl.hasChanged).to.be.false;
         expect(stbl.isCached).to.be.true;
       });
   

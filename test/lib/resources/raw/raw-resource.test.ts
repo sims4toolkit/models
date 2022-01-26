@@ -31,19 +31,6 @@ describe('RawResource', function() {
     });
   });
 
-  describe('#hasChanged', function() {
-    it('should not be assignable', function() {
-      const raw = getRAW();
-      //@ts-expect-error The whole point is that it's an error
-      expect(() => raw.hasChanged = true).to.throw();
-    });
-
-    it('should return false', function() {
-      const raw = getRAW();
-      expect(raw.hasChanged).to.be.false;
-    });
-  });
-
   describe('#buffer', function() {
     it('should not be assignable', function() {
       const raw = getRAW();

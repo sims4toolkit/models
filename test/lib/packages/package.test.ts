@@ -144,8 +144,6 @@ describe("Sims4Package", () => {
     });
   });
 
-  // #hasChanged tested by other tests
-
   // #isCached tested by other tests
 
   describe("#size", () => {
@@ -1056,8 +1054,6 @@ describe("ResourceEntry", () => {
       expect(buffer).to.not.equal(entry.buffer);
     });
   });
-
-  // #hasChanged tested by other tests
 
   describe("#key", () => {
     it("should uncache the dbpf when set", () => {

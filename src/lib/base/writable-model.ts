@@ -1,36 +1,27 @@
 import ApiModelBase from './api-model';
 
 /**
- * Base class for models that have a buffer that can be written to disk. The
- * buffer is cached until any changes are made to the model or any of its
- * children.
+ * Base class for models that can be written to disk.
  */
 export default abstract class WritableModel extends ApiModelBase {
-  private _cachedBuffer?: Buffer;
+  // NOTE: Buffer is fine for now, but look out for memory/time bottlenecks...
+  // If it gets worrying, this should be replaced with a stream.
+  private _buffer?: Buffer;
+  protected _cacheBuffer: boolean;
 
   /**
-   * The buffer for this model. The cached buffer will be used, if available,
-   * otherwise it will be serialized. To force the model to re-serialize (i.e.
-   * throw out the cache and generate a new buffer), call `onChange()` first.
+   * The buffer for this model.
    */
   get buffer(): Buffer {
-    return this._cachedBuffer ??= this._serialize();
+    if (!this._cacheBuffer) return this._serialize();
+    return this._buffer ??= this._serialize();
   }
 
   /** 
-   * Whether the model has changed since the last time it was serialized. This
-   * is the same as checking if the model does not have a cached buffer.
-   */
-  get hasChanged(): boolean {
-    return this._cachedBuffer == undefined;
-  }
-
-  /** 
-   * Whether this model has a cached buffer. This is the same as checking if the
-   * model has not changed.
+   * Whether this model currently has a cached buffer.
    */
   get isCached(): boolean {
-    return this._cachedBuffer != undefined;
+    return this._buffer != undefined;
   }
 
   protected constructor(args?: {
@@ -38,11 +29,12 @@ export default abstract class WritableModel extends ApiModelBase {
     owner?: ApiModelBase;
   }) {
     super(args?.owner);
-    this._cachedBuffer = args?.buffer;
+    this._cacheBuffer = true; // FIXME: make this a setting
+    this._buffer = args?.buffer;
   }
 
   onChange() {
-    delete this._cachedBuffer;
+    delete this._buffer;
     super.onChange();
   }
 
