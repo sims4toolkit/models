@@ -337,6 +337,11 @@ export interface MappedModelEntry<Key, Value> {
    */
   validate(): void;
 
-  // TODO: valueEquals(value: Value): boolean;
-  // implement a way to check if the value exists
+  /**
+   * Checks if the given value is equal to the one that this entry uses.
+   * 
+   * @param value Value to check for equality
+   * @returns True if the value are equal, false otherwise
+   */
+  valueEquals(value: Value): boolean;
 }

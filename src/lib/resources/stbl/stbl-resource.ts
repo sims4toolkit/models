@@ -1,13 +1,13 @@
 import type { KeyStringPair } from "./shared";
 import { fnv32 } from "@s4tk/hashing";
-import ApiModelBase from "../../base/api-model";
-import { PrimitiveEntry, PrimitiveMappedModel } from "../../base/primitive-mapped-model";
+import { PrimitiveMappedModel } from "../../base/primitive-mapped-model";
 import Resource from "../resource";
 import { arraysAreEqual } from "../../common/helpers";
 import { FileReadingOptions } from "../../common/options";
 import readStbl from "./serialization/read-stbl";
 import writeStbl from "./serialization/write-stbl";
 import EncodingType from "../../enums/encoding-type";
+import StringEntry from "./string-entry";
 
 /**
  * Model for string table (STBL) resources.
@@ -96,29 +96,4 @@ export default class StringTableResource extends PrimitiveMappedModel<string, St
   }
 
   //#region Protected Methods
-}
-
-/**
- * An entry in a StringTableResource.
- */
-class StringEntry extends PrimitiveEntry<string> {
-  /** Alias for `this.value` for readability. */
-  get string(): string { return this.value; }
-  set string(string: string) {
-    this.value = string;
-    this.onChange();
-  }
-
-  constructor(key: number, value: string, owner?: StringTableResource) {
-    super(key, value, owner);
-  }
-
-  clone(): StringEntry {
-    return new StringEntry(this.key, this.value);
-  }
-
-  validate(): void {
-    if (Number.isNaN(this.key) || this.key < 0 || this.key > 0xFFFFFFFF)
-      throw new Error(`Expected string entry's key to be a UInt32, got ${this.key}`);
-  }
 }

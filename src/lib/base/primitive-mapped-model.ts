@@ -35,10 +35,14 @@ export abstract class PrimitiveEntry<Value> extends ApiModelBase implements Mapp
   }
 
   equals(other: PrimitiveEntry<Value>): boolean {
-    return this.keyEquals(other?.key) && this.value === other?.value;
+    return this.keyEquals(other?.key) && this.valueEquals(other?.value);
   }
 
   keyEquals(key: number): boolean {
     return this.key === key;
+  }
+
+  valueEquals(value: Value): boolean {
+    return this.value === value;
   }
 }

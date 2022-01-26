@@ -76,6 +76,10 @@ export default class ResourceEntry extends WritableModel implements MappedModelE
     this.value.validate();
   }
 
+  valueEquals(value: Resource): boolean {
+    return this.value.equals(value);
+  }
+
   protected _getCollectionOwner(): Package {
     return this.owner;
   }
