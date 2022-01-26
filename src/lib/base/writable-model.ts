@@ -34,7 +34,7 @@ export default abstract class WritableModel extends ApiModelBase {
   }
 
   protected constructor(
-    saveBuffer: boolean = true, // FIXME: should be false by default
+    saveBuffer: boolean = false,
     buffer?: Buffer,
     owner?: ApiModelBase,
   ) {

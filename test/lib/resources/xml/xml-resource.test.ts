@@ -8,11 +8,24 @@ import { EncodingType } from "../../../../dst/enums";
 
 const XML_DECLARATION = '<?xml version="1.0" encoding="utf-8"?>';
 
-function getTuningFromFile(filename) {
-  const filepath = path.resolve(__dirname, `../../../data/tuning/${filename}.xml`);
-  const buffer = fs.readFileSync(filepath);
-  return XmlResource.from(buffer);
+//#region Helpers
+
+const cachedBuffers: { [key: string]: Buffer; } = {};
+
+function getBuffer(filename: string): Buffer {
+  if (!cachedBuffers[filename]) {
+    const filepath = path.resolve(__dirname, `../../../data/tuning/${filename}.xml`);
+    cachedBuffers[filename] = fs.readFileSync(filepath);
+  }
+
+  return cachedBuffers[filename];
 }
+
+function getTuningFromFile(filename: string, saveBuffer = false): XmlResource {
+  return XmlResource.from(getBuffer(filename), { saveBuffer });
+}
+
+//#endregion Helpers
 
 describe('XmlResource', function() {
   //#region Properties
@@ -59,7 +72,7 @@ describe('XmlResource', function() {
 
       it("should uncache the buffer", function() {
         const buffer = Buffer.from("hi");
-        const tun = XmlResource.from(buffer);
+        const tun = XmlResource.from(buffer, { saveBuffer: true });
         expect(tun.isCached).to.be.true;
         tun.content = "hello";
         expect(tun.isCached).to.be.false;
@@ -100,7 +113,7 @@ describe('XmlResource', function() {
       });
 
       it("should not reset the content or uncache the buffer when mutated", function() {
-        const tun = XmlResource.from(Buffer.from("<T>50</T>"));
+        const tun = XmlResource.from(Buffer.from("<T>50</T>"), { saveBuffer: true });
         expect(tun.isCached).to.be.true;
         expect(tun.content).to.equal("<T>50</T>");
         tun.dom.child.innerValue = 25;
@@ -118,7 +131,7 @@ describe('XmlResource', function() {
       });
 
       it("should uncache the buffer", function() {
-        const tun = XmlResource.from(Buffer.from("<T>50</T>"));
+        const tun = XmlResource.from(Buffer.from("<T>50</T>"), { saveBuffer: true });
         expect(tun.isCached).to.be.true;
         tun.dom = XmlDocumentNode.from("<T>25</T>");
         expect(tun.isCached).to.be.false;
@@ -163,7 +176,7 @@ describe('XmlResource', function() {
       });
 
       it("should uncache the buffer", function() {
-        const tun = XmlResource.from(Buffer.from("<T>50</T>"));
+        const tun = XmlResource.from(Buffer.from("<T>50</T>"), { saveBuffer: true });
         expect(tun.isCached).to.be.true;
         tun.root = tunables.E({ value: "VALUE" });
         expect(tun.isCached).to.be.false;
@@ -186,10 +199,16 @@ describe('XmlResource', function() {
         expect(tun.buffer.toString()).to.equal('');
       });
 
-      it("should return the original buffer for a resource created from a buffer", function() {
+      it("should return the original buffer if saveBuffer = true", function() {
         const buffer = Buffer.from("Hello");
-        const tun = XmlResource.from(buffer);
+        const tun = XmlResource.from(buffer, { saveBuffer: true });
         expect(tun.buffer).to.equal(buffer);
+      });
+
+      it("should return a new buffer if saveBuffer = false", function() {
+        const buffer = Buffer.from("Hello");
+        const tun = XmlResource.from(buffer, { saveBuffer: false });
+        expect(tun.buffer).to.not.equal(buffer);
       });
 
       it("should return the buffer for a resource created from a string", function() {
@@ -210,6 +229,43 @@ describe('XmlResource', function() {
         //@ts-expect-error Error is entire point of test
         expect(() => tun.buffer = Buffer.from("hi")).to.throw();
       });
+    });
+  });
+
+  describe("#saveBuffer", () => {
+    it("should be false by default", () => {
+      const tun = XmlResource.from(getBuffer("ExampleTrait"));
+      expect(tun.saveBuffer).to.be.false;
+    });
+
+    it("should delete the buffer if set to false", () => {
+      const tun = XmlResource.from(getBuffer("ExampleTrait"), { saveBuffer: true });
+      expect(tun.isCached).to.be.true;
+      tun.saveBuffer = false;
+      expect(tun.isCached).to.be.false;
+    });
+
+    it("should not generate a buffer if set to true", () => {
+      const tun = XmlResource.from(getBuffer("ExampleTrait"), { saveBuffer: false });
+      expect(tun.isCached).to.be.false;
+      tun.saveBuffer = true;
+      expect(tun.isCached).to.be.false;
+    });
+
+    it("should cache the buffer after getting it when set to true", () => {
+      const tun = XmlResource.from(getBuffer("ExampleTrait"));
+      tun.saveBuffer = true;
+      expect(tun.isCached).to.be.false;
+      tun.buffer;
+      expect(tun.isCached).to.be.true;
+    });
+
+    it("should not cache the buffer after getting it when set to false", () => {
+      const tun = XmlResource.from(getBuffer("ExampleTrait"));
+      tun.saveBuffer = false;
+      expect(tun.isCached).to.be.false;
+      tun.buffer;
+      expect(tun.isCached).to.be.false;
     });
   });
 
@@ -234,13 +290,6 @@ describe('XmlResource', function() {
       expect(clone.content).to.equal("hello");
     });
 
-    it("should not uncache the original's buffer", function() {
-      const tun = XmlResource.from(Buffer.from("hello"));
-      expect(tun.isCached).to.be.true;
-      tun.clone()
-      expect(tun.isCached).to.be.true;
-    });
-
     it("should not mutate the original's DOM", function() {
       const dom = XmlDocumentNode.from("<T>50</T>")
       const tun = XmlResource.create({ dom });
@@ -261,6 +310,14 @@ describe('XmlResource', function() {
       it("should create a tuning resource with empty content", function() {
         const tun = XmlResource.create();
         expect(tun.content).to.equal('');
+      });
+
+      it("should not cache buffers that are created", () => {
+        const tun = XmlResource.create();
+        expect(tun.isCached).to.be.false;
+        const buffer = tun.buffer;
+        expect(tun.isCached).to.be.false;
+        expect(buffer).to.not.equal(tun.buffer);
       });
     });
 
@@ -311,6 +368,26 @@ describe('XmlResource', function() {
         expect(tun.dom).to.equal(dom);
       });
     });
+
+    context("given saveBuffer = true", () => {
+      it("should cache buffers that are created", () => {
+        const tun = XmlResource.create({ saveBuffer: true });
+        expect(tun.isCached).to.be.false;
+        const buffer = tun.buffer;
+        expect(tun.isCached).to.be.true;
+        expect(buffer).to.equal(tun.buffer);
+      });
+    });
+
+    context("given saveBuffer = false", () => {
+      it("should not cache buffers that are created", () => {
+        const tun = XmlResource.create({ saveBuffer: false });
+        expect(tun.isCached).to.be.false;
+        const buffer = tun.buffer;
+        expect(tun.isCached).to.be.false;
+        expect(buffer).to.not.equal(tun.buffer);
+      });
+    });
   });
 
   describe('#from()', function() {
@@ -319,9 +396,19 @@ describe('XmlResource', function() {
       expect(tun.content).to.equal("Hello");
     });
 
-    it("should immediately cache the buffer", function() {
-      const tun = XmlResource.from(Buffer.from("Hello"));
+    it("should cache the buffer if saveBuffer = true", function() {
+      const tun = XmlResource.from(Buffer.from("Hello"), { saveBuffer: true });
       expect(tun.isCached).to.be.true;
+    });
+
+    it("should not cache the buffer if saveBuffer = false", function() {
+      const tun = XmlResource.from(Buffer.from("Hello"), { saveBuffer: false });
+      expect(tun.isCached).to.be.false;
+    });
+
+    it("should not cache the buffer by default", function() {
+      const tun = XmlResource.from(Buffer.from("Hello"));
+      expect(tun.isCached).to.be.false;
     });
 
     it('should be able to handle real files', function() {
@@ -393,7 +480,7 @@ describe('XmlResource', function() {
 
   describe('#updateDom()', function() {
     it('should uncache the buffer', function() {
-      const tun = XmlResource.from(Buffer.from("<T>50</T>"));
+      const tun = XmlResource.from(Buffer.from("<T>50</T>"), { saveBuffer: true });
       expect(tun.isCached).to.be.true;
       tun.updateDom(dom => {
         dom.child.innerValue = 25;
@@ -420,7 +507,7 @@ describe('XmlResource', function() {
 
   describe('#updateRoot()', function() {
     it('should uncache the buffer', function() {
-      const tun = XmlResource.from(Buffer.from("<T>50</T>"));
+      const tun = XmlResource.from(Buffer.from("<T>50</T>"), { saveBuffer: true });
       expect(tun.isCached).to.be.true;
       tun.updateRoot(root => {
         root.innerValue = 25;
@@ -447,7 +534,7 @@ describe('XmlResource', function() {
 
   describe('#onChange()', function() {
     it('should uncache the buffer', function() {
-      const tun = XmlResource.from(Buffer.from("Hello"));
+      const tun = XmlResource.from(Buffer.from("Hello"), { saveBuffer: true });
       expect(tun.isCached).to.be.true;
       tun.onChange();
       expect(tun.isCached).to.be.false;
