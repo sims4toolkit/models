@@ -1,30 +1,18 @@
-import WritableModel from "../base/writable-model";
-
-type ResourceVariant = 'RAW' | 'XML' | 'DATA' | 'STBL';
+import type ApiModelBase from "../base/api-model";
+import type EncodingType from "../enums/encoding-type";
 
 /**
- * A base class for all resources.
+ * A base for all resources to implement.
  */
-export default abstract class Resource extends WritableModel {
+export default interface Resource extends ApiModelBase {
   /** How this resource is encoded. */
-  abstract readonly variant: ResourceVariant;
+  readonly encodingType: EncodingType;
 
-  /** Returns a deep copy of this resource. */
-  abstract clone(): Resource;
-
-  /**
-   * Returns whether this resource contains the exact same values as another.
-   * 
-   * @param other Other resource to check for equality with this one
-   */
-  equals(other: Resource): boolean {
-    return other && this.variant === other.variant;
-  }
+  // Just to clarify that the clone is a resource
+  clone(): Resource;
 
   /**
-   * Returns true if this resource contains XML.
+   * Returns true if this resource contains XML, false otherwise.
    */
-  isXml(): boolean {
-    return false;
-  }
+  isXml(): boolean;
 }

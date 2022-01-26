@@ -1,35 +1,31 @@
-import Resource from '../resource';
+import type Resource from '../resource';
+import WritableModel from '../../base/writable-model';
+import EncodingType from '../../enums/encoding-type';
 import { bufferContainsXml } from '../../common/helpers';
 
 /**
  * Model for resources that have not been parsed.
  */
-export default class RawResource extends Resource {
-  readonly variant = 'RAW';
-  private _content?: string;
+export default class RawResource extends WritableModel implements Resource {
+  readonly encodingType: EncodingType = EncodingType.Unknown;
+  // NOTE: If necessary, cache plainText. For now, the memory overhead doesn't
+  // seem worth it.
 
-  /** The contents of this resource as plain text. */
+  /**
+   * The contents of this resource as plain text.
+   */
    get plainText(): string {
-    return this._content ??= this.buffer.toString('utf-8');
+    return this.buffer.toString('utf-8');
   }
 
   //#region Initialization
 
-  /**
-   * Creates a new RawResource instance. This constructor is not considered to
-   * be a part of the public API. Please refer to `from()` instead.
-   * 
-   * @param buffer Buffer to load into this resource
-   * @param reason Reason why this resource is being loaded raw
-   */
   protected constructor(buffer: Buffer, public reason?: string) {
     super(buffer);
   }
 
   /**
-   * Creates a new RawResource from the given buffer. This is functionally the
-   * same as the constructor, but is provided for parity with the other resource
-   * types.
+   * Creates a new RawResource from the given buffer.
    * 
    * @param buffer Buffer to create a raw resource from
    */
@@ -46,9 +42,7 @@ export default class RawResource extends Resource {
   }
 
   equals(other: RawResource): boolean {
-    if (!super.equals(other)) return false;
-    if (this.reason !== other.reason) return false;
-    return this.plainText === other.plainText;
+    return other && (this.buffer.compare(other.buffer) === 0);
   }
 
   isXml(): boolean {
@@ -56,8 +50,8 @@ export default class RawResource extends Resource {
   }
 
   onChange() {
-    // intentionally blank because this resource cannot be uncached -- the
-    // buffer is the only thing that meaningfully defines this resource
+    // intentionally blank because the buffer cannot be deleted -- it is the
+    // only defining feature of this model
   }
 
   //#endregion Public Methods
@@ -65,6 +59,7 @@ export default class RawResource extends Resource {
   //#region Protected Methods
 
   protected _serialize(): Buffer {
+    // this should never be thrown in prod, just for development
     throw new Error("Cannot serialize a raw resource.");
   }
 
