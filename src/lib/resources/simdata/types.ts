@@ -9,6 +9,7 @@ export interface SimDataDto {
   unused?: number;
   schemas?: SimDataSchema[];
   instances?: SimDataInstance[];
+  saveBuffer?: boolean;
 }
 
 /**

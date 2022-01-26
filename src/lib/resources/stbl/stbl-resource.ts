@@ -17,8 +17,12 @@ export default class StringTableResource extends PrimitiveMappedModel<string, St
 
   //#region Initialization
 
-  protected constructor(entries?: KeyStringPair[], buffer?: Buffer, owner?: ApiModelBase) {
-    super(entries, buffer, owner);
+  protected constructor(
+    entries?: KeyStringPair[],
+    buffer?: Buffer,
+    saveBuffer?: boolean
+  ) {
+    super(entries, buffer, saveBuffer);
   }
 
    /**
@@ -27,8 +31,11 @@ export default class StringTableResource extends PrimitiveMappedModel<string, St
    * 
    * @param entries Optional entries to create STBL with
    */
-  static create(entries?: KeyStringPair[]): StringTableResource {
-    return new StringTableResource(entries);
+  static create({ entries, saveBuffer }: {
+    entries?: KeyStringPair[];
+    saveBuffer?: boolean;
+  } = {}): StringTableResource { 
+    return new StringTableResource(entries, undefined, saveBuffer);
   }
 
   /**
@@ -38,7 +45,7 @@ export default class StringTableResource extends PrimitiveMappedModel<string, St
    * @param options Options to configure for reading a STBL resource
    */
   static from(buffer: Buffer, options?: FileReadingOptions): StringTableResource {
-    return new StringTableResource(readStbl(buffer, options), buffer);
+    return new StringTableResource(readStbl(buffer, options), buffer, options?.saveBuffer);
   }
 
   //#endregion Initialization

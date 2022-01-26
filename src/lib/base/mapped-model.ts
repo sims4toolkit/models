@@ -28,9 +28,10 @@ export abstract class MappedModel<Key, Value, Entry extends MappedModelEntry<Key
   protected constructor(
     entries?: { key: Key; value: Value; }[],
     buffer?: Buffer,
-    owner?: ApiModelBase,
+    saveBuffer?: boolean,
+    owner?: ApiModelBase
   ) {
-    super(buffer, owner);
+    super(buffer, saveBuffer, owner);
     this._entryMap = new Map();
     this._keyMap = new Map();
 
@@ -335,4 +336,7 @@ export interface MappedModelEntry<Key, Value> {
    * @throws If this model is invalid
    */
   validate(): void;
+
+  // TODO: valueEquals(value: Value): boolean;
+  // implement a way to check if the value exists
 }

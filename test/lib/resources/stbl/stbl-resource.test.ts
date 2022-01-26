@@ -184,10 +184,10 @@ describe("StringTableResource", () => {
     });
 
     it("should create entries from the given ones", () => {
-      const stbl = StringTableResource.create([
+      const stbl = StringTableResource.create({ entries: [
         { key: 123, value: "hi" },
         { key: 456, value: "bye" }
-      ]);
+      ]});
 
       expect(stbl.size).to.equal(2);
       expect(stbl.get(0).key).to.equal(123);
@@ -199,7 +199,7 @@ describe("StringTableResource", () => {
     it("should not mutate the given entries", () => {
       const original = StringTableResource.create();
       const originalEntry = original.add(123, "hi");
-      const stbl = StringTableResource.create([ originalEntry ]);
+      const stbl = StringTableResource.create({ entries: [ originalEntry ]});
 
       stbl.get(0).value = "bye";
       expect(originalEntry.value).to.equal("hi");
@@ -397,10 +397,10 @@ describe("StringTableResource", () => {
 
   describe("#clone()", () => {
     it("should copy the entries", () => {
-      const stbl = StringTableResource.create([
+      const stbl = StringTableResource.create({ entries: [
         { key: 123, value: "hi" },
         { key: 456, value: "bye" }
-      ]);
+      ]});
 
       const clone = stbl.clone();
 
@@ -413,10 +413,10 @@ describe("StringTableResource", () => {
     });
 
     it("should not mutate the original", () => {
-      const stbl = StringTableResource.create([
+      const stbl = StringTableResource.create({ entries: [
         { key: 123, value: "hi" },
         { key: 456, value: "bye" }
-      ]);
+      ]});
 
       const clone = stbl.clone();
       clone.add(789, "yeehaw");
@@ -425,10 +425,10 @@ describe("StringTableResource", () => {
     });
 
     it("should not mutate the entries of the original", () => {
-      const stbl = StringTableResource.create([
+      const stbl = StringTableResource.create({ entries: [
         { key: 123, value: "hi" },
         { key: 456, value: "bye" }
-      ]);
+      ]});
 
       const clone = stbl.clone();
       clone.getByKey(123).value = "hello";
@@ -446,10 +446,10 @@ describe("StringTableResource", () => {
     });
 
     it("should set itself as the owner of the new entries", () => {
-      const stbl = StringTableResource.create([
+      const stbl = StringTableResource.create({ entries: [
         { key: 123, value: "hi" },
         { key: 456, value: "bye" }
-      ]);
+      ]});
 
       const clone = stbl.clone();
       const [ first, second ] = clone.entries;

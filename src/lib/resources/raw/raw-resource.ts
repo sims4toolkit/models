@@ -8,26 +8,31 @@ import { bufferContainsXml } from '../../common/helpers';
  */
 export default class RawResource extends WritableModel implements Resource {
   readonly encodingType: EncodingType = EncodingType.Unknown;
-  // NOTE: If necessary, cache plainText. For now, the memory overhead doesn't
-  // seem worth it.
 
   /**
    * The contents of this resource as plain text.
    */
-   get plainText(): string {
+  get plainText(): string {
     return this.buffer.toString('utf-8');
+  }
+
+  /** Whether or not the buffer should be cached on this model. */
+  get saveBuffer() { return true; }
+  set saveBuffer(saveBuffer: boolean) {
+    throw new Error(`Cannot change value of saveBuffer on raw resource.`);
   }
 
   //#region Initialization
 
   protected constructor(buffer: Buffer, public reason?: string) {
-    super(buffer);
+    super(buffer, true); // raw resource must always save its buffer
   }
 
   /**
    * Creates a new RawResource from the given buffer.
    * 
    * @param buffer Buffer to create a raw resource from
+   * @param reason Optional reason why this resource is not being parsed
    */
   static from(buffer: Buffer, reason?: string): RawResource {
     return new RawResource(buffer, reason);
@@ -50,8 +55,9 @@ export default class RawResource extends WritableModel implements Resource {
   }
 
   onChange() {
-    // intentionally blank because the buffer cannot be deleted -- it is the
-    // only defining feature of this model
+    // intentionally blank because this model cannot be changed, and its buffer
+    // cannot be deleted -- it is the only defining feature of this model
+    return;
   }
 
   //#endregion Public Methods

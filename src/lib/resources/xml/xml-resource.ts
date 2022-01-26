@@ -1,10 +1,12 @@
 import { XmlDocumentNode, XmlNode } from "@s4tk/xml-dom";
 import WritableModel from "../../base/writable-model";
-import EncodingType from "../../enums/encoding-type";
 import Resource from "../resource";
+import EncodingType from "../../enums/encoding-type";
+import { FileReadingOptions } from "../../common/options";
 
 /**
- * Model for a plaintext, XML resource.
+ * Model for a plain text, XML resource. This does not necessarily need to be
+ * tuning, however, the XML DOM is tailored towards use with tuning.
  */
 export default class XmlResource extends WritableModel implements Resource {
   readonly encodingType: EncodingType = EncodingType.XML;
@@ -16,7 +18,7 @@ export default class XmlResource extends WritableModel implements Resource {
     try {
       return this._content ??= this._dom?.toXml() ?? '';
     } catch (e) {
-      throw new Error(`Failed to convert XML DOM to plain text:\n${e}`);
+      throw new Error(`Failed to write XML for DOM:\n${e}`);
     }
   }
 
@@ -27,33 +29,33 @@ export default class XmlResource extends WritableModel implements Resource {
   }
 
   /**
-   * The DOM for this resource. To mutate the contents of the DOM, either use
-   * `updateDom()` or set this property so that cacheing is handled properly.
+   * The DOM for this resource. To mutate the DOM and keep it in sync with the
+   * content/buffer, either use the `updateDom()` method, or set the dom equal
+   * to itself when finished (EX: `resource.dom = resource.dom`).
    */
   get dom(): XmlDocumentNode {
     try {
-      return this._dom ??= XmlDocumentNode.from(this.content, {
+      return this._dom ??= XmlDocumentNode.from(this.content, { // FIXME: content or _content?
         allowMultipleRoots: true
       });
     } catch (e) {
-      throw new Error(`Failed to generate DOM for XML:\n${e}`);
+      throw new Error(`Failed to generate DOM from XML:\n${e}`);
     }
   }
 
   set dom(dom: XmlDocumentNode) {
     this._dom = dom;
-    this._content = undefined;
+    delete this._content;
     this.onChange();
   }
 
   /**
-   * Shorthand for `dom.child`, since most XML resources should only have one
-   * child anyways. To mutate the root, either use `updateRoot()` or set this
-   * property so that cacheing is handled properly.
+   * Shorthand for `dom.child`, since most XML resources should have one child.
+   * To mutate the root and keep it in sync with the content/buffer, either use
+   * the `updateRoot()` method, or set the root equal to itself when finished
+   * (EX: `resource.root = resource.root`).
    */
-  get root(): XmlNode {
-    return this.dom.child;
-  }
+  get root(): XmlNode { return this.dom.child; }
 
   set root(node: XmlNode) {
     this.updateDom(dom => {
@@ -63,47 +65,53 @@ export default class XmlResource extends WritableModel implements Resource {
 
   //#region Initialization
 
-  /**
-   * Creates a new XmlResource instance. This constructor is not considered to
-   * be a part of the public API. Please refer to `create()` and `from()`
-   * instead.
-   * 
-   * @param params Arguments for construction
-   */
   protected constructor(
     content?: string,
     dom?: XmlDocumentNode,
-    buffer?: Buffer
+    buffer?: Buffer,
+    saveBuffer?: boolean
   ) {
-    super(buffer);
+    super(buffer, saveBuffer);
     this._content = content;
     this._dom = dom;
   }
 
   /**
    * Creates a new XML resource with the given content. If no content is
-   * given, the tuning resource is blank.
+   * given, the tuning resource is blank. It is recommended to supply just
+   * XML content or a DOM, but not both (because the model assumes the content
+   * and DOM will always be in sync, but this cannot be guaranteed if both are
+   * user-supplied rather than one being generated from the other).
    * 
-   * Initial Content
+   * Options
    * - `content`: The XML content of the resource as a string.
    * - `dom`: The XmlDocumentNode to use as this resource's DOM.
+   * - `saveBuffer`: Whether or not buffers created for this resource should
+   * be cached. False by default.
    * 
-   * @param initialContent Object containing initial content of this resource
+   * @param options Object containing initial content of this resource
    */
-  static create({ content, dom }: {
+  static create({ content, dom, saveBuffer }: {
     content?: string;
     dom?: XmlDocumentNode;
+    saveBuffer?: boolean;
   } = {}): XmlResource {
-    return new XmlResource(content, dom);
+    return new XmlResource(content, dom, undefined, saveBuffer);
   }
 
   /**
    * Creates an XML resource from a buffer containing XML.
    * 
    * @param buffer Buffer to create an XML resource from
+   * @param options Options for reading the buffer
    */
-  static from(buffer: Buffer): XmlResource {
-    return new XmlResource(buffer.toString('utf-8'), undefined, buffer);
+  static from(buffer: Buffer, options?: FileReadingOptions): XmlResource {
+    return new XmlResource(
+      buffer.toString('utf-8'),
+      undefined,
+      buffer,
+      options?.saveBuffer
+    );
   }
 
   //#endregion Initialization
@@ -114,12 +122,11 @@ export default class XmlResource extends WritableModel implements Resource {
     // copy content only, it is pointless to clone the entire DOM structure
     // because it can just be generated
     const buffer = this.isCached ? this.buffer : undefined;
-    return new XmlResource(this.content, undefined, buffer);
+    return new XmlResource(this.content, undefined, buffer, this.saveBuffer);
   }
 
   equals(other: XmlResource): boolean {
-    // TODO: check length
-    return this.content === other.content;
+    return other && this.content === other.content;
   }
 
   isXml(): boolean {

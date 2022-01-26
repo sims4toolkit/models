@@ -62,9 +62,10 @@ export default class SimDataResource extends WritableModel implements Resource, 
     public unused: number,
     schemas: SimDataSchema[],
     instances: SimDataInstance[],
-    buffer?: Buffer
+    buffer?: Buffer,
+    saveBuffer?: boolean
   ) {
-    super(buffer);
+    super(buffer, saveBuffer);
     this.schemas = schemas;
     this.instances = instances; 
     this._watchProps('version', 'unused');
@@ -95,9 +96,10 @@ export default class SimDataResource extends WritableModel implements Resource, 
     version = SUPPORTED_VERSION,
     unused = 0,
     schemas = [],
-    instances = []
+    instances = [],
+    saveBuffer
   }: SimDataDto = {}): SimDataResource {
-    return new SimDataResource(version, unused, schemas, instances);
+    return new SimDataResource(version, unused, schemas, instances, undefined, saveBuffer);
   }
 
   /**
@@ -108,7 +110,7 @@ export default class SimDataResource extends WritableModel implements Resource, 
    */
   static from(buffer: Buffer, options?: FileReadingOptions): SimDataResource {
     const { version, unused, schemas, instances } = readData(buffer, options);
-    return new SimDataResource(version, unused, schemas, instances, buffer);
+    return new SimDataResource(version, unused, schemas, instances, buffer, options?.saveBuffer);
   }
 
   /**

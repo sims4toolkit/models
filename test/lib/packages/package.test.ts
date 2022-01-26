@@ -35,7 +35,7 @@ function getTestKey(): ResourceKey {
 
 //#endregion Helpers
 
-describe("Sims4Package", () => {
+describe("Package", () => {
   //#region Properties
 
   describe("#buffer", () => {
@@ -43,12 +43,6 @@ describe("Sims4Package", () => {
       const original = Package.create();
       const dbpf = Package.from(original.buffer);
       expect(dbpf.size).to.equal(0);
-    });
-
-    it("should return the cached buffer if it wasn't changed", () => {
-      const buffer = getBuffer("Trait");
-      const dbpf = Package.from(buffer);
-      expect(dbpf.buffer).to.equal(buffer);
     });
 
     it("should serialize a dbpf that wasn't changed, but was uncached", () => {
@@ -423,7 +417,7 @@ describe("Sims4Package", () => {
         },
         {
           key: { type: 321, group: 654, instance: 987n },
-          value: StringTableResource.create([ { key: 1, value: "hi" } ])
+          value: StringTableResource.create({ entries: [ { key: 1, value: "hi" } ]})
         }
       ]);
 
@@ -959,9 +953,9 @@ describe("Sims4Package", () => {
             group: 654,
             instance: 987n
           },
-          value: StringTableResource.create([
+          value: StringTableResource.create({ entries: [
             { key: 1, value: "hi" }
-          ])
+          ]})
         }
       ]);
 
@@ -984,9 +978,9 @@ describe("Sims4Package", () => {
             group: 654,
             instance: 987n
           },
-          value: StringTableResource.create([
+          value: StringTableResource.create({ entries: [
             { key: 1, value: "hi" }
-          ])
+          ]})
         }
       ]);
 
@@ -1009,9 +1003,9 @@ describe("Sims4Package", () => {
             group: 456,
             instance: 789n
           },
-          value: StringTableResource.create([
+          value: StringTableResource.create({ entries: [
             { key: 1, value: "hi" }
-          ])
+          ]})
         }
       ]);
 
@@ -1349,9 +1343,9 @@ describe("ResourceEntry", () => {
         type: 0,
         group: 0,
         instance: 0n
-      }, StringTableResource.create([
+      }, StringTableResource.create({ entries: [
         { key: 1, value: "hi" }
-      ]));
+      ]}));
 
       expect(() => entry.validate()).to.not.throw();
     });
@@ -1363,9 +1357,9 @@ describe("ResourceEntry", () => {
         type: -1,
         group: 0,
         instance: 0n
-      }, StringTableResource.create([
+      }, StringTableResource.create({ entries: [
         { key: 1, value: "hi" }
-      ]));
+      ]}));
 
       expect(() => entry.validate()).to.throw();
     });
@@ -1377,9 +1371,9 @@ describe("ResourceEntry", () => {
         type: 0,
         group: -1,
         instance: 0n
-      }, StringTableResource.create([
+      }, StringTableResource.create({ entries: [
         { key: 1, value: "hi" }
-      ]));
+      ]}));
 
       expect(() => entry.validate()).to.throw();
     });
@@ -1391,9 +1385,9 @@ describe("ResourceEntry", () => {
         type: 0,
         group: 0,
         instance: -1n
-      }, StringTableResource.create([
+      }, StringTableResource.create({ entries: [
         { key: 1, value: "hi" }
-      ]));
+      ]}));
 
       expect(() => entry.validate()).to.throw();
     });
@@ -1405,9 +1399,9 @@ describe("ResourceEntry", () => {
         type: 0x800000000,
         group: 0,
         instance: 0n
-      }, StringTableResource.create([
+      }, StringTableResource.create({ entries: [
         { key: 1, value: "hi" }
-      ]));
+      ]}));
 
       expect(() => entry.validate()).to.throw();
     });
@@ -1419,9 +1413,9 @@ describe("ResourceEntry", () => {
         type: 0,
         group: 0x800000000,
         instance: 0n
-      }, StringTableResource.create([
+      }, StringTableResource.create({ entries: [
         { key: 1, value: "hi" }
-      ]));
+      ]}));
 
       expect(() => entry.validate()).to.throw();
     });
@@ -1433,9 +1427,9 @@ describe("ResourceEntry", () => {
         type: 0,
         group: 0,
         instance: 0x80000000000000000n
-      }, StringTableResource.create([
+      }, StringTableResource.create({ entries: [
         { key: 1, value: "hi" }
-      ]));
+      ]}));
 
       expect(() => entry.validate()).to.throw();
     });
@@ -1447,9 +1441,9 @@ describe("ResourceEntry", () => {
         type: 0,
         group: 0,
         instance: 0x80000000000000000n
-      }, StringTableResource.create([
+      }, StringTableResource.create({ entries: [
         { key: -1, value: "hi" }
-      ]));
+      ]}));
 
       expect(() => entry.validate()).to.throw();
     });
