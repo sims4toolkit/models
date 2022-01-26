@@ -35,7 +35,7 @@ export default class XmlResource extends WritableModel implements Resource {
    */
   get dom(): XmlDocumentNode {
     try {
-      return this._dom ??= XmlDocumentNode.from(this.content, { // FIXME: content or _content?
+      return this._dom ??= XmlDocumentNode.from(this.content, {
         allowMultipleRoots: true
       });
     } catch (e) {
@@ -68,10 +68,10 @@ export default class XmlResource extends WritableModel implements Resource {
   protected constructor(
     content?: string,
     dom?: XmlDocumentNode,
-    buffer?: Buffer,
-    saveBuffer?: boolean
+    saveBuffer?: boolean,
+    buffer?: Buffer
   ) {
-    super(buffer, saveBuffer);
+    super(saveBuffer, buffer);
     this._content = content;
     this._dom = dom;
   }
@@ -96,7 +96,7 @@ export default class XmlResource extends WritableModel implements Resource {
     dom?: XmlDocumentNode;
     saveBuffer?: boolean;
   } = {}): XmlResource {
-    return new XmlResource(content, dom, undefined, saveBuffer);
+    return new XmlResource(content, dom, saveBuffer);
   }
 
   /**
@@ -109,8 +109,8 @@ export default class XmlResource extends WritableModel implements Resource {
     return new XmlResource(
       buffer.toString('utf-8'),
       undefined,
-      buffer,
-      options?.saveBuffer
+      options?.saveBuffer,
+      buffer
     );
   }
 
@@ -122,7 +122,7 @@ export default class XmlResource extends WritableModel implements Resource {
     // copy content only, it is pointless to clone the entire DOM structure
     // because it can just be generated
     const buffer = this.isCached ? this.buffer : undefined;
-    return new XmlResource(this.content, undefined, buffer, this.saveBuffer);
+    return new XmlResource(this.content, undefined, this.saveBuffer, buffer);
   }
 
   equals(other: XmlResource): boolean {

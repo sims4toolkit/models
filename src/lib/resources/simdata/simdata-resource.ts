@@ -62,10 +62,10 @@ export default class SimDataResource extends WritableModel implements Resource, 
     public unused: number,
     schemas: SimDataSchema[],
     instances: SimDataInstance[],
-    buffer?: Buffer,
-    saveBuffer?: boolean
+    saveBuffer?: boolean,
+    buffer?: Buffer
   ) {
-    super(buffer, saveBuffer);
+    super(saveBuffer, buffer);
     this.schemas = schemas;
     this.instances = instances; 
     this._watchProps('version', 'unused');
@@ -75,7 +75,14 @@ export default class SimDataResource extends WritableModel implements Resource, 
     const newSchemas = this.schemas.map(s => s.clone());
     const instances = this.instances.map(i => i.clone({ newSchemas }));
     const buffer = this.isCached ? this.buffer : undefined;
-    return new SimDataResource(this.version, this.unused, newSchemas, instances, buffer);
+    return new SimDataResource(
+      this.version,
+      this.unused,
+      newSchemas,
+      instances,
+      this.saveBuffer,
+      buffer
+    );
   }
 
   /**
@@ -99,7 +106,7 @@ export default class SimDataResource extends WritableModel implements Resource, 
     instances = [],
     saveBuffer
   }: SimDataDto = {}): SimDataResource {
-    return new SimDataResource(version, unused, schemas, instances, undefined, saveBuffer);
+    return new SimDataResource(version, unused, schemas, instances, saveBuffer);
   }
 
   /**
@@ -109,8 +116,15 @@ export default class SimDataResource extends WritableModel implements Resource, 
    * @param options Options to configure
    */
   static from(buffer: Buffer, options?: FileReadingOptions): SimDataResource {
-    const { version, unused, schemas, instances } = readData(buffer, options);
-    return new SimDataResource(version, unused, schemas, instances, buffer, options?.saveBuffer);
+    const dto = readData(buffer, options);
+    return new SimDataResource(
+      dto.version,
+      dto.unused,
+      dto.schemas,
+      dto.instances,
+      options?.saveBuffer,
+      buffer
+    );
   }
 
   /**

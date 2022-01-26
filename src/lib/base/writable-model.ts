@@ -5,7 +5,8 @@ import ApiModelBase from './api-model';
  */
 export default abstract class WritableModel extends ApiModelBase {
   // NOTE: Buffer is fine for now, but look out for memory/time bottlenecks...
-  // If it gets worrying, this should be replaced with a stream.
+  // If any come up, it should be replaced with a stream. This would require
+  // significant refactoring of the entire codebase, though.
   private _buffer?: Buffer;
   private _saveBuffer: boolean;
 
@@ -33,13 +34,13 @@ export default abstract class WritableModel extends ApiModelBase {
   }
 
   protected constructor(
-    buffer?: Buffer,
     saveBuffer: boolean = true, // FIXME: should be false by default
+    buffer?: Buffer,
     owner?: ApiModelBase,
   ) {
     super(owner);
     this._saveBuffer = saveBuffer;
-    if (this._saveBuffer) this._buffer = buffer;
+    if (saveBuffer) this._buffer = buffer;
   }
 
   onChange() {

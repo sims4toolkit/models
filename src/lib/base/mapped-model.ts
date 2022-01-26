@@ -27,11 +27,11 @@ export abstract class MappedModel<Key, Value, Entry extends MappedModelEntry<Key
 
   protected constructor(
     entries?: { key: Key; value: Value; }[],
-    buffer?: Buffer,
     saveBuffer?: boolean,
+    buffer?: Buffer,
     owner?: ApiModelBase
   ) {
-    super(buffer, saveBuffer, owner);
+    super(saveBuffer, buffer, owner);
     this._entryMap = new Map();
     this._keyMap = new Map();
 

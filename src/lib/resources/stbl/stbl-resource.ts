@@ -19,10 +19,10 @@ export default class StringTableResource extends PrimitiveMappedModel<string, St
 
   protected constructor(
     entries?: KeyStringPair[],
-    buffer?: Buffer,
-    saveBuffer?: boolean
+    saveBuffer?: boolean,
+    buffer?: Buffer
   ) {
-    super(entries, buffer, saveBuffer);
+    super(entries, saveBuffer, buffer);
   }
 
    /**
@@ -35,7 +35,7 @@ export default class StringTableResource extends PrimitiveMappedModel<string, St
     entries?: KeyStringPair[];
     saveBuffer?: boolean;
   } = {}): StringTableResource { 
-    return new StringTableResource(entries, undefined, saveBuffer);
+    return new StringTableResource(entries, saveBuffer);
   }
 
   /**
@@ -45,7 +45,11 @@ export default class StringTableResource extends PrimitiveMappedModel<string, St
    * @param options Options to configure for reading a STBL resource
    */
   static from(buffer: Buffer, options?: FileReadingOptions): StringTableResource {
-    return new StringTableResource(readStbl(buffer, options), buffer, options?.saveBuffer);
+    return new StringTableResource(
+      readStbl(buffer, options),
+      options?.saveBuffer,
+      buffer
+    );
   }
 
   //#endregion Initialization
@@ -68,7 +72,7 @@ export default class StringTableResource extends PrimitiveMappedModel<string, St
 
   clone(): StringTableResource {
     const buffer = this.isCached ? this.buffer : undefined;
-    return new StringTableResource(this.entries, buffer);
+    return new StringTableResource(this.entries, this.saveBuffer, buffer);
   }
 
   equals(other: StringTableResource): boolean {

@@ -25,7 +25,7 @@ export default class RawResource extends WritableModel implements Resource {
   //#region Initialization
 
   protected constructor(buffer: Buffer, public reason?: string) {
-    super(buffer, true); // raw resource must always save its buffer
+    super(true, buffer); // raw resource must always save its buffer
   }
 
   /**
