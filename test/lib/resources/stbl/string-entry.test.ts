@@ -16,8 +16,8 @@ function getBuffer(filename: string): Buffer {
   return cachedBuffers[filename];
 }
 
-function getStbl(filename: string): StringTableResource {
-  return StringTableResource.from(getBuffer(filename));
+function getStbl(filename: string, saveBuffer = false): StringTableResource {
+  return StringTableResource.from(getBuffer(filename), { saveBuffer });
 }
 
 //#endregion Helpers
@@ -25,7 +25,7 @@ function getStbl(filename: string): StringTableResource {
 describe("StringEntry", () => {
   describe("#key", () => {
     it("should uncache the stbl when set", () => {
-      const stbl = getStbl("Normal");
+      const stbl = getStbl("Normal", true);
       expect(stbl.isCached).to.be.true;
       stbl.get(0).key++;
       expect(stbl.isCached).to.be.false;
@@ -50,16 +50,8 @@ describe("StringEntry", () => {
       expect(entry.string).to.equal("hi");
     });
 
-    it("should set the value of this entry", () => {
-      const stbl = StringTableResource.create();
-      const entry = stbl.addAndHash("hi");
-      expect(entry.value).to.equal("hi");
-      entry.string = "bye";
-      expect(entry.value).to.equal("bye");
-    });
-
     it("should uncache the stbl when set", () => {
-      const stbl = getStbl("Normal");
+      const stbl = getStbl("Normal", true);
       expect(stbl.isCached).to.be.true;
       stbl.get(0).string = "new";
       expect(stbl.isCached).to.be.false;
@@ -67,8 +59,16 @@ describe("StringEntry", () => {
   });
 
   describe("#value", () => {
+    it("should set the value of this entry", () => {
+      const stbl = StringTableResource.create();
+      const entry = stbl.addAndHash("hi");
+      expect(entry.value).to.equal("hi");
+      entry.value = "bye";
+      expect(entry.value).to.equal("bye");
+    });
+
     it("should uncache the stbl when set", () => {
-      const stbl = getStbl("Normal");
+      const stbl = getStbl("Normal", true);
       expect(stbl.isCached).to.be.true;
       stbl.get(0).value = "new";
       expect(stbl.isCached).to.be.false;
@@ -145,7 +145,7 @@ describe("StringEntry", () => {
 
   describe("#onChange()", () => {
     it("should uncache the owning stbl", () => {
-      const stbl = getStbl("Normal");
+      const stbl = getStbl("Normal", true);
       expect(stbl.isCached).to.be.true;
       stbl.get(0).onChange();
       expect(stbl.isCached).to.be.false;
@@ -175,6 +175,20 @@ describe("StringEntry", () => {
       const stbl = StringTableResource.create();
       const entry = stbl.add(0x100000000, "hi");
       expect(() => entry.validate()).to.throw();
+    });
+  });
+
+  describe("#valueEquals()", () => {
+    it("should return true when value is the same", () => {
+      const stbl = StringTableResource.create();
+      const entry = stbl.add(123, "hi");
+      expect(entry.valueEquals("hi")).to.be.true;
+    });
+
+    it("should return false when value is different", () => {
+      const stbl = StringTableResource.create();
+      const entry = stbl.add(123, "hi");
+      expect(entry.valueEquals("bye")).to.be.false;
     });
   });
 });
