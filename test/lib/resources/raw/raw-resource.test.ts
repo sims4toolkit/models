@@ -23,12 +23,6 @@ describe('RawResource', function() {
       const raw = RawResource.from(Buffer.from("hello"), "Just because!");
       expect(raw.reason).to.equal("Just because!");
     });
-
-    it('should not be assignable', function() {
-      const raw = RawResource.from(Buffer.from("hello"), "Just because!");
-      //@ts-expect-error The whole point is that it's an error
-      expect(() => raw.reason = "Nothing").to.throw();
-    });
   });
 
   describe('#buffer', function() {

@@ -68,12 +68,12 @@ export default class XmlResource extends Resource {
    * 
    * @param params Arguments for construction
    */
-  protected constructor({ content, buffer, dom }: {
-    content?: string;
-    buffer?: Buffer;
-    dom?: XmlDocumentNode;
-  } = {}) {
-    super({ buffer });
+  protected constructor(
+    content?: string,
+    dom?: XmlDocumentNode,
+    buffer?: Buffer
+  ) {
+    super(buffer);
     this._content = content;
     this._dom = dom;
   }
@@ -88,11 +88,11 @@ export default class XmlResource extends Resource {
    * 
    * @param initialContent Object containing initial content of this resource
    */
-  static create(initialContent: {
+  static create({ content, dom }: {
     content?: string;
     dom?: XmlDocumentNode;
   } = {}): XmlResource {
-    return new XmlResource(initialContent);
+    return new XmlResource(content, dom);
   }
 
   /**
@@ -101,7 +101,7 @@ export default class XmlResource extends Resource {
    * @param buffer Buffer to create an XML resource from
    */
   static from(buffer: Buffer): XmlResource {
-    return new XmlResource({ content: buffer.toString('utf-8'), buffer });
+    return new XmlResource(buffer.toString('utf-8'), undefined, buffer);
   }
 
   //#endregion Initialization
@@ -109,10 +109,10 @@ export default class XmlResource extends Resource {
   //#region Public Methods
 
   clone(): XmlResource {
-    return new XmlResource({
-      content: this.content,
-      dom: this.dom.clone()
-    });
+    // copy content only, it is pointless to clone the entire DOM structure
+    // because it can just be generated
+    const buffer = this.isCached ? this.buffer : undefined;
+    return new XmlResource(this.content, undefined, buffer);
   }
 
   equals(other: XmlResource): boolean {

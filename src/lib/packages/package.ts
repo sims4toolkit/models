@@ -14,8 +14,8 @@ import ResourceEntry from "./resource-entry";
 export default class Package extends MappedModel<ResourceKey, Resource, ResourceEntry> {
   //#region Initialization
 
-  protected constructor(entries: ResourceKeyPair[], buffer?: Buffer) {
-    super(entries, { buffer });
+  protected constructor(entries?: ResourceKeyPair[], buffer?: Buffer) {
+    super(entries, buffer); // FIXME: don't cache
   }
 
   /**
@@ -24,7 +24,7 @@ export default class Package extends MappedModel<ResourceKey, Resource, Resource
    * 
    * @param entries Resource entries to use in this package. Empty by default.
    */
-  static create(entries: ResourceKeyPair[] = []): Package {
+  static create(entries?: ResourceKeyPair[]): Package {
     return new Package(entries);
   }
 

@@ -25,15 +25,16 @@ export abstract class MappedModel<Key, Value, Entry extends MappedModelEntry<Key
     return this._entryMap.size;
   }
 
-  protected constructor(entries: { key: Key; value: Value; }[], options?: {
-    buffer?: Buffer;
-    owner?: ApiModelBase;
-  }) {
-    super(options);
+  protected constructor(
+    entries?: { key: Key; value: Value; }[],
+    buffer?: Buffer,
+    owner?: ApiModelBase,
+  ) {
+    super(buffer, owner);
     this._entryMap = new Map();
     this._keyMap = new Map();
 
-    entries.forEach((entry, id) => {
+    entries?.forEach((entry, id) => {
       this._entryMap.set(id, this._makeEntry(entry.key, entry.value, entry));
       const keyId = this._getKeyIdentifier(entry.key);
       if (!this._keyMap.has(keyId)) this._keyMap.set(keyId, id);
@@ -71,6 +72,7 @@ export abstract class MappedModel<Key, Value, Entry extends MappedModelEntry<Key
   add(key: Key, value: Value): Entry {
     const id = this._nextId++;
     if (this._entryMap.has(id))
+      // this should never be thrown in prod, it's for development
       throw new Error(`Duplicated ID in mapped model: ${id}`);
     const entry = this._makeEntry(key, value);
     this._entryMap.set(id, entry);
@@ -81,7 +83,7 @@ export abstract class MappedModel<Key, Value, Entry extends MappedModelEntry<Key
   }
 
   /**
-   * Creates new entries for the give key/value pairs, adds them to this model,
+   * Creates new entries for the given key/value pairs, adds them to this model,
    * and returns them in an array.
    * 
    * @param entries List of objects to add as entries

@@ -230,13 +230,6 @@ describe('XmlResource', function() {
       expect(clone.root.innerValue).to.equal("50");
     });
 
-    it("should not transfer the buffer to the clone", function() {
-      const tun = XmlResource.from(Buffer.from("hello"));
-      expect(tun.isCached).to.be.true;
-      const clone = tun.clone()
-      expect(clone.isCached).to.be.false;
-    });
-
     it("should not mutate the original's content", function() {
       const tun = XmlResource.create({ content: "<T>50</T>" });
       const clone = tun.clone();

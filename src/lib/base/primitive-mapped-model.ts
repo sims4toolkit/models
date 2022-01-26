@@ -3,7 +3,8 @@ import { MappedModel, MappedModelEntry } from "./mapped-model";
 
 /**
  * A mapped model that uses numbers for keys and some other primitive type for
- * its values.
+ * its values. "Primitive type" means types where `===` can be used to
+ * determine equality between two values.
  */
 export abstract class PrimitiveMappedModel<Value, Entry extends PrimitiveEntry<Value>> extends MappedModel<number, Value, Entry> {
   protected _getKeyIdentifier(key: number): number {

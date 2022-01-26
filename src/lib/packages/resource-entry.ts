@@ -41,7 +41,7 @@ export default class ResourceEntry extends WritableModel implements MappedModelE
   set resource(resource: Resource) { this.value = resource; }
   
   constructor(key: ResourceKey, resource: Resource, buffer?: Buffer, owner?: Package) {
-    super({ owner, buffer });
+    super(buffer, owner);
     this.key = key;
     if (resource) resource.owner = this;
     this._resource = resource;

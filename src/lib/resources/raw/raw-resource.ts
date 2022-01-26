@@ -6,17 +6,11 @@ import { bufferContainsXml } from '../../common/helpers';
  */
 export default class RawResource extends Resource {
   readonly variant = 'RAW';
-  private _reason?: string;
   private _content?: string;
 
   /** The contents of this resource as plain text. */
    get plainText(): string {
     return this._content ??= this.buffer.toString('utf-8');
-  }
-
-  /** Reason why this resource has not been parsed. */
-  get reason(): string {
-    return this._reason;
   }
 
   //#region Initialization
@@ -28,9 +22,8 @@ export default class RawResource extends Resource {
    * @param buffer Buffer to load into this resource
    * @param reason Reason why this resource is being loaded raw
    */
-  protected constructor(buffer: Buffer, reason?: string) {
-    super({ buffer });
-    this._reason = reason;
+  protected constructor(buffer: Buffer, public reason?: string) {
+    super(buffer);
   }
 
   /**

@@ -21,16 +21,14 @@ export default abstract class WritableModel extends ApiModelBase {
    * Whether this model currently has a cached buffer.
    */
   get isCached(): boolean {
+    // intentionally != so that null is captured as well
     return this._buffer != undefined;
   }
 
-  protected constructor(args?: {
-    buffer?: Buffer;
-    owner?: ApiModelBase;
-  }) {
-    super(args?.owner);
+  protected constructor(buffer?: Buffer, owner?: ApiModelBase) {
+    super(owner);
     this._cacheBuffer = true; // FIXME: make this a setting
-    this._buffer = args?.buffer;
+    this._buffer = buffer;
   }
 
   onChange() {

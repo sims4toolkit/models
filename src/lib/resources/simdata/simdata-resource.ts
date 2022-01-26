@@ -62,7 +62,7 @@ export default class SimDataResource extends Resource implements SimDataDto {
     instances: SimDataInstance[],
     buffer?: Buffer
   ) {
-    super({ buffer });
+    super(buffer);
     this.schemas = schemas;
     this.instances = instances; 
     this._watchProps('version', 'unused');
