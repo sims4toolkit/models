@@ -4,6 +4,7 @@ import { expect } from "chai";
 import { fnv32 } from "@s4tk/hashing";
 import { StringTableResource } from "../../../../dst/models";
 import MockOwner from "../../../mocks/mock-owner";
+import { EncodingType } from "../../../../dst/enums";
 
 //#region Helpers
 
@@ -160,10 +161,10 @@ describe("StringTableResource", () => {
     });
   });
 
-  describe("#variant", () => {
+  describe("#encodingType", () => {
     it("should be STBL", () => {
       const stbl = getStbl("Normal");
-      expect(stbl.variant).to.equal("STBL");
+      expect(stbl.encodingType).to.equal(EncodingType.STBL);
     });
   });
 

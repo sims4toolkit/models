@@ -1,4 +1,5 @@
 import { expect } from "chai";
+import { EncodingType } from "../../../../dst/enums";
 import { RawResource, StringTableResource } from '../../../../dst/models';
 
 function getRAW(content = "default content") {
@@ -9,7 +10,7 @@ describe('RawResource', function() {
   describe('#variant', function() {
     it('should be "RAW" when loaded', function() {
       const raw = getRAW("file content");
-      expect(raw.variant).to.equal("RAW");
+      expect(raw.encodingType).to.equal(EncodingType.Unknown);
     });
   });
 

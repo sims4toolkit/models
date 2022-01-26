@@ -7,12 +7,13 @@ import { arraysAreEqual } from "../../common/helpers";
 import { FileReadingOptions } from "../../common/options";
 import readStbl from "./serialization/read-stbl";
 import writeStbl from "./serialization/write-stbl";
+import EncodingType from "../../enums/encoding-type";
 
 /**
  * Model for string table (STBL) resources.
  */
 export default class StringTableResource extends PrimitiveMappedModel<string, StringEntry> implements Resource {
-  readonly variant = 'STBL';
+  readonly encodingType: EncodingType = EncodingType.STBL;
 
   //#region Initialization
 

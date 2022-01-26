@@ -6,7 +6,7 @@ import compare from "just-compare";
 import clone from "just-clone";
 import type { ResourceKey } from "../../../dst/lib/packages/types";
 import { Package, RawResource, SimDataResource, StringTableResource, XmlResource } from "../../../dst/models";
-import { TuningResourceType } from "../../../dst/enums";
+import { EncodingType, TuningResourceType } from "../../../dst/enums";
 
 //#region Helpers
 
@@ -78,7 +78,7 @@ describe("Sims4Package", () => {
       const dbpf = Package.from(original.buffer);
       expect(dbpf.size).to.equal(1);
       const tuning = dbpf.get(0).value as XmlResource;
-      expect(tuning.variant).to.equal("XML");
+      expect(tuning.encodingType).to.equal(EncodingType.XML);
       expect(tuning.root.name).to.equal("frankkulak_LB:trait_SimlishNative");
     });
 
@@ -89,7 +89,7 @@ describe("Sims4Package", () => {
       const dbpf = Package.from(original.buffer);
       expect(dbpf.size).to.equal(1);
       const tuning = dbpf.get(0).value as XmlResource;
-      expect(tuning.variant).to.equal("XML");
+      expect(tuning.encodingType).to.equal(EncodingType.XML);
       expect(tuning.root.name).to.equal("frankkulak_LB:trait_SimlishNative");
     });
   });
@@ -292,7 +292,7 @@ describe("Sims4Package", () => {
           group: 0,
           instance: 0x0B3417C01CCD98FEn
         })).to.be.true;
-        expect(image.variant).to.equal("RAW");
+        expect(image.encodingType).to.equal(EncodingType.Unknown);
       });
 
       it("should read other xml resource correctly", () => {
@@ -305,7 +305,7 @@ describe("Sims4Package", () => {
           group: 0,
           instance: 0x2C6BFE4373B9990En
         })).to.be.true;
-        expect(animation.variant).to.equal("XML");
+        expect(animation.encodingType).to.equal(EncodingType.XML);
         expect(animation.root.tag).to.equal("ASM");
         expect(animation.root.children[1].attributes.name).to.equal("utensil");
       });
@@ -316,7 +316,7 @@ describe("Sims4Package", () => {
         });
 
         dbpf.entries.forEach(entry => {
-          expect(entry.value.variant).to.equal("RAW");
+          expect(entry.value.encodingType).to.equal(EncodingType.Unknown);
         });
       });
     });
@@ -481,9 +481,9 @@ describe("Sims4Package", () => {
       const clone = dbpf.clone();
       expect(clone.size).to.equal(2);
       const [ simdata, tuning ] = clone.entries;
-      expect(simdata.value.variant).to.equal("DATA");
+      expect(simdata.value.encodingType).to.equal(EncodingType.DATA);
       expect(simdata.equals(dbpf.get(0))).to.be.true;
-      expect(tuning.value.variant).to.equal("XML");
+      expect(tuning.value.encodingType).to.equal(EncodingType.XML);
       expect(tuning.equals(dbpf.get(1))).to.be.true;
     });
 
@@ -502,8 +502,8 @@ describe("Sims4Package", () => {
       const dbpf = getPackage("Trait");
       const clone = dbpf.clone();
       clone.get(0).value = getTestTuning();
-      expect(clone.get(0).value.variant).to.equal("XML");
-      expect(dbpf.get(0).value.variant).to.equal("DATA");
+      expect(clone.get(0).value.encodingType).to.equal(EncodingType.XML);
+      expect(dbpf.get(0).value.encodingType).to.equal(EncodingType.DATA);
     });
 
     it("should not mutate the original resources", () => {
@@ -576,7 +576,7 @@ describe("Sims4Package", () => {
       const dbpf = getPackage("CompleteTrait");
       expect(dbpf.size).to.equal(4);
       const key = { type: 0x545AC67A, group: 0x005FDD0C, instance: 0x97297134D57FE219n };
-      expect(dbpf.getByKey(key).value.variant).to.equal("DATA");
+      expect(dbpf.getByKey(key).value.encodingType).to.equal(EncodingType.DATA);
       dbpf.deleteByKey(key);
       expect(dbpf.size).to.equal(3);
       expect(dbpf.getByKey(key)).to.be.undefined;
@@ -633,13 +633,13 @@ describe("Sims4Package", () => {
     it("should return the entry with the given ID", () => {
       const dbpf = getPackage("CompleteTrait");
       const image = dbpf.get(0);
-      expect(image.value.variant).to.equal("RAW");
+      expect(image.value.encodingType).to.equal(EncodingType.Unknown);
       const simdata = dbpf.get(1);
-      expect(simdata.value.variant).to.equal("DATA");
+      expect(simdata.value.encodingType).to.equal(EncodingType.DATA);
       const tuning = dbpf.get(2);
-      expect(tuning.value.variant).to.equal("XML");
+      expect(tuning.value.encodingType).to.equal(EncodingType.XML);
       const stbl = dbpf.get(3);
-      expect(stbl.value.variant).to.equal("STBL");
+      expect(stbl.value.encodingType).to.equal(EncodingType.STBL);
     });
 
     it("should return the same item for the same ID even if one before it is removed", () => {
@@ -664,7 +664,7 @@ describe("Sims4Package", () => {
         instance: 0x97297134D57FE219n
       });
 
-      expect(entry.value.variant).to.equal("XML");
+      expect(entry.value.encodingType).to.equal(EncodingType.XML);
     });
 
     it("should return an entry after adding it", () => {
@@ -677,7 +677,7 @@ describe("Sims4Package", () => {
 
       expect(dbpf.getByKey(key)).to.be.undefined;
       dbpf.add(key, getTestTuning());
-      expect(dbpf.getByKey(key).value.variant).to.equal("XML");
+      expect(dbpf.getByKey(key).value.encodingType).to.equal(EncodingType.XML);
     });
 
     it("should return the correct entry after changing its key", () => {
@@ -713,7 +713,7 @@ describe("Sims4Package", () => {
         instance: 0x97297134D57FE219n
       };
 
-      expect(dbpf.getByKey(key).value.variant).to.equal("DATA");
+      expect(dbpf.getByKey(key).value.encodingType).to.equal(EncodingType.DATA);
       dbpf.deleteByKey(key);
       expect(dbpf.getByKey(key)).to.be.undefined;
     });
@@ -1163,7 +1163,7 @@ describe("ResourceEntry", () => {
       const dbpf = getPackage("Trait");
       const entry = dbpf.get(0);
       const clone = entry.clone();
-      expect(clone.value.variant).to.equal("DATA");
+      expect(clone.value.encodingType).to.equal(EncodingType.DATA);
       expect(clone.equals(dbpf.get(0))).to.be.true;
     });
 

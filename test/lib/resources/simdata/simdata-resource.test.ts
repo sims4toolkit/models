@@ -4,6 +4,7 @@ import { expect } from "chai";
 import { SimDataResource } from "../../../../dst/models";
 import { SimDataType, SimDataSchema, SimDataInstance, cells } from "../../../../dst/simdata";
 import MockOwner from "../../../mocks/mock-owner";
+import { EncodingType } from "../../../../dst/enums";
 
 //#region Helpers
 
@@ -317,10 +318,10 @@ describe("SimDataResource", () => {
     });
   });
 
-  describe("#variant", () => {
+  describe("#encodingType", () => {
     it("should be 'DATA'", () => {
       const simdata = getSimDataFromBinary("buff");
-      expect(simdata.variant).to.equal("DATA");
+      expect(simdata.encodingType).to.equal(EncodingType.DATA);
     });
   });
 

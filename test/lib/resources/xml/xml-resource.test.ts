@@ -4,6 +4,7 @@ import { expect } from "chai";
 import { XmlDocumentNode } from "@s4tk/xml-dom";
 import { XmlResource } from '../../../../dst/models';
 import * as tunables from "../../../../dst/tunables";
+import { EncodingType } from "../../../../dst/enums";
 
 const XML_DECLARATION = '<?xml version="1.0" encoding="utf-8"?>';
 
@@ -16,15 +17,10 @@ function getTuningFromFile(filename) {
 describe('XmlResource', function() {
   //#region Properties
 
-  describe('#variant', function() {
-    it('should be "XML" when created', function() {
-      const tun = XmlResource.create();
-      expect(tun.variant).to.equal("XML");
-    });
-
-    it('should be "XML" when loaded', function() {
+  describe('#encodingType', function() {
+    it('should be "XML"', function() {
       const tun = XmlResource.from(Buffer.from("file content"));
-      expect(tun.variant).to.equal("XML");
+      expect(tun.encodingType).to.equal(EncodingType.XML);
     });
   });
 

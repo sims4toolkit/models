@@ -8,6 +8,8 @@ import { SimDataDto } from "./types";
 import { SUPPORTED_VERSION } from "./constants";
 import readData from "./serialization/read-data";
 import writeData from "./serialization/write-data";
+import WritableModel from "../../base/writable-model";
+import EncodingType from "../../enums/encoding-type";
 
 /**
  * A resource for SimData (binary tuning). SimDatas are essentially mini
@@ -15,8 +17,8 @@ import writeData from "./serialization/write-data";
  * with Sims 4 Studio), this model uses the concept of "instances". An
  * "instance" is an object cell that has a name.
  */
-export default class SimDataResource extends Resource implements SimDataDto {
-  readonly variant = 'DATA';
+export default class SimDataResource extends WritableModel implements Resource, SimDataDto {
+  readonly encodingType: EncodingType = EncodingType.DATA;
   private _schemas: SimDataSchema[];
   private _instances: SimDataInstance[];
 
@@ -157,7 +159,7 @@ export default class SimDataResource extends Resource implements SimDataDto {
   //#region Public Methods
 
   equals(other: SimDataResource): boolean {
-    if (!super.equals(other)) return false;
+    if (!(other instanceof SimDataResource)) return false;
     if (this.version !== other.version) return false;
     if (this.unused !== other.unused) return false;
     if (!arraysAreEqual(this.schemas, other.schemas)) return false;
@@ -236,6 +238,10 @@ export default class SimDataResource extends Resource implements SimDataDto {
     }));
 
     return doc;
+  }
+
+  isXml(): boolean {
+    return false;
   }
 
   //#endregion Public Methods

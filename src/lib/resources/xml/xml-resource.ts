@@ -1,11 +1,13 @@
 import { XmlDocumentNode, XmlNode } from "@s4tk/xml-dom";
+import WritableModel from "../../base/writable-model";
+import EncodingType from "../../enums/encoding-type";
 import Resource from "../resource";
 
 /**
  * Model for a plaintext, XML resource.
  */
-export default class XmlResource extends Resource {
-  readonly variant = 'XML';
+export default class XmlResource extends WritableModel implements Resource {
+  readonly encodingType: EncodingType = EncodingType.XML;
   private _content?: string;
   private _dom?: XmlDocumentNode;
 
@@ -116,7 +118,7 @@ export default class XmlResource extends Resource {
   }
 
   equals(other: XmlResource): boolean {
-    if (!super.equals(other)) return false;
+    // TODO: check length
     return this.content === other.content;
   }
 
