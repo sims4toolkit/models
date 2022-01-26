@@ -19,8 +19,8 @@ function getBuffer(filename: string): Buffer {
   return cachedBuffers[filename];
 }
 
-function getStbl(filename: string): StringTableResource {
-  return StringTableResource.from(getBuffer(filename));
+function getStbl(filename: string, saveBuffer = false): StringTableResource {
+  return StringTableResource.from(getBuffer(filename), { saveBuffer });
 }
 
 //#endregion Helpers
@@ -38,20 +38,20 @@ describe("StringTableResource", () => {
 
     it("should return the cached buffer if it wasn't changed", () => {
       const buffer = getBuffer("Normal");
-      const stbl = StringTableResource.from(buffer);
+      const stbl = StringTableResource.from(buffer, { saveBuffer: true });
       expect(stbl.buffer).to.equal(buffer);
     });
 
     it("should serialize a stbl that wasn't changed, but was uncached", () => {
       const buffer = getBuffer("Normal");
-      const stbl = StringTableResource.from(buffer);
+      const stbl = StringTableResource.from(buffer, { saveBuffer: true });
       stbl.onChange();
       expect(stbl.buffer).to.not.equal(buffer);
       expect(stbl.equals(getStbl("Normal"))).to.be.true;
     });
 
     it("should serialize a stbl that had entries added", () => {
-      const original = getStbl("Normal");
+      const original = getStbl("Normal", true);
       original.addAndHash("new string");
       const stbl = StringTableResource.from(original.buffer);
       expect(stbl).to.not.equal(original);
@@ -59,7 +59,7 @@ describe("StringTableResource", () => {
     });
 
     it("should serialize a stbl that had entries removed", () => {
-      const original = getStbl("Normal");
+      const original = getStbl("Normal", true);
       original.delete(0);
       const stbl = StringTableResource.from(original.buffer);
       expect(stbl).to.not.equal(original);
@@ -67,7 +67,7 @@ describe("StringTableResource", () => {
     });
 
     it("should serialize a stbl that had entries mutated", () => {
-      const original = getStbl("Normal");
+      const original = getStbl("Normal", true);
       original.get(0).value = "new string";
       const stbl = StringTableResource.from(original.buffer);
       expect(stbl).to.not.equal(original);
@@ -98,7 +98,7 @@ describe("StringTableResource", () => {
     });
 
     it("should not uncache the model when mutated", () => {
-      const stbl = getStbl("Normal");
+      const stbl = getStbl("Normal", true);
       expect(stbl.isCached).to.be.true;
       const entries = stbl.entries;
       entries.splice(0, 1);
@@ -130,6 +130,43 @@ describe("StringTableResource", () => {
       const entries = stbl.entries;
       stbl.delete(0);
       expect(stbl.entries).to.not.equal(entries);
+    });
+  });
+
+  describe("#saveBuffer", () => {
+    it("should be false by default", () => {
+      const stbl = StringTableResource.from(getBuffer("Normal"));
+      expect(stbl.saveBuffer).to.be.false;
+    });
+
+    it("should delete the buffer if set to false", () => {
+      const stbl = StringTableResource.from(getBuffer("Normal"), { saveBuffer: true });
+      expect(stbl.isCached).to.be.true;
+      stbl.saveBuffer = false;
+      expect(stbl.isCached).to.be.false;
+    });
+
+    it("should not generate a buffer if set to true", () => {
+      const stbl = StringTableResource.from(getBuffer("Normal"), { saveBuffer: false });
+      expect(stbl.isCached).to.be.false;
+      stbl.saveBuffer = true;
+      expect(stbl.isCached).to.be.false;
+    });
+
+    it("should cache the buffer after getting it when set to true", () => {
+      const stbl = StringTableResource.from(getBuffer("Normal"));
+      stbl.saveBuffer = true;
+      expect(stbl.isCached).to.be.false;
+      stbl.buffer;
+      expect(stbl.isCached).to.be.true;
+    });
+
+    it("should not cache the buffer after getting it when set to false", () => {
+      const stbl = StringTableResource.from(getBuffer("Normal"));
+      stbl.saveBuffer = false;
+      expect(stbl.isCached).to.be.false;
+      stbl.buffer;
+      expect(stbl.isCached).to.be.false;
     });
   });
 
@@ -178,6 +215,11 @@ describe("StringTableResource", () => {
       expect(stbl.isCached).to.be.false;
     });
 
+    it("should not be cached, even if saveBuffer = true", () => {
+      const stbl = StringTableResource.create({ saveBuffer: true });
+      expect(stbl.isCached).to.be.false;
+    });
+
     it("should be empty if nothing is given", () => {
       const stbl = StringTableResource.create();
       expect(stbl.size).to.equal(0);
@@ -209,9 +251,19 @@ describe("StringTableResource", () => {
 
   describe("static#from()", () => {
     context("stbl content is valid", () => {
-      it("should be cached", () => {
-        const stbl = StringTableResource.from(getBuffer("Normal"));
+      it("should be cached if saveBuffer = true", () => {
+        const stbl = StringTableResource.from(getBuffer("Normal"), { saveBuffer: true });
         expect(stbl.isCached).to.be.true;
+      });
+
+      it("should not be cached if saveBuffer = false", () => {
+        const stbl = StringTableResource.from(getBuffer("Normal"), { saveBuffer: false });
+        expect(stbl.isCached).to.be.false;
+      });
+
+      it("should not be cached by default", () => {
+        const stbl = StringTableResource.from(getBuffer("Normal"));
+        expect(stbl.isCached).to.be.false;
       });
   
       it("should read empty stbl", () => {
@@ -306,7 +358,7 @@ describe("StringTableResource", () => {
     });
 
     it("should uncache the buffer", () => {
-      const stbl = getStbl("Normal");
+      const stbl = getStbl("Normal", true);
       expect(stbl.isCached).to.be.true;
       stbl.add(123, "hi");
       expect(stbl.isCached).to.be.false;
@@ -372,7 +424,7 @@ describe("StringTableResource", () => {
     });
 
     it("should uncache the buffer", () => {
-      const stbl = getStbl("Normal");
+      const stbl = getStbl("Normal", true);
       expect(stbl.isCached).to.be.true;
       stbl.clear();
       expect(stbl.isCached).to.be.false;
@@ -467,7 +519,7 @@ describe("StringTableResource", () => {
     });
 
     it("should uncache the buffer", () => {
-      const stbl = getStbl("Normal");
+      const stbl = getStbl("Normal", true);
       expect(stbl.isCached).to.be.true;
       stbl.delete(1);
       expect(stbl.isCached).to.be.false;
@@ -745,16 +797,25 @@ describe("StringTableResource", () => {
   });
 
   describe("#onChange()", () => {
-    it("should uncache the buffer", () => {
-      const stbl = getStbl("Normal");
+    it("should uncache the buffer if saveBuffer = true", () => {
+      const stbl = getStbl("Normal", true);
       expect(stbl.isCached).to.be.true;
       stbl.onChange();
       expect(stbl.isCached).to.be.false;
     });
 
-    it("should notify the owner to uncache", () => {
+    it("should notify the owner to uncache if saveBuffer = true", () => {
       const owner = new MockOwner();
-      const stbl = getStbl("Normal");
+      const stbl = getStbl("Normal", true);
+      stbl.owner = owner;
+      expect(owner.cached).to.be.true;
+      stbl.onChange();
+      expect(owner.cached).to.be.false;
+    });
+
+    it("should notify the owner to uncache if saveBuffer = false", () => {
+      const owner = new MockOwner();
+      const stbl = getStbl("Normal", false);
       stbl.owner = owner;
       expect(owner.cached).to.be.true;
       stbl.onChange();
