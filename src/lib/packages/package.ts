@@ -47,11 +47,11 @@ export default class Package extends MappedModel<ResourceKey, Resource, Resource
 
   protected constructor(
     entries?: ResourceKeyPair[],
-    saveCompressedBuffers = true, // FIXME: should be false
-    saveDecompressedBuffers = true, // FIXME: should be false
+    saveCompressedBuffers = false,
+    saveDecompressedBuffers = false,
     buffer?: Buffer
   ) {
-    super(entries, true, buffer); // never cache package buffer, it's pointless // FIXME: should be false
+    super(entries, false, buffer); // never cache package buffer, it's pointless
     this._saveCompressedBuffers = saveCompressedBuffers;
     this._saveDecompressedBuffers = saveDecompressedBuffers;
   }
