@@ -178,9 +178,9 @@ describe("Package", () => {
     });
 
     it("should create entries from the ones that are given", () => {
-      const dbpf = Package.create([
+      const dbpf = Package.create({ entries: [
         { key: getTestKey(), value: getTestTuning() }
-      ]);
+      ]});
 
       expect(dbpf.size).to.equal(1);
       const entry = dbpf.get(0);
@@ -189,9 +189,9 @@ describe("Package", () => {
     });
 
     it("should assign itself as the owner of the given entries", () => {
-      const dbpf = Package.create([
+      const dbpf = Package.create({ entries: [
         { key: getTestKey(), value: getTestTuning() }
-      ]);
+      ]});
 
       const entry = dbpf.get(0);
       expect(entry.owner).to.equal(dbpf);
@@ -715,10 +715,10 @@ describe("Package", () => {
     it("should return the first entry with the given key if there are more than one", () => {
       const key = getTestKey();
 
-      const dbpf = Package.create([
+      const dbpf = Package.create({ entries: [
         { key, value: XmlResource.create({ content: "a" }) },
         { key, value: XmlResource.create({ content: "b" }) },
-      ]);
+      ]});
 
       expect((dbpf.getByKey(key).value as XmlResource).content).to.equal("a");
     });
@@ -735,10 +735,10 @@ describe("Package", () => {
     it("should return the correct entry if there are more than one entry with this key, and the first was deleted", () => {
       const key = getTestKey();
 
-      const dbpf = Package.create([
+      const dbpf = Package.create({ entries: [
         { key, value: XmlResource.create({ content: "a" }) },
         { key, value: XmlResource.create({ content: "b" }) },
-      ]);
+      ]});
 
       dbpf.delete(0);
       expect((dbpf.getByKey(key).value as XmlResource).content).to.equal("b");
@@ -758,10 +758,10 @@ describe("Package", () => {
     it("should return the first ID for the given key if there are more than one", () => {
       const key = getTestKey();
 
-      const dbpf = Package.create([
+      const dbpf = Package.create({ entries: [
         { key, value: XmlResource.create({ content: "a" }) },
         { key, value: XmlResource.create({ content: "b" }) },
-      ]);
+      ]});
 
       expect(dbpf.getIdForKey(key)).to.equal(0);
     });
@@ -882,10 +882,10 @@ describe("Package", () => {
     it("should return true if there are more than one entry with this key, and the first was deleted", () => {
       const key = getTestKey();
 
-      const dbpf = Package.create([
+      const dbpf = Package.create({ entries: [
         { key, value: XmlResource.create({ content: "a" }) },
         { key, value: XmlResource.create({ content: "b" }) },
-      ]);
+      ]});
 
       expect(dbpf.hasKey(key)).to.be.true;
       dbpf.deleteByKey(key);
@@ -938,7 +938,7 @@ describe("Package", () => {
 
   describe("#validate()", () => {
     it("should not throw if all entries are valid", () => {
-      const dbpf = Package.create([
+      const dbpf = Package.create({ entries: [
         {
           key: {
             type: 123,
@@ -957,13 +957,13 @@ describe("Package", () => {
             { key: 1, value: "hi" }
           ]})
         }
-      ]);
+      ]});
 
       expect(() => dbpf.validate()).to.not.throw();
     });
 
     it("should throw if at least one entry is not valid", () => {
-      const dbpf = Package.create([
+      const dbpf = Package.create({ entries: [
         {
           key: {
             type: -1,
@@ -982,13 +982,13 @@ describe("Package", () => {
             { key: 1, value: "hi" }
           ]})
         }
-      ]);
+      ]});
 
       expect(() => dbpf.validate()).to.throw();
     });
 
     it("should throw if there are multiple entries with the same key", () => {
-      const dbpf = Package.create([
+      const dbpf = Package.create({ entries: [
         {
           key: {
             type: 123,
@@ -1007,7 +1007,7 @@ describe("Package", () => {
             { key: 1, value: "hi" }
           ]})
         }
-      ]);
+      ]});
 
       expect(() => dbpf.validate()).to.throw();
     });

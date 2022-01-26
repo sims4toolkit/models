@@ -12,7 +12,8 @@ import ResourceEntry from "./resource-entry";
  * DBPF for short).
  */
 export default class Package extends MappedModel<ResourceKey, Resource, ResourceEntry> {
-  private _saveCompressedBuffers: boolean; // FIXME: getter/setter
+  private _saveCompressedBuffers: boolean;
+  private _saveDecompressedBuffers: boolean;
 
   /** Whether or not the buffer should be cached on this model. */
   get saveBuffer() { return false; }
@@ -20,7 +21,7 @@ export default class Package extends MappedModel<ResourceKey, Resource, Resource
     throw new Error(`Cannot change value of saveBuffer on package. Cacheing packages consumes too much memory for no benefit. If you need to copy a package without editing anything, you can just copy/paste it like an NFT.`);
   }
 
-  /** TODO: docs */
+  /** Whether or not compressed buffers for resource entries should be cached. */
   get saveCompressedBuffers() { return this._saveCompressedBuffers; }
   set saveCompressedBuffers(saveCompressedBuffers: boolean) {
     this._saveCompressedBuffers = saveCompressedBuffers ?? false;
@@ -29,15 +30,23 @@ export default class Package extends MappedModel<ResourceKey, Resource, Resource
     }
   }
 
+  /** Whether or not decompressed buffers for resources should be cached. */
+  get saveDecompressedBuffers() { return this._saveDecompressedBuffers; }
+  set saveDecompressedBuffers(saveDecompressedBuffers: boolean) {
+    this._saveDecompressedBuffers = saveDecompressedBuffers ?? false;
+  }
+
   //#region Initialization
 
   protected constructor(
     entries?: ResourceKeyPair[],
     buffer?: Buffer,
-    saveCompressedBuffers = true // FIXME: should be false by default
+    saveCompressedBuffers = true, // FIXME: should be false by default
+    saveDecompressedBuffers = true // FIXME: should be false by default
   ) {
     super(entries, buffer, true); // never cache package buffer, it's pointless // FIXME: should be false
     this._saveCompressedBuffers = saveCompressedBuffers;
+    this._saveDecompressedBuffers = saveDecompressedBuffers;
   }
 
   /**
@@ -46,8 +55,12 @@ export default class Package extends MappedModel<ResourceKey, Resource, Resource
    * 
    * @param entries Resource entries to use in this package. Empty by default.
    */
-  static create(entries?: ResourceKeyPair[]): Package { // FIXME: should make an object to match rest of API?
-    return new Package(entries); // FIXME: cache compressed buffers / buffers within the resources
+  static create({ entries, saveCompressedBuffers, saveDecompressedBuffers }: {
+    entries?: ResourceKeyPair[];
+    saveCompressedBuffers?: boolean;
+    saveDecompressedBuffers?: boolean;
+  } = {}): Package {
+    return new Package(entries, undefined, saveCompressedBuffers, saveDecompressedBuffers);
   }
 
   /**
@@ -70,7 +83,7 @@ export default class Package extends MappedModel<ResourceKey, Resource, Resource
    * @param options Options for reading the buffer
    */
   static from(buffer: Buffer, options?: FileReadingOptions): Package {
-    return new Package(readDbpf(buffer, options), buffer);
+    return new Package(readDbpf(buffer, options), buffer, options?.saveCompressedBuffer, options?.saveBuffer);
   }
 
   //#endregion Initialization
