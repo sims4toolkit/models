@@ -167,6 +167,8 @@ export abstract class MappedModel<Key, Value, Entry extends MappedModelEntry<Key
     return keys;
   }
 
+  // TODO: findRepeatedValues()
+
   /**
    * Returns the entry that has the given ID, or undefined if there isn't one.
    * 
@@ -233,6 +235,8 @@ export abstract class MappedModel<Key, Value, Entry extends MappedModelEntry<Key
   hasKey(key: Key): boolean {
     return this.getIdForKey(key) !== undefined;
   }
+
+  // TODO: hasValue()
 
   /**
    * Notifies this model that a key has been updated.
