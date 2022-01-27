@@ -131,19 +131,21 @@ export default class SimDataResource extends WritableModel implements Resource, 
    * Creates a SimDataResource from S4S-style XML.
    * 
    * @param xml XML string or buffer to parse as a SimData
+   * @param options Options to configure
    * @throws If the given XML could not be parsed as a SimData
    */
-  static fromXml(xml: string | Buffer): SimDataResource {
-    return this.fromXmlDocument(XmlDocumentNode.from(xml, { ignoreComments: true }));
+  static fromXml(xml: string | Buffer, options?: FileReadingOptions): SimDataResource {
+    return this.fromXmlDocument(XmlDocumentNode.from(xml, { ignoreComments: true }), options);
   }
 
   /**
    * Creates a SimDataResource from an S4S-style XML document.
    * 
    * @param dom XML document from which to parse SimData
+   * @param options Options to configure
    * @throws If the given XML document could not be parsed as a SimData
    */
-  static fromXmlDocument(doc: XmlDocumentNode): SimDataResource {
+  static fromXmlDocument(doc: XmlDocumentNode, options?: FileReadingOptions): SimDataResource {
     const dom = doc.child;
 
     if (!dom || dom.tag !== "SimData")
@@ -167,7 +169,7 @@ export default class SimDataResource extends WritableModel implements Resource, 
       return SimDataInstance.fromXmlNode(instanceNode, schemas);
     });
 
-    return new SimDataResource(version, unused, schemas, instances);
+    return new SimDataResource(version, unused, schemas, instances, options?.saveBuffer);
   }
 
   //#endregion Initialization

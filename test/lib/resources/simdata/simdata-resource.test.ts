@@ -21,12 +21,12 @@ function getBuffer(filename: string) {
   }
 }
 
-function getSimDataFromBinary(filename: string) {
-  return SimDataResource.from(getBuffer(`${filename}.simdata`));
+function getSimDataFromBinary(filename: string, saveBuffer = false) {
+  return SimDataResource.from(getBuffer(`${filename}.simdata`), { saveBuffer });
 }
 
-function getSimDataFromXml(filename: string) {
-  return SimDataResource.fromXml(getBuffer(`${filename}.xml`));
+function getSimDataFromXml(filename: string, saveBuffer = false) {
+  return SimDataResource.fromXml(getBuffer(`${filename}.xml`), { saveBuffer });
 }
 
 interface SimDataTestArgs {
@@ -81,10 +81,22 @@ describe("SimDataResource", () => {
       expect(simdata.equals(original)).to.be.true;
     }
 
-    it("should be the same as the buffer it was created with if no changes were made", () => {
+    it("should be the same as the original buffer if saveBuffer = true", () => {
+      const buffer = getBuffer("buff.simdata");
+      const simdata = SimDataResource.from(buffer, { saveBuffer: true });
+      expect(simdata.buffer).to.equal(buffer);
+    });
+
+    it("should not be the same as the original buffer if saveBuffer = false", () => {
+      const buffer = getBuffer("buff.simdata");
+      const simdata = SimDataResource.from(buffer, { saveBuffer: false });
+      expect(simdata.buffer).to.not.equal(buffer);
+    });
+
+    it("should not be the same as the original buffer by default", () => {
       const buffer = getBuffer("buff.simdata");
       const simdata = SimDataResource.from(buffer);
-      expect(simdata.buffer).to.equal(buffer);
+      expect(simdata.buffer).to.not.equal(buffer);
     });
 
     it("should throw if the current model cannot be serialized", () => {
@@ -161,7 +173,7 @@ describe("SimDataResource", () => {
     });
 
     it("should uncache the owner when set", () => {
-      const simdata = getSimDataFromBinary("two_instances");
+      const simdata = getSimDataFromBinary("two_instances", true);
       expect(simdata.isCached).to.be.true;
       simdata.instance = simdata.instances[1];
       expect(simdata.isCached).to.be.false;
@@ -170,28 +182,28 @@ describe("SimDataResource", () => {
 
   describe("#instances", () => {
     it("should uncache the owner when pushed to", () => {
-      const simdata = getSimDataFromBinary("buff");
+      const simdata = getSimDataFromBinary("buff", true);
       expect(simdata.isCached).to.be.true;
       simdata.instances.push(simdata.instance.clone());
       expect(simdata.isCached).to.be.false;
     });
 
     it("should uncache the owner when spliced", () => {
-      const simdata = getSimDataFromBinary("two_instances");
+      const simdata = getSimDataFromBinary("two_instances", true);
       expect(simdata.isCached).to.be.true;
       simdata.instances.splice(1, 1);
       expect(simdata.isCached).to.be.false;
     });
 
     it("should uncache the owner when child is set", () => {
-      const simdata = getSimDataFromBinary("two_instances");
+      const simdata = getSimDataFromBinary("two_instances", true);
       expect(simdata.isCached).to.be.true;
       simdata.instances[0] = simdata.instances[1];
       expect(simdata.isCached).to.be.false;
     });
 
     it("should uncache the owner when child is mutated", () => {
-      const simdata = getSimDataFromBinary("buff");
+      const simdata = getSimDataFromBinary("buff", true);
       expect(simdata.isCached).to.be.true;
       simdata.instances[0].name = "Better_Name";
       expect(simdata.isCached).to.be.false;
@@ -249,7 +261,7 @@ describe("SimDataResource", () => {
     });
 
     it("should uncache the owner when set", () => {
-      const simdata = getSimDataFromBinary("mood");
+      const simdata = getSimDataFromBinary("mood", true);
       expect(simdata.isCached).to.be.true;
       simdata.schema = simdata.schemas[1];
       expect(simdata.isCached).to.be.false;
@@ -265,28 +277,28 @@ describe("SimDataResource", () => {
 
   describe("#schemas", () => {
     it("should uncache the owner when pushed to", () => {
-      const simdata = getSimDataFromBinary("buff");
+      const simdata = getSimDataFromBinary("buff", true);
       expect(simdata.isCached).to.be.true;
       simdata.schemas.push(simdata.schema.clone());
       expect(simdata.isCached).to.be.false;
     });
 
     it("should uncache the owner when spliced", () => {
-      const simdata = getSimDataFromBinary("buff");
+      const simdata = getSimDataFromBinary("buff", true);
       expect(simdata.isCached).to.be.true;
       simdata.schemas.splice(0, 1);
       expect(simdata.isCached).to.be.false;
     });
 
     it("should uncache the owner when child is set", () => {
-      const simdata = getSimDataFromBinary("buff");
+      const simdata = getSimDataFromBinary("buff", true);
       expect(simdata.isCached).to.be.true;
       simdata.schemas[0] = simdata.schema.clone();
       expect(simdata.isCached).to.be.false;
     });
 
     it("should uncache the owner when child is mutated", () => {
-      const simdata = getSimDataFromBinary("buff");
+      const simdata = getSimDataFromBinary("buff", true);
       expect(simdata.isCached).to.be.true;
       simdata.schemas[0].name = "NewName";
       expect(simdata.isCached).to.be.false;
@@ -311,7 +323,7 @@ describe("SimDataResource", () => {
 
   describe("#unused", () => {
     it("should uncache when set", () => {
-      const simdata = getSimDataFromBinary("buff");
+      const simdata = getSimDataFromBinary("buff", true);
       expect(simdata.isCached).to.be.true;
       simdata.unused = 0x12;
       expect(simdata.isCached).to.be.false;
@@ -327,7 +339,7 @@ describe("SimDataResource", () => {
 
   describe("#version", () => {
     it("should uncache when set", () => {
-      const simdata = getSimDataFromBinary("buff");
+      const simdata = getSimDataFromBinary("buff", true);
       expect(simdata.isCached).to.be.true;
       simdata.version = 0x100;
       expect(simdata.isCached).to.be.false;
@@ -444,6 +456,44 @@ describe("SimDataResource", () => {
 
       expect(schema.owner).to.equal(simdata);
       expect(instance.owner).to.equal(simdata);
+    });
+
+    it("should not cache the buffer by default", () => {
+      const original = getSimDataFromBinary("buff");
+      const simdata = SimDataResource.create({
+        schemas: original.schemas,
+        instances: original.instances
+      });
+
+      expect(simdata.isCached).to.be.false;
+      simdata.buffer;
+      expect(simdata.isCached).to.be.false;
+    });
+
+    it("should not cache the buffer if saveBuffer = false", () => {
+      const original = getSimDataFromBinary("buff");
+      const simdata = SimDataResource.create({
+        schemas: original.schemas,
+        instances: original.instances,
+        saveBuffer: false
+      });
+
+      expect(simdata.isCached).to.be.false;
+      simdata.buffer;
+      expect(simdata.isCached).to.be.false;
+    });
+
+    it("should cache the buffer if saveBuffer = true", () => {
+      const original = getSimDataFromBinary("buff");
+      const simdata = SimDataResource.create({
+        schemas: original.schemas,
+        instances: original.instances,
+        saveBuffer: true
+      });
+
+      expect(simdata.isCached).to.be.false;
+      simdata.buffer;
+      expect(simdata.isCached).to.be.true;
     });
   });
 
@@ -604,6 +654,21 @@ describe("SimDataResource", () => {
         expect(inst.owner).to.equal(simdata);
       });
     });
+
+    it("should not cache the buffer by default", () => {
+      const simdata = getSimDataFromBinary("buff");
+      expect(simdata.isCached).to.be.false;
+    });
+
+    it("should not cache the buffer if saveBuffer = false", () => {
+      const simdata = getSimDataFromBinary("buff", false);
+      expect(simdata.isCached).to.be.false;
+    });
+
+    it("should cache the buffer if saveBuffer = true", () => {
+      const simdata = getSimDataFromBinary("buff", true);
+      expect(simdata.isCached).to.be.true;
+    });
   });
 
   describe("static#fromXml()", () => {
@@ -763,6 +828,27 @@ describe("SimDataResource", () => {
         expect(inst.owner).to.equal(simdata);
       });
     });
+
+    it("should not cache the buffer by default", () => {
+      const simdata = getSimDataFromXml("buff");
+      expect(simdata.isCached).to.be.false;
+      simdata.buffer;
+      expect(simdata.isCached).to.be.false;
+    });
+
+    it("should not cache the buffer if saveBuffer = false", () => {
+      const simdata = getSimDataFromXml("buff", false);
+      expect(simdata.isCached).to.be.false;
+      simdata.buffer;
+      expect(simdata.isCached).to.be.false;
+    });
+
+    it("should cache the buffer if saveBuffer = true", () => {
+      const simdata = getSimDataFromXml("buff", true);
+      expect(simdata.isCached).to.be.false;
+      simdata.buffer;
+      expect(simdata.isCached).to.be.true;
+    });
   });
 
   describe("static#fromXmlDocument()", () => {
@@ -845,7 +931,7 @@ describe("SimDataResource", () => {
     });
 
     it("should uncache the buffer", () => {
-      const simdata = getSimDataFromBinary("two_instances");
+      const simdata = getSimDataFromBinary("two_instances", true);
       expect(simdata.isCached).to.be.true;
       simdata.removeInstances(simdata.instance);
       expect(simdata.isCached).to.be.false;
@@ -875,7 +961,7 @@ describe("SimDataResource", () => {
     });
 
     it("should uncache the owner", () => {
-      const simdata = getSimDataFromBinary("mood");
+      const simdata = getSimDataFromBinary("mood", true);
       expect(simdata.isCached).to.be.true;
       simdata.removeSchemas(simdata.schema);
       expect(simdata.isCached).to.be.false;
@@ -915,16 +1001,32 @@ describe("SimDataResource", () => {
   });
 
   describe("#onChange()", () => {
-    it("should reset the buffer", () => {
-      const simdata = getSimDataFromBinary("buff");
+    it("should reset the buffer when saveBuffer = true", () => {
+      const simdata = getSimDataFromBinary("buff", true);
       expect(simdata.isCached).to.be.true;
       simdata.onChange();
       expect(simdata.isCached).to.be.false;
     });
 
-    it("should uncache the owner", () => {
+    it("should not have any effect when saveBuffer = false", () => {
+      const simdata = getSimDataFromBinary("buff", false);
+      expect(simdata.isCached).to.be.false;
+      simdata.onChange();
+      expect(simdata.isCached).to.be.false;
+    });
+
+    it("should uncache the owner when saveBuffer = true", () => {
       const owner = new MockOwner();
-      const simdata = getSimDataFromBinary("buff");
+      const simdata = getSimDataFromBinary("buff", true);
+      simdata.owner = owner;
+      expect(owner.cached).to.be.true;
+      simdata.onChange();
+      expect(owner.cached).to.be.false;
+    });
+
+    it("should uncache the owner when saveBuffer = false", () => {
+      const owner = new MockOwner();
+      const simdata = getSimDataFromBinary("buff", false);
       simdata.owner = owner;
       expect(owner.cached).to.be.true;
       simdata.onChange();
