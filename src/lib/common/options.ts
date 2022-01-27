@@ -31,10 +31,11 @@ export interface FileReadingOptions {
    * model. Note that raw resources always save their buffer regardless of this
    * option, as it is their only defining feature. False by default.
    * 
-   * If this setting is used on a package, it refers to the buffers for the
-   * resources it contains, not the buffer for the package itself. The buffer
-   * for the package cannot be cached, as doing so would consume twice the
-   * memory for no benefit.
+   * If this option is used on a package, it refers to the buffers for the
+   * resources the package contains, not the buffer for the package itself. The
+   * buffer for the package cannot be cached, as doing so would consume twice
+   * as much memory for no benefit. If you need to copy a package without
+   * mutating its contents, you can just copy/paste it like an NFT.
    * 
    * This is recommended when parsed models are required while extracting files
    * from packages. If parsed models are not required, consider using the

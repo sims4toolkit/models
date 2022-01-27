@@ -129,6 +129,10 @@ describe("ResourceEntry", () => {
     });
   });
 
+  describe("#saveBuffer", () => {
+    // TODO:
+  });
+
   describe("#value", () => {
     it("should uncache the entry when mutated", () => {
       const dbpf = getPackage("Trait", { saveCompressedBuffer: true });
@@ -454,6 +458,10 @@ describe("ResourceEntry", () => {
 
       expect(() => entry.validate()).to.throw();
     });
+  });
+
+  describe("#valueEquals()", () => {
+    // TODO:
   });
 
   //#endregion Public Methods

@@ -16,10 +16,9 @@ export default class RawResource extends WritableModel implements Resource {
     return this.buffer.toString('utf-8');
   }
 
-  /** Whether or not the buffer should be cached on this model. */
   get saveBuffer() { return true; }
   set saveBuffer(saveBuffer: boolean) {
-    throw new Error(`Cannot change value of saveBuffer on raw resource.`);
+    // intentionally blank -- raw resource must always have its buffer saved
   }
 
   //#region Initialization

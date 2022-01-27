@@ -6,6 +6,7 @@ import clone from "just-clone";
 import type { ResourceKey } from "../../../dst/lib/packages/types";
 import { Package, RawResource, SimDataResource, StringTableResource, XmlResource } from "../../../dst/models";
 import { EncodingType, TuningResourceType } from "../../../dst/enums";
+import { FileReadingOptions } from "../../../dst/lib/common/options";
 
 //#region Helpers
 
@@ -20,8 +21,8 @@ function getBuffer(filename: string): Buffer {
   return cachedBuffers[filename];
 }
 
-function getPackage(filename: string): Package {
-  return Package.from(getBuffer(filename));
+function getPackage(filename: string, options?: FileReadingOptions): Package {
+  return Package.from(getBuffer(filename), options);
 }
 
 function getTestTuning(): XmlResource {
@@ -103,13 +104,6 @@ describe("Package", () => {
       expect(dbpf.size).to.equal(4);
     });
 
-    it("should not uncache the model when mutated", () => {
-      const dbpf = getPackage("CompleteTrait");
-      expect(dbpf.isCached).to.be.true;
-      dbpf.entries.push(dbpf.get(0));
-      expect(dbpf.isCached).to.be.true;
-    });
-
     it("should be the same object when accessed more than once without changes", () => {
       const dbpf = getPackage("CompleteTrait");
       const entries = dbpf.entries;
@@ -140,6 +134,27 @@ describe("Package", () => {
   });
 
   // #isCached tested by other tests
+
+  describe("#saveCompressedBuffers", () => {
+    // TODO:
+  });
+
+  describe("#saveDecompressedBuffers", () => {
+    // TODO:
+  });
+
+  describe("#saveBuffer", () => {
+    it("should be false", () => {
+      const dbpf = Package.create();
+      expect(dbpf.saveBuffer).to.be.false;
+    });
+
+    it("should not be able to set to true", () => {
+      const dbpf = Package.create();
+      dbpf.saveBuffer = true;
+      expect(dbpf.saveBuffer).to.be.false;
+    });
+  });
 
   describe("#size", () => {
     it("should return 0 when the dbpf is empty", () => {
@@ -197,20 +212,10 @@ describe("Package", () => {
       const entry = dbpf.get(0);
       expect(entry.owner).to.equal(dbpf);
     });
-
-    it("should not be cached", () => {
-      const dbpf = Package.create();
-      expect(dbpf.isCached).to.be.false;
-    });
   });
 
   describe("static#from()", () => {
     context("dbpf is valid", () => {
-      it("should be cached", () => {
-        const dbpf = getPackage("CompleteTrait");
-        expect(dbpf.isCached).to.be.true;
-      });
-
       it("should read empty dbpf", () => {
         const dbpf = getPackage("Empty");
         expect(dbpf.size).to.equal(0);
@@ -221,17 +226,47 @@ describe("Package", () => {
         expect(dbpf.size).to.equal(4);
       });
 
-      it("should have cached entries", () => {
-        const dbpf = getPackage("CompleteTrait");
+      it("should not have cached entries by default", () => {
+        const dbpf = Package.from(getBuffer("CompleteTrait"));
+        dbpf.entries.forEach(entry => {
+          expect(entry.isCached).to.be.false;
+        });
+      });
+
+      it("should have cached entries if saveCompressedBuffer = true", () => {
+        const dbpf = Package.from(getBuffer("CompleteTrait"), { saveCompressedBuffer: true });
         dbpf.entries.forEach(entry => {
           expect(entry.isCached).to.be.true;
         });
       });
 
-      it("should have cached resources within its entries", () => {
-        const dbpf = getPackage("CompleteTrait");
+      it("should have cached entries if saveCompressedBuffer = false", () => {
+        const dbpf = Package.from(getBuffer("CompleteTrait"), { saveCompressedBuffer: false });
+        dbpf.entries.forEach(entry => {
+          expect(entry.isCached).to.be.false;
+        });
+      });
+
+      it("should have cached resources within its entries if saveBuffer = true", () => {
+        const dbpf = Package.from(getBuffer("CompleteTrait"), { saveBuffer: true });
         dbpf.entries.forEach(entry => {
           expect(entry.value.isCached).to.be.true;
+        });
+      });
+
+      it("should not have cached resources within its entries if saveBuffer = false", () => {
+        const dbpf =  Package.from(getBuffer("CompleteTrait"), { saveBuffer: false });
+        dbpf.entries.forEach(entry => {
+          if (entry.resource.encodingType !== EncodingType.Unknown)
+            expect(entry.value.isCached).to.be.false;
+        });
+      });
+
+      it("should not have cached resources within its entries by default", () => {
+        const dbpf =  Package.from(getBuffer("CompleteTrait"));
+        dbpf.entries.forEach(entry => {
+          if (entry.resource.encodingType !== EncodingType.Unknown)
+            expect(entry.value.isCached).to.be.false;
         });
       });
 
@@ -377,16 +412,8 @@ describe("Package", () => {
       expect(dbpf.hasKey(testKey)).to.be.true;
     });
 
-    it("should uncache the buffer", () => {
-      const dbpf = getPackage("CompleteTrait");
-      expect(dbpf.isCached).to.be.true;
-      const testKey = getTestKey();
-      dbpf.add(testKey, XmlResource.create());
-      expect(dbpf.isCached).to.be.false;
-    });
-
     it("should not uncache other entries", () => {
-      const dbpf = getPackage("CompleteTrait");
+      const dbpf = getPackage("CompleteTrait", { saveCompressedBuffer: true });
 
       dbpf.entries.forEach(entry => {
         expect(entry.isCached).to.be.true;
@@ -442,13 +469,6 @@ describe("Package", () => {
       expect(dbpf.hasKey(key)).to.be.true;
       dbpf.clear();
       expect(dbpf.hasKey(key)).to.be.false;
-    });
-
-    it("should uncache the buffer", () => {
-      const dbpf = getPackage("CompleteTrait");
-      expect(dbpf.isCached).to.be.true;
-      dbpf.clear();
-      expect(dbpf.isCached).to.be.false;
     });
 
     it("should reset the entries property", () => {
@@ -529,13 +549,6 @@ describe("Package", () => {
       dbpf.delete(0);
       expect(dbpf.size).to.equal(1);
       expect(dbpf.getByKey(key)).to.be.undefined;
-    });
-
-    it("should uncache the buffer", () => {
-      const dbpf = getPackage("Trait");
-      expect(dbpf.isCached).to.be.true;
-      dbpf.delete(0);
-      expect(dbpf.isCached).to.be.false;
     });
 
     it("should remove the key from the key map", () => {
@@ -623,6 +636,8 @@ describe("Package", () => {
       expect(compare(repeats[1], third.key)).to.be.true;
     });
   });
+
+  // TODO: findRepeatedValues()
 
   describe("#get()", () => {
     it("should return the entry with the given ID", () => {
@@ -894,6 +909,8 @@ describe("Package", () => {
     });
   });
 
+  // TODO: hasValue()
+
   describe("#resetEntries()", () => {
     it("should force the entries to make a new list", () => {
       const dbpf = getPackage("Trait");
@@ -905,13 +922,6 @@ describe("Package", () => {
   });
 
   describe("#onChange()", () => {
-    it("should uncache the buffer", () => {
-      const dbpf = getPackage("Trait");
-      expect(dbpf.isCached).to.be.true;
-      dbpf.onChange();
-      expect(dbpf.isCached).to.be.false;
-    });
-
     it("should reset the entries", () => {
       const dbpf = getPackage("Trait");
       const entries = dbpf.entries;
@@ -921,7 +931,7 @@ describe("Package", () => {
     });
 
     it("should not uncache the entries", () => {
-      const dbpf = getPackage("Trait");
+      const dbpf = getPackage("Trait", { saveCompressedBuffer: true });
       dbpf.onChange();
       dbpf.entries.forEach(entry => {
         expect(entry.isCached).to.be.true;
@@ -929,7 +939,7 @@ describe("Package", () => {
     });
 
     it("should not uncache the entries' resources", () => {
-      const dbpf = getPackage("Trait");
+      const dbpf = getPackage("Trait", { saveBuffer: true });
       dbpf.onChange();
       dbpf.entries.forEach(entry => {
         expect(entry.value.isCached).to.be.true;

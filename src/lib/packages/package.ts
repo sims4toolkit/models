@@ -15,10 +15,9 @@ export default class Package extends MappedModel<ResourceKey, Resource, Resource
   private _saveCompressedBuffers: boolean;
   private _saveDecompressedBuffers: boolean;
 
-  /** Whether or not the buffer should be cached on this model. */
   get saveBuffer() { return false; }
   set saveBuffer(saveBuffer: boolean) {
-    throw new Error(`Cannot change value of saveBuffer on package. Cacheing packages consumes too much memory for no benefit. If you need to copy a package without editing anything, you can just copy/paste it like an NFT.`);
+    // intentionally blank; packages can never be cached
   }
 
   /** Whether or not compressed buffers for entries should be cached. */

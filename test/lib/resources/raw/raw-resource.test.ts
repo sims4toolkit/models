@@ -65,9 +65,10 @@ describe('RawResource', function() {
       expect(raw.saveBuffer).to.be.true;
     });
 
-    it("should throw when set to false", () => {
+    it("should not do anything when set", () => {
       const raw = RawResource.from(Buffer.from("hello"));
-      expect(() => raw.saveBuffer = false).to.throw()
+      raw.saveBuffer = false;
+      expect(raw.saveBuffer).to.be.true;
     });
   });
 
