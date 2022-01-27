@@ -134,11 +134,75 @@ describe("Package", () => {
   // #isCached tested by other tests
 
   describe("#saveCompressedBuffers", () => {
-    // TODO:
+    it("should be false by default", () => {
+      const dbpf = Package.from(getBuffer("Trait"));
+      expect(dbpf.saveCompressedBuffers).to.be.false;
+    });
+
+    it("should delete the buffers if set to false", () => {
+      const dbpf = Package.from(getBuffer("Trait"), { saveCompressedBuffer: true });
+      expect(dbpf.get(0).isCached).to.be.true;
+      dbpf.saveCompressedBuffers = false;
+      expect(dbpf.get(0).isCached).to.be.false;
+    });
+
+    it("should not generate the buffers if set to true", () => {
+      const dbpf = Package.from(getBuffer("Trait"));
+      expect(dbpf.get(0).isCached).to.be.false;
+      dbpf.saveCompressedBuffers = true;
+      expect(dbpf.get(0).isCached).to.be.false;
+    });
+
+    it("should cache the buffers after getting it when set to true", () => {
+      const dbpf = Package.from(getBuffer("Trait"));
+      expect(dbpf.get(0).isCached).to.be.false;
+      dbpf.saveCompressedBuffers = true;
+      dbpf.get(0).buffer;
+      expect(dbpf.get(0).isCached).to.be.false;
+    });
+
+    it("should not cache the buffer after getting it when set to false", () => {
+      const dbpf = Package.from(getBuffer("Trait"));
+      expect(dbpf.get(0).isCached).to.be.false;
+      dbpf.get(0).buffer;
+      expect(dbpf.get(0).isCached).to.be.false;
+    });
   });
 
   describe("#saveDecompressedBuffers", () => {
-    // TODO:
+    it("should be false by default", () => {
+      const dbpf = Package.from(getBuffer("Trait"));
+      expect(dbpf.saveDecompressedBuffers).to.be.false;
+    });
+
+    it("should delete the buffers if set to false", () => {
+      const dbpf = Package.from(getBuffer("Trait"), { saveBuffer: true });
+      expect(dbpf.get(0).resource.isCached).to.be.true;
+      dbpf.saveDecompressedBuffers = false;
+      expect(dbpf.get(0).resource.isCached).to.be.false;
+    });
+
+    it("should not generate the buffers if set to true", () => {
+      const dbpf = Package.from(getBuffer("Trait"));
+      expect(dbpf.get(0).resource.isCached).to.be.false;
+      dbpf.saveDecompressedBuffers = true;
+      expect(dbpf.get(0).resource.isCached).to.be.false;
+    });
+
+    it("should cache the buffers after getting it when set to true", () => {
+      const dbpf = Package.from(getBuffer("Trait"));
+      expect(dbpf.get(0).resource.isCached).to.be.false;
+      dbpf.saveDecompressedBuffers = true;
+      dbpf.get(0).resource.buffer;
+      expect(dbpf.get(0).resource.isCached).to.be.false;
+    });
+
+    it("should not cache the buffer after getting it when set to false", () => {
+      const dbpf = Package.from(getBuffer("Trait"));
+      expect(dbpf.get(0).resource.isCached).to.be.false;
+      dbpf.get(0).resource.buffer;
+      expect(dbpf.get(0).resource.isCached).to.be.false;
+    });
   });
 
   describe("#saveBuffer", () => {
@@ -372,6 +436,10 @@ describe("Package", () => {
       it("should throw even if ignoreErrors = true", () => {
         expect(() => Package.from(getBuffer("Corrupt"), { ignoreErrors: true })).to.throw();
       });
+    });
+
+    context("setting other options", () => {
+      // TODO:
     });
   });
 
