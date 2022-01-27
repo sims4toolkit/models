@@ -25,7 +25,7 @@ export default class StringTableResource extends PrimitiveMappedModel<string, St
     super(entries, saveBuffer, buffer);
   }
 
-   /**
+  /**
    * Creates a new StringTableResource instance with the given entries, if any.
    * If no entries are provided, an empty STBL is created.
    * 
