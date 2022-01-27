@@ -667,7 +667,30 @@ describe("StringTableResource", () => {
     });
   });
 
-  // TODO: getByValue()
+  describe("#getByValue()", () => {
+    it("should return the first entry with the given value", () => {
+      const stbl = StringTableResource.create({ entries: [
+        { key: 1, value: "first" },
+        { key: 2, value: "second" },
+        { key: 3, value: "last" },
+        { key: 4, value: "last" },
+      ]});
+
+      expect(stbl.getByValue("first").key).to.equal(1);
+      expect(stbl.getByValue("second").key).to.equal(2);
+      expect(stbl.getByValue("last").key).to.equal(3);
+    });
+
+    it("should return undefined if no entries have the given value", () => {
+      const stbl = StringTableResource.create({ entries: [
+        { key: 1, value: "first" },
+        { key: 2, value: "second" },
+        { key: 3, value: "third" },
+      ]});
+
+      expect(stbl.getByValue("last")).to.be.undefined;
+    });
+  });
 
   describe("#getIdForKey()", () => {
     it("should return the ID for the given key", () => {
