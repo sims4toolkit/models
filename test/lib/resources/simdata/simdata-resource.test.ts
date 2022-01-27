@@ -656,17 +656,17 @@ describe("SimDataResource", () => {
     });
 
     it("should not cache the buffer by default", () => {
-      const simdata = getSimDataFromBinary("buff");
+      const simdata = SimDataResource.from(getBuffer("buff.simdata"));
       expect(simdata.isCached).to.be.false;
     });
 
     it("should not cache the buffer if saveBuffer = false", () => {
-      const simdata = getSimDataFromBinary("buff", false);
+      const simdata = SimDataResource.from(getBuffer("buff.simdata"), { saveBuffer: false });
       expect(simdata.isCached).to.be.false;
     });
 
     it("should cache the buffer if saveBuffer = true", () => {
-      const simdata = getSimDataFromBinary("buff", true);
+      const simdata = SimDataResource.from(getBuffer("buff.simdata"), { saveBuffer: true });
       expect(simdata.isCached).to.be.true;
     });
   });
@@ -830,21 +830,21 @@ describe("SimDataResource", () => {
     });
 
     it("should not cache the buffer by default", () => {
-      const simdata = getSimDataFromXml("buff");
+      const simdata = SimDataResource.fromXml(getBuffer("buff.xml"));
       expect(simdata.isCached).to.be.false;
       simdata.buffer;
       expect(simdata.isCached).to.be.false;
     });
 
     it("should not cache the buffer if saveBuffer = false", () => {
-      const simdata = getSimDataFromXml("buff", false);
+      const simdata = SimDataResource.fromXml(getBuffer("buff.xml"), { saveBuffer: false });
       expect(simdata.isCached).to.be.false;
       simdata.buffer;
       expect(simdata.isCached).to.be.false;
     });
 
     it("should cache the buffer if saveBuffer = true", () => {
-      const simdata = getSimDataFromXml("buff", true);
+      const simdata = SimDataResource.fromXml(getBuffer("buff.xml"), { saveBuffer: true });
       expect(simdata.isCached).to.be.false;
       simdata.buffer;
       expect(simdata.isCached).to.be.true;
