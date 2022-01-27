@@ -1,4 +1,4 @@
-import type { KeyStringPair } from "./shared";
+import type { KeyStringPair } from "./types";
 import { fnv32 } from "@s4tk/hashing";
 import { PrimitiveMappedModel } from "../../base/primitive-mapped-model";
 import Resource from "../resource";

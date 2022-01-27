@@ -12,8 +12,8 @@ import WritableModel from "../../base/writable-model";
 import EncodingType from "../../enums/encoding-type";
 
 /**
- * Model for SimData resources. While binary tuning is the same format as
- * SimData, it is NOT supported by this model. Use BinaryTuningResource instead.
+ * Model for SimData resources. While combined tuning is the same format, it is
+ * NOT supported by this model. Use CombinedTuningResource instead.
  * 
  * SimDatas are mini relational databases, and to simplify working with them
  * (and for consistency with its XML format), this model uses the concept of

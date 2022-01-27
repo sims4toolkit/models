@@ -1,4 +1,4 @@
-import type { KeyStringPair } from "../shared";
+import type { KeyStringPair } from "../types";
 import { BinaryEncoder } from "@s4tk/encoding";
 
 /**

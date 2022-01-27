@@ -1,4 +1,4 @@
-import type { KeyStringPair } from "../shared";
+import type { KeyStringPair } from "../types";
 import type { FileReadingOptions } from "../../../common/options";
 import { BinaryDecoder } from "@s4tk/encoding";
 
