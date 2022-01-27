@@ -12,10 +12,12 @@ import WritableModel from "../../base/writable-model";
 import EncodingType from "../../enums/encoding-type";
 
 /**
- * A resource for SimData (binary tuning). SimDatas are essentially mini
- * relational databases, but to simplify working with them (and for consistency
- * with Sims 4 Studio), this model uses the concept of "instances". An
- * "instance" is an object cell that has a name.
+ * Model for SimData resources. While binary tuning is the same format as
+ * SimData, it is NOT supported by this model. Use BinaryTuningResource instead.
+ * 
+ * SimDatas are mini relational databases, and to simplify working with them
+ * (and for consistency with its XML format), this model uses the concept of
+ * "instances". An "instance" is an object cell that has a name.
  */
 export default class SimDataResource extends WritableModel implements Resource, SimDataDto {
   readonly encodingType: EncodingType = EncodingType.DATA;
