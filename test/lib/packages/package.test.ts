@@ -35,8 +35,6 @@ function getTestKey(): ResourceKey {
 
 //#endregion Helpers
 
-// TODO: fix for new cacheing, add tests for saveBuffer, saveCompressedBuffers, and saveDecompressedBuffers
-
 describe("Package", () => {
   //#region Properties
 
@@ -636,8 +634,6 @@ describe("Package", () => {
       expect(compare(repeats[1], third.key)).to.be.true;
     });
   });
-
-  // TODO: findRepeatedValues()
 
   describe("#get()", () => {
     it("should return the entry with the given ID", () => {

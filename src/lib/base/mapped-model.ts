@@ -160,8 +160,6 @@ export abstract class MappedModel<Key, Value, Entry extends MappedModelEntry<Key
     return keys;
   }
 
-  // TODO: findRepeatedValues()
-
   /**
    * Returns the entry that has the given ID, or undefined if there isn't one.
    * 
@@ -220,7 +218,8 @@ export abstract class MappedModel<Key, Value, Entry extends MappedModelEntry<Key
   }
 
   /**
-   * Checks whether this model has an entry with the given key.
+   * Checks whether this model has an entry with the given key. Equality is
+   * determined by the entry's `keyEquals()` method.
    * 
    * @param key Key to check
    * @returns True if there is an entry with the given key, false otherwise
@@ -229,7 +228,20 @@ export abstract class MappedModel<Key, Value, Entry extends MappedModelEntry<Key
     return this.getIdForKey(key) !== undefined;
   }
 
-  // TODO: hasValue()
+  /**
+   * Checks whether this model has an entry with the given value. Equality is
+   * determined by the entry's `valueEquals()` method.
+   * 
+   * @param value Value to check
+   * @returns True if there is an entry with the given value, false otherwise
+   */
+  hasValue(value: Value): boolean {
+    for (const [ , entry ] of this._entryMap) {
+      if (entry.valueEquals(value)) return true;
+    }
+
+    return false;
+  }
 
   /**
    * Notifies this model that a key has been updated.
