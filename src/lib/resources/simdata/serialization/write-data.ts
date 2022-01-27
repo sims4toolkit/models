@@ -3,8 +3,9 @@ import { formatAsHexString } from "@s4tk/hashing/formatting";
 import { fnv32 } from "@s4tk/hashing";
 import { SimDataDto, CellEncodingOptions } from "../types";
 import { HEADER_SIZE, TABLE_HEADER_OFFSET, RELOFFSET_NULL, NO_NAME_HASH, SUPPORTED_VERSION } from "../constants";
-import { SimDataType, SimDataTypeUtils } from "../data-types";
 import * as cells from "../cells";
+import DataType from "../../../enums/data-type";
+import { getAlignment, getBytes } from "../../../common/data-type-helpers";
 
 // FIXME: there could potentially be an issue with padding when writing booleans,
 // for an example use the scenario role that chip sent
@@ -22,14 +23,14 @@ interface SerialSchema {
 /** A DTO for schema columns when they're being serialized. */
 interface SerialColumn {
   name: string; // what mnNameOffset points to
-  dataType: SimDataType; // mnDataType
+  dataType: DataType; // mnDataType
   flags: number;
   offset: number; // mnOffset
 }
 
 /** A table in a DATA file that contains plain values or reference types. */
 interface RawTable {
-  dataType: SimDataType;
+  dataType: DataType;
   row: TableRow;
 }
 
@@ -51,7 +52,7 @@ interface TableCell {
 
 /** References a cell in a Table, specified by the type and schema. */
 interface TableRef {
-  dataType?: SimDataType;
+  dataType?: DataType;
   schemaHash?: number; // iff dataType === Object
   index: number; // index of row to get
 }
@@ -81,9 +82,9 @@ function getPaddingForAlignment(index: number, alignmentMask: number): number {
  */
 function isReferenceType(cell: cells.Cell): boolean {
   switch (cell.dataType) {
-    case SimDataType.Object:
-    case SimDataType.Vector:
-    case SimDataType.Variant:
+    case DataType.Object:
+    case DataType.Vector:
+    case DataType.Variant:
       return true;
     default:
       return false;
@@ -99,8 +100,8 @@ function isReferenceType(cell: cells.Cell): boolean {
 function isStringType(cell: cells.Cell): boolean {
   switch (cell.dataType) {
     // FIXME: is character a string type?
-    case SimDataType.String:
-    case SimDataType.HashedString:
+    case DataType.String:
+    case DataType.HashedString:
       return true;
     default:
       return false;
@@ -131,7 +132,7 @@ export default function writeData(model: SimDataDto): Buffer {
   }
 
   const rawTables: RawTable[] = [];
-  function getRawTable(dataType: SimDataType): RawTable {
+  function getRawTable(dataType: DataType): RawTable {
     let table = rawTables.find(table => table.dataType === dataType);
 
     if (!table) {
@@ -178,8 +179,8 @@ export default function writeData(model: SimDataDto): Buffer {
     columns.forEach(column => {
       schemaSectionSize += 20; // size of column header
       column.offset = size;
-      size += SimDataTypeUtils.getBytes(column.dataType);
-      size += getPaddingForAlignment(size, SimDataTypeUtils.getAlignment(column.dataType) - 1);
+      size += getBytes(column.dataType);
+      size += getPaddingForAlignment(size, getAlignment(column.dataType) - 1);
     });
 
     const serialSchema = {
@@ -208,15 +209,15 @@ export default function writeData(model: SimDataDto): Buffer {
 
   function addCell(cell: cells.Cell): TableRef {
     switch (cell.dataType) {
-      case SimDataType.Object:
+      case DataType.Object:
         return addObjectCell(cell as cells.ObjectCell);
-      case SimDataType.Vector:
+      case DataType.Vector:
         return addVectorCell(cell as cells.VectorCell);
-      case SimDataType.Variant:
+      case DataType.Variant:
         return addVariantCell(cell as cells.VariantCell);
-      case SimDataType.Character:
-      case SimDataType.String:
-      case SimDataType.HashedString:
+      case DataType.Character:
+      case DataType.String:
+      case DataType.HashedString:
         return addTextCell(cell as cells.TextCell);
       default:
         return addPrimitiveCell(cell);
@@ -238,14 +239,14 @@ export default function writeData(model: SimDataDto): Buffer {
 
   function addTextCell(cell: cells.TextCell, getCharRef = false): TableRef {
     const charRef: TableRef = {
-      dataType: SimDataType.Character,
+      dataType: DataType.Character,
       index: charTableLength
     };
 
     charTableLength += Buffer.byteLength(cell.value, 'utf-8') + 1; // +1 for null
     stringsToAddToCharTable.push(cell.value);
 
-    if ((cell.dataType === SimDataType.Character) || getCharRef) {
+    if ((cell.dataType === DataType.Character) || getCharRef) {
       return charRef;
     } else {
       const table = getRawTable(cell.dataType);
@@ -259,7 +260,7 @@ export default function writeData(model: SimDataDto): Buffer {
   }
 
   function addVectorCell(cell: cells.VectorCell): TableRef {
-    if (cell.childType === SimDataType.Vector || cell.childType === SimDataType.Variant) {
+    if (cell.childType === DataType.Vector || cell.childType === DataType.Variant) {
       let firstChildRef: TableRef;
       cell.children.forEach(child => {
         const table = getRawTable(child.dataType);
@@ -292,7 +293,7 @@ export default function writeData(model: SimDataDto): Buffer {
   }
 
   function addVariantCell(cell: cells.VariantCell): TableRef {
-    if (cell.childType === SimDataType.Vector || cell.childType === SimDataType.Variant) {
+    if (cell.childType === DataType.Vector || cell.childType === DataType.Variant) {
       const { child } = cell;
       const table = getRawTable(child.dataType);
       
@@ -440,14 +441,14 @@ export default function writeData(model: SimDataDto): Buffer {
     const rawTablePositions: { [key: number]: number; } = {};
     rawTables.forEach(table => {
       totalSize += getPaddingForAlignment(totalSize, 15);
-      totalSize += getPaddingForAlignment(totalSize, SimDataTypeUtils.getAlignment(table.dataType) - 1);
+      totalSize += getPaddingForAlignment(totalSize, getAlignment(table.dataType) - 1);
       rawTablePositions[table.dataType] = totalSize;
-      totalSize += SimDataTypeUtils.getBytes(table.dataType) * table.row.length;
+      totalSize += getBytes(table.dataType) * table.row.length;
     });
 
     if (hasCharTable) {
       totalSize += getPaddingForAlignment(totalSize, 15);
-      rawTablePositions[SimDataType.Character] = totalSize;
+      rawTablePositions[DataType.Character] = totalSize;
       totalSize += charTableLength;
     }
 
@@ -472,12 +473,12 @@ export default function writeData(model: SimDataDto): Buffer {
       if (ref.dataType === undefined) return RELOFFSET_NULL;
 
       let pos: number, offset: number;
-      if (ref.dataType === SimDataType.Object) {
+      if (ref.dataType === DataType.Object) {
         pos = objectTablePositions[ref.schemaHash];
         offset = serialSchemaMap[ref.schemaHash].size * ref.index;
       } else {
         pos = rawTablePositions[ref.dataType];
-        offset = SimDataTypeUtils.getBytes(ref.dataType) * ref.index;
+        offset = getBytes(ref.dataType) * ref.index;
       }
 
       return pos + offset - encoder.tell();
@@ -503,7 +504,7 @@ export default function writeData(model: SimDataDto): Buffer {
         encoder.uint32(nameHashes[table.name]);
       }
       encoder.int32(bytesLeft() + schemaOffsets[table.schema.hash]);
-      encoder.uint32(SimDataType.Object);
+      encoder.uint32(DataType.Object);
       encoder.uint32(table.schema.size);
       const tablePos = objectTablePositions[table.schema.hash];
       encoder.int32(tablePos - encoder.tell());
@@ -530,7 +531,7 @@ export default function writeData(model: SimDataDto): Buffer {
       encoder.uint32(NO_NAME_HASH);
       encoder.int32(RELOFFSET_NULL);
       encoder.uint32(table.dataType);
-      encoder.uint32(SimDataTypeUtils.getBytes(table.dataType));
+      encoder.uint32(getBytes(table.dataType));
       const tableOffset = rawTablePositions[table.dataType];
       encoder.int32(tableOffset - encoder.tell());
       encoder.uint32(table.row.length);
@@ -547,9 +548,9 @@ export default function writeData(model: SimDataDto): Buffer {
       encoder.int32(RELOFFSET_NULL);
       encoder.uint32(NO_NAME_HASH);
       encoder.int32(RELOFFSET_NULL);
-      encoder.uint32(SimDataType.Character);
+      encoder.uint32(DataType.Character);
       encoder.uint32(1); // bytes for a char
-      const tableOffset = rawTablePositions[SimDataType.Character];
+      const tableOffset = rawTablePositions[DataType.Character];
       encoder.int32(tableOffset - encoder.tell());
       encoder.uint32(charTableLength);
 

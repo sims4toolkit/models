@@ -4,8 +4,9 @@ import { XmlElementNode, XmlNode } from "@s4tk/xml-dom";
 import { formatAsHexString } from "@s4tk/hashing/formatting";
 import { ObjectCell } from "./cells";
 import ApiModelBase from "../../base/api-model";
-import { SimDataType, SimDataTypeUtils } from "./data-types";
 import { arraysAreEqual, removeFromArray } from "../../common/helpers";
+import DataType from "../../enums/data-type";
+import { getSims4StudioName, parseSims4StudioName } from "../../common/data-type-helpers";
 
 /**
  * A schema that objects in a SimData can follow.
@@ -129,7 +130,7 @@ export class SimDataSchema extends ApiModelBase {
  * A column in a SimData schema.
  */
 export class SimDataSchemaColumn extends ApiModelBase {
-  constructor(public name: string, public type: SimDataType, public flags: number, owner?: ApiModelBase) {
+  constructor(public name: string, public type: DataType, public flags: number, owner?: ApiModelBase) {
     super(owner);
     this._watchProps('name', 'type', 'flags');
   }
@@ -164,7 +165,7 @@ export class SimDataSchemaColumn extends ApiModelBase {
       tag: "Column",
       attributes: {
         name: this.name,
-        type: SimDataTypeUtils.getSims4StudioName(this.type),
+        type: getSims4StudioName(this.type),
         flags: formatAsHexString(this.flags, 8, true)
       }
     });
@@ -182,7 +183,7 @@ export class SimDataSchemaColumn extends ApiModelBase {
       throw new Error(`Expected <Column> to have a 'name' attribute.`);
     if (!node.attributes.type)
       throw new Error(`Expected <Column> to have a 'type' attribute.`);
-    const type = SimDataTypeUtils.parseSims4StudioName(node.attributes.type);
+    const type = parseSims4StudioName(node.attributes.type);
     if (!node.attributes.flags)
       throw new Error(`Expected <Column> to have a 'flags' attribute.`);
     const flags = parseNodeAttrAsNumber(node, 'flags');
@@ -220,7 +221,7 @@ export class SimDataInstance extends ObjectCell {
       attributes: {
         name: this.name,
         schema: this.schema.name,
-        type: SimDataTypeUtils.getSims4StudioName(this.dataType)
+        type: getSims4StudioName(this.dataType)
       },
       children: this.schema.columns.map(column => {
         return this.row[column.name].toXmlNode({ nameAttr: column.name });

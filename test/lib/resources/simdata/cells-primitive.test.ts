@@ -1,5 +1,6 @@
 import { expect } from "chai";
-import { SimDataType, cells } from "../../../../dst/simdata";
+import { DataType } from "../../../../dst/enums";
+import { cells } from "../../../../dst/simdata";
 import * as hashing from "@s4tk/hashing";
 import { BinaryDecoder, BinaryEncoder } from "@s4tk/encoding";
 import * as xmlDom from "@s4tk/xml-dom";
@@ -81,7 +82,7 @@ describe("BooleanCell", function() {
 
     it("should have a data type of Boolean", () => {
       const cell = new cells.BooleanCell(true);
-      expect(cell.dataType).to.equal(SimDataType.Boolean);
+      expect(cell.dataType).to.equal(DataType.Boolean);
     });
   });
 
@@ -284,14 +285,14 @@ describe("TextCell", function() {
   describe("#value", () => {
     it("should uncache the owner when set", () => {
       const owner = new MockOwner();
-      const cell = new cells.TextCell(SimDataType.String, "hi", owner);
+      const cell = new cells.TextCell(DataType.String, "hi", owner);
       expect(owner.cached).to.be.true;
       cell.value = "bye";
       expect(owner.cached).to.be.false;
     });
 
     it("should change the value when set", () => {
-      const cell = new cells.TextCell(SimDataType.String, "hi");
+      const cell = new cells.TextCell(DataType.String, "hi");
       cell.value = "bye";
       expect(cell.value).to.equal("bye");
     });
@@ -299,39 +300,39 @@ describe("TextCell", function() {
 
   describe("#constructor()", () => {
     it("should use the provided data type and value", () => {
-      const cell = new cells.TextCell(SimDataType.String, "Something");
-      expect(cell.dataType).to.equal(SimDataType.String);
+      const cell = new cells.TextCell(DataType.String, "Something");
+      expect(cell.dataType).to.equal(DataType.String);
       expect(cell.value).to.equal("Something");
     });
 
     it("should be an empty string if given undefined", () => {
-      const cell = new cells.TextCell(SimDataType.String, undefined);
+      const cell = new cells.TextCell(DataType.String, undefined);
       expect(cell.value).to.equal("");
     });
 
     it("should be an empty string if given null", () => {
-      const cell = new cells.TextCell(SimDataType.String, null);
+      const cell = new cells.TextCell(DataType.String, null);
       expect(cell.value).to.equal("");
     });
   });
 
   describe("#clone()", () => {
     it("should copy the data type and value", () => {
-      const cell = new cells.TextCell(SimDataType.String, "Something");
+      const cell = new cells.TextCell(DataType.String, "Something");
       const clone = cell.clone();
-      expect(clone.dataType).to.equal(SimDataType.String);
+      expect(clone.dataType).to.equal(DataType.String);
       expect(clone.value).to.equal("Something");
     });
 
     it("should not copy the owner", () => {
       const owner = new MockOwner();
-      const cell = new cells.TextCell(SimDataType.String, "Something", owner);
+      const cell = new cells.TextCell(DataType.String, "Something", owner);
       const clone = cell.clone();
       expect(clone.owner).to.be.undefined;
     });
 
     it("should not mutate the original", () => {
-      const cell = new cells.TextCell(SimDataType.String, "Something");
+      const cell = new cells.TextCell(DataType.String, "Something");
       const clone = cell.clone();
       clone.value = "Something else";
       expect(cell.value).to.equal("Something");
@@ -340,25 +341,25 @@ describe("TextCell", function() {
 
   describe("#equals()", () => {
     it("should return true when both have the same type and value", () => {
-      const cell = new cells.TextCell(SimDataType.String, "hi");
-      const other = new cells.TextCell(SimDataType.String, "hi");
+      const cell = new cells.TextCell(DataType.String, "hi");
+      const other = new cells.TextCell(DataType.String, "hi");
       expect(cell.equals(other)).to.be.true;
     });
 
     it("should return false when type is different", () => {
-      const cell = new cells.TextCell(SimDataType.String, "hi");
-      const other = new cells.TextCell(SimDataType.HashedString, "hi");
+      const cell = new cells.TextCell(DataType.String, "hi");
+      const other = new cells.TextCell(DataType.HashedString, "hi");
       expect(cell.equals(other)).to.be.false;
     });
 
     it("should return false when value is different", () => {
-      const cell = new cells.TextCell(SimDataType.String, "hi");
-      const other = new cells.TextCell(SimDataType.String, "bye");
+      const cell = new cells.TextCell(DataType.String, "hi");
+      const other = new cells.TextCell(DataType.String, "bye");
       expect(cell.equals(other)).to.be.false;
     });
 
     it("should return false when other is undefined", () => {
-      const cell = new cells.TextCell(SimDataType.String, "hi");
+      const cell = new cells.TextCell(DataType.String, "hi");
       expect(cell.equals(undefined)).to.be.false;
     });
   });
@@ -366,14 +367,14 @@ describe("TextCell", function() {
   describe("#encode()", () => {
     context("data type === character", () => {
       it("should write 1 byte", () => {
-        const cell = new cells.TextCell(SimDataType.Character, "a");
+        const cell = new cells.TextCell(DataType.Character, "a");
         const encoder = new BinaryEncoder(Buffer.alloc(1));
         cell.encode(encoder);
         expect(encoder.tell()).to.equal(1);
       });
 
       it("should write the character that is contained", () => {
-        const cell = new cells.TextCell(SimDataType.Character, "x");
+        const cell = new cells.TextCell(DataType.Character, "x");
         const buffer = Buffer.alloc(1);
         const encoder = new BinaryEncoder(buffer);
         cell.encode(encoder);
@@ -382,7 +383,7 @@ describe("TextCell", function() {
       });
 
       it("should throw if the byte length is > 1", () => {
-        const cell = new cells.TextCell(SimDataType.Character, "hello");
+        const cell = new cells.TextCell(DataType.Character, "hello");
         const encoder = new BinaryEncoder(Buffer.alloc(5));
         expect(() => cell.encode(encoder)).to.throw();
       });
@@ -390,7 +391,7 @@ describe("TextCell", function() {
 
     context("data type === string", () => {
       it("should write the (positive) offset that is provided", () => {
-        const cell = new cells.TextCell(SimDataType.String, "hi");
+        const cell = new cells.TextCell(DataType.String, "hi");
         const buffer = Buffer.alloc(4);
         const encoder = new BinaryEncoder(buffer)
         cell.encode(encoder, { offset: 32 });
@@ -399,7 +400,7 @@ describe("TextCell", function() {
       });
 
       it("should write the (negative) offset that is provided", () => {
-        const cell = new cells.TextCell(SimDataType.String, "hi");
+        const cell = new cells.TextCell(DataType.String, "hi");
         const buffer = Buffer.alloc(4);
         const encoder = new BinaryEncoder(buffer)
         cell.encode(encoder, { offset: -32 });
@@ -408,14 +409,14 @@ describe("TextCell", function() {
       });
 
       it("should throw if no offset is provided", () => {
-        const cell = new cells.TextCell(SimDataType.String, "hi");
+        const cell = new cells.TextCell(DataType.String, "hi");
         const buffer = Buffer.alloc(4);
         const encoder = new BinaryEncoder(buffer)
         expect(() => cell.encode(encoder)).to.throw();
       });
 
       it("should throw if the value is undefined or null", () => {
-        const cell = cells.TextCell.getDefault(SimDataType.String);
+        const cell = cells.TextCell.getDefault(DataType.String);
         cell.value = undefined;
         const encoder = new BinaryEncoder(Buffer.alloc(4));
         expect(() => cell.encode(encoder)).to.throw();
@@ -424,7 +425,7 @@ describe("TextCell", function() {
 
     context("data type === hashed string", () => {
       it("should write the (positive) offset that is provided and the 32-bit hash of the string", () => {
-        const cell = new cells.TextCell(SimDataType.HashedString, "hi");
+        const cell = new cells.TextCell(DataType.HashedString, "hi");
         const buffer = Buffer.alloc(8);
         const encoder = new BinaryEncoder(buffer)
         cell.encode(encoder, { offset: 32 });
@@ -434,7 +435,7 @@ describe("TextCell", function() {
       });
 
       it("should write the (negative) offset that is provided and the 32-bit hash of the string", () => {
-        const cell = new cells.TextCell(SimDataType.HashedString, "hi");
+        const cell = new cells.TextCell(DataType.HashedString, "hi");
         const buffer = Buffer.alloc(8);
         const encoder = new BinaryEncoder(buffer)
         cell.encode(encoder, { offset: -32 });
@@ -444,7 +445,7 @@ describe("TextCell", function() {
       });
 
       it("should throw if no offset is provided", () => {
-        const cell = new cells.TextCell(SimDataType.HashedString, "hi");
+        const cell = new cells.TextCell(DataType.HashedString, "hi");
         const buffer = Buffer.alloc(8);
         const encoder = new BinaryEncoder(buffer)
         expect(() => cell.encode(encoder)).to.throw();
@@ -454,36 +455,36 @@ describe("TextCell", function() {
 
   describe("#toXmlNode()", () => {
     it("should throw when writing a character with its type", () => {
-      const cell = new cells.TextCell(SimDataType.Character, "x");
+      const cell = new cells.TextCell(DataType.Character, "x");
       expect(() => cell.toXmlNode({ typeAttr: true })).to.throw();
     });
 
     it("should write the value of a string", () => {
-      const cell = new cells.TextCell(SimDataType.String, "b__Head__");
+      const cell = new cells.TextCell(DataType.String, "b__Head__");
       const node = cell.toXmlNode();
       expect(node.toXml()).to.equal(`<T>b__Head__</T>`);
     });
 
     it("should write the value of a hashed string", () => {
-      const cell = new cells.TextCell(SimDataType.HashedString, "b__Head__");
+      const cell = new cells.TextCell(DataType.HashedString, "b__Head__");
       const node = cell.toXmlNode();
       expect(node.toXml()).to.equal(`<T>b__Head__</T>`);
     });
 
     it("should write the type of a string", () => {
-      const cell = new cells.TextCell(SimDataType.String, "b__Head__");
+      const cell = new cells.TextCell(DataType.String, "b__Head__");
       const node = cell.toXmlNode({ typeAttr: true });
       expect(node.toXml()).to.equal(`<T type="String">b__Head__</T>`);
     });
 
     it("should write the type of a hashed string", () => {
-      const cell = new cells.TextCell(SimDataType.HashedString, "b__Head__");
+      const cell = new cells.TextCell(DataType.HashedString, "b__Head__");
       const node = cell.toXmlNode({ typeAttr: true });
       expect(node.toXml()).to.equal(`<T type="HashedString">b__Head__</T>`);
     });
 
     it("should write the given name", () => {
-      const cell = new cells.TextCell(SimDataType.String, "b__Head__");
+      const cell = new cells.TextCell(DataType.String, "b__Head__");
       const node = cell.toXmlNode({ nameAttr: "str" });
       expect(node.toXml()).to.equal(`<T name="str">b__Head__</T>`);
     });
@@ -492,29 +493,29 @@ describe("TextCell", function() {
   describe("#validate()", () => {
     context("data type === character", () => {
       it("should throw if the byte length is > 1", () => {
-        const cell = new cells.TextCell(SimDataType.Character, "hello");
+        const cell = new cells.TextCell(DataType.Character, "hello");
         expect(() => cell.validate()).to.throw();
       });
 
       it("should throw if the byte length is < 1", () => {
-        const cell = new cells.TextCell(SimDataType.Character, "");
+        const cell = new cells.TextCell(DataType.Character, "");
         expect(() => cell.validate()).to.throw();
       });
 
       it("should not throw if the byte length is = 1", () => {
-        const cell = new cells.TextCell(SimDataType.Character, "x");
+        const cell = new cells.TextCell(DataType.Character, "x");
         expect(() => cell.validate()).to.not.throw();
       });
     });
 
     context("data type === string/hashed string", () => {
       it("should not throw if string is non-empty", () => {
-        const cell = new cells.TextCell(SimDataType.String, "Hi");
+        const cell = new cells.TextCell(DataType.String, "Hi");
         expect(() => cell.validate()).to.not.throw();
       });
 
       it("should not throw if string is empty", () => {
-        const cell = new cells.TextCell(SimDataType.String, "");
+        const cell = new cells.TextCell(DataType.String, "");
         expect(() => cell.validate()).to.not.throw();
       });
     });
@@ -528,8 +529,8 @@ describe("TextCell", function() {
         const encoder = new BinaryEncoder(buffer);
         encoder.charsUtf8(char);
         const decoder = new BinaryDecoder(buffer);
-        const cell = cells.TextCell.decode(SimDataType.Character, decoder);
-        expect(cell.dataType).to.equal(SimDataType.Character);
+        const cell = cells.TextCell.decode(DataType.Character, decoder);
+        expect(cell.dataType).to.equal(DataType.Character);
         expect(cell.value).to.equal("x");
       });
     });
@@ -543,8 +544,8 @@ describe("TextCell", function() {
         encoder.skip(2);
         encoder.charsUtf8(string);
         const decoder = new BinaryDecoder(buffer);
-        const cell = cells.TextCell.decode(SimDataType.String, decoder);
-        expect(cell.dataType).to.equal(SimDataType.String);
+        const cell = cells.TextCell.decode(DataType.String, decoder);
+        expect(cell.dataType).to.equal(DataType.String);
         expect(cell.value).to.equal(string);
       });
 
@@ -558,8 +559,8 @@ describe("TextCell", function() {
         encoder.int32(-stringSize);
         const decoder = new BinaryDecoder(buffer);
         decoder.seek(stringSize);
-        const cell = cells.TextCell.decode(SimDataType.String, decoder);
-        expect(cell.dataType).to.equal(SimDataType.String);
+        const cell = cells.TextCell.decode(DataType.String, decoder);
+        expect(cell.dataType).to.equal(DataType.String);
         expect(cell.value).to.equal(string);
       });
     });
@@ -574,8 +575,8 @@ describe("TextCell", function() {
         encoder.skip(2);
         encoder.charsUtf8(string);
         const decoder = new BinaryDecoder(buffer);
-        const cell = cells.TextCell.decode(SimDataType.HashedString, decoder);
-        expect(cell.dataType).to.equal(SimDataType.HashedString);
+        const cell = cells.TextCell.decode(DataType.HashedString, decoder);
+        expect(cell.dataType).to.equal(DataType.HashedString);
         expect(cell.value).to.equal("hello");
       });
 
@@ -590,8 +591,8 @@ describe("TextCell", function() {
         encoder.uint32(fnv32(string));
         const decoder = new BinaryDecoder(buffer);
         decoder.seek(stringSize);
-        const cell = cells.TextCell.decode(SimDataType.HashedString, decoder);
-        expect(cell.dataType).to.equal(SimDataType.HashedString);
+        const cell = cells.TextCell.decode(DataType.HashedString, decoder);
+        expect(cell.dataType).to.equal(DataType.HashedString);
         expect(cell.value).to.equal("hello");
       });
     });
@@ -600,25 +601,25 @@ describe("TextCell", function() {
   describe("static#fromXmlNode()", () => {
     it("should create a cell with the given type and value", () => {
       const node = getPlainNode("hi");
-      const cell = cells.TextCell.fromXmlNode(SimDataType.String, node);
-      expect(cell.dataType).to.equal(SimDataType.String);
+      const cell = cells.TextCell.fromXmlNode(DataType.String, node);
+      expect(cell.dataType).to.equal(DataType.String);
       expect(cell.value).to.equal("hi");
-      const hashedCell = cells.TextCell.fromXmlNode(SimDataType.HashedString, node);
-      expect(hashedCell.dataType).to.equal(SimDataType.HashedString);
+      const hashedCell = cells.TextCell.fromXmlNode(DataType.HashedString, node);
+      expect(hashedCell.dataType).to.equal(DataType.HashedString);
       expect(hashedCell.value).to.equal("hi");
     });
 
     it("should create a cell with an empty string if the node contains undefined", () => {
       const node = getPlainNode(undefined);
-      const cell = cells.TextCell.fromXmlNode(SimDataType.String, node);
+      const cell = cells.TextCell.fromXmlNode(DataType.String, node);
       expect(cell.value).to.equal("");
     });
   });
 
   describe("static#getDefault()", () => {
     it("should return a cell with the given data type and an empty string", () => {
-      const cell = cells.TextCell.getDefault(SimDataType.String);
-      expect(cell.dataType).to.equal(SimDataType.String);
+      const cell = cells.TextCell.getDefault(DataType.String);
+      expect(cell.dataType).to.equal(DataType.String);
       expect(cell.value).to.equal("");
     });
   });
@@ -628,7 +629,7 @@ describe("NumberCell", function() {
   describe("#value", () => {
     it("should uncache the owner when set", () => {
       const owner = new MockOwner();
-      const cell = new cells.NumberCell(SimDataType.UInt32, 100, owner);
+      const cell = new cells.NumberCell(DataType.UInt32, 100, owner);
       expect(owner.cached).to.be.true;
       cell.value = 50;
       expect(owner.cached).to.be.false;
@@ -637,39 +638,39 @@ describe("NumberCell", function() {
 
   describe("#constructor()", () => {
     it("should have the given type and value", () => {
-      const cell = new cells.NumberCell(SimDataType.UInt32, 100);
-      expect(cell.dataType).to.equal(SimDataType.UInt32);
+      const cell = new cells.NumberCell(DataType.UInt32, 100);
+      expect(cell.dataType).to.equal(DataType.UInt32);
       expect(cell.value).to.equal(100);
     });
 
     it("should have value of 0 if given undefined", () => {
-      const cell = new cells.NumberCell(SimDataType.UInt32, undefined);
+      const cell = new cells.NumberCell(DataType.UInt32, undefined);
       expect(cell.value).to.equal(0);
     });
 
     it("should have value of 0 if given null", () => {
-      const cell = new cells.NumberCell(SimDataType.UInt32, null);
+      const cell = new cells.NumberCell(DataType.UInt32, null);
       expect(cell.value).to.equal(0);
     });
   });
 
   describe("#clone()", () => {
     it("should copy the data type and value", () => {
-      const cell = new cells.NumberCell(SimDataType.Int8, 100);
+      const cell = new cells.NumberCell(DataType.Int8, 100);
       const clone = cell.clone();
-      expect(clone.dataType).to.equal(SimDataType.Int8);
+      expect(clone.dataType).to.equal(DataType.Int8);
       expect(clone.value).to.equal(100);
     });
 
     it("should not copy the owner", () => {
       const owner = new MockOwner();
-      const cell = new cells.NumberCell(SimDataType.Int8, 100, owner);
+      const cell = new cells.NumberCell(DataType.Int8, 100, owner);
       const clone = cell.clone();
       expect(clone.owner).to.be.undefined;
     });
 
     it("should not mutate the original", () => {
-      const cell = new cells.NumberCell(SimDataType.Int8, 100);
+      const cell = new cells.NumberCell(DataType.Int8, 100);
       const clone = cell.clone();
       clone.value = 50;
       expect(cell.value).to.equal(100);
@@ -678,7 +679,7 @@ describe("NumberCell", function() {
 
   describe("#encode()", () => {
     it("should write Int8 in 1 byte", () => {
-      const cell = new cells.NumberCell(SimDataType.Int8, -5);
+      const cell = new cells.NumberCell(DataType.Int8, -5);
       const buffer = Buffer.alloc(1);
       const encoder = new BinaryEncoder(buffer);
       expect(() => cell.encode(encoder)).to.not.throw();
@@ -687,7 +688,7 @@ describe("NumberCell", function() {
     });
 
     it("should write UInt8 in 1 byte", () => {
-      const cell = new cells.NumberCell(SimDataType.UInt8, 5);
+      const cell = new cells.NumberCell(DataType.UInt8, 5);
       const buffer = Buffer.alloc(1);
       const encoder = new BinaryEncoder(buffer);
       expect(() => cell.encode(encoder)).to.not.throw();
@@ -696,7 +697,7 @@ describe("NumberCell", function() {
     });
 
     it("should write Int16 in 2 bytes", () => {
-      const cell = new cells.NumberCell(SimDataType.Int16, -5);
+      const cell = new cells.NumberCell(DataType.Int16, -5);
       const buffer = Buffer.alloc(2);
       const encoder = new BinaryEncoder(buffer);
       expect(() => cell.encode(encoder)).to.not.throw();
@@ -705,7 +706,7 @@ describe("NumberCell", function() {
     });
 
     it("should write UInt16 in 2 bytes", () => {
-      const cell = new cells.NumberCell(SimDataType.UInt16, 5);
+      const cell = new cells.NumberCell(DataType.UInt16, 5);
       const buffer = Buffer.alloc(2);
       const encoder = new BinaryEncoder(buffer);
       expect(() => cell.encode(encoder)).to.not.throw();
@@ -714,7 +715,7 @@ describe("NumberCell", function() {
     });
 
     it("should write Int32 in 4 bytes", () => {
-      const cell = new cells.NumberCell(SimDataType.Int32, -5);
+      const cell = new cells.NumberCell(DataType.Int32, -5);
       const buffer = Buffer.alloc(4);
       const encoder = new BinaryEncoder(buffer);
       expect(() => cell.encode(encoder)).to.not.throw();
@@ -723,7 +724,7 @@ describe("NumberCell", function() {
     });
 
     it("should write UInt32 in 4 bytes", () => {
-      const cell = new cells.NumberCell(SimDataType.UInt32, 5);
+      const cell = new cells.NumberCell(DataType.UInt32, 5);
       const buffer = Buffer.alloc(4);
       const encoder = new BinaryEncoder(buffer);
       expect(() => cell.encode(encoder)).to.not.throw();
@@ -732,7 +733,7 @@ describe("NumberCell", function() {
     });
 
     it("should write LocalizationKey in 4 bytes", () => {
-      const cell = new cells.NumberCell(SimDataType.LocalizationKey, 0x12345678);
+      const cell = new cells.NumberCell(DataType.LocalizationKey, 0x12345678);
       const buffer = Buffer.alloc(4);
       const encoder = new BinaryEncoder(buffer);
       expect(() => cell.encode(encoder)).to.not.throw();
@@ -741,7 +742,7 @@ describe("NumberCell", function() {
     });
 
     it("should write Float in 4 bytes", () => {
-      const cell = new cells.NumberCell(SimDataType.Float, 1.75);
+      const cell = new cells.NumberCell(DataType.Float, 1.75);
       const buffer = Buffer.alloc(4);
       const encoder = new BinaryEncoder(buffer);
       expect(() => cell.encode(encoder)).to.not.throw();
@@ -750,33 +751,33 @@ describe("NumberCell", function() {
     });
 
     it("should throw if value is out of bounds", () => {
-      const cell = new cells.NumberCell(SimDataType.UInt8, 500);
+      const cell = new cells.NumberCell(DataType.UInt8, 500);
       const encoder = new BinaryEncoder(Buffer.alloc(1));
       expect(() => cell.encode(encoder)).to.throw();
     });
 
     it("should throw if an unsigned integer is negative", () => {
-      const cell = new cells.NumberCell(SimDataType.UInt32, -10);
+      const cell = new cells.NumberCell(DataType.UInt32, -10);
       const encoder = new BinaryEncoder(Buffer.alloc(4));
       expect(() => cell.encode(encoder)).to.throw();
     });
 
     it("should throw if contains undefined", () => {
-      const cell = cells.NumberCell.getDefault(SimDataType.UInt32);
+      const cell = cells.NumberCell.getDefault(DataType.UInt32);
       cell.value = undefined;
       const encoder = new BinaryEncoder(Buffer.alloc(4));
       expect(() => cell.encode(encoder)).to.throw();
     });
 
     it("should throw if contains null", () => {
-      const cell = cells.NumberCell.getDefault(SimDataType.UInt32);
+      const cell = cells.NumberCell.getDefault(DataType.UInt32);
       cell.value = null;
       const encoder = new BinaryEncoder(Buffer.alloc(4));
       expect(() => cell.encode(encoder)).to.throw();
     });
 
     it("should throw if value is not a number", () => {
-      const cell = cells.NumberCell.getDefault(SimDataType.UInt32);
+      const cell = cells.NumberCell.getDefault(DataType.UInt32);
       //@ts-expect-error error is entire point of test
       cell.value = "hi";
       const encoder = new BinaryEncoder(Buffer.alloc(4));
@@ -786,56 +787,56 @@ describe("NumberCell", function() {
 
   describe("#equals()", () => {
     it("should return true when both have the same type and value", () => {
-      const cell = new cells.NumberCell(SimDataType.UInt32, 64);
-      const other = new cells.NumberCell(SimDataType.UInt32, 64);
+      const cell = new cells.NumberCell(DataType.UInt32, 64);
+      const other = new cells.NumberCell(DataType.UInt32, 64);
       expect(cell.equals(other)).to.be.true;
     });
 
     it("should return false when type is different", () => {
-      const cell = new cells.NumberCell(SimDataType.UInt32, 64);
-      const other = new cells.NumberCell(SimDataType.Int32, 64);
+      const cell = new cells.NumberCell(DataType.UInt32, 64);
+      const other = new cells.NumberCell(DataType.Int32, 64);
       expect(cell.equals(other)).to.be.false;
     });
 
     it("should return false when value is different", () => {
-      const cell = new cells.NumberCell(SimDataType.UInt32, 64);
-      const other = new cells.NumberCell(SimDataType.UInt32, 32);
+      const cell = new cells.NumberCell(DataType.UInt32, 64);
+      const other = new cells.NumberCell(DataType.UInt32, 32);
       expect(cell.equals(other)).to.be.false;
     });
 
     it("should return false when other is undefined", () => {
-      const cell = new cells.NumberCell(SimDataType.UInt32, 64);
+      const cell = new cells.NumberCell(DataType.UInt32, 64);
       expect(cell.equals(undefined)).to.be.false;
     });
   });
 
   describe("#toXmlNode()", () => {
     it("should create a node that contains the value", () => {
-      const cell = new cells.NumberCell(SimDataType.UInt32, 25);
+      const cell = new cells.NumberCell(DataType.UInt32, 25);
       const node = cell.toXmlNode();
       expect(node.toXml()).to.equal(`<T>25</T>`);
     });
 
     it("should have a type attribute when option is true", () => {
-      const cell = new cells.NumberCell(SimDataType.UInt32, 25);
+      const cell = new cells.NumberCell(DataType.UInt32, 25);
       const node = cell.toXmlNode({ typeAttr: true });
       expect(node.toXml()).to.equal(`<T type="UInt32">25</T>`);
     });
 
     it("should use \"Single\" instead of \"Float\" for floats", () => {
-      const cell = new cells.NumberCell(SimDataType.Float, 25);
+      const cell = new cells.NumberCell(DataType.Float, 25);
       const node = cell.toXmlNode({ typeAttr: true });
       expect(node.toXml()).to.equal(`<T type="Single">25</T>`);
     });
 
     it("should use the name attribute when given", () => {
-      const cell = new cells.NumberCell(SimDataType.UInt32, 25);
+      const cell = new cells.NumberCell(DataType.UInt32, 25);
       const node = cell.toXmlNode({ nameAttr: "number" });
       expect(node.toXml()).to.equal(`<T name="number">25</T>`);
     });
 
     it("should use both attributes when given", () => {
-      const cell = new cells.NumberCell(SimDataType.UInt32, 25);
+      const cell = new cells.NumberCell(DataType.UInt32, 25);
       const node = cell.toXmlNode({ nameAttr: "number", typeAttr: true });
       expect(node.toXml()).to.equal(`<T name="number" type="UInt32">25</T>`);
     });
@@ -843,32 +844,32 @@ describe("NumberCell", function() {
 
   describe("#validate()", () => {
     it("should throw when unsigned integer is larger than its limit", () => {
-      const cell = new cells.NumberCell(SimDataType.UInt8, 256);
+      const cell = new cells.NumberCell(DataType.UInt8, 256);
       expect(() => cell.validate()).to.throw();
     });
 
     it("should throw when unsigned integer is negative", () => {
-      const cell = new cells.NumberCell(SimDataType.UInt8, -1);
+      const cell = new cells.NumberCell(DataType.UInt8, -1);
       expect(() => cell.validate()).to.throw();
     });
 
     it("should not throw when unsigned integer is within range", () => {
-      const cell = new cells.NumberCell(SimDataType.UInt8, 255);
+      const cell = new cells.NumberCell(DataType.UInt8, 255);
       expect(() => cell.validate()).to.not.throw();
     });
 
     it("should throw when signed integer is larger than its limit", () => {
-      const cell = new cells.NumberCell(SimDataType.Int8, 128);
+      const cell = new cells.NumberCell(DataType.Int8, 128);
       expect(() => cell.validate()).to.throw();
     });
 
     it("should throw when signed integer is lower than its limit", () => {
-      const cell = new cells.NumberCell(SimDataType.Int8, -129);
+      const cell = new cells.NumberCell(DataType.Int8, -129);
       expect(() => cell.validate()).to.throw();
     });
 
     it("should not throw when signed integer is negative and in range", () => {
-      const cell = new cells.NumberCell(SimDataType.Int8, -1);
+      const cell = new cells.NumberCell(DataType.Int8, -1);
       expect(() => cell.validate()).to.not.throw();
     });
   });
@@ -884,15 +885,15 @@ describe("NumberCell", function() {
     context("data type === 8 bits", () => {
       it("should read a signed integer", () => {
         const decoder = getDecoder(1, 'int8', -5);
-        const cell = cells.NumberCell.decode(SimDataType.Int8, decoder);
-        expect(cell.dataType).to.equal(SimDataType.Int8);
+        const cell = cells.NumberCell.decode(DataType.Int8, decoder);
+        expect(cell.dataType).to.equal(DataType.Int8);
         expect(cell.value).to.equal(-5);
       });
 
       it("should read an unsigned integer", () => {
         const decoder = getDecoder(1, 'uint8', 5);
-        const cell = cells.NumberCell.decode(SimDataType.UInt8, decoder);
-        expect(cell.dataType).to.equal(SimDataType.UInt8);
+        const cell = cells.NumberCell.decode(DataType.UInt8, decoder);
+        expect(cell.dataType).to.equal(DataType.UInt8);
         expect(cell.value).to.equal(5);
       });
     });
@@ -900,15 +901,15 @@ describe("NumberCell", function() {
     context("data type === 16 bits", () => {
       it("should read a signed integer", () => {
         const decoder = getDecoder(2, 'int16', -5);
-        const cell = cells.NumberCell.decode(SimDataType.Int16, decoder);
-        expect(cell.dataType).to.equal(SimDataType.Int16);
+        const cell = cells.NumberCell.decode(DataType.Int16, decoder);
+        expect(cell.dataType).to.equal(DataType.Int16);
         expect(cell.value).to.equal(-5);
       });
 
       it("should read an unsigned integer", () => {
         const decoder = getDecoder(2, 'uint16', 5);
-        const cell = cells.NumberCell.decode(SimDataType.UInt16, decoder);
-        expect(cell.dataType).to.equal(SimDataType.UInt16);
+        const cell = cells.NumberCell.decode(DataType.UInt16, decoder);
+        expect(cell.dataType).to.equal(DataType.UInt16);
         expect(cell.value).to.equal(5);
       });
     });
@@ -916,29 +917,29 @@ describe("NumberCell", function() {
     context("data type === 32 bits", () => {
       it("should read a signed integer", () => {
         const decoder = getDecoder(4, 'int32', -5);
-        const cell = cells.NumberCell.decode(SimDataType.Int32, decoder);
-        expect(cell.dataType).to.equal(SimDataType.Int32);
+        const cell = cells.NumberCell.decode(DataType.Int32, decoder);
+        expect(cell.dataType).to.equal(DataType.Int32);
         expect(cell.value).to.equal(-5);
       });
 
       it("should read an unsigned integer", () => {
         const decoder = getDecoder(4, 'uint32', 5);
-        const cell = cells.NumberCell.decode(SimDataType.UInt32, decoder);
-        expect(cell.dataType).to.equal(SimDataType.UInt32);
+        const cell = cells.NumberCell.decode(DataType.UInt32, decoder);
+        expect(cell.dataType).to.equal(DataType.UInt32);
         expect(cell.value).to.equal(5);
       });
 
       it("should read a float", () => {
         const decoder = getDecoder(4, 'float', 1.5);
-        const cell = cells.NumberCell.decode(SimDataType.Float, decoder);
-        expect(cell.dataType).to.equal(SimDataType.Float);
+        const cell = cells.NumberCell.decode(DataType.Float, decoder);
+        expect(cell.dataType).to.equal(DataType.Float);
         expect(cell.value).to.equal(1.5);
       });
 
       it("should read a localization key", () => {
         const decoder = getDecoder(4, 'uint32', 0x12345678);
-        const cell = cells.NumberCell.decode(SimDataType.LocalizationKey, decoder);
-        expect(cell.dataType).to.equal(SimDataType.LocalizationKey);
+        const cell = cells.NumberCell.decode(DataType.LocalizationKey, decoder);
+        expect(cell.dataType).to.equal(DataType.LocalizationKey);
         expect(cell.value).to.equal(0x12345678);
       });
     });
@@ -947,95 +948,95 @@ describe("NumberCell", function() {
   describe("static#fromXmlNode()", () => {
     it("should parse a positive integer", () => {
       const node = getPlainNode(15);
-      const cell = cells.NumberCell.fromXmlNode(SimDataType.UInt32, node);
+      const cell = cells.NumberCell.fromXmlNode(DataType.UInt32, node);
       expect(cell.value).to.equal(15);
     });
 
     it("should parse a negative integer", () => {
       const node = getPlainNode(-15);
-      const cell = cells.NumberCell.fromXmlNode(SimDataType.Int32, node);
+      const cell = cells.NumberCell.fromXmlNode(DataType.Int32, node);
       expect(cell.value).to.equal(-15);
     });
 
     it("should parse a positive integer from a string", () => {
       const node = getPlainNode("15");
-      const cell = cells.NumberCell.fromXmlNode(SimDataType.UInt32, node);
+      const cell = cells.NumberCell.fromXmlNode(DataType.UInt32, node);
       expect(cell.value).to.equal(15);
     });
 
     it("should parse a negative integer from a string", () => {
       const node = getPlainNode("-15");
-      const cell = cells.NumberCell.fromXmlNode(SimDataType.Int32, node);
+      const cell = cells.NumberCell.fromXmlNode(DataType.Int32, node);
       expect(cell.value).to.equal(-15);
     });
 
     it("should parse a positive float", () => {
       const node = getPlainNode(1.5);
-      const cell = cells.NumberCell.fromXmlNode(SimDataType.Float, node);
+      const cell = cells.NumberCell.fromXmlNode(DataType.Float, node);
       expect(cell.value).to.equal(1.5);
     });
 
     it("should parse a negative float", () => {
       const node = getPlainNode(-1.5);
-      const cell = cells.NumberCell.fromXmlNode(SimDataType.Float, node);
+      const cell = cells.NumberCell.fromXmlNode(DataType.Float, node);
       expect(cell.value).to.equal(-1.5);
     });
 
     it("should parse a positive float from a string", () => {
       const node = getPlainNode("1.5");
-      const cell = cells.NumberCell.fromXmlNode(SimDataType.Float, node);
+      const cell = cells.NumberCell.fromXmlNode(DataType.Float, node);
       expect(cell.value).to.equal(1.5);
     });
 
     it("should parse a negative float from a string", () => {
       const node = getPlainNode("-1.5");
-      const cell = cells.NumberCell.fromXmlNode(SimDataType.Float, node);
+      const cell = cells.NumberCell.fromXmlNode(DataType.Float, node);
       expect(cell.value).to.equal(-1.5);
     });
 
     it("should parse an integer for a loc key", () => {
       const node = getPlainNode(0x12345678);
-      const cell = cells.NumberCell.fromXmlNode(SimDataType.LocalizationKey, node);
+      const cell = cells.NumberCell.fromXmlNode(DataType.LocalizationKey, node);
       expect(cell.value).to.equal(0x12345678);
     });
 
     it("should parse a string for a loc key", () => {
       const node = getPlainNode("0x12345678");
-      const cell = cells.NumberCell.fromXmlNode(SimDataType.LocalizationKey, node);
+      const cell = cells.NumberCell.fromXmlNode(DataType.LocalizationKey, node);
       expect(cell.value).to.equal(0x12345678);
     });
 
     it("should use a value of 0 if it's undefined", () => {
       const node = getPlainNode(undefined);
-      const cell = cells.NumberCell.fromXmlNode(SimDataType.UInt32, node);
+      const cell = cells.NumberCell.fromXmlNode(DataType.UInt32, node);
       expect(cell.value).to.equal(0);
     });
 
     it("should use a value of 0 if it's null", () => {
       const node = getPlainNode(null);
-      const cell = cells.NumberCell.fromXmlNode(SimDataType.UInt32, node);
+      const cell = cells.NumberCell.fromXmlNode(DataType.UInt32, node);
       expect(cell.value).to.equal(0);
     });
 
     it("should throw if the inner value is NaN", () => {
       const node = getPlainNode(NaN);
       expect(() => {
-        cells.NumberCell.fromXmlNode(SimDataType.UInt32, node);
+        cells.NumberCell.fromXmlNode(DataType.UInt32, node);
       }).to.throw();
     });
 
     it("should throw if the inner value cannot be parsed as a number", () => {
       const node = getPlainNode("hi");
       expect(() => {
-        cells.NumberCell.fromXmlNode(SimDataType.UInt32, node);
+        cells.NumberCell.fromXmlNode(DataType.UInt32, node);
       }).to.throw();
     });
   });
 
   describe("static#getDefault()", () => {
     it("should return a cell with a value of 0", () => {
-      const cell = cells.NumberCell.getDefault(SimDataType.UInt32);
-      expect(cell.dataType).to.equal(SimDataType.UInt32);
+      const cell = cells.NumberCell.getDefault(DataType.UInt32);
+      expect(cell.dataType).to.equal(DataType.UInt32);
       expect(cell.value).to.equal(0);
     });
   });
@@ -1045,7 +1046,7 @@ describe("BigIntCell", function() {
   describe("#value", () => {
     it("should uncache the owner when set", () => {
       const owner = new MockOwner();
-      const cell = new cells.BigIntCell(SimDataType.UInt64, 50n, owner);
+      const cell = new cells.BigIntCell(DataType.UInt64, 50n, owner);
       expect(owner.cached).to.be.true;
       cell.value = 25n;
       expect(owner.cached).to.be.false;
@@ -1054,29 +1055,29 @@ describe("BigIntCell", function() {
 
   describe("#constructor()", () => {
     it("should use the given data type and value", () => {
-      const cell = new cells.BigIntCell(SimDataType.UInt64, 50n);
-      expect(cell.dataType).to.equal(SimDataType.UInt64);
+      const cell = new cells.BigIntCell(DataType.UInt64, 50n);
+      expect(cell.dataType).to.equal(DataType.UInt64);
       expect(cell.value).to.equal(50n);
     });
   });
 
   describe("#clone()", () => {
     it("should copy the data type and value", () => {
-      const cell = new cells.BigIntCell(SimDataType.UInt64, 50n);
+      const cell = new cells.BigIntCell(DataType.UInt64, 50n);
       const clone = cell.clone();
-      expect(clone.dataType).to.equal(SimDataType.UInt64);
+      expect(clone.dataType).to.equal(DataType.UInt64);
       expect(clone.value).to.equal(50n);
     });
 
     it("should not copy the owner", () => {
       const owner = new MockOwner();
-      const cell = new cells.BigIntCell(SimDataType.UInt64, 50n, owner);
+      const cell = new cells.BigIntCell(DataType.UInt64, 50n, owner);
       const clone = cell.clone();
       expect(clone.owner).to.be.undefined;
     });
 
     it("should not mutate the original", () => {
-      const cell = new cells.BigIntCell(SimDataType.UInt64, 50n);
+      const cell = new cells.BigIntCell(DataType.UInt64, 50n);
       const clone = cell.clone();
       clone.value = 100n;
       expect(cell.value).to.equal(50n);
@@ -1087,7 +1088,7 @@ describe("BigIntCell", function() {
     it("should write uint64 in 8 bytes", () => {
       const buffer = Buffer.alloc(8);
       const encoder = new BinaryEncoder(buffer);
-      const cell = new cells.BigIntCell(SimDataType.UInt64, 0x1234567812345678n);
+      const cell = new cells.BigIntCell(DataType.UInt64, 0x1234567812345678n);
       cell.encode(encoder);
       expect(encoder.tell()).to.equal(8);
       const decoder = new BinaryDecoder(buffer);
@@ -1097,7 +1098,7 @@ describe("BigIntCell", function() {
     it("should write positive int64 in 8 bytes", () => {
       const buffer = Buffer.alloc(8);
       const encoder = new BinaryEncoder(buffer);
-      const cell = new cells.BigIntCell(SimDataType.Int64, 0x12345678n);
+      const cell = new cells.BigIntCell(DataType.Int64, 0x12345678n);
       cell.encode(encoder);
       expect(encoder.tell()).to.equal(8);
       const decoder = new BinaryDecoder(buffer);
@@ -1107,7 +1108,7 @@ describe("BigIntCell", function() {
     it("should write negative int64 in 8 bytes", () => {
       const buffer = Buffer.alloc(8);
       const encoder = new BinaryEncoder(buffer);
-      const cell = new cells.BigIntCell(SimDataType.Int64, -0x12345678n);
+      const cell = new cells.BigIntCell(DataType.Int64, -0x12345678n);
       cell.encode(encoder);
       expect(encoder.tell()).to.equal(8);
       const decoder = new BinaryDecoder(buffer);
@@ -1117,7 +1118,7 @@ describe("BigIntCell", function() {
     it("should throw if uint64 is negative", () => {
       const buffer = Buffer.alloc(8);
       const encoder = new BinaryEncoder(buffer);
-      const cell = new cells.BigIntCell(SimDataType.UInt64, -0x12345678n);
+      const cell = new cells.BigIntCell(DataType.UInt64, -0x12345678n);
       expect(() => {
         cell.encode(encoder);
       }).to.throw();
@@ -1126,7 +1127,7 @@ describe("BigIntCell", function() {
     it("should throw if table set ref is negative", () => {
       const buffer = Buffer.alloc(8);
       const encoder = new BinaryEncoder(buffer);
-      const cell = new cells.BigIntCell(SimDataType.TableSetReference, -0x12345678n);
+      const cell = new cells.BigIntCell(DataType.TableSetReference, -0x12345678n);
       expect(() => {
         cell.encode(encoder);
       }).to.throw();
@@ -1135,7 +1136,7 @@ describe("BigIntCell", function() {
     it("should throw if value is out of bounds", () => {
       const buffer = Buffer.alloc(8);
       const encoder = new BinaryEncoder(buffer);
-      const cell = new cells.BigIntCell(SimDataType.Int64, 0xFFFF_FFFF_FFFF_FFFFn);
+      const cell = new cells.BigIntCell(DataType.Int64, 0xFFFF_FFFF_FFFF_FFFFn);
       expect(() => {
         cell.encode(encoder);
       }).to.throw();
@@ -1144,50 +1145,50 @@ describe("BigIntCell", function() {
 
   describe("#equals()", () => {
     it("should return true when both have the same type and value", () => {
-      const cell = new cells.BigIntCell(SimDataType.UInt64, 64n);
-      const other = new cells.BigIntCell(SimDataType.UInt64, 64n);
+      const cell = new cells.BigIntCell(DataType.UInt64, 64n);
+      const other = new cells.BigIntCell(DataType.UInt64, 64n);
       expect(cell.equals(other)).to.be.true;
     });
 
     it("should return false when type is different", () => {
-      const cell = new cells.BigIntCell(SimDataType.UInt64, 64n);
-      const other = new cells.BigIntCell(SimDataType.TableSetReference, 64n);
+      const cell = new cells.BigIntCell(DataType.UInt64, 64n);
+      const other = new cells.BigIntCell(DataType.TableSetReference, 64n);
       expect(cell.equals(other)).to.be.false;
     });
 
     it("should return false when value is different", () => {
-      const cell = new cells.BigIntCell(SimDataType.UInt64, 64n);
-      const other = new cells.BigIntCell(SimDataType.UInt64, 128n);
+      const cell = new cells.BigIntCell(DataType.UInt64, 64n);
+      const other = new cells.BigIntCell(DataType.UInt64, 128n);
       expect(cell.equals(other)).to.be.false;
     });
 
     it("should return false when other is undefined", () => {
-      const cell = new cells.BigIntCell(SimDataType.UInt64, 64n);
+      const cell = new cells.BigIntCell(DataType.UInt64, 64n);
       expect(cell.equals(undefined)).to.be.false;
     });
   });
 
   describe("#toXmlNode()", () => {
     it("should create a node that contains the value", () => {
-      const cell = new cells.BigIntCell(SimDataType.UInt64, 25n);
+      const cell = new cells.BigIntCell(DataType.UInt64, 25n);
       const node = cell.toXmlNode();
       expect(node.toXml()).to.equal(`<T>25</T>`);
     });
 
     it("should have a type attribute when option is true", () => {
-      const cell = new cells.BigIntCell(SimDataType.UInt64, 25n);
+      const cell = new cells.BigIntCell(DataType.UInt64, 25n);
       const node = cell.toXmlNode({ typeAttr: true });
       expect(node.toXml()).to.equal(`<T type="UInt64">25</T>`);
     });
 
     it("should use the name attribute when given", () => {
-      const cell = new cells.BigIntCell(SimDataType.UInt64, 25n);
+      const cell = new cells.BigIntCell(DataType.UInt64, 25n);
       const node = cell.toXmlNode({ nameAttr: "bigint" });
       expect(node.toXml()).to.equal(`<T name="bigint">25</T>`);
     });
 
     it("should use both attributes when given", () => {
-      const cell = new cells.BigIntCell(SimDataType.TableSetReference, 12345n);
+      const cell = new cells.BigIntCell(DataType.TableSetReference, 12345n);
       const node = cell.toXmlNode({ nameAttr: "bigint", typeAttr: true });
       expect(node.toXml()).to.equal(`<T name="bigint" type="TableSetReference">12345</T>`);
     });
@@ -1195,47 +1196,47 @@ describe("BigIntCell", function() {
 
   describe("#validate()", () => {
     it("should do nothing when int64 is positive and in range", () => {
-      const cell = new cells.BigIntCell(SimDataType.Int64, 10n);
+      const cell = new cells.BigIntCell(DataType.Int64, 10n);
       expect(() => cell.validate()).to.not.throw();
     });
 
     it("should do nothing when int64 is negative and in range", () => {
-      const cell = new cells.BigIntCell(SimDataType.Int64, -10n);
+      const cell = new cells.BigIntCell(DataType.Int64, -10n);
       expect(() => cell.validate()).to.not.throw();
     });
 
     it("should throw when int64 is negative and out of range", () => {
-      const cell = new cells.BigIntCell(SimDataType.Int64, -1234567890987654321234567890n);
+      const cell = new cells.BigIntCell(DataType.Int64, -1234567890987654321234567890n);
       expect(() => cell.validate()).to.throw();
     });
 
     it("should throw when int64 is positive and out of range", () => {
-      const cell = new cells.BigIntCell(SimDataType.Int64, 1234567890987654321234567890n);
+      const cell = new cells.BigIntCell(DataType.Int64, 1234567890987654321234567890n);
       expect(() => cell.validate()).to.throw();
     });
 
     it("should do nothing when uint64 is in range", () => {
-      const cell = new cells.BigIntCell(SimDataType.UInt64, 10n);
+      const cell = new cells.BigIntCell(DataType.UInt64, 10n);
       expect(() => cell.validate()).to.not.throw();
     });
 
     it("should throw when uint64 is negative", () => {
-      const cell = new cells.BigIntCell(SimDataType.UInt64, -10n);
+      const cell = new cells.BigIntCell(DataType.UInt64, -10n);
       expect(() => cell.validate()).to.throw();
     });
 
     it("should throw when uint64 is positive and out of range", () => {
-      const cell = new cells.BigIntCell(SimDataType.UInt64, 1234567890987654321234567890n);
+      const cell = new cells.BigIntCell(DataType.UInt64, 1234567890987654321234567890n);
       expect(() => cell.validate()).to.throw();
     });
 
     it("should throw when value is undefined", () => {
-      const cell = new cells.BigIntCell(SimDataType.UInt64, undefined);
+      const cell = new cells.BigIntCell(DataType.UInt64, undefined);
       expect(() => cell.validate()).to.throw();
     });
 
     it("should throw when value is null", () => {
-      const cell = new cells.BigIntCell(SimDataType.UInt64, null);
+      const cell = new cells.BigIntCell(DataType.UInt64, null);
       expect(() => cell.validate()).to.throw();
     });
   });
@@ -1250,25 +1251,25 @@ describe("BigIntCell", function() {
 
     it("should read a negative int64", () => {
       const decoder = getDecoder('int64', -0x12345678n);
-      const cell = cells.BigIntCell.decode(SimDataType.Int64, decoder);
+      const cell = cells.BigIntCell.decode(DataType.Int64, decoder);
       expect(cell.value).to.equal(-0x12345678n);
     });
 
     it("should read a positive int64", () => {
       const decoder = getDecoder('int64', 0x12345678n);
-      const cell = cells.BigIntCell.decode(SimDataType.Int64, decoder);
+      const cell = cells.BigIntCell.decode(DataType.Int64, decoder);
       expect(cell.value).to.equal(0x12345678n);
     });
 
     it("should read a uint64", () => {
       const decoder = getDecoder('uint64', 0x1234567812345678n);
-      const cell = cells.BigIntCell.decode(SimDataType.UInt64, decoder);
+      const cell = cells.BigIntCell.decode(DataType.UInt64, decoder);
       expect(cell.value).to.equal(0x1234567812345678n);
     });
 
     it("should read a table set ref", () => {
       const decoder = getDecoder('uint64', 0xFFFF_FFFF_FFFF_FFFFn);
-      const cell = cells.BigIntCell.decode(SimDataType.TableSetReference, decoder);
+      const cell = cells.BigIntCell.decode(DataType.TableSetReference, decoder);
       expect(cell.value).to.equal(0xFFFF_FFFF_FFFF_FFFFn);
     });
   });
@@ -1276,65 +1277,65 @@ describe("BigIntCell", function() {
   describe("static#fromXmlNode()", () => {
     it("should parse a positive number", () => {
       const node = getPlainNode(123456789087654321n);
-      const cell = cells.BigIntCell.fromXmlNode(SimDataType.UInt64, node);
+      const cell = cells.BigIntCell.fromXmlNode(DataType.UInt64, node);
       expect(cell.value).to.equal(123456789087654321n);
     });
 
     it("should parse a negative number", () => {
       const node = getPlainNode(-123456789087654321n);
-      const cell = cells.BigIntCell.fromXmlNode(SimDataType.Int64, node);
+      const cell = cells.BigIntCell.fromXmlNode(DataType.Int64, node);
       expect(cell.value).to.equal(-123456789087654321n);
     });
 
     it("should parse a positive number string", () => {
       const node = getPlainNode("123456789087654321");
-      const cell = cells.BigIntCell.fromXmlNode(SimDataType.UInt64, node);
+      const cell = cells.BigIntCell.fromXmlNode(DataType.UInt64, node);
       expect(cell.value).to.equal(123456789087654321n);
     });
 
     it("should parse a negative number string", () => {
       const node = getPlainNode("-123456789087654321");
-      const cell = cells.BigIntCell.fromXmlNode(SimDataType.Int64, node);
+      const cell = cells.BigIntCell.fromXmlNode(DataType.Int64, node);
       expect(cell.value).to.equal(-123456789087654321n);
     });
 
     it("should parse a positive hex string", () => {
       const node = getPlainNode("0x1234567890ABCDEF");
-      const cell = cells.BigIntCell.fromXmlNode(SimDataType.TableSetReference, node);
+      const cell = cells.BigIntCell.fromXmlNode(DataType.TableSetReference, node);
       expect(cell.value).to.equal(0x1234567890ABCDEFn);
     });
 
     it("should use a value of 0 if it's undefined", () => {
       const node = getPlainNode(undefined);
-      const cell = cells.BigIntCell.fromXmlNode(SimDataType.UInt64, node);
+      const cell = cells.BigIntCell.fromXmlNode(DataType.UInt64, node);
       expect(cell.value).to.equal(0n);
     });
 
     it("should use a value of 0 if it's null", () => {
       const node = getPlainNode(null);
-      const cell = cells.BigIntCell.fromXmlNode(SimDataType.UInt64, node);
+      const cell = cells.BigIntCell.fromXmlNode(DataType.UInt64, node);
       expect(cell.value).to.equal(0n);
     });
 
     it("should throw if the inner value is NaN", () => {
       const node = getPlainNode(NaN);
       expect(() => {
-        cells.BigIntCell.fromXmlNode(SimDataType.UInt64, node);
+        cells.BigIntCell.fromXmlNode(DataType.UInt64, node);
       }).to.throw();
     });
 
     it("should throw if the inner value cannot be parsed as a bigint", () => {
       const node = getPlainNode("hello");
       expect(() => {
-        cells.BigIntCell.fromXmlNode(SimDataType.UInt64, node);
+        cells.BigIntCell.fromXmlNode(DataType.UInt64, node);
       }).to.throw();
     });
   });
 
   describe("static#getDefault()", () => {
     it("should return a cell with the given data type and a value of 0", () => {
-      const cell = cells.BigIntCell.getDefault(SimDataType.UInt64);
-      expect(cell.dataType).to.equal(SimDataType.UInt64);
+      const cell = cells.BigIntCell.getDefault(DataType.UInt64);
+      expect(cell.dataType).to.equal(DataType.UInt64);
       expect(cell.value).to.equal(0n);
     });
   });
@@ -1392,7 +1393,7 @@ describe("ResourceKeyCell", function() {
 
     it("should have a data type of ResourceKey", () => {
       const cell = new cells.ResourceKeyCell(1, 2, 3n);
-      expect(cell.dataType).to.equal(SimDataType.ResourceKey);
+      expect(cell.dataType).to.equal(DataType.ResourceKey);
     });
   });
 
@@ -1631,7 +1632,7 @@ describe("Float2Cell", function() {
 
     it("should have a data type of Float2", () => {
       const cell = new cells.Float2Cell(1, 2);
-      expect(cell.dataType).to.equal(SimDataType.Float2);
+      expect(cell.dataType).to.equal(DataType.Float2);
     });
   });
 
@@ -1868,7 +1869,7 @@ describe("Float3Cell", function() {
 
     it("should have a data type of Float3", () => {
       const cell = new cells.Float3Cell(1, 2, 3);
-      expect(cell.dataType).to.equal(SimDataType.Float3);
+      expect(cell.dataType).to.equal(DataType.Float3);
     });
   });
 
@@ -2131,7 +2132,7 @@ describe("Float4Cell", function() {
 
     it("should have a data type of Float4", () => {
       const cell = new cells.Float4Cell(1, 2, 3, 4);
-      expect(cell.dataType).to.equal(SimDataType.Float4);
+      expect(cell.dataType).to.equal(DataType.Float4);
     });
   });
 

@@ -1,13 +1,14 @@
 import type { BinaryDecoder, BinaryEncoder } from "@s4tk/encoding";
 import type { SimDataSchema } from "./fragments";
-import type { SimDataNumber, SimDataBigInt, SimDataText, SimDataFloatVector } from "./data-types";
+import type { SimDataNumber, SimDataBigInt, SimDataText, SimDataFloatVector } from "./types";
 import { XmlElementNode, XmlNode, XmlValueNode } from "@s4tk/xml-dom";
 import { formatAsHexString } from "@s4tk/hashing/formatting";
 import { fnv32 } from "@s4tk/hashing";
 import { CellCloneOptions, CellEncodingOptions, CellToXmlOptions, ObjectCellRow } from "./types";
 import ApiModelBase from "../../base/api-model";
-import { SimDataType, SimDataTypeUtils } from "./data-types";
 import { arraysAreEqual, removeFromArray } from "../../common/helpers";
+import DataType from "../../enums/data-type";
+import { getSims4StudioName, isBigIntInRange, isNumberInRange, parseNumber, parseSims4StudioName } from "../../common/data-type-helpers";
 
 type PrimitiveType = boolean | number | bigint | string;
 
@@ -24,7 +25,7 @@ export abstract class Cell extends ApiModelBase {
    */
   get asAny(): any { return this; }
 
-  constructor(public readonly dataType: SimDataType, owner?: ApiModelBase) {
+  constructor(public readonly dataType: DataType, owner?: ApiModelBase) {
     super(owner);
   }
 
@@ -109,7 +110,7 @@ export abstract class Cell extends ApiModelBase {
     const attributes: { [key: string]: any; } = {};
     if (nameAttr !== undefined) attributes.name = nameAttr;
     if (typeAttr)
-      attributes.type = SimDataTypeUtils.getSims4StudioName(this.dataType);
+      attributes.type = getSims4StudioName(this.dataType);
     return attributes;
   }
 
@@ -137,42 +138,42 @@ export abstract class Cell extends ApiModelBase {
    * @param schemas Schemas that this cell or its children may follow
    * @param node Node to parse as a cell
    */
-  static parseXmlNode(dataType: SimDataType, node: XmlNode, schemas: SimDataSchema[]): Cell {
+  static parseXmlNode(dataType: DataType, node: XmlNode, schemas: SimDataSchema[]): Cell {
     switch (dataType) {
-      case SimDataType.Boolean:
+      case DataType.Boolean:
         return BooleanCell.fromXmlNode(node);
-      case SimDataType.Int8:
-      case SimDataType.UInt8:
-      case SimDataType.Int16:
-      case SimDataType.UInt16:
-      case SimDataType.Int32:
-      case SimDataType.UInt32:
-      case SimDataType.LocalizationKey:
-      case SimDataType.Float:
+      case DataType.Int8:
+      case DataType.UInt8:
+      case DataType.Int16:
+      case DataType.UInt16:
+      case DataType.Int32:
+      case DataType.UInt32:
+      case DataType.LocalizationKey:
+      case DataType.Float:
         return NumberCell.fromXmlNode(dataType, node);
-      case SimDataType.Int64:
-      case SimDataType.UInt64:
-      case SimDataType.TableSetReference:
+      case DataType.Int64:
+      case DataType.UInt64:
+      case DataType.TableSetReference:
         return BigIntCell.fromXmlNode(dataType, node);
-      case SimDataType.Character:
-      case SimDataType.String:
-      case SimDataType.HashedString:
+      case DataType.Character:
+      case DataType.String:
+      case DataType.HashedString:
         return TextCell.fromXmlNode(dataType, node);
-      case SimDataType.Float2:
+      case DataType.Float2:
         return Float2Cell.fromXmlNode(node);
-      case SimDataType.Float3:
+      case DataType.Float3:
         return Float3Cell.fromXmlNode(node);
-      case SimDataType.Float4:
+      case DataType.Float4:
         return Float4Cell.fromXmlNode(node);
-      case SimDataType.ResourceKey:
+      case DataType.ResourceKey:
         return ResourceKeyCell.fromXmlNode(node);
-      case SimDataType.Object:
+      case DataType.Object:
         return ObjectCell.fromXmlNode(node, schemas);
-      case SimDataType.Vector:
+      case DataType.Vector:
         return VectorCell.fromXmlNode(node, schemas);
-      case SimDataType.Variant:
+      case DataType.Variant:
         return VariantCell.fromXmlNode(node, schemas);
-      case SimDataType.Undefined:
+      case DataType.Undefined:
       default:
         throw new Error(`Cannot parse a "${dataType}" node as a cell.`);
     }
@@ -186,7 +187,7 @@ export abstract class Cell extends ApiModelBase {
  * number, bigint, string, boolean, or another cell.
  */
 abstract class PrimitiveValueCell<T extends PrimitiveType> extends Cell {
-  constructor(dataType: SimDataType, public value: T, owner?: ApiModelBase) {
+  constructor(dataType: DataType, public value: T, owner?: ApiModelBase) {
     super(dataType, owner);
     this._watchProps('value');
   }
@@ -260,7 +261,7 @@ abstract class FloatVectorCell extends Cell {
 
   validate(): void {
     this._floatNames.forEach(floatName => {
-      if (!SimDataTypeUtils.isNumberInRange(this[floatName], SimDataType.Float)) {
+      if (!isNumberInRange(this[floatName], DataType.Float)) {
         throw new Error(`Float vector contains a value that is not a 4-byte float: ${this[floatName]}`);
       }
     });
@@ -287,10 +288,10 @@ abstract class FloatVectorCell extends Cell {
  * A cell that contains a boolean value.
  */
 export class BooleanCell extends PrimitiveValueCell<boolean> {
-  readonly dataType: SimDataType.Boolean;
+  readonly dataType: DataType.Boolean;
 
   constructor(value: boolean, owner?: ApiModelBase) {
-    super(SimDataType.Boolean, value ?? false, owner);
+    super(DataType.Boolean, value ?? false, owner);
   }
 
   clone(): BooleanCell {
@@ -360,21 +361,21 @@ export class TextCell extends PrimitiveValueCell<string> {
   encode(encoder: BinaryEncoder, options?: CellEncodingOptions): void {
     this.validate();
 
-    if (this.dataType === SimDataType.Character) {
+    if (this.dataType === DataType.Character) {
       encoder.charsUtf8(this.value);
     } else {
       // BT uses unsigned, but I'm intentionally signing it here because it can
       // be negative and JS number don't wrap
       encoder.int32(this._getOffsetEncodingOption(options));
 
-      if (this.dataType === SimDataType.HashedString) {
+      if (this.dataType === DataType.HashedString) {
         encoder.uint32(fnv32(this.value));
       }
     }
   }
 
   validate(): void {
-    if (this.dataType === SimDataType.Character) {
+    if (this.dataType === DataType.Character) {
       if (Buffer.byteLength(this.value) !== 1) {
         throw new Error(`Character cell may only occupy one byte, but contains "${this.value}"`);
       }
@@ -402,7 +403,7 @@ export class TextCell extends PrimitiveValueCell<string> {
    */
   static decode(dataType: SimDataText, decoder: BinaryDecoder): TextCell {
     function getValue(): string {
-      if (dataType === SimDataType.Character) return decoder.charsUtf8(1);
+      if (dataType === DataType.Character) return decoder.charsUtf8(1);
 
       // BT uses uint32 for offset, but I'm intentionally using an int32
       // because the value CAN be negative, and JS numbers don't wrap
@@ -410,7 +411,7 @@ export class TextCell extends PrimitiveValueCell<string> {
 
       // don't need to read the hash of hashed strings, because it can/will be
       // calculated later anyways
-      if (dataType === SimDataType.HashedString) decoder.skip(4);
+      if (dataType === DataType.HashedString) decoder.skip(4);
 
       return decoder.savePos<string>(() => {
         decoder.seek(pos);
@@ -463,40 +464,40 @@ export class NumberCell extends PrimitiveValueCell<number> {
     this.validate();
 
     switch (this.dataType) {
-      case SimDataType.Int8:
+      case DataType.Int8:
         encoder.int8(this.value);
         break;
-      case SimDataType.UInt8:
+      case DataType.UInt8:
         encoder.uint8(this.value);
         break;
-      case SimDataType.Int16:
+      case DataType.Int16:
         encoder.int16(this.value);
         break;
-      case SimDataType.UInt16:
+      case DataType.UInt16:
         encoder.uint16(this.value);
         break;
-      case SimDataType.Int32:
+      case DataType.Int32:
         encoder.int32(this.value);
         break;
-      case SimDataType.LocalizationKey:
+      case DataType.LocalizationKey:
         // fallthrough
-      case SimDataType.UInt32:
+      case DataType.UInt32:
         encoder.uint32(this.value);
         break;
-      case SimDataType.Float:
+      case DataType.Float:
         encoder.float(this.value);
         break;
     }
   }
 
   validate(): void {
-    if (!SimDataTypeUtils.isNumberInRange(this.value, this.dataType)) {
+    if (!isNumberInRange(this.value, this.dataType)) {
       throw new Error(`Value of ${this.value} is not within the range of ${this.dataType}.`);
     }
   }
 
   protected _getXmlValue(): XmlValueNode {
-    if (this.dataType === SimDataType.LocalizationKey) {
+    if (this.dataType === DataType.LocalizationKey) {
       var value = formatAsHexString(this.value, 8, true);
     } else {
       var value = this.value.toString();
@@ -517,21 +518,21 @@ export class NumberCell extends PrimitiveValueCell<number> {
   static decode(dataType: SimDataNumber, decoder: BinaryDecoder): NumberCell {
     function getValue(): number {
       switch (dataType) {
-        case SimDataType.Int8:
+        case DataType.Int8:
           return decoder.int8();
-        case SimDataType.UInt8:
+        case DataType.UInt8:
           return decoder.uint8();
-        case SimDataType.Int16:
+        case DataType.Int16:
           return decoder.int16();
-        case SimDataType.UInt16:
+        case DataType.UInt16:
           return decoder.uint16();
-        case SimDataType.Int32:
+        case DataType.Int32:
           return decoder.int32();
-        case SimDataType.UInt32:
+        case DataType.UInt32:
           // fallthrough
-        case SimDataType.LocalizationKey:
+        case DataType.LocalizationKey:
           return decoder.uint32();
-        case SimDataType.Float:
+        case DataType.Float:
           return decoder.float();
       }
     }
@@ -546,7 +547,7 @@ export class NumberCell extends PrimitiveValueCell<number> {
    * @param node Node to parse as a NumberCell
    */
   static fromXmlNode(dataType: SimDataNumber, node: XmlNode): NumberCell {
-    const value = SimDataTypeUtils.parseNumber(node.innerValue, dataType);
+    const value = parseNumber(node.innerValue, dataType);
     
     if (Number.isNaN(value)) {
       throw new Error(`Expected NumberCell to contain a number, but got "${node.innerValue}".`);
@@ -586,19 +587,19 @@ export class BigIntCell extends PrimitiveValueCell<bigint> {
     this.validate();
 
     switch (this.dataType) {
-      case SimDataType.Int64:
+      case DataType.Int64:
         encoder.int64(this.value);
         break;
-      case SimDataType.UInt64:
+      case DataType.UInt64:
         // fallthrough
-      case SimDataType.TableSetReference:
+      case DataType.TableSetReference:
         encoder.uint64(this.value);
         break;
     }
   }
 
   validate(): void {
-    if (!SimDataTypeUtils.isBigIntInRange(this.value, this.dataType)) {
+    if (!isBigIntInRange(this.value, this.dataType)) {
       throw new Error(`Value of ${this.value} is not within the range of ${this.dataType}.`);
     }
   }
@@ -619,11 +620,11 @@ export class BigIntCell extends PrimitiveValueCell<bigint> {
   static decode(dataType: SimDataBigInt, decoder: BinaryDecoder): BigIntCell {
     function getValue(): bigint {
       switch (dataType) {
-        case SimDataType.Int64:
+        case DataType.Int64:
           return decoder.int64();
-        case SimDataType.UInt64:
+        case DataType.UInt64:
           // fallthrough
-        case SimDataType.TableSetReference:
+        case DataType.TableSetReference:
           return decoder.uint64();
       }
     }
@@ -665,10 +666,10 @@ export class BigIntCell extends PrimitiveValueCell<bigint> {
  * A cell that contains a resource key value.
  */
 export class ResourceKeyCell extends Cell {
-  readonly dataType: SimDataType.ResourceKey;
+  readonly dataType: DataType.ResourceKey;
 
   constructor(public type: number, public group: number, public instance: bigint, owner?: ApiModelBase) {
-    super(SimDataType.ResourceKey, owner);
+    super(DataType.ResourceKey, owner);
     this._watchProps('type', 'group', 'instance');
   }
 
@@ -707,11 +708,11 @@ export class ResourceKeyCell extends Cell {
   }
 
   validate(): void {
-    if (!SimDataTypeUtils.isNumberInRange(this.type, SimDataType.UInt32))
+    if (!isNumberInRange(this.type, DataType.UInt32))
       throw new Error(`ResourceKeyCell's type is not a UInt32: ${this.type}`);
-    if (!SimDataTypeUtils.isNumberInRange(this.group, SimDataType.UInt32))
+    if (!isNumberInRange(this.group, DataType.UInt32))
       throw new Error(`ResourceKeyCell's group is not a UInt32: ${this.group}`);
-    if (!SimDataTypeUtils.isBigIntInRange(this.instance, SimDataType.TableSetReference))
+    if (!isBigIntInRange(this.instance, DataType.TableSetReference))
       throw new Error(`ResourceKeyCell's instance is not a UInt64: ${this.instance}`);
   }
 
@@ -769,10 +770,10 @@ export class ResourceKeyCell extends Cell {
  * A cell that contains two floating point numbers.
  */
 export class Float2Cell extends FloatVectorCell {
-  readonly dataType: SimDataType.Float2;
+  readonly dataType: DataType.Float2;
 
   constructor(x: number, y: number, owner?: ApiModelBase) {
-    super(SimDataType.Float2, x, y, owner);
+    super(DataType.Float2, x, y, owner);
   }
 
   clone(): Float2Cell {
@@ -814,11 +815,11 @@ export class Float2Cell extends FloatVectorCell {
  * A cell that contains three floating point numbers.
  */
 export class Float3Cell extends FloatVectorCell {
-  readonly dataType: SimDataType.Float3;
+  readonly dataType: DataType.Float3;
   public z: number;
 
   constructor(x: number, y: number, z: number, owner?: ApiModelBase) {
-    super(SimDataType.Float3, x, y, owner);
+    super(DataType.Float3, x, y, owner);
     this.z = z ?? 0;
     this._floatNames.push('z');
     this._watchProps('z');
@@ -863,12 +864,12 @@ export class Float3Cell extends FloatVectorCell {
  * A cell that contains four floating point numbers.
  */
 export class Float4Cell extends FloatVectorCell {
-  readonly dataType: SimDataType.Float4;
+  readonly dataType: DataType.Float4;
   public z: number;
   public w: number;
 
   constructor(x: number, y: number, z: number, w: number, owner?: ApiModelBase) {
-    super(SimDataType.Float4, x, y, owner);
+    super(DataType.Float4, x, y, owner);
     this.z = z ?? 0;
     this.w = w ?? 0;
     this._floatNames.push('z', 'w');
@@ -914,7 +915,7 @@ export class Float4Cell extends FloatVectorCell {
  * A cell that contains rows that line up with schema columns.
  */
 export class ObjectCell extends MultiValueCell {
-  readonly dataType: SimDataType.Object;
+  readonly dataType: DataType.Object;
   private _row: ObjectCellRow;
 
   /**
@@ -935,7 +936,7 @@ export class ObjectCell extends MultiValueCell {
   get schemaLength() { return this.schema.columns.length; }
 
   constructor(public schema: SimDataSchema, row: ObjectCellRow, owner?: ApiModelBase) {
-    super(SimDataType.Object, owner);
+    super(DataType.Object, owner);
     this.row = row ?? {};
     this._watchProps('schema');
   }
@@ -1093,7 +1094,7 @@ export class ObjectCell extends MultiValueCell {
  * A cell that contains a list of values of the same type.
  */
 export class VectorCell<T extends Cell = Cell> extends MultiValueCell {
-  readonly dataType: SimDataType.Vector;
+  readonly dataType: DataType.Vector;
   private _children: T[];
 
   /**
@@ -1117,7 +1118,7 @@ export class VectorCell<T extends Cell = Cell> extends MultiValueCell {
   get childType() { return this.children[0]?.dataType; }
 
   constructor(children: T[], owner?: ApiModelBase) {
-    super(SimDataType.Vector, owner);
+    super(DataType.Vector, owner);
     this.children = children ?? [];
   }
 
@@ -1213,13 +1214,13 @@ export class VectorCell<T extends Cell = Cell> extends MultiValueCell {
       return VectorCell.getDefault();
     } else {
       const rawType = node.child.attributes.type;
-      const childType = SimDataTypeUtils.parseSims4StudioName(rawType);
+      const childType = parseSims4StudioName(rawType);
       if (childType === undefined)
         throw new Error(`'${rawType}' is not a valid value for the 'type' attribute.`);
       
       const children = node.children.map(childNode => {
         const { type } = childNode.attributes;
-        const thisChildType = SimDataTypeUtils.parseSims4StudioName(type);
+        const thisChildType = parseSims4StudioName(type);
         if (thisChildType !== childType)
           throw new Error(`Vector children have mis-matched types: ${childType} ≠ ${thisChildType}`);
         return Cell.parseXmlNode(childType, childNode, schemas);
@@ -1248,7 +1249,7 @@ export class VectorCell<T extends Cell = Cell> extends MultiValueCell {
  * A cell that may contain another cell.
  */
 export class VariantCell<T extends Cell = Cell> extends Cell {
-  readonly dataType: SimDataType.Variant;
+  readonly dataType: DataType.Variant;
   private _child?: T;
 
   /** The cell that this variant contains, if any. */
@@ -1259,10 +1260,10 @@ export class VariantCell<T extends Cell = Cell> extends Cell {
   }
 
   /** Gets the data type of this cell's child, if it has one. */
-  get childType(): SimDataType { return this.child?.dataType; }
+  get childType(): DataType { return this.child?.dataType; }
 
   constructor(public typeHash: number, child: T, owner?: ApiModelBase) {
-    super(SimDataType.Variant, owner);
+    super(DataType.Variant, owner);
     this.child = child;
     this._watchProps('typeHash', 'child');
   }
@@ -1295,7 +1296,7 @@ export class VariantCell<T extends Cell = Cell> extends Cell {
 
     const children: XmlNode[] = [];
     if (this.child) {
-      if (this.child.dataType === SimDataType.Object) {
+      if (this.child.dataType === DataType.Object) {
         const objChild = this.child as unknown as ObjectCell;
         attributes.schema = objChild.schema.name;
         objChild.schema.columns.forEach(column => {
@@ -1315,7 +1316,7 @@ export class VariantCell<T extends Cell = Cell> extends Cell {
   }
 
   validate({ ignoreCache = false } = {}): void {
-    if (!SimDataTypeUtils.isNumberInRange(this.typeHash, SimDataType.UInt32))
+    if (!isNumberInRange(this.typeHash, DataType.UInt32))
       throw new Error(`Expected variant's type hash to be a UInt32, but got ${this.typeHash}`);
 
     if (this.child) {      
@@ -1349,7 +1350,7 @@ export class VariantCell<T extends Cell = Cell> extends Cell {
       return new VariantCell<U>(typeHash, child as unknown as U);
     } else {
       if (node.child) {
-        const childType = SimDataTypeUtils.parseSims4StudioName(node.child.attributes.type);
+        const childType = parseSims4StudioName(node.child.attributes.type);
         if (childType === undefined)
           throw new Error(`'${childType}' is not a valid value for the 'type' attribute.`);
         const child = Cell.parseXmlNode(childType, node.child, schemas);

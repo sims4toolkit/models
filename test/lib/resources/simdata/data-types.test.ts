@@ -1,19 +1,19 @@
 import { expect } from "chai";
-import { SimDataType } from "../../../../dst/simdata";
-import { SimDataTypeUtils } from "../../../../dst/lib/resources/simdata/data-types";
+import { DataType } from "../../../../dst/enums";
+import * as DataTypeUtils from "../../../../dst/lib/common/data-type-helpers";
 
-describe("SimDataTypeUtils", () => {
+describe("DataTypeUtils", () => {
   describe("#parseNumber()", () => {
     function parseInt32(value: any): number {
-      return SimDataTypeUtils.parseNumber(value, SimDataType.Int32);
+      return DataTypeUtils.parseNumber(value, DataType.Int32);
     }
 
     function parseFloat(value: any): number {
-      return SimDataTypeUtils.parseNumber(value, SimDataType.Float);
+      return DataTypeUtils.parseNumber(value, DataType.Float);
     }
 
     function parseLocKey(value: any): number {
-      return SimDataTypeUtils.parseNumber(value, SimDataType.LocalizationKey);
+      return DataTypeUtils.parseNumber(value, DataType.LocalizationKey);
     }
 
     it("should parse a positive integer", () => {

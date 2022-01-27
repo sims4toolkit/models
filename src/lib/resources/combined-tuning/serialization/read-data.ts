@@ -6,9 +6,10 @@
 */
 
 import { BinaryDecoder } from "@s4tk/encoding";
+import { getAlignment } from "../../../common/data-type-helpers";
 import { makeList } from "../../../common/helpers";
 import { FileReadingOptions } from "../../../common/options";
-import { SimDataType, SimDataTypeUtils } from "../../simdata/data-types";
+import DataType from "../../../enums/data-type";
 import { CombinedTuningDto, Named, Row, Schema, SchemaColumn, StringTable, TableData, TableInfo } from "../types";
 
 const RELOFFSET_NULL = -0x80000000;
@@ -180,31 +181,31 @@ export default function readData(buffer: Buffer, options?: FileReadingOptions): 
   }
 
   // Read a single data field with the given type code.
-  function readDataType(typeCode: SimDataType): any {
+  function readDataType(typeCode: DataType): any {
     switch (typeCode) {
-      case SimDataType.Boolean:           return decoder.uint8();
-      case SimDataType.UInt8:             return decoder.uint8();
-      case SimDataType.Character:         return decoder.charsUtf8(1);
-      case SimDataType.Int8:              return decoder.uint8();
-      case SimDataType.Int16:             return decoder.int16();
-      case SimDataType.UInt16:            return decoder.uint16();
-      case SimDataType.Int32:             return decoder.int32();
-      case SimDataType.UInt32:            return decoder.uint32();
-      case SimDataType.Int64:             return decoder.int64();
-      case SimDataType.UInt64:            return decoder.uint64();
-      case SimDataType.Float:             return decoder.float();
-      case SimDataType.String:            return structString();
-      case SimDataType.HashedString:      return structHashedString();
-      case SimDataType.Object:            return structObjectRef();
-      case SimDataType.Vector:            return structVector();
-      case SimDataType.Float2:            return structVector2();
-      case SimDataType.Float3:            return structVector3();
-      case SimDataType.Float4:            return structVector4();
-      case SimDataType.TableSetReference: return structTableSetRef();
-      case SimDataType.ResourceKey:       return structResourceKey();
-      case SimDataType.LocalizationKey:   return structLocKey();
-      case SimDataType.Variant:           return structVariant();
-      case SimDataType.Undefined:
+      case DataType.Boolean:           return decoder.uint8();
+      case DataType.UInt8:             return decoder.uint8();
+      case DataType.Character:         return decoder.charsUtf8(1);
+      case DataType.Int8:              return decoder.uint8();
+      case DataType.Int16:             return decoder.int16();
+      case DataType.UInt16:            return decoder.uint16();
+      case DataType.Int32:             return decoder.int32();
+      case DataType.UInt32:            return decoder.uint32();
+      case DataType.Int64:             return decoder.int64();
+      case DataType.UInt64:            return decoder.uint64();
+      case DataType.Float:             return decoder.float();
+      case DataType.String:            return structString();
+      case DataType.HashedString:      return structHashedString();
+      case DataType.Object:            return structObjectRef();
+      case DataType.Vector:            return structVector();
+      case DataType.Float2:            return structVector2();
+      case DataType.Float3:            return structVector3();
+      case DataType.Float4:            return structVector4();
+      case DataType.TableSetReference: return structTableSetRef();
+      case DataType.ResourceKey:       return structResourceKey();
+      case DataType.LocalizationKey:   return structLocKey();
+      case DataType.Variant:           return structVariant();
+      case DataType.Undefined:
         throw new Error(`Unknown type code ${typeCode}`);
     }
   }
@@ -313,7 +314,7 @@ export default function readData(buffer: Buffer, options?: FileReadingOptions): 
         // data type.
         if (mTable[i].mnSchemaOffset === RELOFFSET_NULL) {
           tableData.mValue.push(readDataType(mTable[i].mnDataType));
-          alignment = SimDataTypeUtils.getAlignment(mTable[i].mnDataType);
+          alignment = getAlignment(mTable[i].mnDataType);
         } else {
           schemaIndex = getSchemaIndex(mTable[i].startof_mnSchemaOffset + mTable[i].mnSchemaOffset);
           function structRow(): Row {
@@ -324,7 +325,7 @@ export default function readData(buffer: Buffer, options?: FileReadingOptions): 
               schemaColumnName = readNamed(mSchema[schemaIndex].mColumn[k]);
               decoder.seek(rowStart + mSchema[schemaIndex].mColumn[k].mnOffset);
               row[schemaColumnName] = readDataType(mSchema[schemaIndex].mColumn[k].mnDataType);
-              columnAlignment = SimDataTypeUtils.getAlignment(mTable[i].mnDataType);
+              columnAlignment = getAlignment(mTable[i].mnDataType);
               if (columnAlignment > alignment)
                 alignment = columnAlignment;
             }

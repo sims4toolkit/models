@@ -1,11 +1,11 @@
 import type { FileReadingOptions } from "../../../common/options";
+import type { ObjectCellRow, SimDataDto, SimDataRecursiveType } from "../types";
 import { BinaryDecoder } from "@s4tk/encoding";
-import { ObjectCellRow, SimDataDto } from "../types";
 import { makeList } from "../../../common/helpers";
 import { SimDataSchema, SimDataSchemaColumn, SimDataInstance } from "../fragments";
-import { SimDataType, SimDataRecursiveType } from "../data-types";
 import * as cells from "../cells";
 import { RELOFFSET_NULL } from "../constants";
+import DataType from "../../../enums/data-type";
 
 //#region Interfaces
 
@@ -194,7 +194,7 @@ export default function readData(buffer: Buffer, options?: FileReadingOptions): 
     const dataType = tableInfo.mnDataType;
 
     // objs are different, because variants point directly to their data
-    const childCell: cells.Cell = (dataType === SimDataType.Object) ?
+    const childCell: cells.Cell = (dataType === DataType.Object) ?
       readObjectCell(getTableInfo(mTable, decoder.tell())) :
       readCell(dataType);
     
@@ -205,7 +205,7 @@ export default function readData(buffer: Buffer, options?: FileReadingOptions): 
     const childType = tableInfo.mnDataType;
 
     // objs are different, because vectors point directly to their data
-    const childGenFn: () => cells.Cell = childType === SimDataType.Object ?
+    const childGenFn: () => cells.Cell = childType === DataType.Object ?
       (() => {
         const childTableInfo = getTableInfo(mTable, decoder.tell());
         return () => readObjectCell(childTableInfo);
@@ -241,14 +241,14 @@ export default function readData(buffer: Buffer, options?: FileReadingOptions): 
     const tableInfo = getTableInfo(mTable, dataPos);
 
     switch (dataType) {
-      case SimDataType.Object:
+      case DataType.Object:
         if (dataOffset === RELOFFSET_NULL)
           throw new Error("Object cell does not have any data defined.");
         return decoder.savePos<cells.ObjectCell>(() => {
           decoder.seek(dataPos);
           return readObjectCell(tableInfo);
         });
-      case SimDataType.Vector:
+      case DataType.Vector:
         const count = decoder.uint32();
         if (dataOffset === RELOFFSET_NULL || count === 0)
           return new cells.VectorCell<cells.Cell>([]);
@@ -256,7 +256,7 @@ export default function readData(buffer: Buffer, options?: FileReadingOptions): 
           decoder.seek(dataPos);
           return readVectorCell(count, tableInfo);
         });
-      case SimDataType.Variant:
+      case DataType.Variant:
         const typeHash = decoder.uint32();
         if (dataOffset === RELOFFSET_NULL)
           return new cells.VariantCell(typeHash, undefined);
@@ -269,36 +269,36 @@ export default function readData(buffer: Buffer, options?: FileReadingOptions): 
     }
   }
 
-  function readCell(dataType: SimDataType): cells.Cell {
+  function readCell(dataType: DataType): cells.Cell {
     switch (dataType) {
-      case SimDataType.Boolean:
+      case DataType.Boolean:
         return cells.BooleanCell.decode(decoder);
-      case SimDataType.Character:
-      case SimDataType.String:
-      case SimDataType.HashedString:
+      case DataType.Character:
+      case DataType.String:
+      case DataType.HashedString:
         return cells.TextCell.decode(dataType, decoder);
-      case SimDataType.Int8:
-      case SimDataType.UInt8:
-      case SimDataType.Int16:
-      case SimDataType.UInt16:
-      case SimDataType.Int32:
-      case SimDataType.UInt32:
-      case SimDataType.Float:
-      case SimDataType.LocalizationKey:
+      case DataType.Int8:
+      case DataType.UInt8:
+      case DataType.Int16:
+      case DataType.UInt16:
+      case DataType.Int32:
+      case DataType.UInt32:
+      case DataType.Float:
+      case DataType.LocalizationKey:
         return cells.NumberCell.decode(dataType, decoder);
-      case SimDataType.Int64:
-      case SimDataType.UInt64:
-      case SimDataType.TableSetReference:
+      case DataType.Int64:
+      case DataType.UInt64:
+      case DataType.TableSetReference:
         return cells.BigIntCell.decode(dataType, decoder);
-      case SimDataType.Float2:
+      case DataType.Float2:
         return cells.Float2Cell.decode(decoder);
-      case SimDataType.Float3:
+      case DataType.Float3:
         return cells.Float3Cell.decode(decoder);
-      case SimDataType.Float4:
+      case DataType.Float4:
         return cells.Float4Cell.decode(decoder);
-      case SimDataType.ResourceKey:
+      case DataType.ResourceKey:
         return cells.ResourceKeyCell.decode(decoder);
-      case SimDataType.Undefined:
+      case DataType.Undefined:
         throw new Error(`Cannot get value for data type ${dataType}`);
       default: 
         return readCellFromPointer(dataType);

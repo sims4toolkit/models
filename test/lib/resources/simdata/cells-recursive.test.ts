@@ -1,26 +1,27 @@
 import { expect } from "chai";
 import { XmlElementNode, XmlValueNode } from "@s4tk/xml-dom";
 import { BinaryEncoder } from "@s4tk/encoding";
-import { cells, SimDataType, SimDataSchema, SimDataSchemaColumn } from "../../../../dst/simdata";
+import { cells, SimDataSchema, SimDataSchemaColumn } from "../../../../dst/simdata";
 import MockOwner from "../../../mocks/mock-owner";
+import { DataType } from "../../../../dst/enums";
 
 //#region Helpers
 
 const testSchema = new SimDataSchema("TestSchema", 0x1234, [
-  new SimDataSchemaColumn("boolean", SimDataType.Boolean, 0),
-  new SimDataSchemaColumn("uint32", SimDataType.UInt32, 0),
-  new SimDataSchemaColumn("string", SimDataType.String, 0)
+  new SimDataSchemaColumn("boolean", DataType.Boolean, 0),
+  new SimDataSchemaColumn("uint32", DataType.UInt32, 0),
+  new SimDataSchemaColumn("string", DataType.String, 0)
 ]);
 
 const nestedObjectSchema = new SimDataSchema("NestedObject", 0x12, [
-  new SimDataSchemaColumn("obj", SimDataType.Object, 0)
+  new SimDataSchemaColumn("obj", DataType.Object, 0)
 ]);
 
 function newValidObjectCell(): cells.ObjectCell {
   return new cells.ObjectCell(testSchema, {
     boolean: new cells.BooleanCell(true),
-    uint32: new cells.NumberCell(SimDataType.UInt32, 15),
-    string: new cells.TextCell(SimDataType.String, "Hi")
+    uint32: new cells.NumberCell(DataType.UInt32, 15),
+    string: new cells.TextCell(DataType.String, "Hi")
   });
 }
 
@@ -33,7 +34,7 @@ describe("ObjectCell", () => {
     it("should update the owner of all children when set", () => {
       const firstOwner = new MockOwner();
       const boolean = new cells.BooleanCell(true);
-      const string = new cells.TextCell(SimDataType.String, "Hi");
+      const string = new cells.TextCell(DataType.String, "Hi");
       const cell = new cells.ObjectCell(testSchema, {
         boolean,
         string
@@ -167,7 +168,7 @@ describe("ObjectCell", () => {
       const cell = new cells.ObjectCell(testSchema, {
         boolean: new cells.BooleanCell(true)
       });
-      cell.row.string = new cells.TextCell(SimDataType.String, "Hi");
+      cell.row.string = new cells.TextCell(DataType.String, "Hi");
       expect(cell.rowLength).to.equal(2);
     });
 
@@ -196,7 +197,7 @@ describe("ObjectCell", () => {
     it("should set the owner of all given children", () => {
       const owner = new MockOwner()
       const boolean = new cells.BooleanCell(true);
-      const string = new cells.TextCell(SimDataType.String, "Hi");
+      const string = new cells.TextCell(DataType.String, "Hi");
       const cell = new cells.ObjectCell(testSchema, {
         boolean,
         string
@@ -207,7 +208,7 @@ describe("ObjectCell", () => {
 
     it("should contain the given children", () => {
       const boolean = new cells.BooleanCell(true);
-      const string = new cells.TextCell(SimDataType.String, "Hi");
+      const string = new cells.TextCell(DataType.String, "Hi");
       const cell = new cells.ObjectCell(testSchema, {
         boolean,
         string
@@ -235,7 +236,7 @@ describe("ObjectCell", () => {
       });
       const clone = cell.clone();
       expect(clone.rowLength).to.equal(1);
-      expect(clone.row.boolean.dataType).to.equal(SimDataType.Boolean);
+      expect(clone.row.boolean.dataType).to.equal(DataType.Boolean);
       expect(clone.row.boolean.asAny.value).to.be.true;
     });
 
@@ -244,7 +245,7 @@ describe("ObjectCell", () => {
         boolean: new cells.BooleanCell(true)
       });
       const clone = cell.clone();
-      clone.row.string = new cells.TextCell(SimDataType.String, "");
+      clone.row.string = new cells.TextCell(DataType.String, "");
       expect(clone.rowLength).to.equal(2);
       expect(cell.rowLength).to.equal(1);
     });
@@ -324,8 +325,8 @@ describe("ObjectCell", () => {
       const encoder = new BinaryEncoder(buffer);
       const cell = new cells.ObjectCell(testSchema, {
         boolean: new cells.BooleanCell(true),
-        string: new cells.TextCell(SimDataType.String, "Hi"),
-        uint32: new cells.NumberCell(SimDataType.UInt32, 15)
+        string: new cells.TextCell(DataType.String, "Hi"),
+        uint32: new cells.NumberCell(DataType.UInt32, 15)
       });
       cell.encode(encoder, { offset: -5 });
       const decoder = encoder.getDecoder();
@@ -337,8 +338,8 @@ describe("ObjectCell", () => {
       const encoder = new BinaryEncoder(buffer);
       const cell = new cells.ObjectCell(testSchema, {
         boolean: new cells.BooleanCell(true),
-        string: new cells.TextCell(SimDataType.String, "Hi"),
-        uint32: new cells.NumberCell(SimDataType.UInt32, 15)
+        string: new cells.TextCell(DataType.String, "Hi"),
+        uint32: new cells.NumberCell(DataType.UInt32, 15)
       });
       cell.encode(encoder, { offset: 5 });
       const decoder = encoder.getDecoder();
@@ -349,8 +350,8 @@ describe("ObjectCell", () => {
       const encoder = new BinaryEncoder(Buffer.alloc(4));
       const cell = new cells.ObjectCell(testSchema, {
         boolean: new cells.BooleanCell(true),
-        string: new cells.TextCell(SimDataType.String, "Hi"),
-        uint32: new cells.NumberCell(SimDataType.UInt32, 15)
+        string: new cells.TextCell(DataType.String, "Hi"),
+        uint32: new cells.NumberCell(DataType.UInt32, 15)
       });
       expect(() => cell.encode(encoder)).to.throw();
     });
@@ -365,8 +366,8 @@ describe("ObjectCell", () => {
       const encoder = new BinaryEncoder(Buffer.alloc(4));
       const cell = new cells.ObjectCell(testSchema, {
         boolean: new cells.BooleanCell(true),
-        string: new cells.TextCell(SimDataType.String, "Hi"),
-        uint32: new cells.NumberCell(SimDataType.UInt32, 15)
+        string: new cells.TextCell(DataType.String, "Hi"),
+        uint32: new cells.NumberCell(DataType.UInt32, 15)
       });
       cell.row.boolean.owner = new MockOwner();
       expect(() => cell.encode(encoder, { offset: 5 })).to.not.throw();
@@ -377,8 +378,8 @@ describe("ObjectCell", () => {
     it("should return true when objects are the same", () => {
       const cell = new cells.ObjectCell(testSchema, {
         boolean: new cells.BooleanCell(true),
-        uint32: new cells.NumberCell(SimDataType.UInt32, 32),
-        string: new cells.TextCell(SimDataType.String, "hi")
+        uint32: new cells.NumberCell(DataType.UInt32, 32),
+        string: new cells.TextCell(DataType.String, "hi")
       });
 
       const other = cell.clone();
@@ -388,8 +389,8 @@ describe("ObjectCell", () => {
     it("should return true when the schema is a different object, but is equal", () => {
       const cell = new cells.ObjectCell(testSchema, {
         boolean: new cells.BooleanCell(true),
-        uint32: new cells.NumberCell(SimDataType.UInt32, 32),
-        string: new cells.TextCell(SimDataType.String, "hi")
+        uint32: new cells.NumberCell(DataType.UInt32, 32),
+        string: new cells.TextCell(DataType.String, "hi")
       });
 
       const other = cell.clone({ cloneSchema: true });
@@ -399,8 +400,8 @@ describe("ObjectCell", () => {
     it("should return false when the schema is different", () => {
       const cell = new cells.ObjectCell(testSchema, {
         boolean: new cells.BooleanCell(true),
-        uint32: new cells.NumberCell(SimDataType.UInt32, 32),
-        string: new cells.TextCell(SimDataType.String, "hi")
+        uint32: new cells.NumberCell(DataType.UInt32, 32),
+        string: new cells.TextCell(DataType.String, "hi")
       });
 
       const other = cell.clone({ cloneSchema: true });
@@ -411,8 +412,8 @@ describe("ObjectCell", () => {
     it("should return false when there is a different number of cells", () => {
       const cell = new cells.ObjectCell(testSchema, {
         boolean: new cells.BooleanCell(true),
-        uint32: new cells.NumberCell(SimDataType.UInt32, 32),
-        string: new cells.TextCell(SimDataType.String, "hi")
+        uint32: new cells.NumberCell(DataType.UInt32, 32),
+        string: new cells.TextCell(DataType.String, "hi")
       });
 
       const other = cell.clone({ cloneSchema: true });
@@ -423,8 +424,8 @@ describe("ObjectCell", () => {
     it("should return false when there is a different cell", () => {
       const cell = new cells.ObjectCell(testSchema, {
         boolean: new cells.BooleanCell(true),
-        uint32: new cells.NumberCell(SimDataType.UInt32, 32),
-        string: new cells.TextCell(SimDataType.String, "hi")
+        uint32: new cells.NumberCell(DataType.UInt32, 32),
+        string: new cells.TextCell(DataType.String, "hi")
       });
 
       const other = cell.clone({ cloneSchema: true });
@@ -435,8 +436,8 @@ describe("ObjectCell", () => {
     it("should return false when the other is undefined", () => {
       const cell = new cells.ObjectCell(testSchema, {
         boolean: new cells.BooleanCell(true),
-        uint32: new cells.NumberCell(SimDataType.UInt32, 32),
-        string: new cells.TextCell(SimDataType.String, "hi")
+        uint32: new cells.NumberCell(DataType.UInt32, 32),
+        string: new cells.TextCell(DataType.String, "hi")
       });
 
       expect(cell.equals(undefined)).to.be.false;
@@ -482,7 +483,7 @@ describe("ObjectCell", () => {
 
     it("should write a vector child correctly", () => {
       const vectorSchema = new SimDataSchema("VectorSchema", 0x12, [
-        new SimDataSchemaColumn("vector", SimDataType.Vector, 0)
+        new SimDataSchemaColumn("vector", DataType.Vector, 0)
       ]);
 
       const cell = new cells.ObjectCell(vectorSchema, {
@@ -499,7 +500,7 @@ describe("ObjectCell", () => {
 
     it("should write a variant child correctly", () => {
       const variantSchema = new SimDataSchema("VariantSchema", 0x12, [
-        new SimDataSchemaColumn("variant", SimDataType.Variant, 0)
+        new SimDataSchemaColumn("variant", DataType.Variant, 0)
       ]);
 
       const cell = new cells.ObjectCell(variantSchema, {
@@ -592,7 +593,7 @@ describe("ObjectCell", () => {
 
     it("should have the object data type", () => {
       const cell = cells.ObjectCell.getDefault(testSchema);
-      expect(cell.dataType).to.equal(SimDataType.Object);
+      expect(cell.dataType).to.equal(DataType.Object);
     });
   });
 
@@ -636,7 +637,7 @@ describe("ObjectCell", () => {
 
     it("should create a cell following a given schema", () => {
       const cell = cells.ObjectCell.fromXmlNode(node, [testSchema]);
-      expect(cell.dataType).to.equal(SimDataType.Object);
+      expect(cell.dataType).to.equal(DataType.Object);
       expect(cell.rowLength).to.equal(3);
       expect(cell.row.boolean?.asAny.value).to.equal(true);
       expect(cell.row.uint32?.asAny.value).to.equal(15);
@@ -645,7 +646,7 @@ describe("ObjectCell", () => {
 
     it("should contain a vector child if there is one", () => {
       const vectorSchema = new SimDataSchema("VectorSchema", 0x12, [
-        new SimDataSchemaColumn("vector", SimDataType.Vector, 0)
+        new SimDataSchemaColumn("vector", DataType.Vector, 0)
       ]);
 
       const node = new XmlElementNode({
@@ -680,7 +681,7 @@ describe("ObjectCell", () => {
 
     it("should contain a variant child if there is one", () => {
       const variantSchema = new SimDataSchema("VariantSchema", 0x12, [
-        new SimDataSchemaColumn("variant", SimDataType.Variant, 0)
+        new SimDataSchemaColumn("variant", DataType.Variant, 0)
       ]);
 
       const node = new XmlElementNode({
@@ -834,8 +835,8 @@ describe("VectorCell", () => {
     it("should uncache the owner when sorted", () => {
       const owner = new MockOwner();
       const cell = new cells.VectorCell<cells.NumberCell>([
-        new cells.NumberCell(SimDataType.UInt32, 2),
-        new cells.NumberCell(SimDataType.UInt32, 1)
+        new cells.NumberCell(DataType.UInt32, 2),
+        new cells.NumberCell(DataType.UInt32, 1)
       ], owner);
       expect(owner.cached).to.be.true;
       cell.children.sort((a, b) => a.value - b.value);
@@ -848,7 +849,7 @@ describe("VectorCell", () => {
       const cell = new cells.VectorCell<cells.BooleanCell>([
         cells.BooleanCell.getDefault()
       ]);
-      expect(cell.childType).to.equal(SimDataType.Boolean);
+      expect(cell.childType).to.equal(DataType.Boolean);
     });
 
     it("should return undefined when there are no children", () => {
@@ -1091,7 +1092,7 @@ describe("VectorCell", () => {
       const encoder = new BinaryEncoder(buffer);
       const cell = new cells.VectorCell([
         cells.BooleanCell.getDefault(),
-        cells.NumberCell.getDefault(SimDataType.UInt32)
+        cells.NumberCell.getDefault(DataType.UInt32)
       ]);
       expect(() => cell.encode(encoder, { offset: 4 })).to.throw();
     });
@@ -1235,7 +1236,7 @@ describe("VectorCell", () => {
     it("should throw if there are two children with different types", () => {
       const cell = new cells.VectorCell([
         new cells.BooleanCell(true),
-        new cells.NumberCell(SimDataType.UInt32, 15)
+        new cells.NumberCell(DataType.UInt32, 15)
       ]);
 
       expect(() => cell.validate()).to.throw();
@@ -1243,8 +1244,8 @@ describe("VectorCell", () => {
 
     it("should throw if this vector is valid, but one of its children isn't", () => {
       const cell = new cells.VectorCell([
-        new cells.NumberCell(SimDataType.UInt32, 15),
-        new cells.NumberCell(SimDataType.UInt32, -15)
+        new cells.NumberCell(DataType.UInt32, 15),
+        new cells.NumberCell(DataType.UInt32, -15)
       ]);
 
       expect(() => cell.validate()).to.throw();
@@ -1252,8 +1253,8 @@ describe("VectorCell", () => {
 
     it("should not throw if this vector and all of its children are valid", () => {
       const cell = new cells.VectorCell([
-        new cells.NumberCell(SimDataType.UInt32, 15),
-        new cells.NumberCell(SimDataType.UInt32, 15)
+        new cells.NumberCell(DataType.UInt32, 15),
+        new cells.NumberCell(DataType.UInt32, 15)
       ]);
 
       expect(() => cell.validate()).to.not.throw();
@@ -1279,7 +1280,7 @@ describe("VectorCell", () => {
   describe("static#getDefault()", () => {
     it("should have a type of Vector", () => {
       const cell = cells.VectorCell.getDefault();
-      expect(cell.dataType).to.equal(SimDataType.Vector);
+      expect(cell.dataType).to.equal(DataType.Vector);
     });
 
     it("should not have an owner", () => {
@@ -1341,9 +1342,9 @@ describe("VectorCell", () => {
       const cell = cells.VectorCell.fromXmlNode<cells.BooleanCell>(validNode);
       expect(cell.children).to.have.lengthOf(2);
       const [ child1, child2 ] = cell.children;
-      expect(child1.dataType).to.equal(SimDataType.Boolean);
+      expect(child1.dataType).to.equal(DataType.Boolean);
       expect(child1.value).to.be.true;
-      expect(child2.dataType).to.equal(SimDataType.Boolean);
+      expect(child2.dataType).to.equal(DataType.Boolean);
       expect(child2.value).to.be.false;
     });
 
@@ -1372,10 +1373,10 @@ describe("VectorCell", () => {
       });
 
       const cell = cells.VectorCell.fromXmlNode<cells.VectorCell<cells.NumberCell>>(node);
-      expect(cell.childType).to.equal(SimDataType.Vector);
+      expect(cell.childType).to.equal(DataType.Vector);
       expect(cell.length).to.equal(1);
       const single = cell.children[0].children[0];
-      expect(single.dataType).to.equal(SimDataType.Float);
+      expect(single.dataType).to.equal(DataType.Float);
       expect(single.value).to.be.approximately(1.5, 0.001);
     });
 
@@ -1405,10 +1406,10 @@ describe("VectorCell", () => {
       });
 
       const cell = cells.VectorCell.fromXmlNode<cells.VariantCell<cells.NumberCell>>(node);
-      expect(cell.childType).to.equal(SimDataType.Variant);
+      expect(cell.childType).to.equal(DataType.Variant);
       expect(cell.length).to.equal(1);
       const single = cell.children[0].child;
-      expect(single.dataType).to.equal(SimDataType.Float);
+      expect(single.dataType).to.equal(DataType.Float);
       expect(single.value).to.be.approximately(1.5, 0.001);
     });
 
@@ -1576,7 +1577,7 @@ describe("VariantCell", () => {
 
     it("should be the data type of the child", () => {
       const cell = new cells.VariantCell(0, cells.BooleanCell.getDefault());
-      expect(cell.childType).to.equal(SimDataType.Boolean);
+      expect(cell.childType).to.equal(DataType.Boolean);
     });
   });
 
@@ -1670,7 +1671,7 @@ describe("VariantCell", () => {
       const child = cells.BooleanCell.getDefault();
       const cell = new cells.VariantCell(0x12, child, owner);
       const clone = cell.clone();
-      expect(clone.child.dataType).to.equal(SimDataType.Boolean);
+      expect(clone.child.dataType).to.equal(DataType.Boolean);
       expect(clone.child.asAny.value).to.be.false;
     });
 
@@ -1800,8 +1801,8 @@ describe("VariantCell", () => {
     it("should write object child without a U tag", () => {
       const child = new cells.ObjectCell(testSchema, {
         boolean: cells.BooleanCell.getDefault(),
-        uint32: cells.NumberCell.getDefault(SimDataType.UInt32),
-        string: cells.TextCell.getDefault(SimDataType.String)
+        uint32: cells.NumberCell.getDefault(DataType.UInt32),
+        string: cells.TextCell.getDefault(DataType.String)
       });
 
       const cell = new cells.VariantCell(0x1234, child);
@@ -1816,12 +1817,12 @@ describe("VariantCell", () => {
 
   describe("#validate()", () => {
     it("should throw if this variant is valid, but its child isn't", () => {
-      const cell = new cells.VariantCell(0, new cells.NumberCell(SimDataType.UInt32, -15));
+      const cell = new cells.VariantCell(0, new cells.NumberCell(DataType.UInt32, -15));
       expect(() => cell.validate()).to.throw();
     });
 
     it("should not throw if this variant and its child are valid", () => {
-      const cell = new cells.VariantCell(0, new cells.NumberCell(SimDataType.UInt32, 15));
+      const cell = new cells.VariantCell(0, new cells.NumberCell(DataType.UInt32, 15));
       expect(() => cell.validate()).to.not.throw();
     });
 
@@ -1847,14 +1848,14 @@ describe("VariantCell", () => {
 
     it("should throw if the child's owner is different and ignoreCache is false", () => {
       const owner = new MockOwner();
-      const cell = new cells.VariantCell(0, new cells.NumberCell(SimDataType.UInt32, 15), owner);
+      const cell = new cells.VariantCell(0, new cells.NumberCell(DataType.UInt32, 15), owner);
       cell.child.owner = new MockOwner();
       expect(() => cell.validate({ ignoreCache: false })).to.throw();
     });
 
     it("should not throw if the child's owner is different and ignoreCache is true", () => {
       const owner = new MockOwner();
-      const cell = new cells.VariantCell(0, new cells.NumberCell(SimDataType.UInt32, 15), owner);
+      const cell = new cells.VariantCell(0, new cells.NumberCell(DataType.UInt32, 15), owner);
       cell.child.owner = new MockOwner();
       expect(() => cell.validate({ ignoreCache: true })).to.not.throw();
     });
@@ -1863,7 +1864,7 @@ describe("VariantCell", () => {
   describe("static#getDefault()", () => {
     it("should have a type of Variant", () => {
       const cell = cells.VariantCell.getDefault();
-      expect(cell.dataType).to.equal(SimDataType.Variant);
+      expect(cell.dataType).to.equal(DataType.Variant);
     });
 
     it("should not have an owner", () => {
@@ -1909,7 +1910,7 @@ describe("VariantCell", () => {
 
     it("should read primitive child correctly", () => {
       const cell = cells.VariantCell.fromXmlNode<cells.BooleanCell>(validNode);
-      expect(cell.child.dataType).to.equal(SimDataType.Boolean);
+      expect(cell.child.dataType).to.equal(DataType.Boolean);
       expect(cell.child.value).to.be.true;
     });
 
@@ -1943,7 +1944,7 @@ describe("VariantCell", () => {
       const cell = cells.VariantCell.fromXmlNode<cells.VectorCell<cells.BooleanCell>>(node);
       expect(cell.typeHash).to.equal(0x12345678);
       expect(cell.child.length).to.equal(1);
-      expect(cell.child.children[0].dataType).to.equal(SimDataType.Boolean);
+      expect(cell.child.children[0].dataType).to.equal(DataType.Boolean);
       expect(cell.child.children[0].value).to.be.true;
     });
 
@@ -1963,7 +1964,7 @@ describe("VariantCell", () => {
       const cell = cells.VariantCell.fromXmlNode<cells.VariantCell<cells.BooleanCell>>(node);
       expect(cell.typeHash).to.equal(0x00001234);
       expect(cell.child.typeHash).to.equal(0x12345678);
-      expect(cell.child.child.dataType).to.equal(SimDataType.Boolean);
+      expect(cell.child.child.dataType).to.equal(DataType.Boolean);
       expect(cell.child.child.value).to.equal(true);
     });
 

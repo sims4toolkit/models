@@ -2,9 +2,9 @@ import fs from "fs";
 import path from "path";
 import { expect } from "chai";
 import { SimDataResource } from "../../../../dst/models";
-import { SimDataType, SimDataSchema, SimDataInstance, cells } from "../../../../dst/simdata";
+import { SimDataSchema, SimDataInstance, cells } from "../../../../dst/simdata";
 import MockOwner from "../../../mocks/mock-owner";
-import { EncodingType } from "../../../../dst/enums";
+import { DataType, EncodingType } from "../../../../dst/enums";
 
 //#region Helpers
 
@@ -40,7 +40,7 @@ interface SimDataTestArgs {
   numColumns: number;
   firstColumnName: string;
   cellTest(cell: cells.Cell): void;
-  firstColumnType: SimDataType;
+  firstColumnType: DataType;
 }
 
 function testSimData(simdata: SimDataResource, args: SimDataTestArgs) {
@@ -515,7 +515,7 @@ describe("SimDataResource", () => {
           schemaHash: 0xA9DE97E9,
           numColumns: 14,
           firstColumnName: "float",
-          firstColumnType: SimDataType.Float,
+          firstColumnType: DataType.Float,
           cellTest(cell: cells.NumberCell) {
             expect(cell.value).to.be.approximately(1.5, 0.0001);
           }
@@ -533,7 +533,7 @@ describe("SimDataResource", () => {
           schemaHash: 0x0D045687,
           numColumns: 10,
           firstColumnName: "audio_sting_on_add",
-          firstColumnType: SimDataType.ResourceKey,
+          firstColumnType: DataType.ResourceKey,
           cellTest(cell: cells.ResourceKeyCell) {
             expect(cell.type).to.equal(0xFD04E3BE);
             expect(cell.group).to.equal(0x001407EC);
@@ -553,7 +553,7 @@ describe("SimDataResource", () => {
           schemaHash: 0xBF8FFCF2,
           numColumns: 24,
           firstColumnName: "base_color",
-          firstColumnType: SimDataType.Object,
+          firstColumnType: DataType.Object,
           cellTest(cell: cells.ObjectCell) {
             expect(cell.rowLength).to.equal(4);
             expect(cell.schema.name).to.equal("TunableColorRGBA");
@@ -576,7 +576,7 @@ describe("SimDataResource", () => {
           schemaHash: 0xDE2EAF66,
           numColumns: 17,
           firstColumnName: "ages",
-          firstColumnType: SimDataType.Vector,
+          firstColumnType: DataType.Vector,
           cellTest(cell: cells.VectorCell) {
             expect(cell.length).to.equal(5);
             expect(cell.children[0].asAny.value).to.equal(8n);
@@ -595,7 +595,7 @@ describe("SimDataResource", () => {
           schemaHash: 0x0D045687,
           numColumns: 1,
           firstColumnName: "number",
-          firstColumnType: SimDataType.UInt32,
+          firstColumnType: DataType.UInt32,
           cellTest(cell: cells.NumberCell) {
             expect(cell.value).to.equal(5);
           }
@@ -613,9 +613,9 @@ describe("SimDataResource", () => {
           schemaHash: 0x3EE1E34C,
           numColumns: 3,
           firstColumnName: "vector_variant",
-          firstColumnType: SimDataType.Variant,
+          firstColumnType: DataType.Variant,
           cellTest(cell: cells.VariantCell) {
-            expect(cell.childType).to.equal(SimDataType.Vector);
+            expect(cell.childType).to.equal(DataType.Vector);
             expect(cell.child.asAny.children).to.have.lengthOf(2);
             expect(cell.child.asAny.children[0].asAny.value).to.equal(32);
             expect(cell.child.asAny.children[1].asAny.value).to.equal(64);
@@ -634,9 +634,9 @@ describe("SimDataResource", () => {
           schemaHash: 0x3EE1E34C,
           numColumns: 3,
           firstColumnName: "vector_vector",
-          firstColumnType: SimDataType.Vector,
+          firstColumnType: DataType.Vector,
           cellTest(cell: cells.VectorCell) {
-            expect(cell.childType).to.equal(SimDataType.Vector);
+            expect(cell.childType).to.equal(DataType.Vector);
             expect(cell.children).to.have.lengthOf(2);
             expect(cell.children[0].asAny.children[0].value).to.equal(32);
             expect(cell.children[0].asAny.children[1].value).to.equal(64);
@@ -705,7 +705,7 @@ describe("SimDataResource", () => {
         schemaHash: 0xA9DE97E9,
         numColumns: 14,
         firstColumnName: "float",
-        firstColumnType: SimDataType.Float,
+        firstColumnType: DataType.Float,
         cellTest(cell: cells.NumberCell) {
           expect(cell.value).to.be.approximately(1.5, 0.0001);
         }
@@ -723,7 +723,7 @@ describe("SimDataResource", () => {
         schemaHash: 0x0D045687,
         numColumns: 10,
         firstColumnName: "audio_sting_on_add",
-        firstColumnType: SimDataType.ResourceKey,
+        firstColumnType: DataType.ResourceKey,
         cellTest(cell: cells.ResourceKeyCell) {
           expect(cell.type).to.equal(0xFD04E3BE);
           expect(cell.group).to.equal(0x001407EC);
@@ -743,7 +743,7 @@ describe("SimDataResource", () => {
         schemaHash: 0xBF8FFCF2,
         numColumns: 24,
         firstColumnName: "base_color",
-        firstColumnType: SimDataType.Object,
+        firstColumnType: DataType.Object,
         cellTest(cell: cells.ObjectCell) {
           expect(cell.rowLength).to.equal(4);
           expect(cell.schema.name).to.equal("TunableColorRGBA");
@@ -766,7 +766,7 @@ describe("SimDataResource", () => {
         schemaHash: 0xDE2EAF66,
         numColumns: 17,
         firstColumnName: "ages",
-        firstColumnType: SimDataType.Vector,
+        firstColumnType: DataType.Vector,
         cellTest(cell: cells.VectorCell) {
           expect(cell.length).to.equal(5);
           expect(cell.children[0].asAny.value).to.equal(8n);
@@ -785,7 +785,7 @@ describe("SimDataResource", () => {
         schemaHash: 0x0D045687,
         numColumns: 1,
         firstColumnName: "number",
-        firstColumnType: SimDataType.UInt32,
+        firstColumnType: DataType.UInt32,
         cellTest(cell: cells.NumberCell) {
           expect(cell.value).to.equal(5);
         }
@@ -803,9 +803,9 @@ describe("SimDataResource", () => {
         schemaHash: 0x3EE1E34C,
         numColumns: 3,
         firstColumnName: "vector_variant",
-        firstColumnType: SimDataType.Variant,
+        firstColumnType: DataType.Variant,
         cellTest(cell: cells.VariantCell) {
-          expect(cell.childType).to.equal(SimDataType.Vector);
+          expect(cell.childType).to.equal(DataType.Vector);
           expect(cell.child.asAny.children).to.have.lengthOf(2);
           expect(cell.child.asAny.children[0].asAny.value).to.equal(32);
           expect(cell.child.asAny.children[1].asAny.value).to.equal(64);
@@ -824,9 +824,9 @@ describe("SimDataResource", () => {
         schemaHash: 0x3EE1E34C,
         numColumns: 3,
         firstColumnName: "vector_vector",
-        firstColumnType: SimDataType.Vector,
+        firstColumnType: DataType.Vector,
         cellTest(cell: cells.VectorCell) {
-          expect(cell.childType).to.equal(SimDataType.Vector);
+          expect(cell.childType).to.equal(DataType.Vector);
           expect(cell.children).to.have.lengthOf(2);
           expect(cell.children[0].asAny.children[0].value).to.equal(32);
           expect(cell.children[0].asAny.children[1].value).to.equal(64);

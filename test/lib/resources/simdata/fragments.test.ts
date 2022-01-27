@@ -1,12 +1,13 @@
 import { XmlDocumentNode } from "@s4tk/xml-dom";
 import { expect } from "chai";
-import { SimDataSchema, SimDataSchemaColumn, SimDataInstance, SimDataType, cells } from "../../../../dst/simdata";
+import { DataType } from "../../../../dst/enums";
+import { SimDataSchema, SimDataSchemaColumn, SimDataInstance, cells } from "../../../../dst/simdata";
 import MockOwner from "../../../mocks/mock-owner";
 
 const testSchema = new SimDataSchema("TestSchema", 0x1234, [
-  new SimDataSchemaColumn("boolean", SimDataType.Boolean, 0),
-  new SimDataSchemaColumn("uint32", SimDataType.UInt32, 0),
-  new SimDataSchemaColumn("string", SimDataType.String, 0)
+  new SimDataSchemaColumn("boolean", DataType.Boolean, 0),
+  new SimDataSchemaColumn("uint32", DataType.UInt32, 0),
+  new SimDataSchemaColumn("string", DataType.String, 0)
 ]);
 
 describe("SimDataSchema", () => {
@@ -42,7 +43,7 @@ describe("SimDataSchema", () => {
   describe("#columns", () => {
     it("should uncache the owner when pushed to", () => {
       expectOwnerToUncache(schema => {
-        schema.columns.push(new SimDataSchemaColumn("float3", SimDataType.Float3, 0));
+        schema.columns.push(new SimDataSchemaColumn("float3", DataType.Float3, 0));
       });
     });
 
@@ -64,7 +65,7 @@ describe("SimDataSchema", () => {
 
     it("should uncache the owner when child is set", () => {
       expectOwnerToUncache(schema => {
-        schema.columns[0] = new SimDataSchemaColumn("float3", SimDataType.Float3, 0);
+        schema.columns[0] = new SimDataSchemaColumn("float3", DataType.Float3, 0);
       });
     });
 
@@ -84,7 +85,7 @@ describe("SimDataSchema", () => {
       const schema = testSchema.clone();
       const owner = new MockOwner();
       schema.owner = owner;
-      const column = new SimDataSchemaColumn("float3", SimDataType.Float3, 0);
+      const column = new SimDataSchemaColumn("float3", DataType.Float3, 0);
       expect(column.owner).to.be.undefined;
       schema.columns[0] = column;
       expect(column.owner).to.equal(owner);
@@ -94,7 +95,7 @@ describe("SimDataSchema", () => {
       const schema = testSchema.clone();
       const owner = new MockOwner();
       schema.owner = owner;
-      const column = new SimDataSchemaColumn("float3", SimDataType.Float3, 0);
+      const column = new SimDataSchemaColumn("float3", DataType.Float3, 0);
       expect(column.owner).to.be.undefined;
       schema.columns.push(column);
       expect(column.owner).to.equal(owner);
@@ -120,8 +121,8 @@ describe("SimDataSchema", () => {
   describe("#constructor", () => {
     it("should use the given name, hash, and columns", () => {
       const schema = new SimDataSchema("TestSchema", 0x1234, [
-        new SimDataSchemaColumn("boolean", SimDataType.Boolean, 0),
-        new SimDataSchemaColumn("uint32", SimDataType.UInt32, 0)
+        new SimDataSchemaColumn("boolean", DataType.Boolean, 0),
+        new SimDataSchemaColumn("uint32", DataType.UInt32, 0)
       ]);
 
       expect(schema.name).to.equal("TestSchema");
@@ -150,7 +151,7 @@ describe("SimDataSchema", () => {
     it("should pass on the owner that is given to its columns", () => {
       const owner = new MockOwner();
       const schema = new SimDataSchema("TestSchema", 0x1234, [
-        new SimDataSchemaColumn("boolean", SimDataType.Boolean, 0)
+        new SimDataSchemaColumn("boolean", DataType.Boolean, 0)
       ], owner);
       expect(schema.columns[0].owner).to.equal(owner);
     });
@@ -158,7 +159,7 @@ describe("SimDataSchema", () => {
 
   describe("#addColumnClones()", () => {
     it("should add a copy of the given column to this schema", () => {
-      const column = new SimDataSchemaColumn("column", SimDataType.Int16, 0);
+      const column = new SimDataSchemaColumn("column", DataType.Int16, 0);
       const schema = new SimDataSchema("NewSchema", 1, []);
       schema.addColumnClones(column);
       expect(schema.columns).to.have.lengthOf(1);
@@ -166,8 +167,8 @@ describe("SimDataSchema", () => {
     });
 
     it("should add a copy of the given columns to this schema", () => {
-      const column1 = new SimDataSchemaColumn("column1", SimDataType.Int16, 0);
-      const column2 = new SimDataSchemaColumn("column2", SimDataType.Int16, 0);
+      const column1 = new SimDataSchemaColumn("column1", DataType.Int16, 0);
+      const column2 = new SimDataSchemaColumn("column2", DataType.Int16, 0);
       const schema = new SimDataSchema("NewSchema", 1, []);
       schema.addColumnClones(column1, column2);
       expect(schema.columns).to.have.lengthOf(2);
@@ -176,7 +177,7 @@ describe("SimDataSchema", () => {
     });
 
     it("should not mutate the original", () => {
-      const column = new SimDataSchemaColumn("column", SimDataType.Int16, 0);
+      const column = new SimDataSchemaColumn("column", DataType.Int16, 0);
       const schema = new SimDataSchema("NewSchema", 1, []);
       schema.addColumnClones(column);
       schema.columns[0].name = "new_column";
@@ -186,7 +187,7 @@ describe("SimDataSchema", () => {
     it("should set the owner of the new column", () => {
       const owner = new MockOwner();
       const schema = new SimDataSchema("NewSchema", 0x1, [], owner);
-      const column = new SimDataSchemaColumn("column", SimDataType.Int16, 0);
+      const column = new SimDataSchemaColumn("column", DataType.Int16, 0);
       schema.addColumnClones(column);
       expect(schema.columns[0].owner).to.equal(owner);
     });
@@ -194,7 +195,7 @@ describe("SimDataSchema", () => {
     it("should not set the owner of the original column", () => {
       const owner = new MockOwner();
       const schema = new SimDataSchema("NewSchema", 0x1, [], owner);
-      const column = new SimDataSchemaColumn("column", SimDataType.Int16, 0);
+      const column = new SimDataSchemaColumn("column", DataType.Int16, 0);
       schema.addColumnClones(column);
       expect(column.owner).to.be.undefined;
     });
@@ -202,7 +203,7 @@ describe("SimDataSchema", () => {
     it("should uncache the owner", () => {
       const owner = new MockOwner();
       const schema = new SimDataSchema("NewSchema", 0x1, [], owner);
-      const column = new SimDataSchemaColumn("column", SimDataType.Int16, 0);
+      const column = new SimDataSchemaColumn("column", DataType.Int16, 0);
       expect(owner.cached).to.be.true;
       schema.addColumnClones(column);
       expect(owner.cached).to.be.false;
@@ -246,7 +247,7 @@ describe("SimDataSchema", () => {
     it("should not copy the column's owners", () => {
       const owner = new MockOwner();
       const schema = new SimDataSchema("NewSchema", 0x1, [
-        new SimDataSchemaColumn("column", SimDataType.Int16, 0)
+        new SimDataSchemaColumn("column", DataType.Int16, 0)
       ], owner);
       expect(schema.columns[0].owner).to.equal(owner);
       const clone = schema.clone();
@@ -404,11 +405,11 @@ describe("SimDataSchema", () => {
       expect(schema.columns).to.have.lengthOf(3);
       const [ col1, col2, col3 ] = schema.columns;
       expect(col1.name).to.equal("boolean");
-      expect(col1.type).to.equal(SimDataType.Boolean);
+      expect(col1.type).to.equal(DataType.Boolean);
       expect(col2.name).to.equal("float");
-      expect(col2.type).to.equal(SimDataType.Float);
+      expect(col2.type).to.equal(DataType.Float);
       expect(col3.name).to.equal("string");
-      expect(col3.type).to.equal(SimDataType.String);
+      expect(col3.type).to.equal(DataType.String);
     });
   });
 });
@@ -416,7 +417,7 @@ describe("SimDataSchema", () => {
 describe("SimDataSchemaColumn", () => {
   function expectOwnerToUncache(fn: (column: SimDataSchemaColumn) => void) {
     const owner = new MockOwner();
-    const column = new SimDataSchemaColumn("boolean", SimDataType.Boolean, 0, owner);
+    const column = new SimDataSchemaColumn("boolean", DataType.Boolean, 0, owner);
     expect(owner.cached).to.be.true;
     fn(column);
     expect(owner.cached).to.be.false;
@@ -441,49 +442,49 @@ describe("SimDataSchemaColumn", () => {
   describe("#type", () => {
     it("should uncache the owner when set", () => {
       expectOwnerToUncache(column => {
-        column.type = SimDataType.String;
+        column.type = DataType.String;
       });
     });
   });
 
   describe("#constructor", () => {
     it("should use the given name, type, and flags", () => {
-      const column = new SimDataSchemaColumn("boolean", SimDataType.Boolean, 0x1234);
+      const column = new SimDataSchemaColumn("boolean", DataType.Boolean, 0x1234);
       expect(column.name).to.equal("boolean");
-      expect(column.type).to.equal(SimDataType.Boolean);
+      expect(column.type).to.equal(DataType.Boolean);
       expect(column.flags).to.equal(0x1234);
     });
 
     it("should use the owner that is given", () => {
       const owner = new MockOwner();
-      const column = new SimDataSchemaColumn("boolean", SimDataType.Boolean, 0, owner);
+      const column = new SimDataSchemaColumn("boolean", DataType.Boolean, 0, owner);
       expect(column.owner).to.equal(owner);
     });
 
     it("should have an undefined owner if none is given", () => {
-      const column = new SimDataSchemaColumn("boolean", SimDataType.Boolean, 0);
+      const column = new SimDataSchemaColumn("boolean", DataType.Boolean, 0);
       expect(column.owner).to.be.undefined;
     });
   });
 
   describe("#clone()", () => {
     it("should copy the name, type, and flags of this column", () => {
-      const column = new SimDataSchemaColumn("boolean", SimDataType.Boolean, 0x1234);
+      const column = new SimDataSchemaColumn("boolean", DataType.Boolean, 0x1234);
       const clone = column.clone();
       expect(clone.name).to.equal("boolean");
-      expect(clone.type).to.equal(SimDataType.Boolean);
+      expect(clone.type).to.equal(DataType.Boolean);
       expect(clone.flags).to.equal(0x1234);
     });
 
     it("should not copy the owner", () => {
       const owner = new MockOwner();
-      const column = new SimDataSchemaColumn("boolean", SimDataType.Boolean, 0x1234, owner);
+      const column = new SimDataSchemaColumn("boolean", DataType.Boolean, 0x1234, owner);
       const clone = column.clone();
       expect(clone.owner).to.be.undefined;
     });
 
     it("should not mutate the original", () => {
-      const column = new SimDataSchemaColumn("boolean", SimDataType.Boolean, 0x1234);
+      const column = new SimDataSchemaColumn("boolean", DataType.Boolean, 0x1234);
       const clone = column.clone();
       clone.name = "new_name";
       expect(column.name).to.equal("boolean");
@@ -492,27 +493,27 @@ describe("SimDataSchemaColumn", () => {
 
   describe("#equals()", () => {
     it("should return true if the columns are the same", () => {
-      const column = new SimDataSchemaColumn("boolean", SimDataType.Boolean, 0x1234);
+      const column = new SimDataSchemaColumn("boolean", DataType.Boolean, 0x1234);
       const other = column.clone();
       expect(column.equals(other)).to.be.true;
     });
 
     it("should return false if the name is different", () => {
-      const column = new SimDataSchemaColumn("boolean", SimDataType.Boolean, 0x1234);
+      const column = new SimDataSchemaColumn("boolean", DataType.Boolean, 0x1234);
       const other = column.clone();
       other.name = "new_name";
       expect(column.equals(other)).to.be.false;
     });
 
     it("should return false if the type is different", () => {
-      const column = new SimDataSchemaColumn("boolean", SimDataType.Boolean, 0x1234);
+      const column = new SimDataSchemaColumn("boolean", DataType.Boolean, 0x1234);
       const other = column.clone();
-      other.type = SimDataType.Vector;
+      other.type = DataType.Vector;
       expect(column.equals(other)).to.be.false;
     });
 
     it("should return false if the flags are different", () => {
-      const column = new SimDataSchemaColumn("boolean", SimDataType.Boolean, 0x1234);
+      const column = new SimDataSchemaColumn("boolean", DataType.Boolean, 0x1234);
       const other = column.clone();
       other.flags = 0;
       expect(column.equals(other)).to.be.false;
@@ -521,13 +522,13 @@ describe("SimDataSchemaColumn", () => {
 
   describe("#toXmlNode()", () => {
     it("should use the tag 'Column'", () => {
-      const column = new SimDataSchemaColumn("boolean", SimDataType.Boolean, 0x1234);
+      const column = new SimDataSchemaColumn("boolean", DataType.Boolean, 0x1234);
       const node = column.toXmlNode();
       expect(node.tag).to.equal("Column");
     });
 
     it("should have 'name', 'type', and 'flags' attributes", () => {
-      const column = new SimDataSchemaColumn("boolean", SimDataType.Boolean, 0x1234);
+      const column = new SimDataSchemaColumn("boolean", DataType.Boolean, 0x1234);
       const node = column.toXmlNode();
       expect(node.attributes.name).to.equal("boolean");
       expect(node.attributes.type).to.equal("Boolean");
@@ -535,7 +536,7 @@ describe("SimDataSchemaColumn", () => {
     });
 
     it("should write 'Single' for a type of 'Float'", () => {
-      const column = new SimDataSchemaColumn("float", SimDataType.Float, 0);
+      const column = new SimDataSchemaColumn("float", DataType.Float, 0);
       const node = column.toXmlNode();
       expect(node.attributes.type).to.equal("Single");
     });
@@ -566,7 +567,7 @@ describe("SimDataSchemaColumn", () => {
       const node = XmlDocumentNode.from(`<Column name="boolean" type="Boolean" flags="0x00001234" />`).child;
       const column = SimDataSchemaColumn.fromXmlNode(node);
       expect(column.name).to.equal("boolean");
-      expect(column.type).to.equal(SimDataType.Boolean);
+      expect(column.type).to.equal(DataType.Boolean);
       expect(column.flags).to.equal(0x00001234);
     });
   });
@@ -580,7 +581,7 @@ describe("SimDataInstance", () => {
     it("should update the owner of contained cells when set", () => {
       const firstOwner = new MockOwner();
       const boolean = new cells.BooleanCell(true);
-      const string = new cells.TextCell(SimDataType.String, "Hi");
+      const string = new cells.TextCell(DataType.String, "Hi");
       const cell = new SimDataInstance("InstanceName", testSchema, {
         boolean,
         string
@@ -654,8 +655,8 @@ describe("SimDataInstance", () => {
     it("should use an 'I' tag", () => {
       const inst = new SimDataInstance("InstanceName", testSchema, {
         boolean: new cells.BooleanCell(true),
-        uint32: new cells.NumberCell(SimDataType.UInt32, 64),
-        string: new cells.TextCell(SimDataType.String, "hi")
+        uint32: new cells.NumberCell(DataType.UInt32, 64),
+        string: new cells.TextCell(DataType.String, "hi")
       });
       const node = inst.toXmlNode();
       expect(node.tag).to.equal("I");
@@ -664,8 +665,8 @@ describe("SimDataInstance", () => {
     it("should have an 'Object' type", () => {
       const inst = new SimDataInstance("InstanceName", testSchema, {
         boolean: new cells.BooleanCell(true),
-        uint32: new cells.NumberCell(SimDataType.UInt32, 64),
-        string: new cells.TextCell(SimDataType.String, "hi")
+        uint32: new cells.NumberCell(DataType.UInt32, 64),
+        string: new cells.TextCell(DataType.String, "hi")
       });
       const node = inst.toXmlNode();
       expect(node.attributes.type).to.equal("Object");
@@ -674,8 +675,8 @@ describe("SimDataInstance", () => {
     it("should have its schema name written", () => {
       const inst = new SimDataInstance("InstanceName", testSchema, {
         boolean: new cells.BooleanCell(true),
-        uint32: new cells.NumberCell(SimDataType.UInt32, 64),
-        string: new cells.TextCell(SimDataType.String, "hi")
+        uint32: new cells.NumberCell(DataType.UInt32, 64),
+        string: new cells.TextCell(DataType.String, "hi")
       });
       const node = inst.toXmlNode();
       expect(node.attributes.schema).to.equal("TestSchema");
@@ -684,8 +685,8 @@ describe("SimDataInstance", () => {
     it("should write its children with their names", () => {
       const inst = new SimDataInstance("InstanceName", testSchema, {
         boolean: new cells.BooleanCell(true),
-        uint32: new cells.NumberCell(SimDataType.UInt32, 64),
-        string: new cells.TextCell(SimDataType.String, "hi")
+        uint32: new cells.NumberCell(DataType.UInt32, 64),
+        string: new cells.TextCell(DataType.String, "hi")
       });
       const node = inst.toXmlNode();
       expect(node.numChildren).to.equal(3);
@@ -700,7 +701,7 @@ describe("SimDataInstance", () => {
     it("should mutate the original object cell", () => {
       const cell = new cells.ObjectCell(testSchema, {
         boolean: new cells.BooleanCell(true),
-        string: new cells.TextCell(SimDataType.String, "Hi")
+        string: new cells.TextCell(DataType.String, "Hi")
       });
 
       const inst = SimDataInstance.fromObjectCell("InstanceName", cell);
@@ -711,7 +712,7 @@ describe("SimDataInstance", () => {
     it("should create an instance with the given name", () => {
       const cell = new cells.ObjectCell(testSchema, {
         boolean: new cells.BooleanCell(true),
-        string: new cells.TextCell(SimDataType.String, "Hi")
+        string: new cells.TextCell(DataType.String, "Hi")
       });
 
       const inst = SimDataInstance.fromObjectCell("InstanceName", cell);
@@ -722,7 +723,7 @@ describe("SimDataInstance", () => {
       const owner = new MockOwner();
       const cell = new cells.ObjectCell(testSchema, {
         boolean: new cells.BooleanCell(true),
-        string: new cells.TextCell(SimDataType.String, "Hi")
+        string: new cells.TextCell(DataType.String, "Hi")
       }, owner);
 
       const inst = SimDataInstance.fromObjectCell("InstanceName", cell);
@@ -793,11 +794,11 @@ describe("SimDataInstance", () => {
       const inst = SimDataInstance.fromXmlNode(node, [testSchema]);
       expect(inst.rowLength).to.equal(3);
       expect(inst.row.boolean.asAny.value).to.equal(true);
-      expect(inst.row.boolean.dataType).to.equal(SimDataType.Boolean);
+      expect(inst.row.boolean.dataType).to.equal(DataType.Boolean);
       expect(inst.row.uint32.asAny.value).to.equal(64);
-      expect(inst.row.uint32.dataType).to.equal(SimDataType.UInt32);
+      expect(inst.row.uint32.dataType).to.equal(DataType.UInt32);
       expect(inst.row.string.asAny.value).to.equal("hi");
-      expect(inst.row.string.dataType).to.equal(SimDataType.String);
+      expect(inst.row.string.dataType).to.equal(DataType.String);
     });
   });
 });
