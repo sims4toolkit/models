@@ -1,5 +1,5 @@
 /**
- * Types for binary resources (i.e. any resource that follows a BT).
+ * How resources are encoded.
  */
 enum EncodingType {
   Unknown = "Unknown",
