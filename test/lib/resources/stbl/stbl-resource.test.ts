@@ -804,6 +804,29 @@ describe("StringTableResource", () => {
     });
   });
 
+  describe("#hasValue()", () => {
+    it("should return true if the stbl contains the given value", () => {
+      const stbl = StringTableResource.create({
+        entries: [ { key: 1, value: "hi" } ]
+      });
+
+      expect(stbl.hasValue("hi")).to.be.true;
+    });
+
+    it("should return false if the stbl does not contain the given value", () => {
+      const stbl = StringTableResource.create({
+        entries: [ { key: 1, value: "hello" } ]
+      });
+
+      expect(stbl.hasValue("hi")).to.be.false;
+    });
+
+    it("should return false if the stbl is empty", () => {
+      const stbl = StringTableResource.create();
+      expect(stbl.hasValue("hi")).to.be.false;
+    });
+  });
+
   describe("#isXml()", () => {
     it("should return false", () => {
       const stbl = StringTableResource.create();
