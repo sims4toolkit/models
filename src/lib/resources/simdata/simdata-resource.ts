@@ -113,7 +113,7 @@ export default class SimDataResource extends WritableModel implements Resource, 
    * Creates a new SimDataResource from a buffer containing a binary DATA file.
    * 
    * @param buffer Buffer to read
-   * @param options Options to configure
+   * @param options Options for reading and cacheing the SimData
    */
   static from(buffer: Buffer, options?: FileReadingOptions): SimDataResource {
     const dto = readData(buffer, options);
@@ -131,7 +131,7 @@ export default class SimDataResource extends WritableModel implements Resource, 
    * Creates a SimDataResource from S4S-style XML.
    * 
    * @param xml XML string or buffer to parse as a SimData
-   * @param options Options to configure
+   * @param options Options for reading and cacheing the SimData
    * @throws If the given XML could not be parsed as a SimData
    */
   static fromXml(xml: string | Buffer, options?: FileReadingOptions): SimDataResource {
@@ -142,7 +142,7 @@ export default class SimDataResource extends WritableModel implements Resource, 
    * Creates a SimDataResource from an S4S-style XML document.
    * 
    * @param dom XML document from which to parse SimData
-   * @param options Options to configure
+   * @param options Options for reading and cacheing the SimData
    * @throws If the given XML document could not be parsed as a SimData
    */
   static fromXmlDocument(doc: XmlDocumentNode, options?: FileReadingOptions): SimDataResource {

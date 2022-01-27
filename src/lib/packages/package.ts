@@ -3,7 +3,7 @@ import type { ResourceKey, ResourceKeyPair } from "./types";
 import type { FileReadingOptions } from "../common/options";
 import { MappedModel } from "../base/mapped-model";
 import { arraysAreEqual } from "../common/helpers";
-import readDbpf, { extractFiles } from "./serialization/read-dbpf";
+import readDbpf from "./serialization/read-dbpf";
 import writeDbpf from "./serialization/write-dbpf";
 import ResourceEntry from "./resource-entry";
 
@@ -77,24 +77,30 @@ export default class Package extends MappedModel<ResourceKey, Resource, Resource
   }
 
   /**
-   * Reads the given buffer as a DBPF and extracts resources from it according
-   * to the given type filter function. If no function is given, all resources
-   * types are extracted.
+   * Reads the given buffer as a Package, but just returns its entries rather
+   * than a full Package object.
+   * 
+   * If extracting resources to write them to disk, consider these options:
+   * - Set `loadRaw: true`, so that resources are loaded as buffers only rather
+   * than being parsed into models.
+   * - If you cannot use `loadRaw` because you need to parse the resources into
+   * models, set `saveBuffer: true` so that they can be written without needing
+   * to re-serialize the model.
+   * - Consider using `resourceFilter` to determine which resources should be
+   * extracted, according to their type, group, and/or instance.
    * 
    * @param buffer Buffer to extract resources from
-   * @param typeFilter Optional function to filter resources by (it should
-   * accept a resource type, which is a number, and return either true or false)
+   * @param options Options for reading and cacheing the resources
    */
-  static extractFiles(buffer: Buffer, typeFilter?: (type: number) => boolean): ResourceKeyPair[] {
-    // FIXME: this needs a touch up
-    return extractFiles(buffer, typeFilter);
+  static extractResources(buffer: Buffer, options?: FileReadingOptions): ResourceKeyPair[] {
+    return readDbpf(buffer, options);
   }
 
   /**
    * Reads the given buffer as a Package.
    * 
    * @param buffer Buffer to read as a package
-   * @param options Options for reading the buffer
+   * @param options Options for reading and cacheing the resources
    */
   static from(buffer: Buffer, options?: FileReadingOptions): Package {
     return new Package(

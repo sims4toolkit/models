@@ -1,5 +1,5 @@
 import type Resource from "../../resources/resource";
-import type { FileReadingOptions } from "../../common/options";
+import type { FileReadingOptions, ResourceFilter } from "../../common/options";
 import type { ResourceKeyPair, ResourceKey } from "../types";
 import { ZLIB_COMPRESSION } from "../constants";
 import { unzipSync } from "zlib";
@@ -23,7 +23,7 @@ export default function readDbpf(buffer: Buffer, options: FileReadingOptions = {
   const header = readDbpfHeader(decoder, options);
   decoder.seek(header.mnIndexRecordPosition || header.mnIndexRecordPositionLow);
   const flags = readDbpfFlags(decoder);
-  const index = readDbpfIndex(decoder, header, flags);
+  const index = readDbpfIndex(decoder, header, flags, options?.resourceFilter);
   return index.map(indexEntry => {
     decoder.seek(indexEntry.mnPosition);
     const compressedBuffer = decoder.slice(indexEntry.mnSize);
@@ -33,31 +33,6 @@ export default function readDbpf(buffer: Buffer, options: FileReadingOptions = {
     };
     if (options?.saveCompressedBuffer) entry.buffer = compressedBuffer;
     return entry;
-  });
-}
-
-/**
- * Reads the given buffer as a DBPF and extracts resources from it according
- * to the given type filter function. If no function is given, all resources
- * types are extracted (which would take a very, very, very long time).
- * 
- * @param buffer Buffer to extract resources from
- * @param typeFilter Optional function to filter resources by (it should
- * accept a resource type, which is a number, and return either true or false)
- */
-export function extractFiles(buffer: Buffer, typeFilter?: (type: number) => boolean): ResourceKeyPair[] {
-  const decoder = new BinaryDecoder(buffer);
-  const header = readDbpfHeader(decoder, { ignoreErrors: true });
-  decoder.seek(header.mnIndexRecordPosition || header.mnIndexRecordPositionLow);
-  const flags = readDbpfFlags(decoder);
-  const index = readDbpfIndex(decoder, header, flags, typeFilter);
-  return index.map(indexEntry => {
-    decoder.seek(indexEntry.mnPosition);
-    const compressedBuffer = decoder.slice(indexEntry.mnSize);
-    return {
-      key: indexEntry.key,
-      value: getResource(indexEntry, compressedBuffer, { loadRaw: true })
-    };
   });
 }
 
@@ -153,35 +128,34 @@ function readDbpfFlags(decoder: BinaryDecoder): DbpfFlags {
  * @param decoder Decoder to read DBPF index from
  * @param header Header of DBPF that is being read
  * @param flags Flags of DBPF that is being read
- * @param typeFilter Optional function to filter out resources of certain types
+ * @param filter Optional function to filter out resources by type/group/inst
  */
-function readDbpfIndex(decoder: BinaryDecoder, header: DbpfHeader, flags: DbpfFlags, typeFilter?: (type: number) => boolean): IndexEntry[] {
-  let bytesToSkip = 20;
-  if (flags.constantGroupId == undefined) bytesToSkip += 4;
-  if (flags.constantInstanceIdEx == undefined) bytesToSkip += 4;
-
+function readDbpfIndex(decoder: BinaryDecoder, header: DbpfHeader, flags: DbpfFlags, filter?: ResourceFilter): IndexEntry[] {
   return makeList<IndexEntry>(header.mnIndexRecordEntryCount, () => {
     const key: Partial<ResourceKey> = {};
     key.type = flags.constantTypeId ?? decoder.uint32();
-
-    if (typeFilter && !typeFilter(key.type)) {
-      decoder.skip(bytesToSkip);
-      return;
-    }
-
     key.group = flags.constantGroupId ?? decoder.uint32();
     const mInstanceEx = flags.constantInstanceIdEx ?? decoder.uint32();
     const mInstance = decoder.uint32();
     key.instance = (BigInt(mInstanceEx) << 32n) + BigInt(mInstance);
-    const entry: Partial<IndexEntry> = { key: key as ResourceKey };
-    entry.mnPosition = decoder.uint32();
-    const sizeAndCompression = decoder.uint32();
-    entry.mnSize = sizeAndCompression & 0x7FFFFFFF; // 31 bits
-    const isCompressed = (sizeAndCompression >>> 31) === 1; // mbExtendedCompressionType; 1 bit
-    decoder.skip(4); // mnSizeDecompressed (uint32; 4 bytes)
-    if (isCompressed) entry.mnCompressionType = decoder.uint16();
-    decoder.skip(2); // mnCommitted (uint16; 2 bytes)
-    return entry as IndexEntry;
+
+    if (filter && !filter(key.type, key.group, key.instance)) {
+      decoder.skip(4);
+      const sizeAndCompression = decoder.uint32();
+      const isCompressed = (sizeAndCompression >>> 31) === 1;
+      decoder.skip(isCompressed ? 8 : 6); // +2 for mnCompressionType
+      return;
+    } else {
+      const entry: Partial<IndexEntry> = { key: key as ResourceKey };
+      entry.mnPosition = decoder.uint32();
+      const sizeAndCompression = decoder.uint32();
+      entry.mnSize = sizeAndCompression & 0x7FFFFFFF; // 31 bits
+      const isCompressed = (sizeAndCompression >>> 31) === 1; // mbExtendedCompressionType; 1 bit
+      decoder.skip(4); // mnSizeDecompressed (uint32; 4 bytes)
+      if (isCompressed) entry.mnCompressionType = decoder.uint16();
+      decoder.skip(2); // mnCommitted (uint16; 2 bytes)
+      return entry as IndexEntry;
+    }
   }, true); // true to skip nulls/undefineds
 }
 
@@ -193,7 +167,7 @@ function readDbpfIndex(decoder: BinaryDecoder, header: DbpfHeader, flags: DbpfFl
  * @param options Options for serialization
  * @returns Parsed model for the resource
  */
-function getResource(entry: IndexEntry, rawBuffer: Buffer, options: FileReadingOptions): Resource {
+function getResource(entry: IndexEntry, rawBuffer: Buffer, options?: FileReadingOptions): Resource {
   let buffer: Buffer;
 
   if (entry.mnCompressionType) {
@@ -210,14 +184,22 @@ function getResource(entry: IndexEntry, rawBuffer: Buffer, options: FileReadingO
 
   const { type } = entry.key;
 
-  if (type === BinaryResourceType.StringTable) {
-    return StringTableResource.from(buffer, options);
-  } else if (type === BinaryResourceType.SimData) {
-    return SimDataResource.from(buffer, options);
-  } else if ((type in TuningResourceType) || bufferContainsXml(buffer)) {
-    return XmlResource.from(buffer, options);
-  } else {
-    return RawResource.from(buffer, `Unrecognized non-XML type: ${type}`);
+  try {
+    if (type === BinaryResourceType.StringTable) {
+      return StringTableResource.from(buffer, options);
+    } else if (type === BinaryResourceType.SimData) {
+      return SimDataResource.from(buffer, options);
+    } else if ((type in TuningResourceType) || bufferContainsXml(buffer)) {
+      return XmlResource.from(buffer, options);
+    } else {
+      return RawResource.from(buffer, `Unrecognized non-XML type: ${type}`);
+    }
+  } catch (e) {
+    if (options?.loadErrorsAsRaw) {
+      return RawResource.from(buffer, `Model is corrupt.`);
+    } else {
+      throw e;
+    }
   }
 }
 

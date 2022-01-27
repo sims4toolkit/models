@@ -42,7 +42,7 @@ export default class StringTableResource extends PrimitiveMappedModel<string, St
    * Reads the given buffer as a StringTableResource instance and returns it.
    * 
    * @param buffer Buffer to read as a string table
-   * @param options Options to configure for reading a STBL resource
+   * @param options Options for reading and cacheing the STBL
    */
   static from(buffer: Buffer, options?: FileReadingOptions): StringTableResource {
     return new StringTableResource(

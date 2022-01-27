@@ -103,7 +103,7 @@ export default class XmlResource extends WritableModel implements Resource {
    * Creates an XML resource from a buffer containing XML.
    * 
    * @param buffer Buffer to create an XML resource from
-   * @param options Options for reading the buffer
+   * @param options Options for reading and cacheing the XML resource
    */
   static from(buffer: Buffer, options?: FileReadingOptions): XmlResource {
     return new XmlResource(
