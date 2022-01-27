@@ -276,6 +276,10 @@ describe("Package", () => {
     });
   });
 
+  describe("static#extractResources()", () => {
+    // TODO:
+  });
+
   describe("static#from()", () => {
     context("dbpf is valid", () => {
       it("should read empty dbpf", () => {
@@ -439,7 +443,35 @@ describe("Package", () => {
     });
 
     context("setting other options", () => {
-      // TODO:
+      context("resourceFilter", () => {
+        it("should return all resources if not provided", () => {
+          // TODO:
+        });
+
+        it("should only return resources that pass the filter", () => {
+          // TODO:
+        });
+      });
+
+      context("loadErrorsAsRaw", () => {
+        it("should throw if false and a resource is corrupt", () => {
+          // TODO:
+        });
+
+        it("should load a corrupt resource as raw if true", () => {
+          // TODO:
+        });
+      });
+
+      context("loadRaw", () => {
+        it("should load all resources as raw if true", () => {
+          // TODO:
+        });
+
+        it("should load all resources into their models if false", () => {
+          // TODO:
+        });
+      });
     });
   });
 
