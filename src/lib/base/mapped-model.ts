@@ -34,14 +34,7 @@ export abstract class MappedModel<Key, Value, Entry extends MappedModelEntry<Key
     super(saveBuffer, buffer, owner);
     this._entryMap = new Map();
     this._keyMap = new Map();
-
-    entries?.forEach((entry, id) => {
-      this._entryMap.set(id, this._makeEntry(entry.key, entry.value, entry));
-      const keyId = this._getKeyIdentifier(entry.key);
-      if (!this._keyMap.has(keyId)) this._keyMap.set(keyId, id);
-    });
-
-    this._nextId = this.size;
+    this._initializeEntries(entries);
   }
 
   //#region Overridden Public Methods
@@ -298,6 +291,21 @@ export abstract class MappedModel<Key, Value, Entry extends MappedModelEntry<Key
    * @param key Key to get unique identifier for
    */
   protected abstract _getKeyIdentifier(key: Key): number | string;
+
+  /**
+   * Initializes the entries for this model.
+   * 
+   * @param entries Entries to initialize
+   */
+  protected _initializeEntries(entries?: { key: Key; value: Value; }[]) {
+    entries?.forEach((entry, id) => {
+      this._entryMap.set(id, this._makeEntry(entry.key, entry.value, entry));
+      const keyId = this._getKeyIdentifier(entry.key);
+      if (!this._keyMap.has(keyId)) this._keyMap.set(keyId, id);
+    });
+
+    this._nextId = this.size;
+  }
 
   /**
    * Creates a new entry to add to this model.

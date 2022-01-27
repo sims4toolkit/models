@@ -27,11 +27,12 @@ export default function readDbpf(buffer: Buffer, options: FileReadingOptions = {
   return index.map(indexEntry => {
     decoder.seek(indexEntry.mnPosition);
     const compressedBuffer = decoder.slice(indexEntry.mnSize);
-    return {
+    const entry: ResourceKeyPair = {
       key: indexEntry.key,
-      value: getResource(indexEntry, compressedBuffer, options),
-      buffer: compressedBuffer
+      value: getResource(indexEntry, compressedBuffer, options)
     };
+    if (options?.saveCompressedBuffer) entry.buffer = compressedBuffer;
+    return entry;
   });
 }
 
@@ -214,7 +215,7 @@ function getResource(entry: IndexEntry, rawBuffer: Buffer, options: FileReadingO
   } else if (type === BinaryResourceType.SimData) {
     return SimDataResource.from(buffer, options);
   } else if ((type in TuningResourceType) || bufferContainsXml(buffer)) {
-    return XmlResource.from(buffer);
+    return XmlResource.from(buffer, options);
   } else {
     return RawResource.from(buffer, `Unrecognized non-XML type: ${type}`);
   }

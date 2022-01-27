@@ -48,12 +48,12 @@ export default class Package extends MappedModel<ResourceKey, Resource, Resource
   protected constructor(
     entries?: ResourceKeyPair[],
     saveCompressedBuffers = false,
-    saveDecompressedBuffers = false,
-    buffer?: Buffer
-  ) {
-    super(entries, false, buffer); // never cache package buffer, it's pointless
+    saveDecompressedBuffers = false
+  ) {    
+    super(undefined, false); // never cache package buffer, it's pointless
     this._saveCompressedBuffers = saveCompressedBuffers;
     this._saveDecompressedBuffers = saveDecompressedBuffers;
+    this._initializeEntries(entries); // has to happen after props are set
   }
 
   /**
@@ -101,8 +101,7 @@ export default class Package extends MappedModel<ResourceKey, Resource, Resource
     return new Package(
       readDbpf(buffer, options),
       options?.saveCompressedBuffer,
-      options?.saveBuffer,
-      buffer
+      options?.saveBuffer
     );
   }
 
@@ -111,13 +110,10 @@ export default class Package extends MappedModel<ResourceKey, Resource, Resource
   //#region Public Methods
 
   clone(): Package {
-    const buffer = this.isCached ? this.buffer : undefined;
-    const entryClones = this.entries.map(entry => entry.clone());
     return new Package(
-      entryClones,
+      this.entries.map(entry => entry.clone()),
       this.saveCompressedBuffers,
-      this.saveDecompressedBuffers,
-      buffer
+      this.saveDecompressedBuffers
     );
   }
 
@@ -134,6 +130,7 @@ export default class Package extends MappedModel<ResourceKey, Resource, Resource
   }
 
   protected _makeEntry(key: ResourceKey, value: Resource, dto?: ResourceKeyPair): ResourceEntry {
+    value.saveBuffer = this.saveDecompressedBuffers;
     return new ResourceEntry(key, value, this.saveCompressedBuffers, dto?.buffer, this);
   }
 

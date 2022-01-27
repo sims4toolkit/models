@@ -5,6 +5,7 @@ import { expect } from "chai";
 import type { ResourceKey } from "../../../dst/lib/packages/types";
 import { Package, StringTableResource, XmlResource } from "../../../dst/models";
 import { EncodingType, TuningResourceType } from "../../../dst/enums";
+import { FileReadingOptions } from "../../../dst/lib/common/options";
 
 //#region Helpers
 
@@ -19,8 +20,8 @@ function getBuffer(filename: string): Buffer {
   return cachedBuffers[filename];
 }
 
-function getPackage(filename: string): Package {
-  return Package.from(getBuffer(filename));
+function getPackage(filename: string, options?: FileReadingOptions): Package {
+  return Package.from(getBuffer(filename), options);
 }
 
 function getTestTuning(): XmlResource {
@@ -46,18 +47,27 @@ describe("ResourceEntry", () => {
       expect(unzipped).to.equal(tuning.content);
     });
 
-    it("should return the cached buffer if it wasn't changed", () => {
+    it("should return the cached buffer if nothing was changed and saveCompressedBuffers = true", () => {
       const tuning = getTestTuning();
-      const dbpf = Package.create();
+      const dbpf = Package.create({ saveCompressedBuffers: true });
       const testKey = getTestKey();
       const entry = dbpf.add(testKey, tuning);
       const buffer = entry.buffer;
       expect(buffer).to.equal(entry.buffer);
     });
 
-    it("should return a new buffer if it was changed", () => {
+    it("should return a new buffer if nothing was changed and saveCompressedBuffers = false", () => {
       const tuning = getTestTuning();
-      const dbpf = Package.create();
+      const dbpf = Package.create({ saveCompressedBuffers: false });
+      const testKey = getTestKey();
+      const entry = dbpf.add(testKey, tuning);
+      const buffer = entry.buffer;
+      expect(buffer).to.not.equal(entry.buffer);
+    });
+
+    it("should return a new buffer if it was changed and saveCompressedBuffers = true", () => {
+      const tuning = getTestTuning();
+      const dbpf = Package.create({ saveCompressedBuffers: true });
       const testKey = getTestKey();
       const entry = dbpf.add(testKey, tuning);
       const buffer = entry.buffer;
@@ -67,25 +77,8 @@ describe("ResourceEntry", () => {
   });
 
   describe("#key", () => {
-    it("should uncache the dbpf when set", () => {
-      const dbpf = getPackage("Trait");
-      const entry = dbpf.get(0);
-      expect(dbpf.isCached).to.be.true;
-      const testKey = getTestKey();
-      entry.key = testKey;
-      expect(dbpf.isCached).to.be.false;
-    });
-
-    it("should uncache the dbpf when mutated", () => {
-      const dbpf = getPackage("Trait");
-      const entry = dbpf.get(0);
-      expect(dbpf.isCached).to.be.true;
-      entry.key.group = 0x80000000;
-      expect(dbpf.isCached).to.be.false;
-    });
-
     it("should not uncache the entry when mutated", () => {
-      const dbpf = getPackage("Trait");
+      const dbpf = getPackage("Trait", { saveCompressedBuffer: true });
       const entry = dbpf.get(0);
       expect(entry.isCached).to.be.true;
       entry.key.group = 0x80000000;
@@ -93,7 +86,11 @@ describe("ResourceEntry", () => {
     });
 
     it("should not uncache the entry's resource when mutated", () => {
-      const dbpf = getPackage("Trait");
+      const dbpf = Package.from(getBuffer("Trait"), {
+        saveBuffer: true,
+        saveCompressedBuffer: true
+      });
+
       const entry = dbpf.get(0);
       expect(entry.value.isCached).to.be.true;
       entry.key.group = 0x80000000;
@@ -123,33 +120,18 @@ describe("ResourceEntry", () => {
       expect(entry.value).to.equal(newTuning);
     });
 
-    it("should uncache the stbl when set", () => {
-      const dbpf = getPackage("Trait");
-      expect(dbpf.isCached).to.be.true;
-      dbpf.get(0).resource = getTestTuning();
-      expect(dbpf.isCached).to.be.false;
+    it("should uncache the entry when set", () => {
+      const dbpf = getPackage("Trait", { saveCompressedBuffer: true });
+      const entry = dbpf.get(0);
+      expect(entry.isCached).to.be.true;
+      entry.resource = getTestTuning();
+      expect(entry.isCached).to.be.false;
     });
   });
 
   describe("#value", () => {
-    it("should uncache the dbpf when set", () => {
-      const dbpf = getPackage("Trait");
-      const entry = dbpf.get(1);
-      expect(dbpf.isCached).to.be.true;
-      entry.value = getTestTuning();
-      expect(dbpf.isCached).to.be.false;
-    });
-
-    it("should uncache the dbpf when mutated", () => {
-      const dbpf = getPackage("Trait");
-      const entry = dbpf.get(1);
-      expect(dbpf.isCached).to.be.true;
-      (entry.value as XmlResource).content = "";
-      expect(dbpf.isCached).to.be.false;
-    });
-
     it("should uncache the entry when mutated", () => {
-      const dbpf = getPackage("Trait");
+      const dbpf = getPackage("Trait", { saveCompressedBuffer: true });
       const entry = dbpf.get(1);
       expect(entry.isCached).to.be.true;
       (entry.value as XmlResource).content = "";
@@ -157,7 +139,11 @@ describe("ResourceEntry", () => {
     });
 
     it("should uncache the entry's resource when mutated", () => {
-      const dbpf = getPackage("Trait");
+      const dbpf = Package.from(getBuffer("Trait"), {
+        saveBuffer: true,
+        saveCompressedBuffer: true
+      });
+
       const entry = dbpf.get(1);
       expect(entry.value.isCached).to.be.true;
       (entry.value as XmlResource).content = "";
@@ -316,16 +302,12 @@ describe("ResourceEntry", () => {
   });
 
   describe("#onChange()", () => {
-    it("should uncache the owning dbpf", () => {
-      const dbpf = getPackage("Trait");
-      const entry = dbpf.get(0);
-      expect(dbpf.isCached).to.be.true;
-      entry.onChange();
-      expect(dbpf.isCached).to.be.false;
-    });
-
     it("should reset the compressed buffer", () => {
-      const dbpf = getPackage("Trait");
+      const dbpf = Package.from(getBuffer("Trait"), {
+        saveBuffer: true,
+        saveCompressedBuffer: true
+      });
+
       const entry = dbpf.get(0);
       const buffer = entry.buffer;
       expect(entry.buffer).to.equal(buffer);
@@ -334,7 +316,11 @@ describe("ResourceEntry", () => {
     });
 
     it("should not uncache other entries in the dbpf", () => {
-      const dbpf = getPackage("Trait");
+      const dbpf = Package.from(getBuffer("Trait"), {
+        saveBuffer: true,
+        saveCompressedBuffer: true
+      });
+
       const [ simdata, tuning ] = dbpf.entries;
       expect(tuning.isCached).to.be.true;
       expect(tuning.isCached).to.be.true;
@@ -344,7 +330,11 @@ describe("ResourceEntry", () => {
     });
 
     it("should not uncache the contained resource", () => {
-      const dbpf = getPackage("Trait");
+      const dbpf = Package.from(getBuffer("Trait"), {
+        saveBuffer: true,
+        saveCompressedBuffer: true
+      });
+
       const [ simdata ] = dbpf.entries;
       expect(simdata.value.isCached).to.be.true;
       simdata.onChange();
