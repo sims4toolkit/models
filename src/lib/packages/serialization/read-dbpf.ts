@@ -11,6 +11,7 @@ import TuningResourceType from "../../enums/tuning-resources";
 import StringTableResource from "../../resources/stbl/stbl-resource";
 import SimDataResource from "../../resources/simdata/simdata-resource";
 import XmlResource from "../../resources/xml/xml-resource";
+import CombinedTuningResource from "../../resources/combined-tuning/combined-tuning-resource";
 
 /**
  * Reads the given buffer as a DBPF and returns a DTO for it.
@@ -189,6 +190,8 @@ function getResource(entry: IndexEntry, rawBuffer: Buffer, options?: FileReading
       return StringTableResource.from(buffer, options);
     } else if (type === BinaryResourceType.SimData) {
       return SimDataResource.from(buffer, options);
+    } else if (type === BinaryResourceType.CombinedTuning) {
+      return CombinedTuningResource.from(buffer);
     } else if ((type in TuningResourceType) || bufferContainsXml(buffer)) {
       return XmlResource.from(buffer, options);
     } else {

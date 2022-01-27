@@ -44,7 +44,7 @@ export interface TableData {
   mRow?: Row[];
 }
 
-export interface BinaryTuningDto {
+export interface CombinedTuningDto {
   mnVersion: number;
   mUnused: number;
   mSchema: Schema[];

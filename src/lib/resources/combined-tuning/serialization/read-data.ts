@@ -7,8 +7,9 @@
 
 import { BinaryDecoder } from "@s4tk/encoding";
 import { makeList } from "../../../common/helpers";
+import { FileReadingOptions } from "../../../common/options";
 import { SimDataType, SimDataTypeUtils } from "../../simdata/data-types";
-import { BinaryTuningDto, Named, Row, Schema, SchemaColumn, StringTable, TableData, TableInfo } from "../types";
+import { CombinedTuningDto, Named, Row, Schema, SchemaColumn, StringTable, TableData, TableInfo } from "../types";
 
 const RELOFFSET_NULL = -0x80000000;
 
@@ -17,7 +18,7 @@ const RELOFFSET_NULL = -0x80000000;
  * 
  * @param buffer Buffer to read as a DATA file
  */
-export default function readData(buffer: Buffer): BinaryTuningDto {
+export default function readData(buffer: Buffer, options?: FileReadingOptions): CombinedTuningDto {
   const decoder = new BinaryDecoder(buffer);
 
   // Iteration variables
