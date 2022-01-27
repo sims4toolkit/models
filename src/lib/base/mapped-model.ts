@@ -180,6 +180,20 @@ export abstract class MappedModel<Key, Value, Entry extends MappedModelEntry<Key
   }
 
   /**
+   * Returns the first entry that has the given value, or undefined if there
+   * aren't any.
+   * 
+   * @param value Value of entry to retrieve
+   */
+  getByValue(value: Value): Entry {
+    for (const [ , entry ] of this._entryMap) {
+      if (entry.valueEquals(value)) return entry;
+    }
+
+    return undefined;
+  }
+
+  /**
    * Returns the ID of the first entry that has the given key. If there are no
    * entries with the given key, undefined is returned.
    * 
@@ -225,7 +239,7 @@ export abstract class MappedModel<Key, Value, Entry extends MappedModelEntry<Key
    * @returns True if there is an entry with the given key, false otherwise
    */
   hasKey(key: Key): boolean {
-    return this.getIdForKey(key) !== undefined;
+    return this.getIdForKey(key) != undefined;
   }
 
   /**
@@ -236,11 +250,7 @@ export abstract class MappedModel<Key, Value, Entry extends MappedModelEntry<Key
    * @returns True if there is an entry with the given value, false otherwise
    */
   hasValue(value: Value): boolean {
-    for (const [ , entry ] of this._entryMap) {
-      if (entry.valueEquals(value)) return true;
-    }
-
-    return false;
+    return this.getByValue(value) != undefined;
   }
 
   /**

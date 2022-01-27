@@ -667,6 +667,8 @@ describe("StringTableResource", () => {
     });
   });
 
+  // TODO: getByValue()
+
   describe("#getIdForKey()", () => {
     it("should return the ID for the given key", () => {
       const stbl = getStbl("Normal");

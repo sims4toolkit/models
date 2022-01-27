@@ -757,6 +757,8 @@ describe("Package", () => {
     });
   });
 
+  // TODO: getByValue()
+
   describe("#getIdForKey()", () => {
     it("should return the ID for the given key", () => {
       const dbpf = getPackage("CompleteTrait");
