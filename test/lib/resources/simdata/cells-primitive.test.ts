@@ -32,7 +32,8 @@ describe("Cell", function() {
   });
 
   describe("static#parseXmlNode()", function() {
-    // TODO:
+    // NOTE: covered by other tests, since this function is used recursively -
+    // these tests are a nice-to-have
   });
 });
 

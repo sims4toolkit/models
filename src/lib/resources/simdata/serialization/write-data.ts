@@ -7,7 +7,7 @@ import * as cells from "../cells";
 import DataType from "../../../enums/data-type";
 import { getAlignment, getBytes } from "../../../common/data-type-helpers";
 
-// FIXME: there could potentially be an issue with padding when writing booleans,
+// NOTE: there could potentially be an issue with padding when writing booleans,
 // for an example use the scenario role that chip sent
 
 //#region Interfaces
@@ -99,7 +99,7 @@ function isReferenceType(cell: cells.Cell): boolean {
  */
 function isStringType(cell: cells.Cell): boolean {
   switch (cell.dataType) {
-    // FIXME: is character a string type?
+    // NOTE: is character a string type?
     case DataType.String:
     case DataType.HashedString:
       return true;
@@ -408,7 +408,7 @@ export default function writeData(model: SimDataDto): Buffer {
           encoder.uint16(column.dataType);
           encoder.uint16(column.flags); // flags
           encoder.uint32(column.offset);
-          encoder.int32(RELOFFSET_NULL); // FIXME: is this actually used?
+          encoder.int32(RELOFFSET_NULL); // NOTE: is this actually used?
           filledColumns += 20;
         });
 
