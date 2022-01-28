@@ -5,7 +5,7 @@ import compare from "just-compare";
 import clone from "just-clone";
 import type { ResourceKey } from "../../../dst/lib/packages/types";
 import { Package, RawResource, SimDataResource, StringTableResource, XmlResource } from "../../../dst/models";
-import { EncodingType, TuningResourceType } from "../../../dst/enums";
+import { BinaryResourceType, EncodingType, TuningResourceType } from "../../../dst/enums";
 import { FileReadingOptions } from "../../../dst/lib/common/options";
 
 //#region Helpers
@@ -277,7 +277,10 @@ describe("Package", () => {
   });
 
   describe("static#extractResources()", () => {
-    // TODO:
+    it("should return the entries of the dbpf", () => {
+      const entries = Package.extractResources(getBuffer("CompleteTrait"));
+      expect(entries).to.be.an('Array').with.lengthOf(4);
+    });
   });
 
   describe("static#from()", () => {
@@ -445,31 +448,84 @@ describe("Package", () => {
     context("setting other options", () => {
       context("resourceFilter", () => {
         it("should return all resources if not provided", () => {
-          // TODO:
+          const dbpf = Package.from(getBuffer("CompleteTrait"));
+          expect(dbpf.size).to.equal(4);
         });
 
         it("should only return resources that pass the filter", () => {
-          // TODO:
+          const dbpf = Package.from(getBuffer("CompleteTrait"), {
+            resourceFilter(type, group, instance) {
+              return type === BinaryResourceType.SimData || (type in TuningResourceType);
+            }
+          });
+
+          expect(dbpf.size).to.equal(2);
+          expect((dbpf.get(0).resource as SimDataResource).schema.name).to.equal("Trait");
+          expect((dbpf.get(1).resource as XmlResource).root.attributes.i).to.equal("trait");
         });
       });
 
       context("loadErrorsAsRaw", () => {
+        function bufferWithCorruptResource(): Buffer {
+          const dbpf = getPackage("Trait");
+
+          const stbl = StringTableResource.create({
+            entries: [
+              { key: 1, value: "hi" },
+              { key: 2, value: "bye" }
+            ]
+          });
+
+          const stblBuffer = stbl.buffer;
+          stblBuffer.write("haha ur broken now");
+
+          dbpf.add({
+            type: BinaryResourceType.StringTable,
+            group: 0x80000000,
+            instance: 12345n
+          }, RawResource.from(stblBuffer));
+
+          return dbpf.buffer;
+        }
+
         it("should throw if false and a resource is corrupt", () => {
-          // TODO:
+          expect(() => Package.from(bufferWithCorruptResource())).to.throw();
         });
 
         it("should load a corrupt resource as raw if true", () => {
-          // TODO:
+          const dbpf = Package.from(bufferWithCorruptResource(), {
+            loadErrorsAsRaw: true
+          });
+
+          expect(dbpf.size).to.equal(3);
+          expect(dbpf.get(0).resource.encodingType).to.equal(EncodingType.DATA);
+          expect(dbpf.get(1).resource.encodingType).to.equal(EncodingType.XML);
+          expect(dbpf.get(2).resource.encodingType).to.equal(EncodingType.Unknown);
         });
       });
 
       context("loadRaw", () => {
         it("should load all resources as raw if true", () => {
-          // TODO:
+          const dbpf = Package.from(getBuffer("CompleteTrait"), {
+            loadRaw: true
+          });
+
+          expect(dbpf.size).to.equal(4);
+          dbpf.entries.forEach(entry => {
+            expect(entry.resource.encodingType).to.equal(EncodingType.Unknown);
+          });
         });
 
         it("should load all resources into their models if false", () => {
-          // TODO:
+          const dbpf = Package.from(getBuffer("CompleteTrait"), {
+            loadRaw: false
+          });
+
+          expect(dbpf.size).to.equal(4);
+          expect(dbpf.get(0).resource.encodingType).to.equal(EncodingType.Unknown);
+          expect(dbpf.get(1).resource.encodingType).to.equal(EncodingType.DATA);
+          expect(dbpf.get(2).resource.encodingType).to.equal(EncodingType.XML);
+          expect(dbpf.get(3).resource.encodingType).to.equal(EncodingType.STBL);
         });
       });
     });
