@@ -130,7 +130,46 @@ describe("ResourceEntry", () => {
   });
 
   describe("#saveBuffer", () => {
-    // TODO:
+    it("should be false by default", () => {
+      const dbpf = Package.create();
+      const entry = dbpf.add(getTestKey(), getTestTuning());
+      expect(entry.saveBuffer).to.be.false;
+    });
+
+    it("should delete the buffer if set to false", () => {
+      const dbpf = Package.create({ saveCompressedBuffers: true });
+      const entry = dbpf.add(getTestKey(), getTestTuning());
+      entry.buffer;
+      expect(entry.isCached).to.be.true;
+      entry.saveBuffer = false;
+      expect(entry.isCached).to.be.false;
+    });
+
+    it("should not generate a buffer if set to true", () => {
+      const dbpf = Package.create();
+      const entry = dbpf.add(getTestKey(), getTestTuning());
+      expect(entry.isCached).to.be.false;
+      entry.saveBuffer = true;
+      expect(entry.isCached).to.be.false;
+    });
+
+    it("should cache the buffer after getting it when set to true", () => {
+      const dbpf = Package.create();
+      const entry = dbpf.add(getTestKey(), getTestTuning());
+      expect(entry.isCached).to.be.false;
+      entry.saveBuffer = true;
+      expect(entry.isCached).to.be.false;
+      entry.buffer;
+      expect(entry.isCached).to.be.true;
+    });
+
+    it("should not cache the buffer after getting it when set to false", () => {
+      const dbpf = Package.create();
+      const entry = dbpf.add(getTestKey(), getTestTuning());
+      expect(entry.isCached).to.be.false;
+      entry.buffer;
+      expect(entry.isCached).to.be.false;
+    });
   });
 
   describe("#value", () => {
@@ -461,7 +500,17 @@ describe("ResourceEntry", () => {
   });
 
   describe("#valueEquals()", () => {
-    // TODO:
+    it("should return true when the given resource is equal to the one in this entry", () => {
+      const dbpf = getPackage("Trait");
+      const entry = dbpf.get(1).clone();
+      expect(entry.valueEquals(dbpf.get(1).resource)).to.be.true;
+    });
+
+    it("should return false when the given resource is not equal to the one in this entry", () => {
+      const dbpf = getPackage("Trait");
+      const entry = dbpf.get(1).clone();
+      expect(entry.valueEquals(dbpf.get(0).resource)).to.be.false;
+    });
   });
 
   //#endregion Public Methods
