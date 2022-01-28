@@ -6,6 +6,8 @@ import type Package from "./package";
 import type { ResourceKey } from "./types";
 import WritableModel from "../base/writable-model";
 import { MappedModelEntry } from "../base/mapped-model";
+import { isBigIntInRange, isNumberInRange } from "../common/data-type-helpers";
+import DataType from "../enums/data-type";
 
 /**
  * An entry for a resource in a package file. This entry has a key and handles
@@ -67,11 +69,11 @@ export default class ResourceEntry extends WritableModel implements MappedModelE
   }
 
   validate(): void {
-    if (this.key.type < 0 || this.key.type > 0xFFFFFFFF)
+    if (!isNumberInRange(this.key.type, DataType.UInt32))
       throw new Error(`Expected type to be a UInt32, got ${this.key.type}`);
-    if (this.key.group < 0 || this.key.group > 0xFFFFFFFF)
+    if (!isNumberInRange(this.key.group, DataType.UInt32))
       throw new Error(`Expected group to be a UInt32, got ${this.key.group}`);
-    if (this.key.instance < 0n || this.key.instance > 0xFFFFFFFFFFFFFFFFn)
+    if (!isBigIntInRange(this.key.instance, DataType.UInt64))
       throw new Error(`Expected instance to be a UInt64, got ${this.key.instance}`);
     this.value.validate();
   }

@@ -1,5 +1,7 @@
 import type StringTableResource from "./stbl-resource";
 import { PrimitiveEntry } from "../../base/primitive-mapped-model";
+import { isNumberInRange } from "../../common/data-type-helpers";
+import DataType from "../../enums/data-type";
 
 /**
  * An entry in a StringTableResource.
@@ -21,7 +23,7 @@ export default class StringEntry extends PrimitiveEntry<string> {
   }
 
   validate(): void {
-    if (Number.isNaN(this.key) || this.key < 0 || this.key > 0xFFFFFFFF)
+    if (!isNumberInRange(this.key, DataType.UInt32))
       throw new Error(`Expected string entry's key to be a UInt32, got ${this.key}`);
   }
 }

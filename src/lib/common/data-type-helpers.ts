@@ -111,7 +111,7 @@ export function parseSims4StudioName(name: string): DataType {
  * @param dataType Data type to determine range for
  */
 export function isNumberInRange(value: number, dataType: SimDataNumber): boolean {
-  if (value == undefined) return false;
+  if (value == undefined || Number.isNaN(value)) return false;
 
   switch (dataType) {
     case DataType.Int8:
