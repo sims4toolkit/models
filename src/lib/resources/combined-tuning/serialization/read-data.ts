@@ -6,7 +6,6 @@
 */
 
 import { BinaryDecoder } from "@s4tk/encoding";
-import { getAlignment } from "../../../common/data-type-helpers";
 import { makeList } from "../../../common/helpers";
 import { FileReadingOptions } from "../../../common/options";
 import DataType from "../../../enums/data-type";
@@ -314,7 +313,7 @@ export default function readData(buffer: Buffer, options?: FileReadingOptions): 
         // data type.
         if (mTable[i].mnSchemaOffset === RELOFFSET_NULL) {
           tableData.mValue.push(readDataType(mTable[i].mnDataType));
-          alignment = getAlignment(mTable[i].mnDataType);
+          alignment = DataType.getAlignment(mTable[i].mnDataType);
         } else {
           schemaIndex = getSchemaIndex(mTable[i].startof_mnSchemaOffset + mTable[i].mnSchemaOffset);
           function structRow(): Row {
@@ -325,7 +324,7 @@ export default function readData(buffer: Buffer, options?: FileReadingOptions): 
               schemaColumnName = readNamed(mSchema[schemaIndex].mColumn[k]);
               decoder.seek(rowStart + mSchema[schemaIndex].mColumn[k].mnOffset);
               row[schemaColumnName] = readDataType(mSchema[schemaIndex].mColumn[k].mnDataType);
-              columnAlignment = getAlignment(mTable[i].mnDataType);
+              columnAlignment = DataType.getAlignment(mTable[i].mnDataType);
               if (columnAlignment > alignment)
                 alignment = columnAlignment;
             }

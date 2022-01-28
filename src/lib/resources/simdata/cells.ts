@@ -1,14 +1,13 @@
 import type { BinaryDecoder, BinaryEncoder } from "@s4tk/encoding";
 import type { SimDataSchema } from "./fragments";
-import type { SimDataNumber, SimDataBigInt, SimDataText, SimDataFloatVector } from "./types";
 import { XmlElementNode, XmlNode, XmlValueNode } from "@s4tk/xml-dom";
+import DataType from "../../enums/data-type";
+import type { SimDataNumber, SimDataBigInt, SimDataText, SimDataFloatVector } from "../../enums/data-type";
 import { formatAsHexString } from "@s4tk/hashing/formatting";
 import { fnv32 } from "@s4tk/hashing";
 import { CellCloneOptions, CellEncodingOptions, CellToXmlOptions, ObjectCellRow } from "./types";
 import ApiModelBase from "../../base/api-model";
 import { arraysAreEqual, removeFromArray } from "../../common/helpers";
-import DataType from "../../enums/data-type";
-import { getSims4StudioName, isBigIntInRange, isNumberInRange, parseNumber, parseSims4StudioName } from "../../common/data-type-helpers";
 
 type PrimitiveType = boolean | number | bigint | string;
 
@@ -110,7 +109,7 @@ export abstract class Cell extends ApiModelBase {
     const attributes: { [key: string]: any; } = {};
     if (nameAttr !== undefined) attributes.name = nameAttr;
     if (typeAttr)
-      attributes.type = getSims4StudioName(this.dataType);
+      attributes.type = DataType.getSims4StudioName(this.dataType);
     return attributes;
   }
 
@@ -261,7 +260,7 @@ abstract class FloatVectorCell extends Cell {
 
   validate(): void {
     this._floatNames.forEach(floatName => {
-      if (!isNumberInRange(this[floatName], DataType.Float)) {
+      if (!DataType.isNumberInRange(this[floatName], DataType.Float)) {
         throw new Error(`Float vector contains a value that is not a 4-byte float: ${this[floatName]}`);
       }
     });
@@ -491,7 +490,7 @@ export class NumberCell extends PrimitiveValueCell<number> {
   }
 
   validate(): void {
-    if (!isNumberInRange(this.value, this.dataType)) {
+    if (!DataType.isNumberInRange(this.value, this.dataType)) {
       throw new Error(`Value of ${this.value} is not within the range of ${this.dataType}.`);
     }
   }
@@ -547,7 +546,7 @@ export class NumberCell extends PrimitiveValueCell<number> {
    * @param node Node to parse as a NumberCell
    */
   static fromXmlNode(dataType: SimDataNumber, node: XmlNode): NumberCell {
-    const value = parseNumber(node.innerValue, dataType);
+    const value = DataType.parseNumber(node.innerValue, dataType);
     
     if (Number.isNaN(value)) {
       throw new Error(`Expected NumberCell to contain a number, but got "${node.innerValue}".`);
@@ -599,7 +598,7 @@ export class BigIntCell extends PrimitiveValueCell<bigint> {
   }
 
   validate(): void {
-    if (!isBigIntInRange(this.value, this.dataType)) {
+    if (!DataType.isBigIntInRange(this.value, this.dataType)) {
       throw new Error(`Value of ${this.value} is not within the range of ${this.dataType}.`);
     }
   }
@@ -708,11 +707,11 @@ export class ResourceKeyCell extends Cell {
   }
 
   validate(): void {
-    if (!isNumberInRange(this.type, DataType.UInt32))
+    if (!DataType.isNumberInRange(this.type, DataType.UInt32))
       throw new Error(`ResourceKeyCell's type is not a UInt32: ${this.type}`);
-    if (!isNumberInRange(this.group, DataType.UInt32))
+    if (!DataType.isNumberInRange(this.group, DataType.UInt32))
       throw new Error(`ResourceKeyCell's group is not a UInt32: ${this.group}`);
-    if (!isBigIntInRange(this.instance, DataType.TableSetReference))
+    if (!DataType.isBigIntInRange(this.instance, DataType.TableSetReference))
       throw new Error(`ResourceKeyCell's instance is not a UInt64: ${this.instance}`);
   }
 
@@ -1214,13 +1213,13 @@ export class VectorCell<T extends Cell = Cell> extends MultiValueCell {
       return VectorCell.getDefault();
     } else {
       const rawType = node.child.attributes.type;
-      const childType = parseSims4StudioName(rawType);
+      const childType = DataType.parseSims4StudioName(rawType);
       if (childType === undefined)
         throw new Error(`'${rawType}' is not a valid value for the 'type' attribute.`);
       
       const children = node.children.map(childNode => {
         const { type } = childNode.attributes;
-        const thisChildType = parseSims4StudioName(type);
+        const thisChildType = DataType.parseSims4StudioName(type);
         if (thisChildType !== childType)
           throw new Error(`Vector children have mis-matched types: ${childType} ≠ ${thisChildType}`);
         return Cell.parseXmlNode(childType, childNode, schemas);
@@ -1316,7 +1315,7 @@ export class VariantCell<T extends Cell = Cell> extends Cell {
   }
 
   validate({ ignoreCache = false } = {}): void {
-    if (!isNumberInRange(this.typeHash, DataType.UInt32))
+    if (!DataType.isNumberInRange(this.typeHash, DataType.UInt32))
       throw new Error(`Expected variant's type hash to be a UInt32, but got ${this.typeHash}`);
 
     if (this.child) {      
@@ -1350,7 +1349,7 @@ export class VariantCell<T extends Cell = Cell> extends Cell {
       return new VariantCell<U>(typeHash, child as unknown as U);
     } else {
       if (node.child) {
-        const childType = parseSims4StudioName(node.child.attributes.type);
+        const childType = DataType.parseSims4StudioName(node.child.attributes.type);
         if (childType === undefined)
           throw new Error(`'${childType}' is not a valid value for the 'type' attribute.`);
         const child = Cell.parseXmlNode(childType, node.child, schemas);

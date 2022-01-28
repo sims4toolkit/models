@@ -6,7 +6,6 @@ import { ObjectCell } from "./cells";
 import ApiModelBase from "../../base/api-model";
 import { arraysAreEqual, removeFromArray } from "../../common/helpers";
 import DataType from "../../enums/data-type";
-import { getSims4StudioName, parseSims4StudioName } from "../../common/data-type-helpers";
 
 /**
  * A schema that objects in a SimData can follow.
@@ -165,7 +164,7 @@ export class SimDataSchemaColumn extends ApiModelBase {
       tag: "Column",
       attributes: {
         name: this.name,
-        type: getSims4StudioName(this.type),
+        type: DataType.getSims4StudioName(this.type),
         flags: formatAsHexString(this.flags, 8, true)
       }
     });
@@ -183,7 +182,7 @@ export class SimDataSchemaColumn extends ApiModelBase {
       throw new Error(`Expected <Column> to have a 'name' attribute.`);
     if (!node.attributes.type)
       throw new Error(`Expected <Column> to have a 'type' attribute.`);
-    const type = parseSims4StudioName(node.attributes.type);
+    const type = DataType.parseSims4StudioName(node.attributes.type);
     if (!node.attributes.flags)
       throw new Error(`Expected <Column> to have a 'flags' attribute.`);
     const flags = parseNodeAttrAsNumber(node, 'flags');
@@ -221,7 +220,7 @@ export class SimDataInstance extends ObjectCell {
       attributes: {
         name: this.name,
         schema: this.schema.name,
-        type: getSims4StudioName(this.dataType)
+        type: DataType.getSims4StudioName(this.dataType)
       },
       children: this.schema.columns.map(column => {
         return this.row[column.name].toXmlNode({ nameAttr: column.name });

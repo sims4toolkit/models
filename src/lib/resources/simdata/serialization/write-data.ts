@@ -5,7 +5,6 @@ import { SimDataDto, CellEncodingOptions } from "../types";
 import { HEADER_SIZE, TABLE_HEADER_OFFSET, RELOFFSET_NULL, NO_NAME_HASH, SUPPORTED_VERSION } from "../constants";
 import * as cells from "../cells";
 import DataType from "../../../enums/data-type";
-import { getAlignment, getBytes } from "../../../common/data-type-helpers";
 
 // NOTE: there could potentially be an issue with padding when writing booleans,
 // for an example use the scenario role that chip sent
@@ -179,8 +178,8 @@ export default function writeData(model: SimDataDto): Buffer {
     columns.forEach(column => {
       schemaSectionSize += 20; // size of column header
       column.offset = size;
-      size += getBytes(column.dataType);
-      size += getPaddingForAlignment(size, getAlignment(column.dataType) - 1);
+      size += DataType.getBytes(column.dataType);
+      size += getPaddingForAlignment(size, DataType.getAlignment(column.dataType) - 1);
     });
 
     const serialSchema = {
@@ -441,9 +440,9 @@ export default function writeData(model: SimDataDto): Buffer {
     const rawTablePositions: { [key: number]: number; } = {};
     rawTables.forEach(table => {
       totalSize += getPaddingForAlignment(totalSize, 15);
-      totalSize += getPaddingForAlignment(totalSize, getAlignment(table.dataType) - 1);
+      totalSize += getPaddingForAlignment(totalSize, DataType.getAlignment(table.dataType) - 1);
       rawTablePositions[table.dataType] = totalSize;
-      totalSize += getBytes(table.dataType) * table.row.length;
+      totalSize += DataType.getBytes(table.dataType) * table.row.length;
     });
 
     if (hasCharTable) {
@@ -478,7 +477,7 @@ export default function writeData(model: SimDataDto): Buffer {
         offset = serialSchemaMap[ref.schemaHash].size * ref.index;
       } else {
         pos = rawTablePositions[ref.dataType];
-        offset = getBytes(ref.dataType) * ref.index;
+        offset = DataType.getBytes(ref.dataType) * ref.index;
       }
 
       return pos + offset - encoder.tell();
@@ -531,7 +530,7 @@ export default function writeData(model: SimDataDto): Buffer {
       encoder.uint32(NO_NAME_HASH);
       encoder.int32(RELOFFSET_NULL);
       encoder.uint32(table.dataType);
-      encoder.uint32(getBytes(table.dataType));
+      encoder.uint32(DataType.getBytes(table.dataType));
       const tableOffset = rawTablePositions[table.dataType];
       encoder.int32(tableOffset - encoder.tell());
       encoder.uint32(table.row.length);

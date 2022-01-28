@@ -1,11 +1,11 @@
 import type { FileReadingOptions } from "../../../common/options";
-import type { ObjectCellRow, SimDataDto, SimDataRecursiveType } from "../types";
+import type { ObjectCellRow, SimDataDto } from "../types";
 import { BinaryDecoder } from "@s4tk/encoding";
 import { makeList } from "../../../common/helpers";
 import { SimDataSchema, SimDataSchemaColumn, SimDataInstance } from "../fragments";
 import * as cells from "../cells";
 import { RELOFFSET_NULL } from "../constants";
-import DataType from "../../../enums/data-type";
+import DataType, { SimDataRecursiveType } from "../../../enums/data-type";
 
 //#region Interfaces
 
