@@ -913,7 +913,19 @@ describe("Package", () => {
     });
   });
 
-  // TODO: getByValue()
+  describe("#getByValue()", () => {
+    it("should return undefined if no resources equal the one given", () => {
+      const dbpf = getPackage("CompleteTrait");
+      expect(dbpf.getByValue(getTestTuning())).to.be.undefined;
+    });
+
+    it("should be the entry that has an equal resource", () => {
+      const dbpf = getPackage("CompleteTrait");
+      dbpf.add(getTestKey(), getTestTuning());
+      const id = dbpf.getIdForKey(dbpf.getByValue(getTestTuning()).key);
+      expect(id).to.equal(4);
+    });
+  });
 
   describe("#getIdForKey()", () => {
     it("should return the ID for the given key", () => {
@@ -1063,7 +1075,18 @@ describe("Package", () => {
     });
   });
 
-  // TODO: hasValue()
+  describe("#hasValue()", () => {
+    it("should return false if no resources equal the one given", () => {
+      const dbpf = getPackage("CompleteTrait");
+      expect(dbpf.hasValue(getTestTuning())).to.be.false;
+    });
+
+    it("should return true if there is a resource that is equal", () => {
+      const dbpf = getPackage("CompleteTrait");
+      dbpf.add(getTestKey(), getTestTuning());
+      expect(dbpf.hasValue(getTestTuning())).to.be.true;
+    });
+  });
 
   describe("#resetEntries()", () => {
     it("should force the entries to make a new list", () => {
