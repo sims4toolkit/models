@@ -22,5 +22,17 @@ enum StringTableLocale {
   Swedish = 0x15,
 }
 
+namespace StringTableLocale {
+  /**
+   * Sets the high byte on the instance to the value for the given locale.
+   * 
+   * @param locale Locale to set on instance
+   * @param instance Instance to set locale for
+   */
+  export function setHighByte(locale: StringTableLocale, instance: bigint): bigint {
+   return (instance & 0x00FFFFFFFFFFFFFFn) | BigInt(locale) << 56n;
+  }
+}
+
 // `export default enum` not supported by TS
 export default StringTableLocale;
