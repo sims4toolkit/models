@@ -439,6 +439,25 @@ describe("#LocString()", function() {
     expect(stbl.entries[2].value).to.equal('Third');
   });
 
+  it("should re-use an existing string entry if the string is the same", () => {
+    const stbl = StringTableResource.create();
+
+    const node = L({
+      children: [
+        LocString({ string: 'Hi', stbl }),
+        LocString({ string: 'Bye', stbl }),
+        LocString({ string: 'Hi', stbl }),
+      ]
+    });
+
+    expect(stbl.size).to.equal(2);
+    expect(stbl.entries[0].value).to.equal('Hi');
+    expect(stbl.entries[1].value).to.equal('Bye');
+
+    expect(node.numChildren).to.equal(3);
+    expect(node.children[0].innerValue).to.equal(node.children[2].innerValue);
+  });
+
   it('should hash the string if no alternative is given', function() {
     const stbl = StringTableResource.create();
     const string = "Some String";

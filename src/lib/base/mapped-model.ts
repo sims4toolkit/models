@@ -59,6 +59,11 @@ export abstract class MappedModel<Key, Value, Entry extends MappedModelEntry<Key
    * Creates a new entry with the given key and value, adds it to this model,
    * and returns it.
    * 
+   * To ensure that values are not duplicated, consider using the following:
+   * ```ts
+   * model.getByValue(valueToAdd) ?? model.add(valueToAdd)
+   * ```
+   * 
    * @param key Key of entry
    * @param value Value of entry
    * @returns The entry object that was created
@@ -79,6 +84,11 @@ export abstract class MappedModel<Key, Value, Entry extends MappedModelEntry<Key
   /**
    * Creates new entries for the given key/value pairs, adds them to this model,
    * and returns them in an array.
+   * 
+   * To ensure that values are not duplicated, consider using the following:
+   * ```ts
+   * model.addAll(entries.filter(entry => !model.hasValue(entry.value)))
+   * ```
    * 
    * @param entries List of objects to add as entries
    * @returns An array of the entries that were created

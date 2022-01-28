@@ -214,7 +214,7 @@ export function LocString({ name, string, toHash, stbl }: {
   toHash?: string;
   stbl: StringTableResource;
 }): XmlElementNode {
-  const entry = stbl.addAndHash(string, toHash);
+  const entry = stbl.getByValue(string) ?? stbl.addAndHash(string, toHash);
   return T({
     name,
     value: formatStringKey(entry.key),

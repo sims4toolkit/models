@@ -61,6 +61,11 @@ export default class StringTableResource extends PrimitiveMappedModel<string, St
    * and returns it. If `toHash` is supplied, it will be hashed for the key. If
    * not, then the string itself will be hashed.
    * 
+   * To ensure that strings are not duplicated, consider using the following:
+   * ```ts
+   * stbl.getByValue(stringToAdd) ?? stbl.addAndHash(stringToAdd)
+   * ```
+   * 
    * @param value String to add to table
    * @param toHash Optional string to hash for the key
    * @returns The entry object that was created
