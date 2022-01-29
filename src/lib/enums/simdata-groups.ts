@@ -5,6 +5,7 @@ import TuningResourceType from "./tuning-resources";
  */
 enum SimDataGroup {
   Achievement = 0x00559EE6,
+  AchievementCategory = 0x0051C125,
   AchievementCollection = 0x00D2B461,
   Aspiration = 0x00B6465D,
   AspirationCategory = 0x0050DB3B,

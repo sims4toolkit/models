@@ -2,9 +2,9 @@
  * Types for tuning resources (i.e. any XML resource that is loaded as tuning).
  */
 enum TuningResourceType {
+  Achievement = 0x78559E9E,
   AchievementCategory = 0x2451C101,
   AchievementCollection = 0x04D2B465,
-  Achievement = 0x78559E9E,
   Action = 0x0C772E27,
   Animation = 0xEE17C6AD,
   AspirationCategory = 0xE350DBD8,
@@ -81,7 +81,7 @@ enum TuningResourceType {
   Scommodity = 0x51077643,
   Statistic = 0x339BC5BD,
   Strategy = 0x6224C9D6,
-  Street = 0x03B33DDF, // apparently same as Casoccultskintonetuning...
+  Street = 0x03B33DDF, // apparently same as CasOccultSkintoneTuning...
   Subroot = 0xB7FF8F95,
   TagSet = 0x49395302,
   TemplateChooser = 0x48C2D5ED,
