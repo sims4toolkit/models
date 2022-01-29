@@ -2,7 +2,7 @@ import type Resource from "../resources/resource";
 import type { ResourceKey, ResourceKeyPair } from "./types";
 import type { FileReadingOptions } from "../common/options";
 import { MappedModel } from "../base/mapped-model";
-import { arraysAreEqual } from "../common/helpers";
+import { arraysAreEqual, promisify } from "../common/helpers";
 import readDbpf from "./serialization/read-dbpf";
 import writeDbpf from "./serialization/write-dbpf";
 import ResourceEntry from "./resource-entry";
@@ -97,6 +97,26 @@ export default class Package extends MappedModel<ResourceKey, Resource, Resource
   }
 
   /**
+   * Reads the given buffer as a Package asynchronously, and returns a Promise
+   * that resolves with its entries in an array.
+   * 
+   * If extracting resources to write them to disk, consider these options:
+   * - Set `loadRaw: true`, so that resources are loaded as buffers only rather
+   * than being parsed into models.
+   * - If you cannot use `loadRaw` because you need to parse the resources into
+   * models, set `saveBuffer: true` so that they can be written without needing
+   * to re-serialize the model.
+   * - Consider using `resourceFilter` to determine which resources should be
+   * extracted, according to their type, group, and/or instance.
+   * 
+   * @param buffer Buffer to extract resources from
+   * @param options Options for reading and cacheing the resources
+   */
+  static extractResourcesAsync(buffer: Buffer, options?: FileReadingOptions): Promise<ResourceKeyPair[]> {
+    return promisify(() => Package.extractResources(buffer, options));
+  }
+
+  /**
    * Reads the given buffer as a Package.
    * 
    * @param buffer Buffer to read as a package
@@ -108,6 +128,17 @@ export default class Package extends MappedModel<ResourceKey, Resource, Resource
       options?.saveCompressedBuffer,
       options?.saveBuffer
     );
+  }
+
+  /**
+   * Reads the given buffer as a Package asynchronously, and returns a Promise
+   * that resolves with it.
+   * 
+   * @param buffer Buffer to read as a package
+   * @param options Options for reading and cacheing the resources
+   */
+  static fromAsync(buffer: Buffer, options?: FileReadingOptions): Promise<Package> {
+    return promisify(() => Package.from(buffer, options));
   }
 
   //#endregion Initialization

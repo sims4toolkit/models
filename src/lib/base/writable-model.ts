@@ -1,3 +1,4 @@
+import { promisify } from '../common/helpers';
 import ApiModelBase from './api-model';
 
 /**
@@ -41,6 +42,15 @@ export default abstract class WritableModel extends ApiModelBase {
     super(owner);
     this._saveBuffer = saveBuffer;
     if (saveBuffer) this._buffer = buffer;
+  }
+
+  /**
+   * Generates the buffer for this model asynchronously, and returns a Promise
+   * that resolves with it. To get the buffer synchronously, just access the
+   * `buffer` property.
+   */
+  getBufferAsync(): Promise<Buffer> {
+    return promisify(() => this.buffer);
   }
 
   onChange() {

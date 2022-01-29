@@ -2,7 +2,7 @@ import type { KeyStringPair } from "./types";
 import { fnv32 } from "@s4tk/hashing";
 import { PrimitiveMappedModel } from "../../base/primitive-mapped-model";
 import Resource from "../resource";
-import { arraysAreEqual } from "../../common/helpers";
+import { arraysAreEqual, promisify } from "../../common/helpers";
 import { FileReadingOptions } from "../../common/options";
 import readStbl from "./serialization/read-stbl";
 import writeStbl from "./serialization/write-stbl";
@@ -39,7 +39,7 @@ export default class StringTableResource extends PrimitiveMappedModel<string, St
   }
 
   /**
-   * Reads the given buffer as a StringTableResource instance and returns it.
+   * Reads the given buffer as a StringTableResource and returns it.
    * 
    * @param buffer Buffer to read as a string table
    * @param options Options for reading and cacheing the STBL
@@ -50,6 +50,17 @@ export default class StringTableResource extends PrimitiveMappedModel<string, St
       options?.saveBuffer,
       buffer
     );
+  }
+
+  /**
+   * Reads the given buffer as a StringTableResource asynchronously and returns
+   * a Promise that resolves with it.
+   * 
+   * @param buffer Buffer to read as a string table
+   * @param options Options for reading and cacheing the STBL
+   */
+  static fromAsync(buffer: Buffer, options?: FileReadingOptions): Promise<StringTableResource> {
+    return promisify(() => StringTableResource.from(buffer, options));
   }
 
   //#endregion Initialization

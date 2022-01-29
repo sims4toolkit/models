@@ -63,3 +63,19 @@ export function arraysAreEqual(arr1: Equalable[], arr2: any[]): boolean {
 export function bufferContainsXml(buffer: Buffer): boolean {
   return buffer.length >= 5 && buffer.slice(0, 5).toString('utf-8') === '<?xml';
 }
+
+/**
+ * Returns a Promise that resolves with the result of the given function.
+ * 
+ * @param fn Function that returns the object to be wrapped in a Promise
+ */
+export function promisify<T>(fn: () => T): Promise<T> {
+  return new Promise((resolve, reject) => {
+    try {
+      const result = fn();
+      resolve(result);
+    } catch(e) {
+      reject(e);
+    }
+  });
+}

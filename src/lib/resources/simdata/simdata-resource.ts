@@ -2,7 +2,7 @@ import type { FileReadingOptions } from "../../common/options";
 import { XmlDocumentNode, XmlElementNode, XmlNode } from "@s4tk/xml-dom";
 import { formatAsHexString } from "@s4tk/hashing/formatting";
 import Resource from "../resource";
-import { arraysAreEqual, removeFromArray } from "../../common/helpers";
+import { arraysAreEqual, promisify, removeFromArray } from "../../common/helpers";
 import { SimDataInstance, SimDataSchema } from "./fragments";
 import { SimDataDto } from "./types";
 import { SUPPORTED_VERSION } from "./constants";
@@ -130,6 +130,17 @@ export default class SimDataResource extends WritableModel implements Resource, 
   }
 
   /**
+   * Creates a new SimDataResource asynchronously from a buffer containing a
+   * binary DATA file. Returns a Promise that resolves with the SimDataResource.
+   * 
+   * @param buffer Buffer to read
+   * @param options Options for reading and cacheing the SimData
+   */
+  static fromAsync(buffer: Buffer, options?: FileReadingOptions): Promise<SimDataResource> {
+    return promisify(() => SimDataResource.from(buffer, options));
+  }
+
+  /**
    * Creates a SimDataResource from S4S-style XML.
    * 
    * @param xml XML string or buffer to parse as a SimData
@@ -137,7 +148,20 @@ export default class SimDataResource extends WritableModel implements Resource, 
    * @throws If the given XML could not be parsed as a SimData
    */
   static fromXml(xml: string | Buffer, options?: FileReadingOptions): SimDataResource {
-    return this.fromXmlDocument(XmlDocumentNode.from(xml, { ignoreComments: true }), options);
+    return SimDataResource.fromXmlDocument(XmlDocumentNode.from(xml, {
+      ignoreComments: true
+    }), options);
+  }
+
+  /**
+   * Creates a SimDataResource asynchronously from S4S-style XML. Returns a
+   * Promise that resolves with the SimDataResource.
+   * 
+   * @param xml XML string or buffer to parse as a SimData
+   * @param options Options for reading and cacheing the SimData
+   */
+  static fromXmlAsync(xml: string | Buffer, options?: FileReadingOptions): Promise<SimDataResource> {
+    return promisify(() => SimDataResource.fromXml(xml, options));
   }
 
   /**
@@ -172,6 +196,18 @@ export default class SimDataResource extends WritableModel implements Resource, 
     });
 
     return new SimDataResource(version, unused, schemas, instances, options?.saveBuffer);
+  }
+
+  /**
+   * Creates a SimDataResource asynchronously from an S4S-style XML document.
+   * Returns a Promise that resolves with the SimDataResource.
+   * 
+   * @param dom XML document from which to parse SimData
+   * @param options Options for reading and cacheing the SimData
+   * @throws If the given XML document could not be parsed as a SimData
+   */
+  static fromXmlDocumentAsync(doc: XmlDocumentNode, options?: FileReadingOptions): Promise<SimDataResource> {
+    return promisify(() => SimDataResource.fromXmlDocument(doc, options));
   }
 
   //#endregion Initialization

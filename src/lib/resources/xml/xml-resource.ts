@@ -3,6 +3,7 @@ import WritableModel from "../../base/writable-model";
 import Resource from "../resource";
 import EncodingType from "../../enums/encoding-type";
 import { FileReadingOptions } from "../../common/options";
+import { promisify } from "../../common/helpers";
 
 /**
  * Model for a plain text, XML resource. This does not necessarily need to be
@@ -112,6 +113,17 @@ export default class XmlResource extends WritableModel implements Resource {
       options?.saveBuffer,
       buffer
     );
+  }
+
+  /**
+   * Creates an XML resource asynchronously from a buffer containing XML, and
+   * returns a Promise that resolves with it.
+   * 
+   * @param buffer Buffer to create an XML resource from
+   * @param options Options for reading and cacheing the XML resource
+   */
+  static fromAsync(buffer: Buffer, options?: FileReadingOptions): Promise<XmlResource> {
+    return promisify(() => XmlResource.from(buffer, options));
   }
 
   //#endregion Initialization
