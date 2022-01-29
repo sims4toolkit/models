@@ -32,6 +32,15 @@ namespace StringTableLocale {
   export function setHighByte(locale: StringTableLocale, instance: bigint): bigint {
    return (instance & 0x00FFFFFFFFFFFFFFn) | BigInt(locale) << 56n;
   }
+
+  /**
+   * Determines and returns the locale for the given instance ID.
+   * 
+   * @param instance Instance to get locale from
+   */
+  export function getLocale(instance: bigint): StringTableLocale {
+    return Number(instance >> 56n);
+  }
 }
 
 // `export default enum` not supported by TS

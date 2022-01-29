@@ -39,4 +39,21 @@ describe("StringTableLocale", () => {
       expect(inst).to.equal(0x1322A82C94D66CD3n);
     });
   });
+
+  describe("#getLocale()", () => {
+    it("should return English when high byte is 0x00", () => {
+      const locale = StringTableLocale.getLocale(0x0022A82C94D66CD3n);
+      expect(locale).to.equal(StringTableLocale.English);
+    });
+
+    it("should return Italian when high byte is 0x0B", () => {
+      const locale = StringTableLocale.getLocale(0x0B22A82C94D66CD3n);
+      expect(locale).to.equal(StringTableLocale.Italian);
+    });
+
+    it("should return Spanish when high byte is 0x13", () => {
+      const locale = StringTableLocale.getLocale(0x1322A82C94D66CD3n);
+      expect(locale).to.equal(StringTableLocale.Spanish);
+    });
+  });
 });
