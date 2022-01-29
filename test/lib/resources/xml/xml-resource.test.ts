@@ -1,9 +1,8 @@
 import * as fs from "fs";
 import * as path from "path";
 import { expect } from "chai";
-import { XmlDocumentNode } from "@s4tk/xml-dom";
+import { XmlDocumentNode, XmlElementNode, XmlValueNode } from "@s4tk/xml-dom";
 import { XmlResource } from '../../../../dst/models';
-import * as tunables from "../../../../dst/tunables";
 import { EncodingType } from "../../../../dst/enums";
 
 const XML_DECLARATION = '<?xml version="1.0" encoding="utf-8"?>';
@@ -170,7 +169,12 @@ describe('XmlResource', function() {
       it("should update the first child of the DOM", function() {
         const dom = XmlDocumentNode.from("<T>50</T>");
         const tun = XmlResource.create({ dom });
-        tun.root = tunables.E({ value: "VALUE" });
+        tun.root = new XmlElementNode({
+          tag: "E",
+          children: [
+            new XmlValueNode("VALUE")
+          ]
+        });
         expect(dom.child.tag).to.equal("E");
         expect(dom.child.innerValue).to.equal("VALUE");
       });
@@ -178,7 +182,12 @@ describe('XmlResource', function() {
       it("should uncache the buffer", function() {
         const tun = XmlResource.from(Buffer.from("<T>50</T>"), { saveBuffer: true });
         expect(tun.isCached).to.be.true;
-        tun.root = tunables.E({ value: "VALUE" });
+        tun.root = new XmlElementNode({
+          tag: "E",
+          children: [
+            new XmlValueNode("VALUE")
+          ]
+        });
         expect(tun.isCached).to.be.false;
       });
 
@@ -186,7 +195,12 @@ describe('XmlResource', function() {
         const dom = XmlDocumentNode.from("<T>50</T>");
         const tun = XmlResource.create({ dom });
         expect(tun.content).to.equal(`${XML_DECLARATION}\n<T>50</T>`);
-        tun.root = tunables.E({ value: "VALUE" });
+        tun.root = new XmlElementNode({
+          tag: "E",
+          children: [
+            new XmlValueNode("VALUE")
+          ]
+        });
         expect(tun.content).to.equal(`${XML_DECLARATION}\n<E>VALUE</E>`);
       });
     });
