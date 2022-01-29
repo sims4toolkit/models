@@ -332,6 +332,21 @@ describe("StringTableResource", () => {
     });
   });
 
+  describe("static#fromAsync()", () => {
+    it("should return a resource in a promise", () => {
+      return StringTableResource.fromAsync(getBuffer("Normal")).then(stbl => {
+        expect(stbl).to.be.instanceOf(StringTableResource);
+        expect(stbl.size).to.equal(3);
+      });
+    });
+
+    it("should reject if resource is invalid", () => {
+      return StringTableResource.fromAsync(getBuffer("Corrupt")).then().catch(err => {
+        expect(err).to.be.instanceOf(Error);
+      });
+    });
+  });
+
   //#endregion Initialization
 
   //#region Methods

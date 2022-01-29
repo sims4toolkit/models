@@ -283,6 +283,20 @@ describe("Package", () => {
     });
   });
 
+  describe("static#extractResourcesAsync()", () => {
+    it("should return entries in a promise", () => {
+      return Package.extractResourcesAsync(getBuffer("CompleteTrait")).then(entries => {
+        expect(entries).to.be.an('Array').with.lengthOf(4);
+      });
+    });
+
+    it("should reject the promise if there's an error", () => {
+      return Package.extractResourcesAsync(getBuffer("Corrupt")).then().catch(err => {
+        expect(err).to.be.instanceOf(Error);
+      });
+    });
+  });
+
   describe("static#from()", () => {
     context("dbpf is valid", () => {
       it("should read empty dbpf", () => {
@@ -527,6 +541,21 @@ describe("Package", () => {
           expect(dbpf.get(2).resource.encodingType).to.equal(EncodingType.XML);
           expect(dbpf.get(3).resource.encodingType).to.equal(EncodingType.STBL);
         });
+      });
+    });
+  });
+
+  describe("static#fromAsync()", () => {
+    it("should return a package in a promise", () => {
+      return Package.fromAsync(getBuffer("CompleteTrait")).then(dbpf => {
+        expect(dbpf).to.be.instanceOf(Package);
+        expect(dbpf.size).to.equal(4);
+      });
+    });
+
+    it("should reject the promise if there's an error", () => {
+      return Package.fromAsync(getBuffer("Corrupt")).then().catch(err => {
+        expect(err).to.be.instanceOf(Error);
       });
     });
   });

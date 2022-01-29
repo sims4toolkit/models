@@ -459,6 +459,15 @@ describe('XmlResource', function() {
     });
   });
 
+  describe("static#fromAsync()", () => {
+    it("should return a resource in a promise", () => {
+      return XmlResource.fromAsync(getBuffer("ExampleTrait")).then(tuning => {
+        expect(tuning).to.be.instanceOf(XmlResource);
+        expect(tuning.encodingType).to.equal(EncodingType.XML);
+      });
+    });
+  });
+
   //#endregion Initialization
 
   //#region Methods

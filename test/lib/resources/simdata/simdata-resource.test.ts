@@ -688,6 +688,21 @@ describe("SimDataResource", () => {
     });
   });
 
+  describe("static#fromAsync()", () => {
+    it("should return a resource in a promise", () => {
+      return SimDataResource.fromAsync(getBuffer("trait.simdata")).then(simdata => {
+        expect(simdata).to.be.instanceOf(SimDataResource);
+        expect(simdata.schema.name).to.equal("Trait");
+      });
+    });
+
+    it("should reject if resource is invalid", () => {
+      return SimDataResource.fromAsync(getBuffer("corrupt_header.simdata")).then().catch(err => {
+        expect(err).to.be.instanceOf(Error);
+      });
+    });
+  });
+
   describe("static#fromXml()", () => {
     function testXmlSimData(args: SimDataTestArgs) {
       const simdata = SimDataResource.fromXml(getBuffer(`${args.filename}.xml`));
@@ -868,10 +883,18 @@ describe("SimDataResource", () => {
     });
   });
 
-  describe("static#fromXmlDocument()", () => {
-    // fromXml() uses this function for everything but parsing the string as an
-    // XML document, so tests for it are tests for this
+  describe("static#fromXmlAsync()", () => {
+    it("should return a resource in a promise", () => {
+      return SimDataResource.fromXmlAsync(getBuffer("trait.xml")).then(simdata => {
+        expect(simdata).to.be.instanceOf(SimDataResource);
+        expect(simdata.schema.name).to.equal("Trait");
+      });
+    });
   });
+
+  // fromXmlDocument() is tested by fromXml()
+
+  // fromXmlDocumentAsync() is tested by fromXmlAsync()
 
   //#endregion Initialization
 
