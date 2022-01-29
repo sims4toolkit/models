@@ -10,10 +10,7 @@
   "bugs": {
     "url": "https://github.com/sims4toolkit/models/issues"
   },
-  "main": "dst/models.js",
-  "files": [
-    "dst/"
-  ],
+  "main": "./models.js",
   "scripts": {
     "clean": "rm -rf ./dst/**",
     "dev": "npm run clean ; tsc --watch",
