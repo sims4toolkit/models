@@ -40,7 +40,7 @@
   "dependencies": {
     "@s4tk/encoding": "^0.1.2",
     "@s4tk/hashing": "^0.1.1",
-    "@s4tk/xml-dom": "^0.1.1",
+    "@s4tk/xml-dom": "^0.1.2",
     "just-clone": "^5.0.1",
     "just-compare": "^2.0.1"
   }
