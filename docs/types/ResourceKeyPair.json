@@ -8,7 +8,7 @@
       "prefix": "interface",
       "name": "ResourceKeyPair"
     },
-    "description": "Pairing of a resource key and resource it belongs to.",
+    "description": "Pairing of a resource key and the resource it belongs to.",
     "sourceCode": "src/lib/packages/types.ts"
   },
   "sections": [

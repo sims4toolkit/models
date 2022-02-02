@@ -21,7 +21,7 @@
         {
           "name": "MappedModelEntry<ResourceKey, Resource>",
           "path": {
-            "pkg": "MappedModelEntry",
+            "pkg": "models",
             "group": "abstracts",
             "item": "MappedModelEntry"
           }
@@ -39,7 +39,7 @@
           "displayType": "property",
           "prefix": "get, set",
           "name": "resource",
-          "description": "Alias for the 'value', which contains the resource.",
+          "description": "Alias for the 'value' property (from MappedModelEntry), which contains the resource.",
           "type": {
             "name": "Resource",
             "path": {
