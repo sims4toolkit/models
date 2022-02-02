@@ -1,0 +1,135 @@
+{
+  "$schema": "https://raw.githubusercontent.com/sims4toolkit/misc/main/json-schemas/docs-item-schema.json",
+  "header": {
+    "title": {
+      "prefix": "abstract class",
+      "name": "MappedModel",
+      "generics": [
+        {
+          "name": "Key"
+        },
+        {
+          "name": "Value"
+        },
+        {
+          "name": "Entry",
+          "extends": [
+            {
+              "name": "MappedModelEntry<Key, Value>",
+              "path": {
+                "pkg": "models",
+                "group": "abstracts",
+                "item": "MappedModelEntry"
+              }
+            }
+          ]
+        }
+      ],
+      "extends": [
+        {
+          "name": "WritableModel",
+          "path": {
+            "pkg": "models",
+            "group": "abstracts",
+            "item": "WritableModel"
+          }
+        }
+      ]
+    },
+    "description": "Base class for writable models that contain mapped data.",
+    "sourceCode": "src/lib/base/mapped-model.ts"
+  },
+  "sections": [
+    {
+      "title": "Properties",
+      "content": [
+        {
+          "displayType": "property",
+          "name": "entries",
+          "prefix": "get",
+          "description": "An iterable of the entries in this model. Note that mutating this iterable will not update the model, but mutating individual entries will.",
+          "type": {
+            "name": "Entry[]"
+          }
+        },
+        {
+          "displayType": "property",
+          "name": "size",
+          "prefix": "get",
+          "description": "The number of entries in this model.",
+          "type": {
+            "name": "number"
+          }
+        }
+      ]
+    },
+    {
+      "title": "Methods",
+      "content": [
+        {
+          "displayType": "function",
+          "name": "add",
+          "description": "Creates a new entry with the given key and value, adds it to this model, and returns it.\n\nTo ensure that values are not duplicated, consider using the following:\n\nmodel.getByValue(valueToAdd) ?? model.add(valueToAdd)",
+          "arguments": [
+            {
+              "name": "key",
+              "description": "Key of entry.",
+              "type": {
+                "name": "Key"
+              }
+            },
+            {
+              "name": "value",
+              "description": "Value of entry.",
+              "type": {
+                "name": "Value"
+              }
+            }
+          ],
+          "returnType": {
+            "name": "Entry"
+          }
+        },
+        {
+          "displayType": "function",
+          "name": "addAll",
+          "description": "Creates new entries for the given key/value pairs, adds them to this model, and returns them in an array.\n\nTo ensure that values are not duplicated, consider using the following:\n\nmodel.addAll(entries.filter(entry => !model.hasValue(entry.value)))",
+          "arguments": [
+            {
+              "name": "entries",
+              "description": "Array of key/value pairs to add.",
+              "type": {
+                "name": "{ key: Key; value: Value; }[]"
+              }
+            }
+          ],
+          "returnType": {
+            "name": "Entry[]"
+          }
+        },
+        {
+          "displayType": "function",
+          "name": "clear",
+          "description": "Removes all entries from this model."
+        },
+        {
+          "displayType": "function",
+          "name": "delete",
+          "description": "Removes an entry from this model by its unique ID. Returns true if something was deleted, false otherwise.",
+          "arguments": [
+            {
+              "name": "id",
+              "description": "Unique ID of entry to delete.",
+              "type": {
+                "name": "number"
+              }
+            }
+          ],
+          "returnType": {
+            "name": "boolean"
+          }
+        }
+      ]
+    }
+  ]
+}
