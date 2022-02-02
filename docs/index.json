@@ -72,6 +72,8 @@
         "Resource",
         "ResourceEntry",
         "ResourceFilter",
+        "ResourceKey",
+        "ResourceKeyPair",
         "StringEntry"
       ]
     }

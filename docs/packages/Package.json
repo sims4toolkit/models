@@ -19,15 +19,248 @@
         }
       ]
     },
-    "description": "A model for package files ",
+    "description": "A model for Sims 4 package files (also called \"Database Packed Files\", or DBPF for short).",
     "sourceCode": "/src/lib/packages/package.ts"
   },
   "sections": [
     {
+      "title": "Properties",
       "content": [
         {
-          "displayType": "general",
-          "paragraphs": []
+          "displayType": "property",
+          "prefix": "get",
+          "name": "saveBuffer",
+          "description": "Always false. Cannot be set to true. Packages cannot be cached, because doing so would take up extra memory for no benefit. The only use case for this would be copying an entire package from one location and pasting it somewhere else, which is something you can do with a plain file system.",
+          "overrides": {
+            "name": "WritableModel",
+            "path": {
+              "pkg": "models",
+              "group": "abstracts",
+              "item": "WritableModel"
+            }
+          },
+          "type": {
+            "name": "boolean"
+          }
+        },
+        {
+          "displayType": "property",
+          "prefix": "get, set",
+          "name": "saveCompressedBuffers",
+          "description": "Whether or not compressed buffers for entries should be cached. When set, this will recursively set the 'saveBuffer' property of all contained entries.",
+          "type": {
+            "name": "boolean"
+          }
+        },
+        {
+          "displayType": "property",
+          "prefix": "get, set",
+          "name": "saveDecompressedBuffers",
+          "description": "Whether or not decompressed buffers for individual resources should be cached. When set, this will recursively set the 'saveBuffer' property of all contained resources.",
+          "type": {
+            "name": "boolean"
+          }
+        }
+      ]
+    },
+    {
+      "title": "Initialization",
+      "description": "The constructor is not a part of the public API, and may be changed without warning. Avoid using it, favoring the static methods instead.",
+      "content": [
+        {
+          "displayType": "function",
+          "prefix": "static",
+          "name": "create",
+          "returnType": {
+            "name": "Package"
+          },
+          "description": "Creates a new package with the provided entries. If no entries are provided, the package is empty.",
+          "arguments": [
+            {
+              "description": "Optional arguments.",
+              "optional": true,
+              "name": "options",
+              "type": {
+                "name": "object"
+              },
+              "properties": [
+                {
+                  "name": "entries",
+                  "optional": true,
+                  "description": "Array of key-resource pairs to initialize a package with. These can be existing entries from another package, or plain JS objects that match the interface. New entry objects will be created when the package is initialized, so the provided entries will not be mutated. However, the keys and resources within the entries will NOT be cloned, meaning that editing them will mutate the original keys and resources. If you plan on editing these keys or resources, consider the 'cloneKeys' and 'cloneResources' options.",
+                  "type": {
+                    "name": "ResourceKeyPair[]",
+                    "path": {
+                      "pkg": "models",
+                      "group": "types",
+                      "item": "ResourceKeyPair"
+                    }
+                  }
+                },
+                {
+                  "name": "cloneKeys",
+                  "optional": true,
+                  "description": "Whether or not to clone the provided keys before adding them to the package. False by default.",
+                  "type": {
+                    "name": "boolean"
+                  }
+                },
+                {
+                  "name": "cloneResources",
+                  "optional": true,
+                  "description": "Whether or not to clone the provided resources before adding them to the package. False by default.",
+                  "type": {
+                    "name": "boolean"
+                  }
+                },
+                {
+                  "name": "saveCompressedBuffers",
+                  "optional": true,
+                  "description": "Whether or not to cache the compressed buffers on entries within the package. If set to true and provided entries are already instances of ResourceEntry, their cached buffers will be preserved. This will set the 'saveBuffer' property on all contained entries. False by default.",
+                  "type": {
+                    "name": "boolean"
+                  }
+                },
+                {
+                  "name": "saveDecompressedBuffers",
+                  "optional": true,
+                  "description": "Whether or not to cache the decompressed buffers on individual resources within the package. If set to true, the buffers of provided resources will be preserved. This will set the 'saveBuffer' property on all contained resources (be careful if you are not cloning resources - this will delete the cached buffers on the provided resources if they are the same instances). False by default.",
+                  "type": {
+                    "name": "boolean"
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "displayType": "function",
+          "prefix": "static",
+          "name": "from",
+          "returnType": {
+            "name": "Package"
+          },
+          "description": "Read the given buffer as a Package.",
+          "arguments": [
+            {
+              "name": "buffer",
+              "type": {
+                "name": "Buffer"
+              },
+              "description": "Buffer to read as a Package."
+            },
+            {
+              "name": "options",
+              "optional": true,
+              "description": "Optional arguments for reading the buffer.",
+              "type": {
+                "name": "FileReadingOptions",
+                "path": {
+                  "pkg": "models",
+                  "group": "types",
+                  "item": "FileReadingOptions"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "displayType": "function",
+          "prefix": "static async",
+          "name": "fromAsync",
+          "returnType": {
+            "name": "Promise<Package>"
+          },
+          "description": "Reads the given buffer as a Package asynchronously, and returns a Promise that resolves with it.",
+          "arguments": [
+            {
+              "name": "buffer",
+              "type": {
+                "name": "Buffer"
+              },
+              "description": "Buffer to read as a Package."
+            },
+            {
+              "name": "options",
+              "optional": true,
+              "description": "Optional arguments for reading the buffer.",
+              "type": {
+                "name": "FileReadingOptions",
+                "path": {
+                  "pkg": "models",
+                  "group": "types",
+                  "item": "FileReadingOptions"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Other Static Methods",
+      "content": [
+        {
+          "displayType": "function",
+          "prefix": "static",
+          "name": "extractResources",
+          "returnType": {
+            "name": "ResourceKeyPair[]"
+          },
+          "description": "Reads the given buffer as a Package, but just returns its entries rather than a full Package object.",
+          "arguments": [
+            {
+              "name": "buffer",
+              "type": {
+                "name": "Buffer"
+              },
+              "description": "Buffer to read as a Package."
+            },
+            {
+              "name": "options",
+              "optional": true,
+              "description": "Optional arguments for reading the buffer.",
+              "type": {
+                "name": "FileReadingOptions",
+                "path": {
+                  "pkg": "models",
+                  "group": "types",
+                  "item": "FileReadingOptions"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "displayType": "function",
+          "prefix": "static async",
+          "name": "extractResourcesAsync",
+          "returnType": {
+            "name": "Promise<ResourceKeyPair[]>"
+          },
+          "description": "Reads the given buffer as a Package asynchronously, and returns a Promise that resolves with its entries in an array.",
+          "arguments": [
+            {
+              "name": "buffer",
+              "type": {
+                "name": "Buffer"
+              },
+              "description": "Buffer to read as a Package."
+            },
+            {
+              "name": "options",
+              "optional": true,
+              "description": "Optional arguments for reading the buffer.",
+              "type": {
+                "name": "FileReadingOptions",
+                "path": {
+                  "pkg": "models",
+                  "group": "types",
+                  "item": "FileReadingOptions"
+                }
+              }
+            }
+          ]
         }
       ]
     }
