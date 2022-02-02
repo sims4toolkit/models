@@ -36,7 +36,7 @@
         }
       ]
     },
-    "description": "Base class for writable models that contain mapped data.\nNote that keys for entries do not necessarily have to be unique. They should be, but they do not have to be in order for the model to be structurally valid. For a constant, truly unique identifier per entry, use the ID that is generated when it is added.",
+    "description": "Base class for writable models that contain mapped data.\n\nNote that keys for entries do not necessarily have to be unique. They should be, but they do not have to be in order for the model to be structurally valid. For a constant, truly unique identifier per entry, use the ID that is generated when it is added.",
     "sourceCode": "src/lib/base/mapped-model.ts"
   },
   "sections": [

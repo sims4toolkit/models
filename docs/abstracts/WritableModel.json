@@ -66,7 +66,7 @@
         {
           "displayType": "function",
           "name": "onChange",
-          "description": "Deletes this model's cache and notifies its own to do the same. You should never have to call this yourself.",
+          "description": "Deletes this model's cache and notifies its owner to do the same. You should never have to call this yourself.",
           "overrides": {
             "name": "ApiModel",
             "path": {
