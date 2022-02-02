@@ -10,17 +10,6 @@ export type ResourceFilter = (type: number, group: number, instance: bigint) => 
  */
 export interface FileReadingOptions {
   /**
-   * (For packages only) If provided, then the only resources that will be
-   * loaded are those that pass (i.e. return true from) this function. If not
-   * provided, then all resources will be loaded.
-   * 
-   * If using a filter to extract files, it is strongly recommended to also use
-   * the `loadRaw` option, so that models are not needlessly created when all
-   * you need are the buffers.
-   */
-  resourceFilter?: ResourceFilter;
-
-  /**
    * (For binary files only) If true, non-critical errors will be ignored while
    * reading the file(s), and an exception will only be thrown when it is
    * totally unavoidable. False by default.
@@ -44,6 +33,17 @@ export interface FileReadingOptions {
    * `saveBuffer` option instead.
    */
   loadRaw?: boolean;
+
+  /**
+   * (For packages only) If provided, then the only resources that will be
+   * loaded are those that pass (i.e. return true from) this function. If not
+   * provided, then all resources will be loaded.
+   * 
+   * If using a filter to extract files, it is strongly recommended to also use
+   * the `loadRaw` option, so that models are not needlessly created when all
+   * you need are the buffers.
+   */
+  resourceFilter?: ResourceFilter;
 
   /**
    * If true, then the decompressed buffer for a resource will be saved on its

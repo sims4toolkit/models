@@ -1,0 +1,35 @@
+{
+  "$schema": "https://raw.githubusercontent.com/sims4toolkit/misc/main/json-schemas/docs-item-schema.json",
+  "header": {
+    "title": {
+      "prefix": "type",
+      "name": "ResourceFilter"
+    },
+    "description": "Alias for a function that accepts a type, group, and instance, and returns a boolean. Intended for use with FileReadingOptions's 'resourceFilter' option.",
+    "sourceCode": "src/lib/common/options.ts"
+  },
+  "sections": [
+    {
+      "content": [
+        {
+          "displayType": "general",
+          "paragraphs": [
+            "(type: number, group: number, instance: bigint) => boolean"
+          ]
+        }
+      ]
+    }
+  ],
+  "footer": {
+    "seeAlso": [
+      {
+        "name": "FileReadingOptions",
+        "path": {
+          "pkg": "models",
+          "group": "types",
+          "item": "FileReadingOptions"
+        }
+      }
+    ]
+  }
+}

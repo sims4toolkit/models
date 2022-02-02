@@ -1,0 +1,80 @@
+{
+  "$schema": "https://raw.githubusercontent.com/sims4toolkit/misc/main/json-schemas/docs-item-schema.json",
+  "imports": [
+    "import type { StringEntry } from \"@s4tk/models/types\"; // TypeScript only"
+  ],
+  "header": {
+    "title": {
+      "prefix": "class",
+      "name": "StringEntry",
+      "extends": [
+        {
+          "name": "ApiModelBase",
+          "path": {
+            "pkg": "models",
+            "group": "abstracts",
+            "item": "ApiModelBase"
+          }
+        }
+      ],
+      "implements": [
+        {
+          "name": "MappedModelEntry<number, string>",
+          "path": {
+            "pkg": "models",
+            "group": "abstracts",
+            "item": "MappedModelEntry"
+          }
+        }
+      ]
+    },
+    "description": "An entry in a string table with a numerical key and string value. Though the constructor is technically public, there is absolutely no reason to create a string entry manually, and doing so is not considered a part of the API, and may change without notice. Entries are created automatically when key/value pairs are added to mapped models.",
+    "sourceCode": "src/lib/resources/stbl/string-entry.ts"
+  },
+  "sections": [
+    {
+      "title": "Properties",
+      "content": [
+        {
+          "displayType": "property",
+          "prefix": "get, set",
+          "name": "string",
+          "description": "Alias for the 'value' property (from MappedModelEntry), which contains the string.",
+          "type": {
+            "name": "string"
+          }
+        }
+      ]
+    },
+    {
+      "title": "Methods",
+      "content": [
+        {
+          "displayType": "function",
+          "name": "validate",
+          "description": "Throws an exception if the key is not a positive, 32-bit integer.",
+          "overrides": {
+            "name": "ApiModelBase",
+            "path": {
+              "pkg": "models",
+              "group": "abstracts",
+              "item": "ApiModelBase"
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "footer": {
+    "seeAlso": [
+      {
+        "name": "StringTableResource",
+        "path": {
+          "pkg": "models",
+          "group": "resources",
+          "item": "StringTableResource"
+        }
+      }
+    ]
+  }
+}
