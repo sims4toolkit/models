@@ -10,7 +10,7 @@
       "name": "EncodingType"
     },
     "description": "Types for how resources are encoded.",
-    "sourceCode": "src/lib/enums/encoding-types.ts"
+    "sourceCode": "src/lib/enums/encoding-type.ts"
   },
   "sections": [
     {
