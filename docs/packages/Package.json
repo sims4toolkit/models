@@ -10,7 +10,7 @@
       "name": "Package",
       "extends": [
         {
-          "name": "MappedModel",
+          "name": "MappedModel<ResourceKey, Resource, ResourceEntry>",
           "path": {
             "pkg": "models",
             "group": "abstracts",
@@ -131,6 +131,14 @@
                 }
               ]
             }
+          ],
+          "examples": [
+            {
+              "code": "const emptyPkg = Package.create();"
+            },
+            {
+              "code": "const dbpf = Package.create({ entries: [\n  {\n    key: {\n      type: TuningResourceType.Trait,\n      group: 0,\n      instance: fnv32(\"some_trait\")\n    },\n    value: XmlResource.from(traitTuningBuffer)\n  },\n  {\n    key: {\n      type: BinaryResourceType.SimData,\n      group: SimDataGroup.Trait,\n      instance: fnv32(\"some_trait\")\n    },\n    value: SimDataResource.from(traitSimDataBuffer)\n  },\n]});"
+            }
           ]
         },
         {
@@ -162,6 +170,11 @@
                 }
               }
             }
+          ],
+          "examples": [
+            {
+              "code": "const pkg = Package.from(buffer, {\n  saveCompressedBuffer: true\n});"
+            }
           ]
         },
         {
@@ -192,6 +205,11 @@
                   "item": "FileReadingOptions"
                 }
               }
+            }
+          ],
+          "examples": [
+            {
+              "code": "Package.fromAsync(buffer, {\n  saveCompressedBuffer: true\n}).then(pkg => {\n  // do stuff\n});"
             }
           ]
         }
@@ -229,6 +247,11 @@
                 }
               }
             }
+          ],
+          "examples": [
+            {
+              "code": "const stringTables = Package.extractResources(buffer, {\n  resourceFilter(type, group, inst) {\n    return type === BinaryResourceType.StringTable;\n  }\n});"
+            }
           ]
         },
         {
@@ -260,9 +283,50 @@
                 }
               }
             }
+          ],
+          "examples": [
+            {
+              "code": "Package.extractResourcesAsync(buffer, {\n  resourceFilter(type, group, inst) {\n    return type === BinaryResourceType.StringTable;\n  }\n}).then(stringTables => {\n  // do stuff\n});"
+            }
           ]
         }
       ]
     }
-  ]
+  ],
+  "footer": {
+    "seeAlso": [
+      {
+        "name": "Resource",
+        "path": {
+          "pkg": "models",
+          "group": "types",
+          "item": "Resource"
+        }
+      },
+      {
+        "name": "ResourceEntry",
+        "path": {
+          "pkg": "models",
+          "group": "types",
+          "item": "ResourceEntry"
+        }
+      },
+      {
+        "name": "ResourceKey",
+        "path": {
+          "pkg": "models",
+          "group": "types",
+          "item": "ResourceKey"
+        }
+      },
+      {
+        "name": "ResourceKeyPair",
+        "path": {
+          "pkg": "models",
+          "group": "types",
+          "item": "ResourceKeyPair"
+        }
+      }
+    ]
+  }
 }
