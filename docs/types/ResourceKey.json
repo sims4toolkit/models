@@ -1,0 +1,48 @@
+{
+  "$schema": "https://raw.githubusercontent.com/sims4toolkit/misc/main/json-schemas/docs-item-schema.json",
+  "imports": [
+    "import type { ResourceKey } from \"@s4tk/models/types\"; // TypeScript only"
+  ],
+  "header": {
+    "title": {
+      "prefix": "interface",
+      "name": "ResourceKey"
+    },
+    "description": "Object that has a type, group, and instance.",
+    "sourceCode": "src/lib/packages/types.ts"
+  },
+  "sections": [
+    {
+      "title": "Properties",
+      "content": [
+        {
+          "displayType": "property",
+          "prefix": "get, set",
+          "name": "type",
+          "description": "The type of a resource.",
+          "type": {
+            "name": "number"
+          }
+        },
+        {
+          "displayType": "property",
+          "prefix": "get, set",
+          "name": "group",
+          "description": "The group of a resource.",
+          "type": {
+            "name": "number"
+          }
+        },
+        {
+          "displayType": "property",
+          "prefix": "get, set",
+          "name": "instance",
+          "description": "The instance of a resource.",
+          "type": {
+            "name": "bigint"
+          }
+        }
+      ]
+    }
+  ]
+}

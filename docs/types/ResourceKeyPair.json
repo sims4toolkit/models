@@ -1,0 +1,59 @@
+{
+  "$schema": "https://raw.githubusercontent.com/sims4toolkit/misc/main/json-schemas/docs-item-schema.json",
+  "imports": [
+    "import type { ResourceKeyPair } from \"@s4tk/models/types\"; // TypeScript only"
+  ],
+  "header": {
+    "title": {
+      "prefix": "interface",
+      "name": "ResourceKeyPair"
+    },
+    "description": "Pairing of a resource key and resource it belongs to.",
+    "sourceCode": "src/lib/packages/types.ts"
+  },
+  "sections": [
+    {
+      "title": "Properties",
+      "content": [
+        {
+          "displayType": "property",
+          "prefix": "get, set",
+          "name": "key",
+          "description": "The key for the resource.",
+          "type": {
+            "name": "ResourceKey",
+            "path": {
+              "pkg": "models",
+              "group": "types",
+              "item": "ResourceKey"
+            }
+          }
+        },
+        {
+          "displayType": "property",
+          "prefix": "get, set",
+          "name": "value",
+          "description": "The resource.",
+          "type": {
+            "name": "Resource",
+            "path": {
+              "pkg": "models",
+              "group": "types",
+              "item": "Resource"
+            }
+          }
+        },
+        {
+          "displayType": "property",
+          "prefix": "get",
+          "name": "buffer",
+          "optional": true,
+          "description": "The compressed buffer for the resource, if there is one.",
+          "type": {
+            "name": "Buffer"
+          }
+        }
+      ]
+    }
+  ]
+}

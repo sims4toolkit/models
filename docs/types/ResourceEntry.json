@@ -1,0 +1,85 @@
+{
+  "$schema": "https://raw.githubusercontent.com/sims4toolkit/misc/main/json-schemas/docs-item-schema.json",
+  "imports": [
+    "import type { ResourceEntry } from \"@s4tk/models/types\"; // TypeScript only"
+  ],
+  "header": {
+    "title": {
+      "prefix": "class",
+      "name": "ResourceEntry",
+      "extends": [
+        {
+          "name": "WritableModel",
+          "path": {
+            "pkg": "models",
+            "group": "abstracts",
+            "item": "WritableModel"
+          }
+        }
+      ],
+      "implements": [
+        {
+          "name": "MappedModelEntry<ResourceKey, Resource>",
+          "path": {
+            "pkg": "MappedModelEntry",
+            "group": "abstracts",
+            "item": "MappedModelEntry"
+          }
+        }
+      ]
+    },
+    "description": "An entry in a package file with a key and resource. Though the constructor is technically public, there is absolutely no reason to create a resource entry manually, and doing so is not considered a part of the API, and may change without notice. Entries are created automatically when key/value pairs are added to mapped models.",
+    "sourceCode": "src/lib/packages/resource-entry.ts"
+  },
+  "sections": [
+    {
+      "title": "Properties",
+      "content": [
+        {
+          "displayType": "property",
+          "prefix": "get, set",
+          "name": "resource",
+          "description": "Alias for the 'value', which contains the resource.",
+          "type": {
+            "name": "Resource",
+            "path": {
+              "pkg": "models",
+              "group": "types",
+              "item": "Resource"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "title": "Methods",
+      "content": [
+        {
+          "displayType": "function",
+          "name": "validate",
+          "description": "Throws a detailed exception if A) the type or group is not a positive, 32-bit integer, B) the instance is not a positive, 64-bit bigint, or C) if the contained resource fails its own validation check.",
+          "overrides": {
+            "name": "ApiModelBase",
+            "path": {
+              "pkg": "models",
+              "group": "abstracts",
+              "item": "ApiModelBase"
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "footer": {
+    "seeAlso": [
+      {
+        "name": "Package",
+        "path": {
+          "pkg": "models",
+          "group": "packages",
+          "item": "Package"
+        }
+      }
+    ]
+  }
+}

@@ -20,7 +20,7 @@
       ]
     },
     "description": "A model for Sims 4 package files (also called \"Database Packed Files\", or DBPF for short).",
-    "sourceCode": "/src/lib/packages/package.ts"
+    "sourceCode": "src/lib/packages/package.ts"
   },
   "sections": [
     {

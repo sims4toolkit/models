@@ -1,0 +1,58 @@
+{
+  "$schema": "https://raw.githubusercontent.com/sims4toolkit/misc/main/json-schemas/docs-item-schema.json",
+  "imports": [
+    "import type { Resource } from \"@s4tk/models/types\"; // TypeScript only"
+  ],
+  "header": {
+    "title": {
+      "prefix": "interface",
+      "name": "Resource",
+      "extends": [
+        {
+          "name": "WritableModel",
+          "path": {
+            "pkg": "models",
+            "group": "abstracts",
+            "item": "WritableModel"
+          }
+        }
+      ]
+    },
+    "description": "Base for all resources to implement.",
+    "sourceCode": "src/lib/resources/resource.ts"
+  },
+  "sections": [
+    {
+      "title": "Properties",
+      "content": [
+        {
+          "displayType": "property",
+          "prefix": "readonly",
+          "name": "encodingType",
+          "description": "How this resource is encoded.",
+          "type": {
+            "name": "EncodingType",
+            "path": {
+              "pkg": "models",
+              "group": "enums",
+              "item": "EncodingType"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "title": "Methods",
+      "content": [
+        {
+          "displayType": "function",
+          "name": "isXml",
+          "returnType": {
+            "name": "boolean"
+          },
+          "description": "True if this resource contains XML, false otherwise. Note that this is still false for binary resources that can be converted to XML, such as SimData."
+        }
+      ]
+    }
+  ]
+}

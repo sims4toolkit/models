@@ -62,6 +62,7 @@
       "items": [
         "ApiModel",
         "MappedModel",
+        "MappedModelEntry",
         "WritableModel"
       ]
     },
