@@ -49,7 +49,7 @@ export default abstract class WritableModel extends ApiModelBase {
    * that resolves with it. To get the buffer synchronously, just access the
    * `buffer` property.
    */
-  getBufferAsync(): Promise<Buffer> {
+  async getBufferAsync(): Promise<Buffer> {
     return promisify(() => this.buffer);
   }
 

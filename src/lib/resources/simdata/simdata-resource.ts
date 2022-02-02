@@ -136,7 +136,7 @@ export default class SimDataResource extends WritableModel implements Resource, 
    * @param buffer Buffer to read
    * @param options Options for reading and cacheing the SimData
    */
-  static fromAsync(buffer: Buffer, options?: FileReadingOptions): Promise<SimDataResource> {
+  static async fromAsync(buffer: Buffer, options?: FileReadingOptions): Promise<SimDataResource> {
     return promisify(() => SimDataResource.from(buffer, options));
   }
 
@@ -160,7 +160,7 @@ export default class SimDataResource extends WritableModel implements Resource, 
    * @param xml XML string or buffer to parse as a SimData
    * @param options Options for reading and cacheing the SimData
    */
-  static fromXmlAsync(xml: string | Buffer, options?: FileReadingOptions): Promise<SimDataResource> {
+  static async fromXmlAsync(xml: string | Buffer, options?: FileReadingOptions): Promise<SimDataResource> {
     return promisify(() => SimDataResource.fromXml(xml, options));
   }
 
@@ -206,7 +206,7 @@ export default class SimDataResource extends WritableModel implements Resource, 
    * @param options Options for reading and cacheing the SimData
    * @throws If the given XML document could not be parsed as a SimData
    */
-  static fromXmlDocumentAsync(doc: XmlDocumentNode, options?: FileReadingOptions): Promise<SimDataResource> {
+  static async fromXmlDocumentAsync(doc: XmlDocumentNode, options?: FileReadingOptions): Promise<SimDataResource> {
     return promisify(() => SimDataResource.fromXmlDocument(doc, options));
   }
 

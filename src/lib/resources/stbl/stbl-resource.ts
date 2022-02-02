@@ -59,7 +59,7 @@ export default class StringTableResource extends PrimitiveMappedModel<string, St
    * @param buffer Buffer to read as a string table
    * @param options Options for reading and cacheing the STBL
    */
-  static fromAsync(buffer: Buffer, options?: FileReadingOptions): Promise<StringTableResource> {
+  static async fromAsync(buffer: Buffer, options?: FileReadingOptions): Promise<StringTableResource> {
     return promisify(() => StringTableResource.from(buffer, options));
   }
 

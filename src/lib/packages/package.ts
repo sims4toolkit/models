@@ -144,7 +144,7 @@ export default class Package extends MappedModel<ResourceKey, Resource, Resource
    * @param buffer Buffer to extract resources from
    * @param options Options for reading and cacheing the resources
    */
-  static extractResourcesAsync(buffer: Buffer, options?: FileReadingOptions): Promise<ResourceKeyPair[]> {
+  static async extractResourcesAsync(buffer: Buffer, options?: FileReadingOptions): Promise<ResourceKeyPair[]> {
     return promisify(() => Package.extractResources(buffer, options));
   }
 
@@ -169,7 +169,7 @@ export default class Package extends MappedModel<ResourceKey, Resource, Resource
    * @param buffer Buffer to read as a package
    * @param options Options for reading and cacheing the resources
    */
-  static fromAsync(buffer: Buffer, options?: FileReadingOptions): Promise<Package> {
+  static async fromAsync(buffer: Buffer, options?: FileReadingOptions): Promise<Package> {
     return promisify(() => Package.from(buffer, options));
   }
 

@@ -122,7 +122,7 @@ export default class XmlResource extends WritableModel implements Resource {
    * @param buffer Buffer to create an XML resource from
    * @param options Options for reading and cacheing the XML resource
    */
-  static fromAsync(buffer: Buffer, options?: FileReadingOptions): Promise<XmlResource> {
+  static async fromAsync(buffer: Buffer, options?: FileReadingOptions): Promise<XmlResource> {
     return promisify(() => XmlResource.from(buffer, options));
   }
 
