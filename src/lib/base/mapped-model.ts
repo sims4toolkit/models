@@ -207,7 +207,7 @@ export abstract class MappedModel<Key, Value, Entry extends MappedModelEntry<Key
    * Returns the ID of the first entry that has the given key. If there are no
    * entries with the given key, undefined is returned.
    * 
-   * @param key Key to get IDs for
+   * @param key Key to get ID for
    */
   getIdForKey(key: Key): number {
     return this._keyMap.get(this._getKeyIdentifier(key));
