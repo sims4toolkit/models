@@ -249,6 +249,57 @@
             "name": "number[]"
           }
         },
+        {
+          "displayType": "function",
+          "name": "has",
+          "description": "Checks whether this model has an entry with the given ID.",
+          "arguments": [
+            {
+              "name": "id",
+              "description": "ID to check.",
+              "type": {
+                "name": "number"
+              }
+            }
+          ],
+          "returnType": {
+            "name": "boolean"
+          }
+        },
+        {
+          "displayType": "function",
+          "name": "hasKey",
+          "description": "Checks whether this model has an entry with the given key. Equality is determined by the entry's 'keyEquals()' method.",
+          "arguments": [
+            {
+              "name": "key",
+              "description": "Key to check.",
+              "type": {
+                "name": "Key"
+              }
+            }
+          ],
+          "returnType": {
+            "name": "boolean"
+          }
+        },
+        {
+          "displayType": "function",
+          "name": "hasValue",
+          "description": "Checks whether this model has an entry with the given value. Equality is determined by the entry's 'valueEquals()' method.",
+          "arguments": [
+            {
+              "name": "value",
+              "description": "Value to check.",
+              "type": {
+                "name": "Value"
+              }
+            }
+          ],
+          "returnType": {
+            "name": "boolean"
+          }
+        }
       ]
     }
   ]
