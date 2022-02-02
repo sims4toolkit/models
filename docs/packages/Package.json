@@ -137,7 +137,7 @@
               "code": "const emptyPkg = Package.create();"
             },
             {
-              "code": "const dbpf = Package.create({ entries: [\n  {\n    key: {\n      type: TuningResourceType.Trait,\n      group: 0,\n      instance: fnv32(\"some_trait\")\n    },\n    value: XmlResource.from(traitTuningBuffer)\n  },\n  {\n    key: {\n      type: BinaryResourceType.SimData,\n      group: SimDataGroup.Trait,\n      instance: fnv32(\"some_trait\")\n    },\n    value: SimDataResource.from(traitSimDataBuffer)\n  },\n]});"
+              "code": "const traitPkg = Package.create({ entries: [\n  {\n    key: {\n      type: TuningResourceType.Trait,\n      group: 0,\n      instance: 12345n\n    },\n    value: XmlResource.from(traitTuningBuffer)\n  },\n  {\n    key: {\n      type: BinaryResourceType.SimData,\n      group: SimDataGroup.Trait,\n      instance: 12345n\n    },\n    value: SimDataResource.from(traitSimDataBuffer)\n  },\n]});"
             }
           ]
         },
