@@ -138,7 +138,117 @@
           "returnType": {
             "name": "boolean"
           }
-        }
+        },
+        {
+          "displayType": "function",
+          "name": "deleteByKey",
+          "description": "Removes the first entry from this model that has the given key. Returns true if something was deleted, false otherwise.",
+          "arguments": [
+            {
+              "name": "key",
+              "description": "Key of the entry to remove.",
+              "type": {
+                "name": "Key"
+              }
+            }
+          ],
+          "returnType": {
+            "name": "boolean"
+          }
+        },
+        {
+          "displayType": "function",
+          "name": "findRepeatedKeys",
+          "description": "Finds all keys that belong to more than one entry and returns them in an array.",
+          "returnType": {
+            "name": "Key[]"
+          }
+        },
+        {
+          "displayType": "function",
+          "name": "get",
+          "description": "Returns the entry that has the given ID, or undefined if there isn't one.",
+          "arguments": [
+            {
+              "name": "id",
+              "description": "ID of entry to retrieve.",
+              "type": {
+                "name": "number"
+              }
+            }
+          ],
+          "returnType": {
+            "name": "Entry"
+          }
+        },
+        {
+          "displayType": "function",
+          "name": "getByKey",
+          "description": "Returns the first entry that has the given key, or undefined if there aren't any.",
+          "arguments": [
+            {
+              "name": "key",
+              "description": "Key of entry to retrieve.",
+              "type": {
+                "name": "Key"
+              }
+            }
+          ],
+          "returnType": {
+            "name": "Entry"
+          }
+        },
+        {
+          "displayType": "function",
+          "name": "getByValue",
+          "description": "Returns the first entry that has the given value, or undefined if there aren't any.",
+          "arguments": [
+            {
+              "name": "value",
+              "description": "Value of entry to retrieve.",
+              "type": {
+                "name": "Value"
+              }
+            }
+          ],
+          "returnType": {
+            "name": "Entry"
+          }
+        },
+        {
+          "displayType": "function",
+          "name": "getIdForKey",
+          "description": "Returns the ID of the first entry that has the given key. If there are no entries with the given key, undefined is returned.",
+          "arguments": [
+            {
+              "name": "key",
+              "description": "Key to get ID for.",
+              "type": {
+                "name": "Key"
+              }
+            }
+          ],
+          "returnType": {
+            "name": "number"
+          }
+        },
+        {
+          "displayType": "function",
+          "name": "getIdsForKey",
+          "description": "Returns an array of the IDs for every entry that has the given key. Ideally, the result will always have one number, however, keys are not guaranteed to be unique. If there are no entries with the given key, an empty array is returned.",
+          "arguments": [
+            {
+              "name": "key",
+              "description": "Key to get IDs for.",
+              "type": {
+                "name": "Key"
+              }
+            }
+          ],
+          "returnType": {
+            "name": "number[]"
+          }
+        },
       ]
     }
   ]
