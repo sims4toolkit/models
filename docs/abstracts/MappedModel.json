@@ -36,7 +36,7 @@
         }
       ]
     },
-    "description": "Base class for writable models that contain mapped data.",
+    "description": "Base class for writable models that contain mapped data.\nNote that keys for entries do not necessarily have to be unique. They should be, but they do not have to be in order for the model to be structurally valid. For a constant, truly unique identifier per entry, use the ID that is generated when it is added.",
     "sourceCode": "src/lib/base/mapped-model.ts"
   },
   "sections": [
@@ -69,7 +69,7 @@
         {
           "displayType": "function",
           "name": "add",
-          "description": "Creates a new entry with the given key and value, adds it to this model, and returns it.\n\nTo ensure that values are not duplicated, consider using the following:\n\nmodel.getByValue(valueToAdd) ?? model.add(valueToAdd)",
+          "description": "Creates a new entry with the given key and value, adds it to this model, and returns it.",
           "arguments": [
             {
               "name": "key",
@@ -88,12 +88,17 @@
           ],
           "returnType": {
             "name": "Entry"
-          }
+          },
+          "examples": [
+            {
+              "code": "// To ensure that values are not duplicated, consider using the following:\n\nmodel.getByValue(valueToAdd) ?? model.add(valueToAdd);"
+            }
+          ]
         },
         {
           "displayType": "function",
           "name": "addAll",
-          "description": "Creates new entries for the given key/value pairs, adds them to this model, and returns them in an array.\n\nTo ensure that values are not duplicated, consider using the following:\n\nmodel.addAll(entries.filter(entry => !model.hasValue(entry.value)))",
+          "description": "Creates new entries for the given key/value pairs, adds them to this model, and returns them in an array.",
           "arguments": [
             {
               "name": "entries",
@@ -105,7 +110,12 @@
           ],
           "returnType": {
             "name": "Entry[]"
-          }
+          },
+          "examples": [
+            {
+              "code": "// To ensure that values are not duplicated, consider using the following:\n\nmodel.addAll(entries.filter(entry => !model.hasValue(entry.value)));"
+            }
+          ]
         },
         {
           "displayType": "function",
