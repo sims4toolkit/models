@@ -299,6 +299,16 @@
           "returnType": {
             "name": "boolean"
           }
+        },
+        {
+          "displayType": "function",
+          "name": "resetEntries",
+          "description": "Resets the 'entries' property of this model, so that a new array will be created the next time it is used."
+        },
+        {
+          "displayType": "function",
+          "name": "resetEntries",
+          "description": "Resets the key map (i.e. the object that maps entry keys to their unique IDs) of this model to guarantee that all keys are mapped to the ID of the first entry they appear in. This function should not ever have to be used, but is supplied in case the key map ever falls out of sync after editing / deleting a lot of entries. If you find yourself having to use this method, please report why."
         }
       ]
     }
