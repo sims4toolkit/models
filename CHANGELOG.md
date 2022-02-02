@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Export SimData cells as individual classes rather than an object.
 - Renamed `TuningResourceType.Street` to `TuningResourceType.Tuning`.
+- Made all async methods awaitable.
 ### Added
 - Added various types/interfaces to API in `@s4tk/models/types`.
 - Added `cloneKeys` and `cloneResources` options to `Package.create()` options.
