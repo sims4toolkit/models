@@ -1,0 +1,43 @@
+{
+  "$schema": "https://raw.githubusercontent.com/sims4toolkit/misc/main/json-schemas/docs-item-schema.json",
+  "imports": [
+    "import { EncodingType } from \"@s4tk/models/enums\"; // ESM",
+    "const { EncodingType } = require(\"@s4tk/models/enums\"); // CJS"
+  ],
+  "header": {
+    "title": {
+      "prefix": "enum",
+      "name": "EncodingType"
+    },
+    "description": "Types for how resources are encoded.",
+    "sourceCode": "src/lib/enums/encoding-types.ts"
+  },
+  "sections": [
+    {
+      "title": "Values",
+      "content": [
+        {
+          "displayType": "enum",
+          "values": [
+            {
+              "name": "Unknown",
+              "value": "\"Unknown\""
+            },
+            {
+              "name": "XML",
+              "value": "\"XML\""
+            },
+            {
+              "name": "DATA",
+              "value": "\"DATA\""
+            },
+            {
+              "name": "STBL",
+              "value": "\"STBL\""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,5 +1,5 @@
 /**
- * High bits to set for specific locales for String Table instances.
+ * High bytes to set for specific locales for String Table instances.
  */
 enum StringTableLocale {
   English = 0x00,

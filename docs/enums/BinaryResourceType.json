@@ -1,0 +1,43 @@
+{
+  "$schema": "https://raw.githubusercontent.com/sims4toolkit/misc/main/json-schemas/docs-item-schema.json",
+  "imports": [
+    "import { BinaryResourceType } from \"@s4tk/models/enums\"; // ESM",
+    "const { BinaryResourceType } = require(\"@s4tk/models/enums\"); // CJS"
+  ],
+  "header": {
+    "title": {
+      "prefix": "enum",
+      "name": "BinaryResourceType"
+    },
+    "description": "Types for binary resources. Note that this enum is currently not comprehensive.",
+    "sourceCode": "src/lib/enums/binary-resources.ts"
+  },
+  "sections": [
+    {
+      "title": "Values",
+      "content": [
+        {
+          "displayType": "enum",
+          "values": [
+            {
+              "name": "CombinedTuning",
+              "value": "0x62E94D38"
+            },
+            {
+              "name": "DstImage",
+              "value": "0x00B2D882"
+            },
+            {
+              "name": "SimData",
+              "value": "0x545AC67A"
+            },
+            {
+              "name": "StringTable",
+              "value": "0x220557DA"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

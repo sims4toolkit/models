@@ -1,0 +1,158 @@
+{
+  "$schema": "https://raw.githubusercontent.com/sims4toolkit/misc/main/json-schemas/docs-item-schema.json",
+  "imports": [
+    "import { StringTableLocale } from \"@s4tk/models/enums\"; // ESM",
+    "const { StringTableLocale } = require(\"@s4tk/models/enums\"); // CJS"
+  ],
+  "header": {
+    "title": {
+      "prefix": "enum",
+      "name": "StringTableLocale"
+    },
+    "description": "High bytes to set for specific locales for String Table instances.",
+    "sourceCode": "src/lib/enums/stbl-locales.ts"
+  },
+  "sections": [
+    {
+      "title": "Values",
+      "content": [
+        {
+          "displayType": "enum",
+          "values": [
+            {
+              "name": "English",
+              "value": "0x00"
+            },
+            {
+              "name": "ChineseSimplified",
+              "value": "0x01"
+            },
+            {
+              "name": "ChineseTraditional",
+              "value": "0x02"
+            },
+            {
+              "name": "Czech",
+              "value": "0x03"
+            },
+            {
+              "name": "Danish",
+              "value": "0x04"
+            },
+            {
+              "name": "Dutch",
+              "value": "0x05"
+            },
+            {
+              "name": "Finnish",
+              "value": "0x06"
+            },
+            {
+              "name": "French",
+              "value": "0x07"
+            },
+            {
+              "name": "German",
+              "value": "0x08"
+            },
+            {
+              "name": "Italian",
+              "value": "0x0B"
+            },
+            {
+              "name": "Japanese",
+              "value": "0x0C"
+            },
+            {
+              "name": "Korean",
+              "value": "0x0D"
+            },
+            {
+              "name": "Norwegian",
+              "value": "0x0E"
+            },
+            {
+              "name": "Polish",
+              "value": "0x0F"
+            },
+            {
+              "name": "Portuguese",
+              "value": "0x11"
+            },
+            {
+              "name": "Russian",
+              "value": "0x12"
+            },
+            {
+              "name": "Spanish",
+              "value": "0x13"
+            },
+            {
+              "name": "Swedish",
+              "value": "0x15"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Functions",
+      "description": "Helper functions related to string table locales.",
+      "content": [
+        {
+          "displayType": "function",
+          "prefix": "static",
+          "name": "getLocale",
+          "description": "Determines and returns the locale for the given instance ID.",
+          "returnType": {
+            "name": "StringTableLocale"
+          },
+          "arguments": [
+            {
+              "name": "instance",
+              "description": "Instance to get locale from",
+              "type": {
+                "name": "bigint"
+              }
+            }
+          ],
+          "examples": [
+            {
+              "code": "const locale = StringTableLocale.getLocale(0x0B22A82C94D66CD3n);\n// locale === StringTableLocale.Italian"
+            }
+          ]
+        },
+        {
+          "displayType": "function",
+          "prefix": "static",
+          "name": "setHighByte",
+          "description": "Sets the high byte on the instance to the value for the given locale.",
+          "returnType": {
+            "name": "bigint"
+          },
+          "arguments": [
+            {
+              "name": "locale",
+              "description": "Locale to use when setting high byte.",
+              "type": {
+                "name": "StringTableLocale"
+              }
+            },
+            {
+              "name": "instance",
+              "description": "Instance to set high byte of.",
+              "type": {
+                "name": "bigint"
+              }
+            }
+          ],
+          "examples": [
+            {
+              "code": "const newInstance = StringTableLocale.setHighByte(StringTableLocale.Italian, 0x4522A82C94D66CD3n);\n// newInstance === 0x0B22A82C94D66CD3n"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

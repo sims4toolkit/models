@@ -1,0 +1,119 @@
+{
+  "$schema": "https://raw.githubusercontent.com/sims4toolkit/misc/main/json-schemas/docs-item-schema.json",
+  "imports": [
+    "import { DataType } from \"@s4tk/models/enums\"; // ESM",
+    "const { DataType } = require(\"@s4tk/models/enums\"); // CJS"
+  ],
+  "header": {
+    "title": {
+      "prefix": "enum",
+      "name": "DataType"
+    },
+    "description": "Types for SimData values. Note that there are functions available on this enum, but they are intended for internal use only. You may use them (even though there is likely no use for them), but note that they may be changed without notice.",
+    "sourceCode": "src/lib/enums/data-type.ts"
+  },
+  "sections": [
+    {
+      "title": "Values",
+      "content": [
+        {
+          "displayType": "enum",
+          "values": [
+            {
+              "name": "Boolean",
+              "value": "0"
+            },
+            {
+              "name": "Character",
+              "value": "1"
+            },
+            {
+              "name": "Int8",
+              "value": "2"
+            },
+            {
+              "name": "UInt8",
+              "value": "3"
+            },
+            {
+              "name": "Int16",
+              "value": "4"
+            },
+            {
+              "name": "UInt16",
+              "value": "5"
+            },
+            {
+              "name": "Int32",
+              "value": "6"
+            },
+            {
+              "name": "UInt32",
+              "value": "7"
+            },
+            {
+              "name": "Int64",
+              "value": "8"
+            },
+            {
+              "name": "UInt64",
+              "value": "9"
+            },
+            {
+              "name": "Float",
+              "value": "10"
+            },
+            {
+              "name": "String",
+              "value": "11"
+            },
+            {
+              "name": "HashedString",
+              "value": "12"
+            },
+            {
+              "name": "Object",
+              "value": "13"
+            },
+            {
+              "name": "Vector",
+              "value": "14"
+            },
+            {
+              "name": "Float2",
+              "value": "15"
+            },
+            {
+              "name": "Float3",
+              "value": "16"
+            },
+            {
+              "name": "Float4",
+              "value": "17"
+            },
+            {
+              "name": "TableSetReference",
+              "value": "18"
+            },
+            {
+              "name": "ResourceKey",
+              "value": "19"
+            },
+            {
+              "name": "LocalizationKey",
+              "value": "20"
+            },
+            {
+              "name": "Variant",
+              "value": "21"
+            },
+            {
+              "name": "Undefined",
+              "value": "22"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
