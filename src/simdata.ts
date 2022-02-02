@@ -1,14 +1,21 @@
-import {
+export {
   SimDataInstance,
   SimDataSchema,
   SimDataSchemaColumn,
 } from "./lib/resources/simdata/fragments";
 
-import * as cells from "./lib/resources/simdata/cells";
-
 export {
-  SimDataInstance,
-  SimDataSchema,
-  SimDataSchemaColumn,
-  cells
-}
+  Cell,
+  BooleanCell,
+  TextCell,
+  NumberCell,
+  BigIntCell,
+  ResourceKeyCell,
+  Float2Cell,
+  Float3Cell,
+  Float4Cell,
+  VectorCell,
+  VariantCell,
+  ObjectCell
+} from "./lib/resources/simdata/cells";
+

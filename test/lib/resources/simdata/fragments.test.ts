@@ -1,7 +1,7 @@
 import { XmlDocumentNode } from "@s4tk/xml-dom";
 import { expect } from "chai";
 import { DataType } from "../../../../dst/enums";
-import { SimDataSchema, SimDataSchemaColumn, SimDataInstance, cells } from "../../../../dst/simdata";
+import { SimDataSchema, SimDataSchemaColumn, SimDataInstance, TextCell, BooleanCell, NumberCell, ObjectCell } from "../../../../dst/simdata";
 import MockOwner from "../../../mocks/mock-owner";
 
 const testSchema = new SimDataSchema("TestSchema", 0x1234, [
@@ -580,8 +580,8 @@ describe("SimDataInstance", () => {
   describe("#owner", () => {
     it("should update the owner of contained cells when set", () => {
       const firstOwner = new MockOwner();
-      const boolean = new cells.BooleanCell(true);
-      const string = new cells.TextCell(DataType.String, "Hi");
+      const boolean = new BooleanCell(true);
+      const string = new TextCell(DataType.String, "Hi");
       const cell = new SimDataInstance("InstanceName", testSchema, {
         boolean,
         string
@@ -597,7 +597,7 @@ describe("SimDataInstance", () => {
       const inst = new SimDataInstance("InstanceName", testSchema, {}, owner);
       const newOwner = new MockOwner();
       inst.owner = newOwner;
-      const child = new cells.BooleanCell(true);
+      const child = new BooleanCell(true);
       inst.row.boolean = child;
       expect(child.owner).to.equal(newOwner);
     });
@@ -654,9 +654,9 @@ describe("SimDataInstance", () => {
   describe("#toXmlNode()", () => {
     it("should use an 'I' tag", () => {
       const inst = new SimDataInstance("InstanceName", testSchema, {
-        boolean: new cells.BooleanCell(true),
-        uint32: new cells.NumberCell(DataType.UInt32, 64),
-        string: new cells.TextCell(DataType.String, "hi")
+        boolean: new BooleanCell(true),
+        uint32: new NumberCell(DataType.UInt32, 64),
+        string: new TextCell(DataType.String, "hi")
       });
       const node = inst.toXmlNode();
       expect(node.tag).to.equal("I");
@@ -664,9 +664,9 @@ describe("SimDataInstance", () => {
 
     it("should have an 'Object' type", () => {
       const inst = new SimDataInstance("InstanceName", testSchema, {
-        boolean: new cells.BooleanCell(true),
-        uint32: new cells.NumberCell(DataType.UInt32, 64),
-        string: new cells.TextCell(DataType.String, "hi")
+        boolean: new BooleanCell(true),
+        uint32: new NumberCell(DataType.UInt32, 64),
+        string: new TextCell(DataType.String, "hi")
       });
       const node = inst.toXmlNode();
       expect(node.attributes.type).to.equal("Object");
@@ -674,9 +674,9 @@ describe("SimDataInstance", () => {
 
     it("should have its schema name written", () => {
       const inst = new SimDataInstance("InstanceName", testSchema, {
-        boolean: new cells.BooleanCell(true),
-        uint32: new cells.NumberCell(DataType.UInt32, 64),
-        string: new cells.TextCell(DataType.String, "hi")
+        boolean: new BooleanCell(true),
+        uint32: new NumberCell(DataType.UInt32, 64),
+        string: new TextCell(DataType.String, "hi")
       });
       const node = inst.toXmlNode();
       expect(node.attributes.schema).to.equal("TestSchema");
@@ -684,9 +684,9 @@ describe("SimDataInstance", () => {
 
     it("should write its children with their names", () => {
       const inst = new SimDataInstance("InstanceName", testSchema, {
-        boolean: new cells.BooleanCell(true),
-        uint32: new cells.NumberCell(DataType.UInt32, 64),
-        string: new cells.TextCell(DataType.String, "hi")
+        boolean: new BooleanCell(true),
+        uint32: new NumberCell(DataType.UInt32, 64),
+        string: new TextCell(DataType.String, "hi")
       });
       const node = inst.toXmlNode();
       expect(node.numChildren).to.equal(3);
@@ -699,9 +699,9 @@ describe("SimDataInstance", () => {
 
   describe("static#fromObjectCell()", () => {
     it("should mutate the original object cell", () => {
-      const cell = new cells.ObjectCell(testSchema, {
-        boolean: new cells.BooleanCell(true),
-        string: new cells.TextCell(DataType.String, "Hi")
+      const cell = new ObjectCell(testSchema, {
+        boolean: new BooleanCell(true),
+        string: new TextCell(DataType.String, "Hi")
       });
 
       const inst = SimDataInstance.fromObjectCell("InstanceName", cell);
@@ -710,9 +710,9 @@ describe("SimDataInstance", () => {
     });
 
     it("should create an instance with the given name", () => {
-      const cell = new cells.ObjectCell(testSchema, {
-        boolean: new cells.BooleanCell(true),
-        string: new cells.TextCell(DataType.String, "Hi")
+      const cell = new ObjectCell(testSchema, {
+        boolean: new BooleanCell(true),
+        string: new TextCell(DataType.String, "Hi")
       });
 
       const inst = SimDataInstance.fromObjectCell("InstanceName", cell);
@@ -721,9 +721,9 @@ describe("SimDataInstance", () => {
 
     it("should copy the owner", () => {
       const owner = new MockOwner();
-      const cell = new cells.ObjectCell(testSchema, {
-        boolean: new cells.BooleanCell(true),
-        string: new cells.TextCell(DataType.String, "Hi")
+      const cell = new ObjectCell(testSchema, {
+        boolean: new BooleanCell(true),
+        string: new TextCell(DataType.String, "Hi")
       }, owner);
 
       const inst = SimDataInstance.fromObjectCell("InstanceName", cell);
