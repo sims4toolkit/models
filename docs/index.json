@@ -1,0 +1,79 @@
+{
+  "$schema": "https://raw.githubusercontent.com/sims4toolkit/misc/main/json-schemas/docs-index-schema.json",
+  "versions": [
+    "0.1.2",
+    "0.1.1",
+    "0.1.0"
+  ],
+  "groups": [
+    {
+      "name": "packages",
+      "items": [
+        "Package"
+      ]
+    },
+    {
+      "name": "resources",
+      "items": [
+        "RawResource",
+        "SimDataResource",
+        "StringTableResource",
+        "XmlResource"
+      ]
+    },
+    {
+      "name": "enums",
+      "items": [
+        "BinaryResourceType",
+        "DataType",
+        "EncodingType",
+        "SimDataGroup",
+        "StringTableLocale",
+        "TuningResourceType"
+      ]
+    },
+    {
+      "name": "simdata-fragments",
+      "items": [
+        "SimDataInstance",
+        "SimDataSchema",
+        "SimDataSchemaColumn"
+      ]
+    },
+    {
+      "name": "simdata-cells",
+      "items": [
+        "BigIntCell",
+        "BooleanCell",
+        "Cell",
+        "Float2Cell",
+        "Float3Cell",
+        "Float4Cell",
+        "NumberCell",
+        "ObjectCell",
+        "ResourceKeyCell",
+        "TextCell",
+        "VariantCell",
+        "VectorCell"
+      ]
+    },
+    {
+      "name": "abstracts",
+      "items": [
+        "ApiModel",
+        "MappedModel",
+        "WritableModel"
+      ]
+    },
+    {
+      "name": "types",
+      "items": [
+        "FileReadingOptions",
+        "Resource",
+        "ResourceEntry",
+        "ResourceFilter",
+        "StringEntry"
+      ]
+    }
+  ]
+}

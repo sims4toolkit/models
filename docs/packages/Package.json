@@ -1,0 +1,35 @@
+{
+  "$schema": "https://raw.githubusercontent.com/sims4toolkit/misc/main/json-schemas/docs-item-schema.json",
+  "imports": [
+    "import { Package } from \"@s4tk/models\"; // ESM",
+    "const { Package } = require(\"@s4tk/models\"); // CJS"
+  ],
+  "header": {
+    "title": {
+      "prefix": "class",
+      "name": "Package",
+      "extends": [
+        {
+          "name": "MappedModel",
+          "path": {
+            "pkg": "models",
+            "group": "abstracts",
+            "item": "MappedModel"
+          }
+        }
+      ]
+    },
+    "description": "A model for package files ",
+    "sourceCode": "/src/lib/packages/package.ts"
+  },
+  "sections": [
+    {
+      "content": [
+        {
+          "displayType": "general",
+          "paragraphs": []
+        }
+      ]
+    }
+  ]
+}
