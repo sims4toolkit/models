@@ -6,6 +6,7 @@ import { arraysAreEqual, promisify } from "../common/helpers";
 import readDbpf from "./serialization/read-dbpf";
 import writeDbpf from "./serialization/write-dbpf";
 import ResourceEntry from "./resource-entry";
+import clone from "just-clone";
 
 /**
  * Model for a Sims 4 package file (also called a "Database Packed File", or
@@ -60,7 +61,13 @@ export default class Package extends MappedModel<ResourceKey, Resource, Resource
    * provided, the package is empty.
    * 
    * Options
-   * - `entries`: Array of entries to add. Empty by default.
+   * - `entries`: Array of entries to add. New entry objects will be created for
+   * the package, but keys and resources will not be cloned unless told to with
+   * the `cloneKeys` and `cloneResources` options. Empty by default.
+   * - `cloneKeys`: Whether or not to clone the keys before adding them to the
+   * package. False by default.
+   * - `cloneResources`: Whether or not to clone the resource before adding them
+   * to the package. False by default.
    * - `saveCompressedBuffers`: Whether or not to cache the compressed buffers
    * for individual entries. False by default.
    * - `saveDecompressedBuffers`: Whether or not to cache the decompressed
@@ -68,12 +75,37 @@ export default class Package extends MappedModel<ResourceKey, Resource, Resource
    * 
    * @param options Optional arguments for creating a new Package
    */
-  static create({ entries, saveCompressedBuffers, saveDecompressedBuffers }: {
+  static create({
+    entries,
+    cloneKeys = false,
+    cloneResources = false,
+    saveCompressedBuffers,
+    saveDecompressedBuffers
+  }: {
     entries?: ResourceKeyPair[];
+    cloneKeys?: boolean;
+    cloneResources?: boolean;
     saveCompressedBuffers?: boolean;
     saveDecompressedBuffers?: boolean;
   } = {}): Package {
-    return new Package(entries, saveCompressedBuffers, saveDecompressedBuffers);
+    let entriesToUse: ResourceKeyPair[];
+
+    if (cloneKeys || cloneResources) {
+      entriesToUse = entries.map(entry => {
+        return {
+          key: cloneKeys ? clone(entry.key) : entry.key,
+          value: cloneResources ? entry.value.clone() : entry.value
+        }
+      });
+    } else {
+      entriesToUse = entries;
+    }
+
+    return new Package(
+      entriesToUse,
+      saveCompressedBuffers,
+      saveDecompressedBuffers
+    );
   }
 
   /**

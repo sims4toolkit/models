@@ -274,6 +274,57 @@ describe("Package", () => {
       const entry = dbpf.get(0);
       expect(entry.owner).to.equal(dbpf);
     });
+
+    it("should mutate the original keys if cloneKeys not set", () => {
+      const entry = { key: getTestKey(), value: getTestTuning() };
+      const originalType = entry.key.type;
+      const dbpf = Package.create({ entries: [ entry ]});
+      dbpf.get(0).key.type += 1;
+      expect(entry.key.type).to.equal(originalType + 1);
+    });
+
+    it("should mutate the original keys if cloneKeys = false", () => {
+      const entry = { key: getTestKey(), value: getTestTuning() };
+      const originalType = entry.key.type;
+      const dbpf = Package.create({ entries: [ entry ], cloneKeys: false});
+      dbpf.get(0).key.type += 1;
+      expect(entry.key.type).to.equal(originalType + 1);
+    });
+
+    it("should not mutate the original keys if cloneKeys = true", () => {
+      const entry = { key: getTestKey(), value: getTestTuning() };
+      const originalType = entry.key.type;
+      const dbpf = Package.create({ entries: [ entry ], cloneKeys: true});
+      dbpf.get(0).key.type += 1;
+      expect(entry.key.type).to.equal(originalType);
+    });
+
+    it("should mutate the original resources if cloneResources not set", () => {
+      const entry = { key: getTestKey(), value: getTestTuning() };
+      const originalTuningName = entry.value.root.name;
+      const dbpf = Package.create({ entries: [ entry ]});
+      (dbpf.get(0).resource as XmlResource).root.name = "asdf";
+      expect(entry.value.root.name).to.not.equal(originalTuningName);
+      expect(entry.value.root.name).to.equal("asdf");
+    });
+
+    it("should mutate the original resources if cloneResources = false", () => {
+      const entry = { key: getTestKey(), value: getTestTuning() };
+      const originalTuningName = entry.value.root.name;
+      const dbpf = Package.create({ entries: [ entry ], cloneResources: false});
+      (dbpf.get(0).resource as XmlResource).root.name = "asdf";
+      expect(entry.value.root.name).to.not.equal(originalTuningName);
+      expect(entry.value.root.name).to.equal("asdf");
+    });
+
+    it("should not mutate the original resources if cloneResources = true", () => {
+      const entry = { key: getTestKey(), value: getTestTuning() };
+      const originalTuningName = entry.value.root.name;
+      const dbpf = Package.create({ entries: [ entry ], cloneResources: true});
+      (dbpf.get(0).resource as XmlResource).root.name = "asdf";
+      expect(entry.value.root.name).to.equal(originalTuningName);
+      expect(entry.value.root.name).to.not.equal("asdf");
+    });
   });
 
   describe("static#extractResources()", () => {
