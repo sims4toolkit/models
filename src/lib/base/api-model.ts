@@ -31,7 +31,7 @@ export default abstract class ApiModelBase {
     return this._proxy;
   }
 
-  //#endregion Public Methods
+  //#region Public Methods
 
   /**
    * Returns a deep copy of this model with the same public properties (except

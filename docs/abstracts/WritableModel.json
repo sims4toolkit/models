@@ -1,0 +1,82 @@
+{
+  "$schema": "https://raw.githubusercontent.com/sims4toolkit/misc/main/json-schemas/docs-item-schema.json",
+  "header": {
+    "title": {
+      "prefix": "abstract class",
+      "name": "WritableModel",
+      "extends": [
+        {
+          "name": "ApiModel",
+          "path": {
+            "pkg": "models",
+            "group": "abstracts",
+            "item": "ApiModel"
+          }
+        }
+      ]
+    },
+    "description": "Base class for models that can be written to disk.",
+    "sourceCode": "src/lib/base/writable-model.ts"
+  },
+  "sections": [
+    {
+      "title": "Properties",
+      "content": [
+        {
+          "displayType": "property",
+          "prefix": "get",
+          "name": "buffer",
+          "type": {
+            "name": "Buffer"
+          },
+          "description": "The buffer for this model. If one is cached, it is returned. If there is no cached buffer available, then this model will be serialized on the fly."
+        },
+        {
+          "displayType": "property",
+          "prefix": "get",
+          "name": "isCached",
+          "type": {
+            "name": "boolean"
+          },
+          "description": "Whether this model currently has a cached buffer. True when the buffer is cached, false when it's not."
+        },
+        {
+          "displayType": "property",
+          "prefix": "get, set",
+          "name": "saveBuffer",
+          "type": {
+            "name": "boolean"
+          },
+          "description": "Whether or not the buffer should be cached on this model. If the buffer is currently false and this is set to true, the cache is cleared."
+        }
+      ]
+    },
+    {
+      "title": "Methods",
+      "content": [
+        {
+          "displayType": "function",
+          "prefix": "async",
+          "name": "getBufferAsync",
+          "returnType": {
+            "name": "Promise<Buffer>"
+          },
+          "description": "Generates the buffer for this model asynchronously, and returns a Promise that resolves with it. To get the buffer synchronously, just access the 'buffer' property."
+        },
+        {
+          "displayType": "function",
+          "name": "onChange",
+          "description": "Deletes this model's cache and notifies its own to do the same. You should never have to call this yourself.",
+          "overrides": {
+            "name": "ApiModel",
+            "path": {
+              "pkg": "models",
+              "group": "abstracts",
+              "item": "ApiModel"
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

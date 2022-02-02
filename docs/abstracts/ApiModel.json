@@ -1,0 +1,68 @@
+{
+  "$schema": "https://raw.githubusercontent.com/sims4toolkit/misc/main/json-schemas/docs-item-schema.json",
+  "header": {
+    "title": {
+      "prefix": "abstract class",
+      "name": "ApiModel"
+    },
+    "description": "Base class for all other models in the API.",
+    "sourceCode": "src/lib/base/api-model.ts"
+  },
+  "sections": [
+    {
+      "title": "Properties",
+      "content": [
+        {
+          "displayType": "property",
+          "prefix": "get, set",
+          "name": "owner",
+          "type": {
+            "name": "ApiModel"
+          },
+          "optional": true,
+          "description": "The model that contains this one (for cacheing purposes)."
+        }
+      ]
+    },
+    {
+      "title": "Methods",
+      "content": [
+        {
+          "displayType": "function",
+          "name": "clone",
+          "returnType": {
+            "name": "ApiModel"
+          },
+          "description": "Returns a deep copy of this model with the same public properties (except for its owner). Internal or private values are not guaranteed to be preserved. This is guaranteed to return the same type as the object it is called on."
+        },
+        {
+          "displayType": "function",
+          "name": "equals",
+          "arguments": [
+            {
+              "name": "other",
+              "type": {
+                "name": "any"
+              },
+              "description": "Object/value to compare to this model."
+            }
+          ],
+          "returnType": {
+            "name": "boolean"
+          },
+          "description": "Determines whether this model is equivalent to another object."
+        },
+        {
+          "displayType": "function",
+          "name": "onChange",
+          "description": "Notifies this model and its owner that one of its values has been changed. You should never have to call this yourself."
+        },
+        {
+          "displayType": "function",
+          "name": "validate",
+          "description": "Verifies that this model is valid. If it isn't, a detailed exception is thrown to explain what is wrong. If nothing is wrong, no exception is thrown."
+        }
+      ]
+    }
+  ]
+}
