@@ -1,0 +1,271 @@
+{
+  "$schema": "https://raw.githubusercontent.com/sims4toolkit/misc/main/json-schemas/docs-item-schema.json",
+  "imports": [
+    "import { StringTableResource } from \"@s4tk/models\"; // ESM",
+    "const { StringTableResource } = require(\"@s4tk/models\"); // CJS"
+  ],
+  "header": {
+    "title": {
+      "prefix": "class",
+      "name": "StringTableResource",
+      "extends": [
+        {
+          "name": "MappedModel<number, string, StringEntry>",
+          "path": {
+            "pkg": "models",
+            "group": "abstracts",
+            "item": "MappedModel"
+          }
+        }
+      ],
+      "implements": [
+        {
+          "name": "Resource",
+          "path": {
+            "pkg": "models",
+            "group": "types",
+            "item": "Resource"
+          }
+        }
+      ]
+    },
+    "description": "Model for string table (STBL) resources.",
+    "sourceCode": "src/lib/resources/stbl/stbl-resource.ts"
+  },
+  "sections": [
+    {
+      "title": "Properties",
+      "content": [
+        {
+          "displayType": "property",
+          "prefix": "readonly",
+          "name": "encodingType",
+          "description": "Always 'EncodingType.STBL'.",
+          "type": {
+            "name": "EncodingType",
+            "path": {
+              "pkg": "models",
+              "group": "enums",
+              "item": "EncodingType"
+            }
+          },
+          "overrides": {
+            "name": "Resource",
+            "path": {
+              "pkg": "models",
+              "group": "types",
+              "item": "Resource"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "title": "Initialization",
+      "description": "The constructor is not a part of the public API, and may be changed without warning. Avoid using it, favoring the static methods instead.",
+      "content": [
+        {
+          "displayType": "function",
+          "prefix": "static",
+          "name": "create",
+          "returnType": {
+            "name": "StringTableResource"
+          },
+          "description": "Creates a new StringTableResource instance with the given entries, if any. If no entries are provided, an empty STBL is created.",
+          "arguments": [
+            {
+              "description": "Optional arguments.",
+              "optional": true,
+              "name": "options",
+              "type": {
+                "name": "object"
+              },
+              "properties": [
+                {
+                  "name": "entries",
+                  "optional": true,
+                  "description": "Optional entries to create STBL with. If no entries are provided, the STBL is empty.",
+                  "type": {
+                    "name": "KeyStringPair",
+                    "path": {
+                      "pkg": "models",
+                      "group": "types",
+                      "item": "KeyStringPair"
+                    }
+                  }
+                },
+                {
+                  "name": "saveBuffer",
+                  "optional": true,
+                  "description": "Whether or not buffers created for this resource should be cached. False by default.",
+                  "type": {
+                    "name": "boolean"
+                  }
+                }
+              ]
+            }
+          ],
+          "examples": [
+            {
+              "code": "const emptyStbl = StringTableResource.create();"
+            },
+            {
+              "code": "const stbl = StringTableResource.create({\n  entries: [\n    {\n      key: 123,\n      value: \"hi\"\n    },\n    {\n      key: 456,\n      value: \"bye\"\n    }\n  ]\n});"
+            }
+          ]
+        },
+        {
+          "displayType": "function",
+          "prefix": "static",
+          "name": "from",
+          "returnType": {
+            "name": "StringTableResource"
+          },
+          "description": "Reads the given buffer as a StringTableResource and returns it.",
+          "arguments": [
+            {
+              "name": "buffer",
+              "description": "Buffer to read as a STBL.",
+              "type": {
+                "name": "Buffer"
+              }
+            },
+            {
+              "name": "options",
+              "optional": true,
+              "description": "Optional arguments for reading the buffer.",
+              "type": {
+                "name": "FileReadingOptions",
+                "path": {
+                  "pkg": "models",
+                  "group": "types",
+                  "item": "FileReadingOptions"
+                }
+              }
+            }
+          ],
+          "examples": [
+            {
+              "code": "const stbl = StringTableResource.from(buffer);"
+            }
+          ]
+        },
+        {
+          "displayType": "function",
+          "prefix": "static",
+          "name": "fromAsync",
+          "returnType": {
+            "name": "Promise<StringTableResource>"
+          },
+          "description": "Reads the given buffer as a StringTableResource asynchronously and returns a Promise that resolves with it.",
+          "arguments": [
+            {
+              "name": "buffer",
+              "description": "Buffer to read as a STBL.",
+              "type": {
+                "name": "Buffer"
+              }
+            },
+            {
+              "name": "options",
+              "optional": true,
+              "description": "Optional arguments for reading the buffer.",
+              "type": {
+                "name": "FileReadingOptions",
+                "path": {
+                  "pkg": "models",
+                  "group": "types",
+                  "item": "FileReadingOptions"
+                }
+              }
+            }
+          ],
+          "examples": [
+            {
+              "code": "StringTableResource.fromAsync(buffer).then(stbl => {\n  // do stuff\n});"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Methods",
+      "content": [
+        {
+          "displayType": "function",
+          "name": "isXml",
+          "returnType": {
+            "name": "boolean"
+          },
+          "description": "Always returns false.",
+          "overrides": {
+            "name": "Resource",
+            "path": {
+              "pkg": "models",
+              "group": "types",
+              "item": "Resource"
+            }
+          }
+        },
+        {
+          "displayType": "function",
+          "name": "addAndHash",
+          "returnType": {
+            "name": "StringEntry",
+            "path": {
+              "pkg": "models",
+              "group": "types",
+              "item": "StringEntry"
+            }
+          },
+          "description": "Creates a new entry from the given string, adds it to the string table, and returns it. If 'toHash' is supplied, it will be hashed for the key. If not, then the string itself will be hashed.",
+          "arguments": [
+            {
+              "name": "value",
+              "type": {
+                "name": "string"
+              },
+              "description": "String value to add to STBL."
+            },
+            {
+              "name": "toHash",
+              "optional": true,
+              "description": "Optional string to hash for the key.",
+              "type": {
+                "name": "string"
+              }
+            }
+          ],
+          "examples": [
+            {
+              "code": "// adds an entry with key fnv32(\"something\")\nstbl.addAndHash(\"something\");\n\n// adds an entry with key fnv32(\"my_name:some_string\")\nstbl.addAndHash(\"something\", \"my_name:some_string\");"
+            },
+            {
+              "code": "// To ensure that strings are not duplicated, consider using the following:\nstbl.getByValue(stringToAdd) ?? stbl.addAndHash(stringToAdd);"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "footer": {
+    "seeAlso": [
+      {
+        "name": "StringEntry",
+        "path": {
+          "pkg": "models",
+          "group": "types",
+          "item": "StringEntry"
+        }
+      },
+      {
+        "name": "MappedModel",
+        "path": {
+          "pkg": "models",
+          "group": "abstracts",
+          "item": "MappedModel"
+        }
+      }
+    ]
+  }
+}
