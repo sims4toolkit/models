@@ -1,0 +1,165 @@
+{
+  "$schema": "https://raw.githubusercontent.com/sims4toolkit/misc/main/json-schemas/docs-item-schema.json",
+  "imports": [
+    "import { SimDataInstance } from \"@s4tk/models/simdata\"; // ESM",
+    "const { SimDataInstance } = require(\"@s4tk/models/simdata\"); // CJS"
+  ],
+  "header": {
+    "title": {
+      "prefix": "class",
+      "name": "SimDataInstance",
+      "extends": [
+        {
+          "name": "ObjectCell",
+          "path": {
+            "pkg": "models",
+            "group": "simdata-cells",
+            "item": "ObjectCell"
+          }
+        }
+      ]
+    },
+    "description": "A top-level object cell that has a name. These are the only cells that actually appear in SimData XML, so these are the models that modders are probably familiar with.",
+    "sourceCode": "src/lib/resources/simdata/fragments.ts"
+  },
+  "sections": [
+    {
+      "title": "Properties",
+      "content": [
+        {
+          "displayType": "property",
+          "name": "name",
+          "prefix": "get, set",
+          "type": {
+            "name": "string"
+          },
+          "description": "The name of this instance."
+        }
+      ]
+    },
+    {
+      "title": "Initialization",
+      "content": [
+        {
+          "displayType": "function",
+          "name": "constructor",
+          "returnType": {
+            "name": "SimDataInstance"
+          },
+          "description": "Creates a new SimDataInstance.",
+          "arguments": [
+            {
+              "name": "name",
+              "type": {
+                "name": "string"
+              },
+              "description": "The name to use on this instance."
+            },
+            {
+              "name": "schema",
+              "type": {
+                "name": "SimDataSchema",
+                "path": {
+                  "pkg": "models",
+                  "group": "simdata-fragments",
+                  "item": "SimDataSchema"
+                }
+              },
+              "description": "The schema for this instance to follow."
+            },
+            {
+              "name": "row",
+              "type": {
+                "name": "ObjectCellRow",
+                "path": {
+                  "pkg": "models",
+                  "group": "types",
+                  "item": "ObjectCellRow"
+                }
+              },
+              "description": "The values within this instance."
+            },
+            {
+              "name": "owner",
+              "optional": true,
+              "type": {
+                "name": "ApiModelBase",
+                "path": {
+                  "pkg": "models",
+                  "group": "abstracts",
+                  "item": "ApiModelBase"
+                }
+              },
+              "description": "The SimData that contains this instance."
+            }
+          ]
+        },
+        {
+          "displayType": "function",
+          "prefix": "static",
+          "name": "fromObjectCell",
+          "returnType": {
+            "name": "SimDataInstance"
+          },
+          "description": "Creates a new SimDataInstance from an existing object cell.",
+          "arguments": [
+            {
+              "name": "name",
+              "type": {
+                "name": "string"
+              },
+              "description": "The name to use on this instance."
+            },
+            {
+              "name": "source",
+              "type": {
+                "name": "ObjectCell",
+                "path": {
+                  "pkg": "models",
+                  "group": "simdata-cells",
+                  "item": "ObjectCell"
+                }
+              },
+              "description": "ObjectCell to base this instance off of."
+            }
+          ]
+        },
+        {
+          "displayType": "function",
+          "prefix": "static",
+          "name": "fromXmlNode",
+          "returnType": {
+            "name": "SimDataInstance"
+          },
+          "description": "Creates a new SimDataInstance from an XML node.",
+          "arguments": [
+            {
+              "name": "node",
+              "type": {
+                "name": "XmlNode",
+                "path": {
+                  "pkg": "xml-dom",
+                  "group": "interfaces",
+                  "item": "XmlNode"
+                }
+              },
+              "description": "The XML node to create an instance from."
+            },
+            {
+              "name": "schemas",
+              "type": {
+                "name": "SimDataSchema[]",
+                "path": {
+                  "pkg": "models",
+                  "group": "simdata-fragments",
+                  "item": "SimDataSchema"
+                }
+              },
+              "description": "Array of schemas to use while parsing the XML node as an instance. If the instance's schema is not provided in this array, an exception is thrown."
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

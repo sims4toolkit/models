@@ -232,6 +232,7 @@ export class SimDataInstance extends ObjectCell {
    * Creates a SimDataInstance from an ObjectCell. Nothing is cloned - exact
    * references are maintained. Additionally, the owner is not copied.
    * 
+   * @param name The name to use on this instance
    * @param source ObjectCell to base this instance off of
    */
   static fromObjectCell(name: string, source: ObjectCell): SimDataInstance {
@@ -242,6 +243,7 @@ export class SimDataInstance extends ObjectCell {
    * Parses an S4S-style XML node as an instance.
    * 
    * @param node Node to parse as a instance
+   * @param schemas Array of schemas to use while parsing this instance
    */
   static fromXmlNode(node: XmlNode, schemas: SimDataSchema[]): SimDataInstance {
     if (node.tag !== "I")
