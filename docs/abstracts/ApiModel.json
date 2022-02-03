@@ -3,7 +3,7 @@
   "header": {
     "title": {
       "prefix": "abstract class",
-      "name": "ApiModel"
+      "name": "ApiModelBase"
     },
     "description": "Base class for all other models in the API.",
     "sourceCode": "src/lib/base/api-model.ts"
@@ -17,7 +17,7 @@
           "prefix": "get, set",
           "name": "owner",
           "type": {
-            "name": "ApiModel"
+            "name": "ApiModelBase"
           },
           "optional": true,
           "description": "The model that contains this one (for cacheing purposes)."
@@ -31,7 +31,7 @@
           "displayType": "function",
           "name": "clone",
           "returnType": {
-            "name": "ApiModel"
+            "name": "ApiModelBase"
           },
           "description": "Returns a deep copy of this model with the same public properties (except for its owner). Internal or private values are not guaranteed to be preserved. This is guaranteed to return the same type as the object it is called on."
         },

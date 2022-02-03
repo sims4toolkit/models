@@ -1,0 +1,147 @@
+{
+  "$schema": "https://raw.githubusercontent.com/sims4toolkit/misc/main/json-schemas/docs-item-schema.json",
+  "imports": [
+    "import { SimDataSchemaColumn } from \"@s4tk/models/simdata\"; // ESM",
+    "const { SimDataSchemaColumn } = require(\"@s4tk/models/simdata\"); // CJS"
+  ],
+  "header": {
+    "title": {
+      "prefix": "class",
+      "name": "SimDataSchemaColumn",
+      "extends": [
+        {
+          "name": "ApiModelBase",
+          "path": {
+            "pkg": "models",
+            "group": "abstracts",
+            "item": "ApiModelBase"
+          }
+        }
+      ]
+    },
+    "description": "A column in a SimData schema.",
+    "sourceCode": "src/lib/resources/simdata/fragments.ts"
+  },
+  "sections": [
+    {
+      "title": "Properties",
+      "content": [
+        {
+          "displayType": "property",
+          "prefix": "get, set",
+          "name": "flags",
+          "type": {
+            "name": "number"
+          },
+          "description": "The flags for this column. Ideally, this should always be 0."
+        },
+        {
+          "displayType": "property",
+          "prefix": "get, set",
+          "name": "name",
+          "type": {
+            "name": "string"
+          },
+          "description": "The name of this column."
+        },
+        {
+          "displayType": "property",
+          "prefix": "get, set",
+          "name": "type",
+          "type": {
+            "name": "DataType",
+            "path": {
+              "pkg": "models",
+              "group": "enums",
+              "item": "DataType"
+            }
+          },
+          "description": "The data type of this column."
+        }
+      ]
+    },
+    {
+      "title": "Initialization",
+      "content": [
+        {
+          "displayType": "function",
+          "name": "constructor",
+          "returnType": {
+            "name": "SimDataSchemaColumn"
+          },
+          "description": "Creates a new SimDataSchemaColumn.",
+          "arguments": [
+            {
+              "name": "name",
+              "description": "The name of this column.",
+              "type": {
+                "name": "string"
+              }
+            },
+            {
+              "name": "type",
+              "description": "The data type of this column.",
+              "type": {
+                "name": "DataType",
+                "path": {
+                  "pkg": "models",
+                  "group": "enums",
+                  "item": "DataType"
+                }
+              }
+            },
+            {
+              "name": "flags",
+              "optional": true,
+              "description": "The flags of this column.",
+              "type": {
+                "name": "number"
+              }
+            }
+          ]
+        },
+        {
+          "displayType": "function",
+          "prefix": "static",
+          "name": "fromXmlNode",
+          "returnType": {
+            "name": "SimDataSchemaColumn"
+          },
+          "description": "Creates a new SimDataSchemaColumn from an XmlNode.",
+          "arguments": [
+            {
+              "name": "node",
+              "description": "Node to parse as a column.",
+              "type": {
+                "name": "XmlNode",
+                "path": {
+                  "pkg": "xml-dom",
+                  "group": "nodes",
+                  "item": "XmlNode"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Methods",
+      "content": [
+        {
+          "displayType": "function",
+          "name": "toXmlNode",
+          "returnType": {
+            "name": "XmlElementNode",
+            "path": {
+              "pkg": "xml-dom",
+              "group": "nodes",
+              "item": "XmlElementNode"
+            }
+          },
+          "description": "Creates an XmlElementNode object that represents this column as it would appear within an S4S-style XML SimData document."
+        }
+      ]
+    }
+  ]
+}

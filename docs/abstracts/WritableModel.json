@@ -6,11 +6,11 @@
       "name": "WritableModel",
       "extends": [
         {
-          "name": "ApiModel",
+          "name": "ApiModelBase",
           "path": {
             "pkg": "models",
             "group": "abstracts",
-            "item": "ApiModel"
+            "item": "ApiModelBase"
           }
         }
       ]
@@ -68,11 +68,11 @@
           "name": "onChange",
           "description": "Deletes this model's cache and notifies its owner to do the same. You should never have to call this yourself.",
           "overrides": {
-            "name": "ApiModel",
+            "name": "ApiModelBase",
             "path": {
               "pkg": "models",
               "group": "abstracts",
-              "item": "ApiModel"
+              "item": "ApiModelBase"
             }
           }
         }

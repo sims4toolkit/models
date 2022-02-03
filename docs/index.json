@@ -60,7 +60,7 @@
     {
       "name": "abstracts",
       "items": [
-        "ApiModel",
+        "ApiModelBase",
         "MappedModel",
         "MappedModelEntry",
         "WritableModel"
