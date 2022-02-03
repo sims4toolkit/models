@@ -1,0 +1,103 @@
+{
+  "$schema": "https://raw.githubusercontent.com/sims4toolkit/misc/main/json-schemas/docs-item-schema.json",
+  "header": {
+    "title": {
+      "prefix": "interface",
+      "name": "MappedModelEntry",
+      "generics": [
+        {
+          "name": "Key"
+        },
+        {
+          "name": "Value"
+        }
+      ]
+    },
+    "description": "Interface for mapped model entries to implement.",
+    "sourceCode": "src/lib/base/mapped-model.ts"
+  },
+  "sections": [
+    {
+      "title": "Properties",
+      "content": [
+        {
+          "displayType": "property",
+          "prefix": "get, set",
+          "name": "owner",
+          "optional": true,
+          "description": "Mapped model that contains this one.",
+          "type": {
+            "name": "MappedModel<MappedModel<Key, Value, MappedModelEntry>",
+            "path": {
+              "pkg": "models",
+              "group": "abstracts",
+              "item": "MappedModel"
+            }
+          }
+        },
+        {
+          "displayType": "property",
+          "prefix": "get, set",
+          "name": "key",
+          "description": "The key for this entry.",
+          "type": {
+            "name": "Key"
+          }
+        },
+        {
+          "displayType": "property",
+          "prefix": "get, set",
+          "name": "value",
+          "description": "The value for this entry.",
+          "type": {
+            "name": "Value"
+          }
+        }
+      ]
+    },
+    {
+      "title": "Methods",
+      "content": [
+        {
+          "displayType": "function",
+          "name": "keyEquals",
+          "description": "Checks if the given key is equal to the one that this entry uses. Returns true if the keys are equal, false if they're not.",
+          "arguments": [
+            {
+              "name": "key",
+              "type": {
+                "name": "Key"
+              },
+              "description": "Key to check for equality."
+            }
+          ],
+          "returnType": {
+            "name": "boolean"
+          }
+        },
+        {
+          "displayType": "function",
+          "name": "validate",
+          "description": "Verifies that this entry is valid. If it isn't, a detailed exception is thrown to explain what is wrong. If nothing is wrong, no exception is thrown."
+        },
+        {
+          "displayType": "function",
+          "name": "valueEquals",
+          "description": "Checks if the given value is equal to the one that this entry has. Returns true if the values are equal, false if they're not.",
+          "arguments": [
+            {
+              "name": "value",
+              "type": {
+                "name": "Value"
+              },
+              "description": "Value to check for equality."
+            }
+          ],
+          "returnType": {
+            "name": "boolean"
+          }
+        }
+      ]
+    }
+  ]
+}
