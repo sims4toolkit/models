@@ -1,0 +1,197 @@
+{
+  "$schema": "https://raw.githubusercontent.com/sims4toolkit/misc/main/json-schemas/docs-item-schema.json",
+  "imports": [
+    "import { SimDataSchema } from \"@s4tk/models/simdata\"; // ESM",
+    "const { SimDataSchema } = require(\"@s4tk/models/simdata\"); // CJS"
+  ],
+  "header": {
+    "title": {
+      "prefix": "class",
+      "name": "SimDataSchema",
+      "extends": [
+        {
+          "name": "ApiModelBase",
+          "path": {
+            "pkg": "models",
+            "group": "abstracts",
+            "item": "ApiModelBase"
+          }
+        }
+      ]
+    },
+    "description": "A schema that objects in a SimData can follow.",
+    "sourceCode": "src/lib/resources/simdata/fragments.ts"
+  },
+  "sections": [
+    {
+      "title": "Properties",
+      "content": [
+        {
+          "displayType": "property",
+          "prefix": "get",
+          "name": "columns",
+          "type": {
+            "name": "SimDataSchemaColumn[]",
+            "path": {
+              "pkg": "models",
+              "group": "simdata-fragments",
+              "item": "SimDataSchemaColumn"
+            }
+          },
+          "description": "An array that contains the columns for this schema. Mutating this array and its children is safe in terms of cacheing."
+        },
+        {
+          "displayType": "property",
+          "prefix": "get, set",
+          "name": "hash",
+          "type": {
+            "name": "number"
+          },
+          "description": "The hash for this schema. Note that this is not necessarily the hash of its name."
+        },
+        {
+          "displayType": "property",
+          "prefix": "get, set",
+          "name": "name",
+          "type": {
+            "name": "string"
+          },
+          "description": "The name of this schema."
+        }
+      ]
+    },
+    {
+      "title": "Initialization",
+      "content": [
+        {
+          "displayType": "function",
+          "name": "constructor",
+          "returnType": {
+            "name": "SimDataSchema"
+          },
+          "description": "Creates a new SimDataSchema.",
+          "arguments": [
+            {
+              "name": "name",
+              "description": "The name for this schema.",
+              "type": {
+                "name": "string"
+              }
+            },
+            {
+              "name": "hash",
+              "description": "The hash for this schema.",
+              "type": {
+                "name": "number"
+              }
+            },
+            {
+              "name": "columns",
+              "description": "The columns for this schema.",
+              "type": {
+                "name": "SimDataSchemaColumn[]",
+                "path": {
+                  "pkg": "models",
+                  "group": "simdata-fragments",
+                  "item": "SimDataSchemaColumn"
+                }
+              }
+            },
+            {
+              "name": "owner",
+              "optional": true,
+              "description": "The SimData that contains this schema.",
+              "type": {
+                "name": "ApiModelBase",
+                "path": {
+                  "pkg": "models",
+                  "group": "abstracts",
+                  "item": "ApiModelBase"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "displayType": "function",
+          "prefix": "static",
+          "name": "fromXmlNode",
+          "returnType": {
+            "name": "SimDataSchema"
+          },
+          "description": "Creates a new SimDataSchema from an XmlNode.",
+          "arguments": [
+            {
+              "name": "node",
+              "description": "Node to parse as a schema.",
+              "type": {
+                "name": "XmlNode",
+                "path": {
+                  "pkg": "xml-dom",
+                  "group": "nodes",
+                  "item": "XmlNode"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Methods",
+      "content": [
+        {
+          "displayType": "function",
+          "name": "addColumnClones",
+          "description": "Clones and adds the given columns to this schema. It is always recommended to use this method over a regular 'push()' when sharing columns between schemas, so as to avoid cacheing issues.",
+          "arguments": [
+            {
+              "name": "...columns",
+              "type": {
+                "name": "SimDataSchemaColumn[]",
+                "path": {
+                  "pkg": "models",
+                  "group": "simdata-fragments",
+                  "item": "SimDataSchemaColumn"
+                }
+              },
+              "description": "Variable number of columns to clone and add to this schema."
+            }
+          ]
+        },
+        {
+          "displayType": "function",
+          "name": "removeColumns",
+          "description": "Removes the given columns from this schema. Columns are removed by reference equality, so the given objects must be the exact objects that exist in this SimData.",
+          "arguments": [
+            {
+              "name": "...columns",
+              "type": {
+                "name": "SimDataSchemaColumn[]",
+                "path": {
+                  "pkg": "models",
+                  "group": "simdata-fragments",
+                  "item": "SimDataSchemaColumn"
+                }
+              },
+              "description": "Variable number of columns to remove by reference."
+            }
+          ]
+        },
+        {
+          "displayType": "function",
+          "name": "toXmlNode",
+          "returnType": {
+            "name": "XmlElementNode",
+            "path": {
+              "pkg": "xml-dom",
+              "group": "nodes",
+              "item": "XmlElementNode"
+            }
+          },
+          "description": "Creates an XmlElementNode object that represents this schema as it would appear within an S4S-style XML SimData document."
+        }
+      ]
+    }
+  ]
+}

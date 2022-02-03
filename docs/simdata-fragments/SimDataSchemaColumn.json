@@ -97,6 +97,19 @@
               "type": {
                 "name": "number"
               }
+            },
+            {
+              "name": "owner",
+              "optional": true,
+              "description": "The SimData that contains this column.",
+              "type": {
+                "name": "ApiModelBase",
+                "path": {
+                  "pkg": "models",
+                  "group": "abstracts",
+                  "item": "ApiModelBase"
+                }
+              }
             }
           ]
         },
