@@ -87,11 +87,11 @@
           "name": "root",
           "description": "Alias for dom.child, since most XML resources should have just one child anyways. To mutate the root and keep it in sync with the content/buffer, either use the 'updateRoot()' method, or set the root equal to itself when finished (EX: 'resource.root = resource.root').",
           "type": {
-            "name": "XmlDocumentNode",
+            "name": "XmlNode",
             "path": {
               "pkg": "xml-dom",
               "group": "classes",
-              "item": "XmlDocumentNode"
+              "item": "XmlNode"
             }
           }
         }
