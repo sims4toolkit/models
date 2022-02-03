@@ -40,7 +40,7 @@
           "displayType": "property",
           "prefix": "readonly",
           "name": "encodingType",
-          "description": "How this resource is encoded. Always 'EncodingType.Unknown'.",
+          "description": "Always 'EncodingType.Unknown'.",
           "type": {
             "name": "EncodingType",
             "path": {
@@ -119,7 +119,12 @@
                 "name": "string"
               },
               "optional": true,
-              "description": "Reason why this resource is being loaded raw."
+              "description": "Optional reason why this resource is being loaded raw."
+            }
+          ],
+          "examples": [
+            {
+              "code": "const raw = RawResource.from(buffer, \"Because I said so.\");"
             }
           ]
         }
