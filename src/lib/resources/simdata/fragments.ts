@@ -129,7 +129,7 @@ export class SimDataSchema extends ApiModelBase {
  * A column in a SimData schema.
  */
 export class SimDataSchemaColumn extends ApiModelBase {
-  constructor(public name: string, public type: DataType, public flags: number, owner?: ApiModelBase) {
+  constructor(public name: string, public type: DataType, public flags: number = 0, owner?: ApiModelBase) {
     super(owner);
     this._watchProps('name', 'type', 'flags');
   }
