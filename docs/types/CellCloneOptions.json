@@ -1,0 +1,53 @@
+{
+  "$schema": "https://raw.githubusercontent.com/sims4toolkit/misc/main/json-schemas/docs-item-schema.json",
+  "header": {
+    "title": {
+      "prefix": "interface",
+      "name": "CellCloneOptions"
+    },
+    "description": "Object of optional params when cloning a SimData cell. This is only used with object cells, or cells that contain object cells (such as variants or vectors).",
+    "sourceCode": "src/lib/resources/simdata/types.ts"
+  },
+  "sections": [
+    {
+      "title": "Properties",
+      "content": [
+        {
+          "displayType": "property",
+          "name": "cloneSchema",
+          "type": {
+            "name": "boolean"
+          },
+          "optional": true,
+          "description": "Whether or not to clone the schema(s) of any objects in this cell's tree. False by default."
+        },
+        {
+          "displayType": "property",
+          "name": "newSchemas",
+          "type": {
+            "name": "SimDataSchema[]",
+            "path": {
+              "pkg": "models",
+              "group": "simdata-fragments",
+              "item": "SimDataSchema"
+            }
+          },
+          "optional": true,
+          "description": "If cloneSchema is false, then find and use the appropriate schemas from this array. It is recommended to always use this option, so that the same schemas are not created more than once."
+        }
+      ]
+    }
+  ],
+  "footer": {
+    "seeAlso": [
+      {
+        "name": "ObjectCell",
+        "path": {
+          "pkg": "models",
+          "group": "simdata-cells",
+          "item": "ObjectCell"
+        }
+      }
+    ]
+  }
+}

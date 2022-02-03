@@ -1,0 +1,39 @@
+{
+  "$schema": "https://raw.githubusercontent.com/sims4toolkit/misc/main/json-schemas/docs-item-schema.json",
+  "header": {
+    "title": {
+      "prefix": "interface",
+      "name": "CellEncodingOptions"
+    },
+    "description": "Object of optional params when encoding a SimData cell as binary. This is only used with cells that contain variably-sized data, such as Strings, Objects, and Vectors. This is mostly for internal use, there is likely no need for users.",
+    "sourceCode": "src/lib/resources/simdata/types.ts"
+  },
+  "sections": [
+    {
+      "title": "Properties",
+      "content": [
+        {
+          "displayType": "property",
+          "name": "offset",
+          "type": {
+            "name": "number"
+          },
+          "optional": true,
+          "description": "The offset at which this cell's data can be found."
+        }
+      ]
+    }
+  ],
+  "footer": {
+    "seeAlso": [
+      {
+        "name": "Cell",
+        "path": {
+          "pkg": "models",
+          "group": "simdata-cells",
+          "item": "Cell"
+        }
+      }
+    ]
+  }
+}

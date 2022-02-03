@@ -1,0 +1,48 @@
+{
+  "$schema": "https://raw.githubusercontent.com/sims4toolkit/misc/main/json-schemas/docs-item-schema.json",
+  "header": {
+    "title": {
+      "prefix": "interface",
+      "name": "CellToXmlOptions"
+    },
+    "description": "Object of optional params when serializing a SimData cell as XML. This is mostly for internal use, there is likely no need for users.",
+    "sourceCode": "src/lib/resources/simdata/types.ts"
+  },
+  "sections": [
+    {
+      "title": "Properties",
+      "content": [
+        {
+          "displayType": "property",
+          "name": "nameAttr",
+          "type": {
+            "name": "string"
+          },
+          "optional": true,
+          "description": "The value to put in the 'name' attribute. No name by default."
+        },
+        {
+          "displayType": "property",
+          "name": "typeAttr",
+          "type": {
+            "name": "boolean"
+          },
+          "optional": true,
+          "description": "Whether or not to include the cell's type in its 'type' attribute. False by default."
+        }
+      ]
+    }
+  ],
+  "footer": {
+    "seeAlso": [
+      {
+        "name": "Cell",
+        "path": {
+          "pkg": "models",
+          "group": "simdata-cells",
+          "item": "Cell"
+        }
+      }
+    ]
+  }
+}
