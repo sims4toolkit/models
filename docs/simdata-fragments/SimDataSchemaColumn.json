@@ -129,7 +129,7 @@
                 "name": "XmlNode",
                 "path": {
                   "pkg": "xml-dom",
-                  "group": "nodes",
+                  "group": "interfaces",
                   "item": "XmlNode"
                 }
               }
@@ -148,7 +148,7 @@
             "name": "XmlElementNode",
             "path": {
               "pkg": "xml-dom",
-              "group": "nodes",
+              "group": "classes",
               "item": "XmlElementNode"
             }
           },
@@ -156,5 +156,17 @@
         }
       ]
     }
-  ]
+  ],
+  "footer": {
+    "seeAlso": [
+      {
+        "name": "SimDataSchema",
+        "path": {
+          "pkg": "models",
+          "group": "simdata-fragments",
+          "item": "SimDataSchema"
+        }
+      }
+    ]
+  }
 }
