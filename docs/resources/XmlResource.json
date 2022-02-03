@@ -149,6 +149,17 @@
                 }
               ]
             }
+          ],
+          "examples": [
+            {
+              "code": "const emptyXml = XmlResource.create();"
+            },
+            {
+              "code": "const xmlFromString = XmlResource.create({\n  content: \"<I n=\\\"some_file\\\"><T n=\\\"something\\\">50</T></I>\"\n});"
+            },
+            {
+              "code": "const xmlFromDom = XmlResource.create({\n  dom: new XmlDocumentNode(...) // create it however you want\n});"
+            }
           ]
         },
         {
@@ -180,6 +191,11 @@
                 }
               }
             }
+          ],
+          "examples": [
+            {
+              "code": "const xmlFromBuffer = XmlResource.from(buffer);"
+            }
           ]
         },
         {
@@ -210,6 +226,11 @@
                   "item": "FileReadingOptions"
                 }
               }
+            }
+          ],
+          "examples": [
+            {
+              "code": "XmlResource.fromAsync(buffer).then(xml => {\n  // do stuff\n});"
             }
           ]
         }
