@@ -1,0 +1,35 @@
+{
+  "$schema": "https://raw.githubusercontent.com/sims4toolkit/misc/main/json-schemas/docs-item-schema.json",
+  "header": {
+    "title": {
+      "prefix": "interface",
+      "name": "ObjectCellRow"
+    },
+    "description": "Alias for an object that maps strings to SimData cells.",
+    "sourceCode": "src/lib/resources/simdata/types.ts"
+  },
+  "sections": [
+    {
+      "content": [
+        {
+          "displayType": "general",
+          "paragraphs": [
+            "[key: string]: Cell"
+          ]
+        }
+      ]
+    }
+  ],
+  "footer": {
+    "seeAlso": [
+      {
+        "name": "Cell",
+        "path": {
+          "pkg": "models",
+          "group": "simdata-cells",
+          "item": "Cell"
+        }
+      }
+    ]
+  }
+}
