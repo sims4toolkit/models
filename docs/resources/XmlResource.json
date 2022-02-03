@@ -235,6 +235,65 @@
           ]
         }
       ]
+    },
+    {
+      "title": "Methods",
+      "content": [
+        {
+          "displayType": "function",
+          "name": "isXml",
+          "returnType": {
+            "name": "boolean"
+          },
+          "description": "Always returns true.",
+          "overrides": {
+            "name": "Resource",
+            "path": {
+              "pkg": "models",
+              "group": "types",
+              "item": "Resource"
+            }
+          }
+        },
+        {
+          "displayType": "function",
+          "name": "updateDom",
+          "description": "Accepts a callback function to which the DOM is passed as an argument, so that it can be mutated in a way that ensures cacheing is handled properly.",
+          "arguments": [
+            {
+              "name": "fn",
+              "type": {
+                "name": "(dom: XmlDocumentNode) => void"
+              },
+              "description": "Callback function in which the DOM can be altered."
+            }
+          ],
+          "examples": [
+            {
+              "code": "xmlResource.updateDom(dom => {\n  dom.child.name = \"SomeNewName\";\n  dom.child.addChildren(...);\n});"
+            }
+          ]
+        },
+        {
+          "displayType": "function",
+          "name": "updateRoot",
+          "description": "Accepts a callback function to which the DOM's root element (i.e. its first, and hopefully only, child) is passed as an argument, so that it can be mutated in a way that ensures cacheing is handled properly.",
+          "arguments": [
+            {
+              "name": "fn",
+              "type": {
+                "name": "(root: XmlNode) => void"
+              },
+              "description": "Callback function in which the DOM root can be altered."
+            }
+          ],
+          "examples": [
+            {
+              "code": "xmlResource.updateRoot(root => {\n  root.name = \"SomeNewName\";\n  root.addChildren(...);\n});"
+            }
+          ]
+        }
+      ]
     }
   ]
 }

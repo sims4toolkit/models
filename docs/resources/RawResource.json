@@ -129,6 +129,27 @@
           ]
         }
       ]
+    },
+    {
+      "title": "Methods",
+      "content": [
+        {
+          "displayType": "function",
+          "name": "isXml",
+          "returnType": {
+            "name": "boolean"
+          },
+          "description": "Always returns false.",
+          "overrides": {
+            "name": "Resource",
+            "path": {
+              "pkg": "models",
+              "group": "types",
+              "item": "Resource"
+            }
+          }
+        }
+      ]
     }
   ]
 }
