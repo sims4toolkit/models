@@ -1,0 +1,129 @@
+{
+  "$schema": "https://raw.githubusercontent.com/sims4toolkit/misc/main/json-schemas/docs-item-schema.json",
+  "imports": [
+    "import { RawResource } from \"@s4tk/models\"; // ESM",
+    "const { RawResource } = require(\"@s4tk/models\"); // CJS"
+  ],
+  "header": {
+    "title": {
+      "prefix": "class",
+      "name": "RawResource",
+      "extends": [
+        {
+          "name": "WritableModel",
+          "path": {
+            "pkg": "models",
+            "group": "abstracts",
+            "item": "WritableModel"
+          }
+        }
+      ],
+      "implements": [
+        {
+          "name": "Resource",
+          "path": {
+            "pkg": "models",
+            "group": "types",
+            "item": "Resource"
+          }
+        }
+      ]
+    },
+    "description": "Model for resources that have not been parsed.",
+    "sourceCode": "src/lib/resources/raw/raw-resource.ts"
+  },
+  "sections": [
+    {
+      "title": "Properties",
+      "content": [
+        {
+          "displayType": "property",
+          "prefix": "readonly",
+          "name": "encodingType",
+          "description": "How this resource is encoded. Always 'EncodingType.Unknown'.",
+          "type": {
+            "name": "EncodingType",
+            "path": {
+              "pkg": "models",
+              "group": "enums",
+              "item": "EncodingType"
+            }
+          },
+          "overrides": {
+            "name": "Resource",
+            "path": {
+              "pkg": "models",
+              "group": "types",
+              "item": "Resource"
+            }
+          }
+        },
+        {
+          "displayType": "property",
+          "prefix": "get",
+          "name": "plainText",
+          "description": "The contents of this resource as plain text (using UTF-8 encoding).",
+          "type": {
+            "name": "string"
+          }
+        },
+        {
+          "displayType": "property",
+          "prefix": "get, set",
+          "name": "reason",
+          "optional": true,
+          "description": "Why this resource was loaded raw instead of being parsed.",
+          "type": {
+            "name": "string"
+          }
+        },
+        {
+          "displayType": "property",
+          "prefix": "get",
+          "name": "saveBuffer",
+          "description": "Always true. Cannot be set to false. The only defining feature of a RawResource is its buffer, so deleting it is just like deleting the entire model.",
+          "overrides": {
+            "name": "WritableModel",
+            "path": {
+              "pkg": "models",
+              "group": "abstracts",
+              "item": "WritableModel"
+            }
+          },
+          "type": {
+            "name": "boolean"
+          }
+        }
+      ]
+    },
+    {
+      "title": "Initialization",
+      "description": "The constructor is not a part of the public API, and may be changed without warning. Avoid using it, favoring the static 'from' method instead. Note that there is no async variant of the 'from' method, since there is nothing to be done asynchronously - RawResource is essentially a wrapper for a plain Buffer.",
+      "content": [
+        {
+          "displayType": "function",
+          "prefix": "static",
+          "name": "from",
+          "description": "Creates a new RawResource from the given buffer.",
+          "arguments": [
+            {
+              "name": "buffer",
+              "type": {
+                "name": "Buffer"
+              },
+              "description": "Buffer to load into this resource."
+            },
+            {
+              "name": "reason",
+              "type": {
+                "name": "string"
+              },
+              "optional": true,
+              "description": "Reason why this resource is being loaded raw."
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
