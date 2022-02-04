@@ -20,4 +20,4 @@ All S4TK software is currently considered to be in its pre-release stage. Use at
 
 ## Documentation
 
-Visit [sims4toolkit.com/#/docs/models] for the most up-to-date documentation.
+Visit [sims4toolkit.com/#/docs/models](sims4toolkit.com/#/docs/models) for the most up-to-date documentation.
