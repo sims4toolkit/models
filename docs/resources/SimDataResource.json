@@ -1,0 +1,152 @@
+{
+  "$schema": "https://raw.githubusercontent.com/sims4toolkit/misc/main/json-schemas/docs-item-schema.json",
+  "imports": [
+    "import { SimDataResource } from \"@s4tk/models\"; // ESM",
+    "const { SimDataResource } = require(\"@s4tk/models\"); // CJS"
+  ],
+  "header": {
+    "title": {
+      "prefix": "class",
+      "name": "SimDataResource",
+      "extends": [
+        {
+          "name": "WritableModel",
+          "path": {
+            "pkg": "models",
+            "group": "abstracts",
+            "item": "WritableModel"
+          }
+        }
+      ],
+      "implements": [
+        {
+          "name": "Resource",
+          "path": {
+            "pkg": "models",
+            "group": "types",
+            "item": "Resource"
+          }
+        }
+      ]
+    },
+    "description": "Model for SimData resources. While combined tuning is the same format, it is NOT supported by this model.\nSimDatas are mini relational databases, and to simplify working with them (and for consistency with its XML format), this model uses the concept of \"instances\". An instance is an object cell that has a name.",
+    "sourceCode": "src/lib/resources/simdata/simdata-resource.ts"
+  },
+  "sections": [
+    {
+      "title": "Properties",
+      "content": [
+        {
+          "displayType": "property",
+          "prefix": "readonly",
+          "name": "encodingType",
+          "description": "Always 'EncodingType.DATA'.",
+          "type": {
+            "name": "EncodingType",
+            "path": {
+              "pkg": "models",
+              "group": "enums",
+              "item": "EncodingType"
+            }
+          },
+          "overrides": {
+            "name": "Resource",
+            "path": {
+              "pkg": "models",
+              "group": "types",
+              "item": "Resource"
+            }
+          }
+        },
+        {
+          "displayType": "property",
+          "prefix": "get, set",
+          "name": "instance",
+          "description": "Alias for 'instances[0]'.",
+          "type": {
+            "name": "SimDataInstance",
+            "path": {
+              "pkg": "models",
+              "group": "simdata-fragments",
+              "item": "SimDataInstance"
+            }
+          }
+        },
+        {
+          "displayType": "property",
+          "prefix": "get",
+          "name": "instances",
+          "description": "An array that contains the instances for this SimData. Mutating this array and its children is safe in terms of cacheing.",
+          "type": {
+            "name": "SimDataInstance[]",
+            "path": {
+              "pkg": "models",
+              "group": "simdata-fragments",
+              "item": "SimDataInstance"
+            }
+          }
+        },
+        {
+          "displayType": "property",
+          "prefix": "get",
+          "name": "props",
+          "description": "Alias for 'instances[0].row'",
+          "type": {
+            "name": "ObjectCellRow",
+            "path": {
+              "pkg": "models",
+              "group": "type",
+              "item": "ObjectCellRow"
+            }
+          }
+        },
+        {
+          "displayType": "property",
+          "prefix": "get, set",
+          "name": "schema",
+          "description": "Alias for 'schemas[0]'.",
+          "type": {
+            "name": "SimDataSchema",
+            "path": {
+              "pkg": "models",
+              "group": "simdata-fragments",
+              "item": "SimDataSchema"
+            }
+          }
+        },
+        {
+          "displayType": "property",
+          "prefix": "get",
+          "name": "schemas",
+          "description": "An array that contains the schemas for this SimData. Mutating this array and its children is safe in terms of cacheing.",
+          "type": {
+            "name": "SimDataSchema[]",
+            "path": {
+              "pkg": "models",
+              "group": "simdata-fragments",
+              "item": "SimDataSchema"
+            }
+          }
+        },
+        {
+          "displayType": "property",
+          "prefix": "get, set",
+          "name": "unused",
+          "description": "An number in the SimData header that is not used, but is usually set to the group number for a pack.",
+          "type": {
+            "name": "number"
+          }
+        },
+        {
+          "displayType": "property",
+          "prefix": "get, set",
+          "name": "version",
+          "description": "The version of this SimData. This can either be 0x100 or 0x101, but should be 0x101.",
+          "type": {
+            "name": "number"
+          }
+        }
+      ]
+    }
+  ]
+}
