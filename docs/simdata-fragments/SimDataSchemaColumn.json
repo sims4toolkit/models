@@ -166,6 +166,14 @@
           "group": "simdata-fragments",
           "item": "SimDataSchema"
         }
+      },
+      {
+        "name": "SimDataResource",
+        "path": {
+          "pkg": "models",
+          "group": "resources",
+          "item": "SimDataResource"
+        }
       }
     ]
   }

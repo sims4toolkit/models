@@ -1,0 +1,202 @@
+{
+  "$schema": "https://raw.githubusercontent.com/sims4toolkit/misc/main/json-schemas/docs-item-schema.json",
+  "imports": [
+    "import type { Cell } from \"@s4tk/models/simdata\"; // TypeScript only"
+  ],
+  "header": {
+    "title": {
+      "prefix": "abstract class",
+      "name": "Cell",
+      "extends": [
+        {
+          "name": "ApiModelBase",
+          "path": {
+            "pkg": "models",
+            "group": "abstracts",
+            "item": "ApiModelBase"
+          }
+        }
+      ]
+    },
+    "description": "Value that appears in a SimData table.",
+    "sourceCode": "src/lib/resources/simdata/cells.ts"
+  },
+  "sections": [
+    {
+      "title": "Properties",
+      "content": [
+        {
+          "displayType": "property",
+          "name": "asAny",
+          "prefix": "get",
+          "description": "Returns this cell casted as an any, to make accessing properties from an object row less tedious if using TypeScript. This is of no use to those using JavaScript.",
+          "type": {
+            "name": "any"
+          }
+        },
+        {
+          "displayType": "property",
+          "name": "dataType",
+          "prefix": "readonly",
+          "description": "Data type of this cell.",
+          "type": {
+            "name": "DataType",
+            "path": {
+              "pkg": "models",
+              "group": "enums",
+              "item": "DataType"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "title": "Methods",
+      "content": [
+        {
+          "displayType": "function",
+          "name": "clone",
+          "returnType": {
+            "name": "Cell"
+          },
+          "arguments": [
+            {
+              "name": "options",
+              "optional": true,
+              "description": "Options for cloning this cell.",
+              "type": {
+                "name": "CellCloneOptions",
+                "path": {
+                  "pkg": "models",
+                  "group": "types",
+                  "item": "CellCloneOptions"
+                }
+              }
+            }
+          ],
+          "overrides": {
+            "name": "ApiModelBase",
+            "path": {
+              "pkg": "models",
+              "group": "abstracts",
+              "item": "ApiModelBase"
+            }
+          },
+          "description": "Creates a deep copy of this cell, retaining all information except for the owner. Everything contained and owned by this cell will also be cloned, except for the schema of any objects. If you need to clone the schemas, set cloneSchema: true."
+        },
+        {
+          "displayType": "function",
+          "name": "encode",
+          "arguments": [
+            {
+              "name": "encoder",
+              "description": "Encoder to write this cell into.",
+              "type": {
+                "name": "BinaryEncoder",
+                "path": {
+                  "pkg": "encoding",
+                  "group": "classes",
+                  "item": "BinaryEncoder"
+                }
+              }
+            },
+            {
+              "name": "options",
+              "optional": true,
+              "description": "Options for encoding this cell.",
+              "type": {
+                "name": "CellEncodingOptions",
+                "path": {
+                  "pkg": "models",
+                  "group": "types",
+                  "item": "CellEncodingOptions"
+                }
+              }
+            }
+          ],
+          "description": "Writes this cell's value(s) into the given encoder at the current position. If this cell is recursive, then the offset option MUST be supplied, or an exception will be thrown. Note that contained cells will NOT be encoded, just the offset to the contained cell."
+        },
+        {
+          "displayType": "function",
+          "name": "toXmlNode",
+          "arguments": [
+            {
+              "name": "options",
+              "optional": true,
+              "description": "Options for serializing this cell as XML.",
+              "type": {
+                "name": "CellToXmlOptions",
+                "path": {
+                  "pkg": "models",
+                  "group": "types",
+                  "item": "CellToXmlOptions"
+                }
+              }
+            }
+          ],
+          "overrides": {
+            "name": "XmlElementNode",
+            "path": {
+              "pkg": "xml-dom",
+              "group": "classes",
+              "item": "XmlElementNode"
+            }
+          },
+          "description": "Creates an XmlElementNode object that represents this cell as it would appear within an S4S-style XML SimData document."
+        }
+      ]
+    },
+    {
+      "title": "Static Methods",
+      "content": [
+        {
+          "displayType": "function",
+          "name": "parseXmlNode",
+          "prefix": "static",
+          "description": "Parses a cell of the given type from the given node, using the list of schemas to read any objects that it may contain.",
+          "returnType": {
+            "name": "Cell"
+          },
+          "arguments": [
+            {
+              "name": "dataType",
+              "description": "The type of cell to read.",
+              "type": {
+                "name": "DataType",
+                "path": {
+                  "group": "enums",
+                  "item": "DataType",
+                  "pkg": "models"
+                }
+              }
+            },
+            {
+              "name": "node",
+              "description": "Node to parse as a cell.",
+              "type": {
+                "name": "XmlNode",
+                "path": {
+                  "group": "interfaces",
+                  "item": "XmlNode",
+                  "pkg": "xml-dom"
+                }
+              }
+            },
+            {
+              "name": "schemas",
+              "description": "Schemas that this cell or its children may follow.",
+              "type": {
+                "name": "SimDataSchema[]",
+                "path": {
+                  "pkg": "models",
+                  "group": "simdata-fragments",
+                  "item": "SimDataSchema"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

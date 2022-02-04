@@ -193,5 +193,17 @@
         }
       ]
     }
-  ]
+  ],
+  "footer": {
+    "seeAlso": [
+      {
+        "name": "SimDataResource",
+        "path": {
+          "pkg": "models",
+          "group": "resources",
+          "item": "SimDataResource"
+        }
+      }
+    ]
+  }
 }
