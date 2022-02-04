@@ -1,0 +1,35 @@
+{
+  "$schema": "https://raw.githubusercontent.com/sims4toolkit/misc/main/json-schemas/docs-item-schema.json",
+  "header": {
+    "title": {
+      "prefix": "type",
+      "name": "SimDataBigInt"
+    },
+    "description": "Subset of the DataType enum, which includes all 64-bit numerical types.",
+    "sourceCode": "src/lib/enums/data-type.ts"
+  },
+  "sections": [
+    {
+      "title": "Values",
+      "content": [
+        {
+          "displayType": "enum",
+          "values": [
+            {
+              "name": "Int64",
+              "value": "8"
+            },
+            {
+              "name": "UInt64",
+              "value": "9"
+            },
+            {
+              "name": "TableSetReference",
+              "value": "18"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

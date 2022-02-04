@@ -1,0 +1,55 @@
+{
+  "$schema": "https://raw.githubusercontent.com/sims4toolkit/misc/main/json-schemas/docs-item-schema.json",
+  "header": {
+    "title": {
+      "prefix": "type",
+      "name": "SimDataNumber"
+    },
+    "description": "Subset of the DataType enum, which includes all 32-bit or smaller numerical types.",
+    "sourceCode": "src/lib/enums/data-type.ts"
+  },
+  "sections": [
+    {
+      "title": "Values",
+      "content": [
+        {
+          "displayType": "enum",
+          "values": [
+            {
+              "name": "Int8",
+              "value": "2"
+            },
+            {
+              "name": "UInt8",
+              "value": "3"
+            },
+            {
+              "name": "Int16",
+              "value": "4"
+            },
+            {
+              "name": "UInt16",
+              "value": "5"
+            },
+            {
+              "name": "Int32",
+              "value": "6"
+            },
+            {
+              "name": "UInt32",
+              "value": "7"
+            },
+            {
+              "name": "Float",
+              "value": "10"
+            },
+            {
+              "name": "LocalizationKey",
+              "value": "20"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

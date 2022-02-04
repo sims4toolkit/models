@@ -1,0 +1,35 @@
+{
+  "$schema": "https://raw.githubusercontent.com/sims4toolkit/misc/main/json-schemas/docs-item-schema.json",
+  "header": {
+    "title": {
+      "prefix": "type",
+      "name": "SimDataText"
+    },
+    "description": "Subset of the DataType enum, which includes all types that are represented in a string. 'Text' is used to avoid confusion with the literal 'String' data type, since this includes single characters and hashed strings as well.",
+    "sourceCode": "src/lib/enums/data-type.ts"
+  },
+  "sections": [
+    {
+      "title": "Values",
+      "content": [
+        {
+          "displayType": "enum",
+          "values": [
+            {
+              "name": "Character",
+              "value": "1"
+            },
+            {
+              "name": "String",
+              "value": "11"
+            },
+            {
+              "name": "HashedString",
+              "value": "12"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

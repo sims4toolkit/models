@@ -79,6 +79,9 @@
         "ResourceFilter",
         "ResourceKey",
         "ResourceKeyPair",
+        "SimDataBigInt",
+        "SimDataNumber",
+        "SimDataText",
         "StringEntry"
       ]
     }
