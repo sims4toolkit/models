@@ -1,0 +1,203 @@
+{
+  "$schema": "https://raw.githubusercontent.com/sims4toolkit/misc/main/json-schemas/docs-item-schema.json",
+  "imports": [
+    "import { VariantCell } from \"@s4tk/models/simdata\"; // ESM",
+    "const { VariantCell } = require(\"@s4tk/models/simdata\"); // CJS"
+  ],
+  "header": {
+    "title": {
+      "prefix": "class",
+      "name": "VariantCell",
+      "generics": [
+        {
+          "name": "ChildType",
+          "extends": [
+            {
+              "name": "Cell",
+              "path": {
+                "pkg": "models",
+                "group": "simdata-cells",
+                "item": "Cell"
+              }
+            }
+          ]
+        }
+      ],
+      "extends": [
+        {
+          "name": "Cell",
+          "path": {
+            "pkg": "models",
+            "group": "simdata-cells",
+            "item": "Cell"
+          }
+        }
+      ]
+    },
+    "description": "A cell that can contain any other kind of cell, depending on its type hash.",
+    "sourceCode": "src/lib/resources/simdata/cells.ts"
+  },
+  "sections": [
+    {
+      "title": "Properties",
+      "content": [
+        {
+          "displayType": "property",
+          "name": "dataType",
+          "prefix": "readonly",
+          "description": "Always DataType.Variant.",
+          "type": {
+            "name": "DataType.Variant",
+            "path": {
+              "pkg": "models",
+              "group": "enums",
+              "item": "DataType"
+            }
+          },
+          "overrides": {
+            "name": "Cell",
+            "path": {
+              "pkg": "models",
+              "group": "simdata-cells",
+              "item": "Cell"
+            }
+          }
+        },
+        {
+          "displayType": "property",
+          "name": "child",
+          "prefix": "get, set",
+          "optional": true,
+          "description": "The cell that this variant contains, if any.",
+          "type": {
+            "name": "ChildType"
+          }
+        },
+        {
+          "displayType": "property",
+          "name": "childType",
+          "prefix": "get",
+          "description": "Gets the data type of this cell's child, if it has one. Undefined if there is no child.",
+          "type": {
+            "name": "DataType",
+            "path": {
+              "pkg": "models",
+              "group": "enums",
+              "item": "DataType"
+            }
+          }
+        },
+        {
+          "displayType": "property",
+          "prefix": "get, set",
+          "name": "typeHash",
+          "type": {
+            "name": "number"
+          },
+          "description": "The type hash for this cell."
+        }
+      ]
+    },
+    {
+      "title": "Initialization",
+      "content": [
+        {
+          "displayType": "function",
+          "name": "constructor",
+          "description": "Creates a new VariantCell.",
+          "returnType": {
+            "name": "VariantCell"
+          },
+          "arguments": [
+            {
+              "name": "typeHash",
+              "type": {
+                "name": "number"
+              },
+              "description": "Type hash for this cell."
+            },
+            {
+              "name": "child",
+              "type": {
+                "name": "ChildType"
+              },
+              "description": "Child of this cell. Allowed to be undefined."
+            },
+            {
+              "name": "owner",
+              "optional": true,
+              "type": {
+                "name": "ApiModelBase",
+                "path": {
+                  "pkg": "models",
+                  "group": "abstracts",
+                  "item": "ApiModelBase"
+                }
+              },
+              "description": "Model that contains this cell."
+            }
+          ]
+        },
+        {
+          "displayType": "function",
+          "prefix": "static",
+          "name": "fromXmlNode",
+          "generics": [
+            {
+              "name": "ChildType",
+              "extends": [
+                {
+                  "name": "Cell",
+                  "path": {
+                    "pkg": "models",
+                    "group": "simdata-cells",
+                    "item": "Cell"
+                  }
+                }
+              ]
+            }
+          ],
+          "arguments": [
+            {
+              "name": "node",
+              "description": "Node to parse the cell from.",
+              "type": {
+                "name": "XmlNode",
+                "path": {
+                  "pkg": "xml-dom",
+                  "group": "interfaces",
+                  "item": "XmlNode"
+                }
+              }
+            },
+            {
+              "name": "schemas",
+              "description": "Array of schemas that this cell's child or any of its descendants may follow. If any appropriate schemas are missing, an exception is thrown.",
+              "type": {
+                "name": "SimDataSchema[]",
+                "path": {
+                  "pkg": "models",
+                  "group": "simdata-fragments",
+                  "item": "SimDataSchema"
+                }
+              }
+            }
+          ],
+          "description": "Parses a VariantCell from the given XML node.",
+          "returnType": {
+            "name": "VariantCell<ChildType>"
+          }
+        },
+        {
+          "displayType": "function",
+          "prefix": "static",
+          "name": "getDefault",
+          "description": "Creates a default VariantCell that does not have a child.",
+          "returnType": {
+            "name": "VariantCell<Cell>"
+          }
+        }
+      ]
+    }
+  ]
+}
