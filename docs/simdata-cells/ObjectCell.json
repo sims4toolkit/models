@@ -1,0 +1,196 @@
+{
+  "$schema": "https://raw.githubusercontent.com/sims4toolkit/misc/main/json-schemas/docs-item-schema.json",
+  "imports": [
+    "import { ObjectCell } from \"@s4tk/models/simdata\"; // ESM",
+    "const { ObjectCell } = require(\"@s4tk/models/simdata\"); // CJS"
+  ],
+  "header": {
+    "title": {
+      "prefix": "class",
+      "name": "ObjectCell",
+      "extends": [
+        {
+          "name": "Cell",
+          "path": {
+            "pkg": "models",
+            "group": "simdata-cells",
+            "item": "Cell"
+          }
+        }
+      ]
+    },
+    "description": "A cell that contains a row of cells that follows a schema.",
+    "sourceCode": "src/lib/resources/simdata/cells.ts"
+  },
+  "sections": [
+    {
+      "title": "Properties",
+      "content": [
+        {
+          "displayType": "property",
+          "name": "dataType",
+          "prefix": "readonly",
+          "description": "Always DataType.Object.",
+          "type": {
+            "name": "DataType.Object",
+            "path": {
+              "pkg": "models",
+              "group": "enums",
+              "item": "DataType"
+            }
+          },
+          "overrides": {
+            "name": "Cell",
+            "path": {
+              "pkg": "models",
+              "group": "simdata-cells",
+              "item": "Cell"
+            }
+          }
+        },
+        {
+          "displayType": "property",
+          "name": "row",
+          "prefix": "get",
+          "description": "Object containing the cells nested within this one.",
+          "type": {
+            "name": "ObjectCellRow",
+            "path": {
+              "pkg": "models",
+              "group": "types",
+              "item": "ObjectCellRow"
+            }
+          }
+        },
+        {
+          "displayType": "property",
+          "name": "rowLength",
+          "prefix": "get",
+          "description": "Number of cells in this cell's row. Alias for 'Object.keys(this.row).length'.",
+          "type": {
+            "name": "number"
+          }
+        },
+        {
+          "displayType": "property",
+          "name": "schemaLength",
+          "prefix": "get",
+          "description": "Number of cells in this cell's schema. Alias for 'this.schema.columns.length'.",
+          "type": {
+            "name": "number"
+          }
+        }
+      ]
+    },
+    {
+      "title": "Initialization",
+      "content": [
+        {
+          "displayType": "function",
+          "name": "constructor",
+          "description": "Creates a new ObjectCell.",
+          "returnType": {
+            "name": "ObjectCell"
+          },
+          "arguments": [
+            {
+              "name": "schema",
+              "type": {
+                "name": "SimDataSchema",
+                "path": {
+                  "pkg": "models",
+                  "group": "simdata-fragments",
+                  "item": "SimDataSchema"
+                }
+              },
+              "description": "Schema for this cell to follow."
+            },
+            {
+              "name": "row",
+              "type": {
+                "name": "ObjectCellRow",
+                "path": {
+                  "pkg": "models",
+                  "group": "types",
+                  "item": "ObjectCellRow"
+                }
+              },
+              "description": "Row containing the cells within this one."
+            },
+            {
+              "name": "owner",
+              "optional": true,
+              "type": {
+                "name": "ApiModelBase",
+                "path": {
+                  "pkg": "models",
+                  "group": "abstracts",
+                  "item": "ApiModelBase"
+                }
+              },
+              "description": "Model that contains this cell."
+            }
+          ]
+        },
+        {
+          "displayType": "function",
+          "prefix": "static",
+          "name": "fromXmlNode",
+          "arguments": [
+            {
+              "name": "node",
+              "description": "Node to parse the cell from.",
+              "type": {
+                "name": "XmlNode",
+                "path": {
+                  "pkg": "xml-dom",
+                  "group": "interfaces",
+                  "item": "XmlNode"
+                }
+              }
+            },
+            {
+              "name": "schemas",
+              "description": "Array of schemas that this cell or any of its descendants may follow. If not supplied, or if appropriate schemas are missing, an exception is thrown.",
+              "type": {
+                "name": "SimDataSchema[]",
+                "path": {
+                  "pkg": "models",
+                  "group": "simdata-fragments",
+                  "item": "SimDataSchema"
+                }
+              }
+            }
+          ],
+          "description": "Parses an ObjectCell from the given XML node.",
+          "returnType": {
+            "name": "ObjectCell"
+          }
+        },
+        {
+          "displayType": "function",
+          "prefix": "static",
+          "name": "getDefault",
+          "description": "Creates a default ObjectCell that follows the given schema.",
+          "returnType": {
+            "name": "ObjectCell"
+          },
+          "arguments": [
+            {
+              "name": "schema",
+              "description": "Schema for the cell to follow.",
+              "type": {
+                "name": "SimDataSchema",
+                "path": {
+                  "pkg": "models",
+                  "group": "simdata-fragments",
+                  "item": "SimDataSchema"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
