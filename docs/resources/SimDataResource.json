@@ -458,6 +458,108 @@
           ]
         }
       ]
+    },
+    {
+      "title": "Methods",
+      "content": [
+        {
+          "displayType": "function",
+          "name": "isXml",
+          "returnType": {
+            "name": "boolean"
+          },
+          "description": "Always returns false.",
+          "overrides": {
+            "name": "Resource",
+            "path": {
+              "pkg": "models",
+              "group": "types",
+              "item": "Resource"
+            }
+          }
+        },
+        {
+          "displayType": "function",
+          "name": "removeInstances",
+          "description": "Removes instances from this SimData by reference equality, so the passed in instances must be the exact objects to remove.",
+          "arguments": [
+            {
+              "name": "...instances",
+              "description": "Variable number of instances to remove by reference.",
+              "type": {
+                "name": "SimDataInstance[]",
+                "path": {
+                  "pkg": "models",
+                  "group": "simdata-fragments",
+                  "item": "SimDataInstance"
+                }
+              }
+            }
+          ],
+          "examples": [
+            {
+              "code": "data.removeInstances(instance1, instance2);"
+            }
+          ]
+        },
+        {
+          "displayType": "function",
+          "name": "removeSchemas",
+          "description": "Removes schemas from this SimData by reference equality, so the passed in instances must be the exact objects to remove.",
+          "arguments": [
+            {
+              "name": "...schemas",
+              "description": "Variable number of schemas to remove by reference.",
+              "type": {
+                "name": "SimDataSchema[]",
+                "path": {
+                  "pkg": "models",
+                  "group": "simdata-fragments",
+                  "item": "SimDataSchema"
+                }
+              }
+            }
+          ],
+          "examples": [
+            {
+              "code": "data.removeSchemas(schema1, schema2);"
+            }
+          ]
+        },
+        {
+          "displayType": "function",
+          "name": "toXmlDocument",
+          "returnType": {
+            "name": "XmlDocumentNode",
+            "path": {
+              "pkg": "xml-dom",
+              "group": "classes",
+              "item": "XmlDocumentNode"
+            }
+          },
+          "description": "Creates an XmlDocumentNode object that represents this SimData exactly as it would appear in Sims 4 Studio.",
+          "arguments": [
+            {
+              "name": "args",
+              "type": {
+                "name": "object"
+              },
+              "optional": true,
+              "description": "Optional arguments.",
+              "properties": [
+                {
+                  "name": "sort",
+                  "optional": true,
+                  "type": {
+                    "name": "true"
+                  },
+                  "description": "Whether or not to sort the nodes alphabetically. Note that schemas will not be sorted, just instances and columns within schemas. Schemas will remain in order of priority (or insertion, if they were added manually)."
+                }
+              ]
+            }
+          ]
+        }
+      ]
     }
   ]
 }
