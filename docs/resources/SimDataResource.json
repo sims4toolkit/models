@@ -302,6 +302,160 @@
               "code": "SimDataResource.fromAsync(buffer).then(data => {\n  // do stuff\n});"
             }
           ]
+        },
+        {
+          "displayType": "function",
+          "prefix": "static",
+          "name": "fromXml",
+          "returnType": {
+            "name": "SimDataResource"
+          },
+          "description": "Creates a SimDataResource from S4S-style XML. Throws if XML could not be parsed as a valid SimData.",
+          "arguments": [
+            {
+              "name": "xml",
+              "description": "XML string or buffer to parse as a SimData.",
+              "type": {
+                "name": "string | Buffer"
+              }
+            },
+            {
+              "name": "options",
+              "optional": true,
+              "description": "Optional arguments for reading the XML.",
+              "type": {
+                "name": "FileReadingOptions",
+                "path": {
+                  "pkg": "models",
+                  "group": "types",
+                  "item": "FileReadingOptions"
+                }
+              }
+            }
+          ],
+          "examples": [
+            {
+              "code": "const data = SimDataResource.fromXml(xml);"
+            }
+          ]
+        },
+        {
+          "displayType": "function",
+          "prefix": "static",
+          "name": "fromXmlAsync",
+          "returnType": {
+            "name": "Promise<SimDataResource>"
+          },
+          "description": "Creates a SimDataResource asynchronously from S4S-style XML. Returns a Promise that resolves with the SimDataResource.",
+          "arguments": [
+            {
+              "name": "xml",
+              "description": "XML string or buffer to parse as a SimData.",
+              "type": {
+                "name": "string | Buffer"
+              }
+            },
+            {
+              "name": "options",
+              "optional": true,
+              "description": "Optional arguments for reading the XML.",
+              "type": {
+                "name": "FileReadingOptions",
+                "path": {
+                  "pkg": "models",
+                  "group": "types",
+                  "item": "FileReadingOptions"
+                }
+              }
+            }
+          ],
+          "examples": [
+            {
+              "code": "SimDataResource.fromXmlAsync(xml).then(data => {\n  // do stuff\n});"
+            }
+          ]
+        },
+        {
+          "displayType": "function",
+          "prefix": "static",
+          "name": "fromXmlDocument",
+          "returnType": {
+            "name": "SimDataResource"
+          },
+          "description": "Creates a SimDataResource from an S4S-style XML document.",
+          "arguments": [
+            {
+              "name": "doc",
+              "description": "XML document from which to parse SimData.",
+              "type": {
+                "name": "XmlDocumentNode",
+                "path": {
+                  "pkg": "xml-dom",
+                  "group": "classes",
+                  "item": "XmlDocumentNode"
+                }
+              }
+            },
+            {
+              "name": "options",
+              "optional": true,
+              "description": "Optional arguments for reading the document.",
+              "type": {
+                "name": "FileReadingOptions",
+                "path": {
+                  "pkg": "models",
+                  "group": "types",
+                  "item": "FileReadingOptions"
+                }
+              }
+            }
+          ],
+          "examples": [
+            {
+              "code": "const data = SimDataResource.fromXmlDocument(doc);"
+            }
+          ]
+        },
+        {
+          "displayType": "function",
+          "prefix": "static",
+          "name": "fromXmlDocumentAsync",
+          "returnType": {
+            "name": "Promise<SimDataResource>"
+          },
+          "description": "Creates a SimDataResource asynchronously from an S4S-style XML document. Returns a Promise that resolves with the SimDataResource.",
+          "arguments": [
+            {
+              "name": "doc",
+              "description": "XML document from which to parse SimData.",
+              "type": {
+                "name": "XmlDocumentNode",
+                "path": {
+                  "pkg": "xml-dom",
+                  "group": "classes",
+                  "item": "XmlDocumentNode"
+                }
+              }
+            },
+            {
+              "name": "options",
+              "optional": true,
+              "description": "Optional arguments for reading the XML.",
+              "type": {
+                "name": "FileReadingOptions",
+                "path": {
+                  "pkg": "models",
+                  "group": "types",
+                  "item": "FileReadingOptions"
+                }
+              }
+            }
+          ],
+          "examples": [
+            {
+              "code": "SimDataResource.fromXmlDocumentAsync(doc).then(data => {\n  // do stuff\n});"
+            }
+          ]
         }
       ]
     }
