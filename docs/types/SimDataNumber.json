@@ -51,5 +51,17 @@
         }
       ]
     }
-  ]
+  ],
+  "footer": {
+    "seeAlso": [
+      {
+        "name": "DataType",
+        "path": {
+          "pkg": "models",
+          "group": "enums",
+          "item": "DataType"
+        }
+      }
+    ]
+  }
 }
