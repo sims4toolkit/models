@@ -29,7 +29,7 @@
         }
       ]
     },
-    "description": "Model for SimData resources. While combined tuning is the same format, it is NOT supported by this model.\nSimDatas are mini relational databases, and to simplify working with them (and for consistency with its XML format), this model uses the concept of \"instances\". An instance is an object cell that has a name.",
+    "description": "Model for SimData resources. While combined tuning is the same format, it is NOT supported by this model.\n\nSimDatas are mini relational databases, and to simplify working with them (and for consistency with its XML format), this model uses the concept of \"instances\". An instance is an object cell that has a name.",
     "sourceCode": "src/lib/resources/simdata/simdata-resource.ts"
   },
   "sections": [
@@ -95,7 +95,7 @@
             "name": "ObjectCellRow",
             "path": {
               "pkg": "models",
-              "group": "type",
+              "group": "types",
               "item": "ObjectCellRow"
             }
           }
