@@ -1,0 +1,179 @@
+{
+  "$schema": "https://raw.githubusercontent.com/sims4toolkit/misc/main/json-schemas/docs-item-schema.json",
+  "imports": [
+    "import { ResourceKeyCell } from \"@s4tk/models/simdata\"; // ESM",
+    "const { ResourceKeyCell } = require(\"@s4tk/models/simdata\"); // CJS"
+  ],
+  "header": {
+    "title": {
+      "prefix": "class",
+      "name": "ResourceKeyCell",
+      "extends": [
+        {
+          "name": "Cell",
+          "path": {
+            "pkg": "models",
+            "group": "simdata-cells",
+            "item": "Cell"
+          }
+        }
+      ]
+    },
+    "description": "A cell that contains a resource key value.",
+    "sourceCode": "src/lib/resources/simdata/cells.ts"
+  },
+  "sections": [
+    {
+      "title": "Data Types",
+      "description": "Valid data types for this cell type.",
+      "content": [
+        {
+          "displayType": "general",
+          "paragraphs": [
+            "DataType.ResourceKey"
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Properties",
+      "content": [
+        {
+          "displayType": "property",
+          "name": "type",
+          "prefix": "get, set",
+          "description": "Type of the key.",
+          "type": {
+            "name": "number"
+          }
+        },
+        {
+          "displayType": "property",
+          "name": "group",
+          "prefix": "get, set",
+          "description": "Group of the key.",
+          "type": {
+            "name": "number"
+          }
+        },
+        {
+          "displayType": "property",
+          "name": "instance",
+          "prefix": "get, set",
+          "description": "Instance of the key.",
+          "type": {
+            "name": "bigint"
+          }
+        }
+      ]
+    },
+    {
+      "title": "Initialization",
+      "content": [
+        {
+          "displayType": "function",
+          "name": "constructor",
+          "returnType": {
+            "name": "ResourceKeyCell"
+          },
+          "arguments": [
+            {
+              "name": "type",
+              "description": "Type of the key.",
+              "type": {
+                "name": "number"
+              }
+            },
+            {
+              "name": "group",
+              "description": "Group of the key.",
+              "type": {
+                "name": "number"
+              }
+            },
+            {
+              "name": "instance",
+              "description": "Instance of the key.",
+              "type": {
+                "name": "bigint"
+              }
+            },
+            {
+              "name": "owner",
+              "optional": true,
+              "type": {
+                "name": "ApiModelBase",
+                "path": {
+                  "pkg": "models",
+                  "group": "abstracts",
+                  "item": "ApiModelBase"
+                }
+              },
+              "description": "Model that contains this cell."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Static Methods",
+      "content": [
+        {
+          "displayType": "function",
+          "prefix": "static",
+          "name": "decode",
+          "arguments": [
+            {
+              "name": "decoder",
+              "description": "Decoder to read the value from.",
+              "type": {
+                "name": "BinaryDecoder",
+                "path": {
+                  "pkg": "encoding",
+                  "group": "classes",
+                  "item": "BinaryDecoder"
+                }
+              }
+            }
+          ],
+          "description": "Reads a ResourceKeyCell from the given decoder.",
+          "returnType": {
+            "name": "ResourceKeyCell"
+          }
+        },
+        {
+          "displayType": "function",
+          "prefix": "static",
+          "name": "fromXmlNode",
+          "arguments": [
+            {
+              "name": "node",
+              "description": "Node to parse the cell from.",
+              "type": {
+                "name": "XmlNode",
+                "path": {
+                  "pkg": "xml-dom",
+                  "group": "interfaces",
+                  "item": "XmlNode"
+                }
+              }
+            }
+          ],
+          "description": "Parses a ResourceKeyCell from the given XML node.",
+          "returnType": {
+            "name": "ResourceKeyCell"
+          }
+        },
+        {
+          "displayType": "function",
+          "prefix": "static",
+          "name": "getDefault",
+          "description": "Creates the default cell for this type.",
+          "returnType": {
+            "name": "ResourceKeyCell"
+          }
+        }
+      ]
+    }
+  ]
+}

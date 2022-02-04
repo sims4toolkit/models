@@ -134,8 +134,8 @@ export abstract class Cell extends ApiModelBase {
    * schemas to read any objects that it may contain.
    * 
    * @param dataType The type of cell to read
-   * @param schemas Schemas that this cell or its children may follow
    * @param node Node to parse as a cell
+   * @param schemas Schemas that this cell or its children may follow
    */
   static parseXmlNode(dataType: DataType, node: XmlNode, schemas: SimDataSchema[]): Cell {
     switch (dataType) {
