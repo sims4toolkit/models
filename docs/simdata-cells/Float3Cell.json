@@ -32,7 +32,7 @@
           "prefix": "readonly",
           "description": "Always DataType.Float3.",
           "type": {
-            "name": "DataType",
+            "name": "DataType.Float3",
             "path": {
               "pkg": "models",
               "group": "enums",

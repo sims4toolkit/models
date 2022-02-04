@@ -32,7 +32,7 @@
           "prefix": "readonly",
           "description": "Always DataType.ResourceKey.",
           "type": {
-            "name": "DataType",
+            "name": "DataType.ResourceKey",
             "path": {
               "pkg": "models",
               "group": "enums",

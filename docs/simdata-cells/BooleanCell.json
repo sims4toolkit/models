@@ -24,18 +24,6 @@
   },
   "sections": [
     {
-      "title": "Data Types",
-      "description": "Valid data types for this cell type.",
-      "content": [
-        {
-          "displayType": "general",
-          "paragraphs": [
-            "DataType.Boolean"
-          ]
-        }
-      ]
-    },
-    {
       "title": "Properties",
       "content": [
         {
@@ -44,7 +32,7 @@
           "prefix": "readonly",
           "description": "Always DataType.Boolean.",
           "type": {
-            "name": "DataType",
+            "name": "DataType.Boolean",
             "path": {
               "pkg": "models",
               "group": "enums",
