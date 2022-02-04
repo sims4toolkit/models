@@ -24,27 +24,28 @@
   },
   "sections": [
     {
-      "title": "Data Types",
-      "description": "Valid data types for this cell type.",
-      "content": [
-        {
-          "displayType": "general",
-          "paragraphs": [
-            "DataType.ResourceKey"
-          ]
-        }
-      ]
-    },
-    {
       "title": "Properties",
       "content": [
         {
           "displayType": "property",
-          "name": "type",
-          "prefix": "get, set",
-          "description": "Type of the key.",
+          "name": "dataType",
+          "prefix": "readonly",
+          "description": "Always DataType.ResourceKey.",
           "type": {
-            "name": "number"
+            "name": "DataType",
+            "path": {
+              "pkg": "models",
+              "group": "enums",
+              "item": "DataType"
+            }
+          },
+          "overrides": {
+            "name": "Cell",
+            "path": {
+              "pkg": "models",
+              "group": "simdata-cells",
+              "item": "Cell"
+            }
           }
         },
         {
@@ -64,6 +65,15 @@
           "type": {
             "name": "bigint"
           }
+        },
+        {
+          "displayType": "property",
+          "name": "type",
+          "prefix": "get, set",
+          "description": "Type of the key.",
+          "type": {
+            "name": "number"
+          }
         }
       ]
     },
@@ -73,6 +83,7 @@
         {
           "displayType": "function",
           "name": "constructor",
+          "description": "Creates a new ResourceKeyCell.",
           "returnType": {
             "name": "ResourceKeyCell"
           },
@@ -112,12 +123,7 @@
               "description": "Model that contains this cell."
             }
           ]
-        }
-      ]
-    },
-    {
-      "title": "Static Methods",
-      "content": [
+        },
         {
           "displayType": "function",
           "prefix": "static",

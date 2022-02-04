@@ -40,6 +40,28 @@
       "content": [
         {
           "displayType": "property",
+          "name": "dataType",
+          "prefix": "readonly",
+          "description": "Always DataType.Boolean.",
+          "type": {
+            "name": "DataType",
+            "path": {
+              "pkg": "models",
+              "group": "enums",
+              "item": "DataType"
+            }
+          },
+          "overrides": {
+            "name": "Cell",
+            "path": {
+              "pkg": "models",
+              "group": "simdata-cells",
+              "item": "Cell"
+            }
+          }
+        },
+        {
+          "displayType": "property",
           "name": "value",
           "prefix": "get, set",
           "description": "Value in this cell.",
@@ -55,6 +77,7 @@
         {
           "displayType": "function",
           "name": "constructor",
+          "description": "Creates a new BooleanCell.",
           "returnType": {
             "name": "BooleanCell"
           },
@@ -80,12 +103,7 @@
               "description": "Model that contains this cell."
             }
           ]
-        }
-      ]
-    },
-    {
-      "title": "Static Methods",
-      "content": [
+        },
         {
           "displayType": "function",
           "prefix": "static",
