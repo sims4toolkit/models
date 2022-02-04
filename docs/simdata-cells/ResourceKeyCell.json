@@ -52,7 +52,7 @@
           "displayType": "property",
           "name": "group",
           "prefix": "get, set",
-          "description": "Group of the key.",
+          "description": "Group of the key (UInt32).",
           "type": {
             "name": "number"
           }
@@ -61,7 +61,7 @@
           "displayType": "property",
           "name": "instance",
           "prefix": "get, set",
-          "description": "Instance of the key.",
+          "description": "Instance of the key (UInt64).",
           "type": {
             "name": "bigint"
           }
@@ -70,7 +70,7 @@
           "displayType": "property",
           "name": "type",
           "prefix": "get, set",
-          "description": "Type of the key.",
+          "description": "Type of the key (UInt32).",
           "type": {
             "name": "number"
           }

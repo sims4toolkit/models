@@ -1,0 +1,185 @@
+{
+  "$schema": "https://raw.githubusercontent.com/sims4toolkit/misc/main/json-schemas/docs-item-schema.json",
+  "imports": [
+    "import { Float3Cell } from \"@s4tk/models/simdata\"; // ESM",
+    "const { Float3Cell } = require(\"@s4tk/models/simdata\"); // CJS"
+  ],
+  "header": {
+    "title": {
+      "prefix": "class",
+      "name": "Float3Cell",
+      "extends": [
+        {
+          "name": "Cell",
+          "path": {
+            "pkg": "models",
+            "group": "simdata-cells",
+            "item": "Cell"
+          }
+        }
+      ]
+    },
+    "description": "A cell that contains three float values.",
+    "sourceCode": "src/lib/resources/simdata/cells.ts"
+  },
+  "sections": [
+    {
+      "title": "Properties",
+      "content": [
+        {
+          "displayType": "property",
+          "name": "dataType",
+          "prefix": "readonly",
+          "description": "Always DataType.Float3.",
+          "type": {
+            "name": "DataType",
+            "path": {
+              "pkg": "models",
+              "group": "enums",
+              "item": "DataType"
+            }
+          },
+          "overrides": {
+            "name": "Cell",
+            "path": {
+              "pkg": "models",
+              "group": "simdata-cells",
+              "item": "Cell"
+            }
+          }
+        },
+        {
+          "displayType": "property",
+          "name": "x",
+          "prefix": "get, set",
+          "description": "First float (4 bytes).",
+          "type": {
+            "name": "number"
+          }
+        },
+        {
+          "displayType": "property",
+          "name": "y",
+          "prefix": "get, set",
+          "description": "Second float (4 bytes).",
+          "type": {
+            "name": "number"
+          }
+        },
+        {
+          "displayType": "property",
+          "name": "z",
+          "prefix": "get, set",
+          "description": "Third float (4 bytes).",
+          "type": {
+            "name": "number"
+          }
+        }
+      ]
+    },
+    {
+      "title": "Initialization",
+      "content": [
+        {
+          "displayType": "function",
+          "name": "constructor",
+          "description": "Creates a new Float3Cell.",
+          "returnType": {
+            "name": "Float3Cell"
+          },
+          "arguments": [
+            {
+              "name": "x",
+              "description": "First float.",
+              "type": {
+                "name": "number"
+              }
+            },
+            {
+              "name": "y",
+              "description": "Second float.",
+              "type": {
+                "name": "number"
+              }
+            },
+            {
+              "name": "z",
+              "description": "Third float.",
+              "type": {
+                "name": "number"
+              }
+            },
+            {
+              "name": "owner",
+              "optional": true,
+              "type": {
+                "name": "ApiModelBase",
+                "path": {
+                  "pkg": "models",
+                  "group": "abstracts",
+                  "item": "ApiModelBase"
+                }
+              },
+              "description": "Model that contains this cell."
+            }
+          ]
+        },
+        {
+          "displayType": "function",
+          "prefix": "static",
+          "name": "decode",
+          "arguments": [
+            {
+              "name": "decoder",
+              "description": "Decoder to read the value from.",
+              "type": {
+                "name": "BinaryDecoder",
+                "path": {
+                  "pkg": "encoding",
+                  "group": "classes",
+                  "item": "BinaryDecoder"
+                }
+              }
+            }
+          ],
+          "description": "Reads a Float3Cell from the given decoder.",
+          "returnType": {
+            "name": "Float3Cell"
+          }
+        },
+        {
+          "displayType": "function",
+          "prefix": "static",
+          "name": "fromXmlNode",
+          "arguments": [
+            {
+              "name": "node",
+              "description": "Node to parse the cell from.",
+              "type": {
+                "name": "XmlNode",
+                "path": {
+                  "pkg": "xml-dom",
+                  "group": "interfaces",
+                  "item": "XmlNode"
+                }
+              }
+            }
+          ],
+          "description": "Parses a Float3Cell from the given XML node.",
+          "returnType": {
+            "name": "Float3Cell"
+          }
+        },
+        {
+          "displayType": "function",
+          "prefix": "static",
+          "name": "getDefault",
+          "description": "Creates the default cell for this type.",
+          "returnType": {
+            "name": "Float3Cell"
+          }
+        }
+      ]
+    }
+  ]
+}
