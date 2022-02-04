@@ -1,0 +1,229 @@
+{
+  "$schema": "https://raw.githubusercontent.com/sims4toolkit/misc/main/json-schemas/docs-item-schema.json",
+  "imports": [
+    "import { VectorCell } from \"@s4tk/models/simdata\"; // ESM",
+    "const { VectorCell } = require(\"@s4tk/models/simdata\"); // CJS"
+  ],
+  "header": {
+    "title": {
+      "prefix": "class",
+      "name": "VectorCell",
+      "generics": [
+        {
+          "name": "ChildType",
+          "extends": [
+            {
+              "name": "Cell",
+              "path": {
+                "pkg": "models",
+                "group": "simdata-cells",
+                "item": "Cell"
+              }
+            }
+          ]
+        }
+      ],
+      "extends": [
+        {
+          "name": "Cell",
+          "path": {
+            "pkg": "models",
+            "group": "simdata-cells",
+            "item": "Cell"
+          }
+        }
+      ]
+    },
+    "description": "A cell that can contain an array of any other kind of cell. All child cells must be of the same type in order for the vector to be valid.",
+    "sourceCode": "src/lib/resources/simdata/cells.ts"
+  },
+  "sections": [
+    {
+      "title": "Properties",
+      "content": [
+        {
+          "displayType": "property",
+          "name": "dataType",
+          "prefix": "readonly",
+          "description": "Always DataType.Vector.",
+          "type": {
+            "name": "DataType.Vector",
+            "path": {
+              "pkg": "models",
+              "group": "enums",
+              "item": "DataType"
+            }
+          },
+          "overrides": {
+            "name": "Cell",
+            "path": {
+              "pkg": "models",
+              "group": "simdata-cells",
+              "item": "Cell"
+            }
+          }
+        },
+        {
+          "displayType": "property",
+          "name": "children",
+          "prefix": "get",
+          "optional": true,
+          "description": "An array that contains all of the child cells of this vector. Mutating this array and its children is safe in terms of cacheing.",
+          "type": {
+            "name": "ChildType[]"
+          }
+        },
+        {
+          "displayType": "property",
+          "name": "childType",
+          "prefix": "get",
+          "description": "Gets the data type of this cell's children, if it has any. Undefined if there are no children. Alias for 'children[0].dataType'.",
+          "type": {
+            "name": "DataType",
+            "path": {
+              "pkg": "models",
+              "group": "enums",
+              "item": "DataType"
+            }
+          }
+        },
+        {
+          "displayType": "property",
+          "prefix": "get",
+          "name": "length",
+          "type": {
+            "name": "number"
+          },
+          "description": "Number of chidlren in this vector. Alias for 'this.children.length'."
+        }
+      ]
+    },
+    {
+      "title": "Initialization",
+      "content": [
+        {
+          "displayType": "function",
+          "name": "constructor",
+          "description": "Creates a new VectorCell.",
+          "returnType": {
+            "name": "VectorCell"
+          },
+          "arguments": [
+            {
+              "name": "children",
+              "type": {
+                "name": "ChildType[]"
+              },
+              "description": "Children of this cell. Allowed to be undefined or empty."
+            },
+            {
+              "name": "owner",
+              "optional": true,
+              "type": {
+                "name": "ApiModelBase",
+                "path": {
+                  "pkg": "models",
+                  "group": "abstracts",
+                  "item": "ApiModelBase"
+                }
+              },
+              "description": "Model that contains this cell."
+            }
+          ]
+        },
+        {
+          "displayType": "function",
+          "prefix": "static",
+          "name": "fromXmlNode",
+          "generics": [
+            {
+              "name": "ChildType",
+              "extends": [
+                {
+                  "name": "Cell",
+                  "path": {
+                    "pkg": "models",
+                    "group": "simdata-cells",
+                    "item": "Cell"
+                  }
+                }
+              ]
+            }
+          ],
+          "arguments": [
+            {
+              "name": "node",
+              "description": "Node to parse the cell from.",
+              "type": {
+                "name": "XmlNode",
+                "path": {
+                  "pkg": "xml-dom",
+                  "group": "interfaces",
+                  "item": "XmlNode"
+                }
+              }
+            },
+            {
+              "name": "schemas",
+              "description": "Array of schemas that this cell's children or any of their descendants may follow. If any appropriate schemas are missing, an exception is thrown.",
+              "type": {
+                "name": "SimDataSchema[]",
+                "path": {
+                  "pkg": "models",
+                  "group": "simdata-fragments",
+                  "item": "SimDataSchema"
+                }
+              }
+            }
+          ],
+          "description": "Parses a VectorCell from the given XML node.",
+          "returnType": {
+            "name": "VectorCell<ChildType>"
+          }
+        },
+        {
+          "displayType": "function",
+          "prefix": "static",
+          "name": "getDefault",
+          "description": "Creates a default VectorCell that does not have any children.",
+          "returnType": {
+            "name": "VectorCell<Cell>"
+          }
+        }
+      ]
+    },
+    {
+      "title": "Methods",
+      "content": [
+        {
+          "displayType": "function",
+          "name": "addClones",
+          "description": "Pushes the given cells into this vector's children array, but clones them before doing so (this should be used instead of 'push()' when re-using cells between vectors, or else cacheing may break). Alternatively, you may use 'push()' as long as you clone the cells yourself.",
+          "arguments": [
+            {
+              "name": "...children",
+              "type": {
+                "name": "ChildType[]"
+              },
+              "description": "Variable number of children to clone and add to this vector's children."
+            }
+          ]
+        },
+        {
+          "displayType": "function",
+          "name": "removeChildren",
+          "description": "Child cells to remove. All cells are objects, and they are removed by reference equality. You must pass in the exact objects you want to remove.",
+          "arguments": [
+            {
+              "name": "...children",
+              "type": {
+                "name": "ChildType[]"
+              },
+              "description": "Variable number of children to remove from this vector's children."
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
