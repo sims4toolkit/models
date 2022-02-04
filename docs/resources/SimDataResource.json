@@ -147,6 +147,163 @@
           }
         }
       ]
+    },
+    {
+      "title": "Initialization",
+      "description": "The constructor is not a part of the public API, and may be changed without warning. Avoid using it, favoring the static methods instead.",
+      "content": [
+        {
+          "displayType": "function",
+          "prefix": "static",
+          "name": "create",
+          "returnType": {
+            "name": "SimDataResource"
+          },
+          "description": "Creates a new SimDataResource with the given optional parameters.",
+          "arguments": [
+            {
+              "description": "Optional arguments.",
+              "optional": true,
+              "name": "options",
+              "type": {
+                "name": "object"
+              },
+              "properties": [
+                {
+                  "name": "version",
+                  "optional": true,
+                  "description": "The version of the SimData. 0x101 by default.",
+                  "type": {
+                    "name": "number"
+                  }
+                },
+                {
+                  "name": "unused",
+                  "optional": true,
+                  "description": "The 'unused' UInt32 in the SimData header. This number should correspond to the group number of the pack associated with this SimData, or be 0 if it does not require a pack. Default is 0.",
+                  "type": {
+                    "name": "number"
+                  }
+                },
+                {
+                  "name": "schemas",
+                  "optional": true,
+                  "description": "A list of the schemas in this SimData. Default is empty.",
+                  "type": {
+                    "name": "SimDataSchema[]",
+                    "path": {
+                      "pkg": "models",
+                      "group": "simdata-fragments",
+                      "item": "SimDataSchema"
+                    }
+                  }
+                },
+                {
+                  "name": "instances",
+                  "optional": true,
+                  "description": "A list of the instances in this SimData. Default is empty.",
+                  "type": {
+                    "name": "SimDataInstance[]",
+                    "path": {
+                      "pkg": "models",
+                      "group": "simdata-fragments",
+                      "item": "SimDataInstance"
+                    }
+                  }
+                },
+                {
+                  "name": "saveBuffer",
+                  "optional": true,
+                  "description": "Whether or not buffers created for this resource should be cached. False by default.",
+                  "type": {
+                    "name": "boolean"
+                  }
+                }
+              ]
+            }
+          ],
+          "examples": [
+            {
+              "code": "const emptyData = SimDataResource.create();"
+            },
+            {
+              "code": "const data = SimDataResource.create({\n  schemas: [ ... ],\n  instances: [ ... ]\n});"
+            }
+          ]
+        },
+        {
+          "displayType": "function",
+          "prefix": "static",
+          "name": "from",
+          "returnType": {
+            "name": "SimDataResource"
+          },
+          "description": "Reads the given buffer as a SimDataResource and returns it.",
+          "arguments": [
+            {
+              "name": "buffer",
+              "description": "Buffer to read as a SimData.",
+              "type": {
+                "name": "Buffer"
+              }
+            },
+            {
+              "name": "options",
+              "optional": true,
+              "description": "Optional arguments for reading the buffer.",
+              "type": {
+                "name": "FileReadingOptions",
+                "path": {
+                  "pkg": "models",
+                  "group": "types",
+                  "item": "FileReadingOptions"
+                }
+              }
+            }
+          ],
+          "examples": [
+            {
+              "code": "const data = SimDataResource.from(buffer);"
+            }
+          ]
+        },
+        {
+          "displayType": "function",
+          "prefix": "static",
+          "name": "fromAsync",
+          "returnType": {
+            "name": "Promise<SimDataResource>"
+          },
+          "description": "Reads the given buffer as a SimDataResource asynchronously and returns a Promise that resolves with it.",
+          "arguments": [
+            {
+              "name": "buffer",
+              "description": "Buffer to read as a SimData.",
+              "type": {
+                "name": "Buffer"
+              }
+            },
+            {
+              "name": "options",
+              "optional": true,
+              "description": "Optional arguments for reading the buffer.",
+              "type": {
+                "name": "FileReadingOptions",
+                "path": {
+                  "pkg": "models",
+                  "group": "types",
+                  "item": "FileReadingOptions"
+                }
+              }
+            }
+          ],
+          "examples": [
+            {
+              "code": "SimDataResource.fromAsync(buffer).then(data => {\n  // do stuff\n});"
+            }
+          ]
+        }
+      ]
     }
   ]
 }
