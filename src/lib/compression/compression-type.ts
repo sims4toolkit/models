@@ -6,7 +6,7 @@ enum CompressionType {
   StreamableCompresssion = 0xFFFE,
   InternalCompression = 0xFFFF,
   DeletedRecord = 0xFFE0,
-  ZLIB = 23106
+  ZLIB = 0x5A42
 }
 
 export default CompressionType;
