@@ -5,7 +5,7 @@ import compare from "just-compare";
 import clone from "just-clone";
 import type { ResourceKey } from "../../../dst/lib/packages/types";
 import { Package, RawResource, SimDataResource, StringTableResource, XmlResource } from "../../../dst/models";
-import { BinaryResourceType, EncodingType, TuningResourceType } from "../../../dst/enums";
+import { BinaryResourceType, EncodingType, TuningResourceType, CompressionType } from "../../../dst/enums";
 import { FileReadingOptions } from "../../../dst/lib/common/options";
 
 //#region Helpers
@@ -483,6 +483,12 @@ describe("Package", () => {
           expect(entry.value.encodingType).to.equal(EncodingType.Unknown);
         });
       });
+
+      it("should read internally compressed resources correctly", () => {
+        const dbpf = getPackage("InternalCompression");
+        expect(dbpf.size).to.equal(1);
+        expect(dbpf.get(0).resource.encodingType).to.equal(EncodingType.STBL);
+      });
     });
 
     context("dbpf header is invalid", () => {
@@ -591,6 +597,81 @@ describe("Package", () => {
           expect(dbpf.get(1).resource.encodingType).to.equal(EncodingType.DATA);
           expect(dbpf.get(2).resource.encodingType).to.equal(EncodingType.XML);
           expect(dbpf.get(3).resource.encodingType).to.equal(EncodingType.STBL);
+        });
+      });
+
+      context("decompressRawResources", () => {
+        it("should not decompress raw resources using ZLIB by default", () => {
+          const dbpf = Package.from(getBuffer("Trait"), {
+            loadRaw: true
+          });
+
+          dbpf.entries.forEach(entry => {
+            expect(entry.resource.encodingType).to.equal(EncodingType.Unknown);
+            expect(entry.resource.isCompressed).to.be.true;
+            expect(entry.resource.compressionType).to.equal(CompressionType.ZLIB);
+          });
+        });
+
+        it("should not decompress raw resources using Internal Compression by default", () => {
+          const dbpf = Package.from(getBuffer("InternalCompression"), {
+            loadRaw: true
+          });
+
+          const entry = dbpf.get(0);
+          expect(entry.resource.encodingType).to.equal(EncodingType.Unknown);
+          expect(entry.resource.isCompressed).to.be.true;
+          expect(entry.resource.compressionType).to.equal(CompressionType.InternalCompression);
+        });
+
+        it("should not decompress raw resources using ZLIB if set to false", () => {
+          const dbpf = Package.from(getBuffer("Trait"), {
+            loadRaw: true,
+            decompressRawResources: false
+          });
+
+          dbpf.entries.forEach(entry => {
+            expect(entry.resource.encodingType).to.equal(EncodingType.Unknown);
+            expect(entry.resource.isCompressed).to.be.true;
+            expect(entry.resource.compressionType).to.equal(CompressionType.ZLIB);
+          });
+        });
+
+        it("should not decompress raw resources using Internal Compression if set to false", () => {
+          const dbpf = Package.from(getBuffer("InternalCompression"), {
+            loadRaw: true,
+            decompressRawResources: false
+          });
+
+          const entry = dbpf.get(0);
+          expect(entry.resource.encodingType).to.equal(EncodingType.Unknown);
+          expect(entry.resource.isCompressed).to.be.true;
+          expect(entry.resource.compressionType).to.equal(CompressionType.InternalCompression);
+        });
+
+        it("should decompress raw resources using ZLIB if set to true", () => {
+          const dbpf = Package.from(getBuffer("Trait"), {
+            loadRaw: true,
+            decompressRawResources: true
+          });
+
+          dbpf.entries.forEach(entry => {
+            expect(entry.resource.encodingType).to.equal(EncodingType.Unknown);
+            expect(entry.resource.isCompressed).to.be.false;
+            expect(entry.resource.compressionType).to.equal(CompressionType.ZLIB);
+          });
+        });
+
+        it("should decompress raw resources using Internal Compression if set to true", () => {
+          const dbpf = Package.from(getBuffer("InternalCompression"), {
+            loadRaw: true,
+            decompressRawResources: true
+          });
+
+          const entry = dbpf.get(0);
+          expect(entry.resource.encodingType).to.equal(EncodingType.Unknown);
+          expect(entry.resource.isCompressed).to.be.false;
+          expect(entry.resource.compressionType).to.equal(CompressionType.InternalCompression);
         });
       });
     });
