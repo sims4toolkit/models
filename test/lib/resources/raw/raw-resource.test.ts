@@ -7,11 +7,23 @@ function getRAW(content = "default content") {
 }
 
 describe('RawResource', function() {
-  describe('#variant', function() {
+  describe('#encodingType', function() {
     it('should be "RAW" when loaded', function() {
       const raw = getRAW("file content");
       expect(raw.encodingType).to.equal(EncodingType.Unknown);
     });
+  });
+
+  describe("#compressionType", () => {
+    // TODO:
+  });
+
+  describe("#isCompressed", () => {
+    // TODO:
+  });
+
+  describe("#sizeDecompressed", () => {
+    // TODO:
   });
 
   describe('#reason', function() {
