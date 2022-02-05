@@ -179,11 +179,12 @@ function getResource(entry: IndexEntry, rawBuffer: Buffer, options?: FileReading
   }
 
   try {
-    var buffer = decompressBuffer(buffer, entry.mnCompressionType, entry.mnSizeDecompressed);
+    var buffer = decompressBuffer(rawBuffer, entry.mnCompressionType, entry.mnSizeDecompressed);
   } catch (e) {
-    return RawResource.from(buffer, {
+    return RawResource.from(rawBuffer, {
       compressionType: entry.mnCompressionType,
       isCompressed: true,
+      sizeDecompressed: entry.mnSizeDecompressed,
       reason: `Unsupported compression: ${entry.mnCompressionType} (${CompressionType[entry.mnCompressionType]})`
     });
   }
