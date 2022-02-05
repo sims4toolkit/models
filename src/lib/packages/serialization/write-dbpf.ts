@@ -1,5 +1,4 @@
 import type { ResourceKeyPair } from "../types";
-import { ZLIB_COMPRESSION } from "../constants";
 import { BinaryEncoder } from "@s4tk/encoding";
 
 const HEADER_BYTE_SIZE = 96;
@@ -10,7 +9,12 @@ const HEADER_BYTE_SIZE = 96;
  * @param dbpf DBPF model to serialize into a buffer
  */
 export default function writeDbpf(entries: ResourceKeyPair[]): Buffer {
-  const recordsBuffer = Buffer.concat(entries.map(entry => entry.buffer));
+  const entryBuffers: Buffer[] = []; // just in case models aren't cached
+  const recordsBuffer = Buffer.concat(entries.map(entry => {
+    const buffer = entry.buffer;
+    entryBuffers.push(buffer);
+    return buffer;
+  }));
 
   const indexBuffer: Buffer = (() => {
     // each entry is 32 bytes, and flags are 4
@@ -20,16 +24,18 @@ export default function writeDbpf(entries: ResourceKeyPair[]): Buffer {
     encoder.skip(4); // flags will always be written as null
 
     let recordOffset = 0;
-    entries.forEach(entry => {
+    entries.forEach((entry, i) => {
+      const entryBuffer = entryBuffers[i];
       encoder.uint32(entry.key.type); // mType
       encoder.uint32(entry.key.group); // mGroup
       encoder.uint32(Number(entry.key.instance >> 32n)); // mInstanceEx
       encoder.uint32(Number(entry.key.instance & 0xFFFFFFFFn)); // mInstance
       encoder.uint32(HEADER_BYTE_SIZE + recordOffset); // mnPosition
-      recordOffset += entry.buffer.byteLength;
-      encoder.uint32(entry.buffer.byteLength + 0x80000000); // mnSize + mbExtendedCompressionType
-      encoder.uint32(entry.value.buffer.byteLength); // mnSizeDecompressed
-      encoder.uint16(ZLIB_COMPRESSION); // mnCompressionType
+      recordOffset += entryBuffer.byteLength;
+      encoder.uint32(entryBuffer.byteLength + 0x80000000); // mnSize + mbExtendedCompressionType
+      // FIXME: if models aren't cached, then buffer is being serialized here again
+      encoder.uint32(entry.value.sizeDecompressed ?? entry.value.buffer.byteLength); // mnSizeDecompressed
+      encoder.uint16(entry.value.compressionType); // mnCompressionType
       encoder.uint16(1); // mnCommitted // NOTE: is this always 1?
     });
 

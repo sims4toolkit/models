@@ -24,7 +24,8 @@ export default class RawResource extends WritableModel implements Resource {
     buffer: Buffer,
     readonly compressionType: CompressionType,
     readonly isCompressed: boolean,
-    public reason?: string
+    readonly sizeDecompressed?: number,
+    public reason?: string,
   ) {
     super(true, buffer); // raw resource must always save its buffer
   }
@@ -32,18 +33,32 @@ export default class RawResource extends WritableModel implements Resource {
   /**
    * Creates a new RawResource.
    * 
+   * Options
+   * - `compressionType`: How this resource is/should be compressed. ZLIB by
+   * default.
+   * - `isCompressed`: Whether or not the buffer in this raw resource is
+   * compressed using the algorithm specified in `compressionType`. False by
+   * default.
+   * - `sizeDecompressed`: The length of the buffer when it is decompressed.
+   * Equals the length of the given buffer by default.
+   * - `reason`: Reason why this resource is being loaded raw.
+   * 
    * @param buffer Buffer for raw resource
-   * @param compressionType How this resource is/should be compressed
-   * @param isCompressed Whether or not the buffer is already compressed
-   * @param reason Why this resource is raw
+   * @param options Optional arguments
    */
-  static from(
-    buffer: Buffer,
-    compressionType: CompressionType,
-    isCompressed: boolean,
-    reason?: string
-  ): RawResource {
-    return new RawResource(buffer, compressionType, isCompressed, reason);
+  static from(buffer: Buffer, { compressionType, isCompressed, sizeDecompressed, reason }: {
+    compressionType?: CompressionType;
+    isCompressed?: boolean;
+    sizeDecompressed?: number;
+    reason?: string;
+  } = {}): RawResource {
+    return new RawResource(
+      buffer,
+      compressionType ?? CompressionType.ZLIB,
+      isCompressed ?? false,
+      sizeDecompressed ?? buffer.length,
+      reason
+    );
   }
 
   //#endregion Initialization
@@ -55,6 +70,7 @@ export default class RawResource extends WritableModel implements Resource {
       this.buffer,
       this.compressionType,
       this.isCompressed,
+      this.sizeDecompressed,
       this.reason
     );
   }

@@ -11,6 +11,7 @@ import SimDataResource from "../../resources/simdata/simdata-resource";
 import XmlResource from "../../resources/xml/xml-resource";
 import CombinedTuningResource from "../../resources/combined-tuning/combined-tuning-resource";
 import decompressBuffer from "../../compression/decompress";
+import CompressionType from "../../compression/compression-type";
 
 /**
  * Reads the given buffer as a DBPF and returns a DTO for it.
@@ -170,17 +171,29 @@ function readDbpfIndex(decoder: BinaryDecoder, header: DbpfHeader, flags: DbpfFl
  */
 function getResource(entry: IndexEntry, rawBuffer: Buffer, options?: FileReadingOptions): Resource {
   if (options?.loadRaw && !options?.decompressRawResources) {
-    const isCompressed = Boolean(entry.mnCompressionType);
-    return RawResource.from(rawBuffer, entry.mnCompressionType, isCompressed);
+    return RawResource.from(rawBuffer, {
+      compressionType: entry.mnCompressionType,
+      isCompressed: true,
+      sizeDecompressed: entry.mnSizeDecompressed
+    });
   }
 
   try {
     var buffer = decompressBuffer(buffer, entry.mnCompressionType, entry.mnSizeDecompressed);
   } catch (e) {
-    return RawResource.from(buffer, entry.mnCompressionType, true, e);
+    return RawResource.from(buffer, {
+      compressionType: entry.mnCompressionType,
+      isCompressed: true,
+      reason: `Unsupported compression: ${entry.mnCompressionType} (${CompressionType[entry.mnCompressionType]})`
+    });
   }
 
-  const raw = (reason?: string) => RawResource.from(buffer, entry.mnCompressionType, false, reason);
+  const raw = (reason?: string) => RawResource.from(buffer, {
+    compressionType: entry.mnCompressionType,
+    isCompressed: false,
+    reason
+  });
+
   if (options?.loadRaw) return raw();
   
   const { type } = entry.key;
