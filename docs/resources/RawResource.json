@@ -29,7 +29,7 @@
         }
       ]
     },
-    "description": "Model for resources that have not been parsed.",
+    "description": "Model for resources that have not been parsed. Note that the buffer within a raw resource may be compressed (this is the default behavior if extracted from a package) - check the 'isCompressed' and 'compressionType' properties to determine how to read this resource.",
     "sourceCode": "src/lib/resources/raw/raw-resource.ts"
   },
   "sections": [
@@ -114,17 +114,59 @@
               "description": "Buffer to load into this resource."
             },
             {
-              "name": "reason",
+              "name": "options",
               "type": {
-                "name": "string"
+                "name": "object"
               },
               "optional": true,
-              "description": "Optional reason why this resource is being loaded raw."
+              "description": "Optional arguments",
+              "properties": [
+                {
+                  "name": "compressionType",
+                  "optional": true,
+                  "description": "How this resource is/should be compressed. ZLIB by default.",
+                  "type": {
+                    "name": "CompressionType",
+                    "path": {
+                      "pkg": "models",
+                      "group": "types",
+                      "item": "CompressionType"
+                    }
+                  }
+                },
+                {
+                  "name": "isCompressed",
+                  "optional": true,
+                  "description": "Whether or not the buffer in this raw resource is compressed using the algorithm specified in compressionType. False by default.",
+                  "type": {
+                    "name": "boolean"
+                  }
+                },
+                {
+                  "name": "sizeDecompressed",
+                  "optional": true,
+                  "description": "The length of the buffer when it is decompressed. Equals the length of the given buffer by default.",
+                  "type": {
+                    "name": "number"
+                  }
+                },
+                {
+                  "name": "reason",
+                  "optional": true,
+                  "description": "Reason why this resource is being loaded raw.",
+                  "type": {
+                    "name": "string"
+                  }
+                }
+              ]
             }
           ],
           "examples": [
             {
-              "code": "const raw = RawResource.from(buffer, \"Because I said so.\");"
+              "code": "// For raw resources that are not compressed\nconst raw = RawResource.from(buffer, {\n  reason: \"Because I said so.\"\n});"
+            },
+            {
+              "code": "// For raw resources that are already compressed\nconst raw = RawResource.from(buffer, {\n  compressionType: CompressionType.StreamableCompresssion,\n  isCompressed: true,\n  sizeDecompressed: 123456,\n  reason: \"Incompatible compression format.\"\n});"
             }
           ]
         }
