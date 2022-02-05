@@ -1,5 +1,5 @@
 import { expect } from "chai";
-import { EncodingType } from "../../../../dst/enums";
+import { CompressionType, EncodingType } from "../../../../dst/enums";
 import { RawResource, StringTableResource } from '../../../../dst/models';
 
 function getRAW(content = "default content") {
@@ -15,15 +15,45 @@ describe('RawResource', function() {
   });
 
   describe("#compressionType", () => {
-    // TODO:
+    it("should be ZLIB, if not provided", () => {
+      const raw = RawResource.from(Buffer.from("hello"));
+      expect(raw.compressionType).to.equal(CompressionType.ZLIB);
+    });
+
+    it("should be the format that is provided", () => {
+      const raw = RawResource.from(Buffer.from("hello"), {
+        compressionType: CompressionType.InternalCompression
+      });
+      expect(raw.compressionType).to.equal(CompressionType.InternalCompression);
+    });
   });
 
   describe("#isCompressed", () => {
-    // TODO:
+    it("should be false, if not provided", () => {
+      const raw = RawResource.from(Buffer.from("hello"));
+      expect(raw.isCompressed).to.be.false;
+    });
+
+    it("should be true if given true", () => {
+      const raw = RawResource.from(Buffer.from("hello"), {
+        isCompressed: true
+      });
+      expect(raw.isCompressed).to.be.true;
+    });
   });
 
   describe("#sizeDecompressed", () => {
-    // TODO:
+    it("should be the byte size of the original buffer, if not provided", () => {
+      const raw = RawResource.from(Buffer.from("héllo"));
+      expect(raw.sizeDecompressed).to.equal(6);
+    });
+
+    it("should be the value that is given", () => {
+      const raw = RawResource.from(Buffer.from("héllo"), {
+        sizeDecompressed: 10
+      });
+      expect(raw.sizeDecompressed).to.equal(10);
+    });
   });
 
   describe('#reason', function() {
