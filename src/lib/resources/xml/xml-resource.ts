@@ -4,6 +4,7 @@ import Resource from "../resource";
 import EncodingType from "../../enums/encoding-type";
 import { FileReadingOptions } from "../../common/options";
 import { promisify } from "../../common/helpers";
+import CompressionType from "../../compression/compression-type";
 
 /**
  * Model for a plain text, XML resource. This does not necessarily need to be
@@ -11,6 +12,8 @@ import { promisify } from "../../common/helpers";
  */
 export default class XmlResource extends WritableModel implements Resource {
   readonly encodingType: EncodingType = EncodingType.XML;
+  readonly compressionType: CompressionType = CompressionType.ZLIB;
+  readonly isCompressed: boolean = false;
   private _content?: string;
   private _dom?: XmlDocumentNode;
 

@@ -1,8 +1,6 @@
 import type Resource from "../../resources/resource";
 import type { FileReadingOptions, ResourceFilter } from "../../common/options";
 import type { ResourceKeyPair, ResourceKey } from "../types";
-import { ZLIB_COMPRESSION } from "../constants";
-import { unzipSync } from "zlib";
 import { BinaryDecoder } from "@s4tk/encoding";
 import { bufferContainsXml, makeList } from "../../common/helpers";
 import RawResource from "../../resources/raw/raw-resource";
@@ -12,6 +10,7 @@ import StringTableResource from "../../resources/stbl/stbl-resource";
 import SimDataResource from "../../resources/simdata/simdata-resource";
 import XmlResource from "../../resources/xml/xml-resource";
 import CombinedTuningResource from "../../resources/combined-tuning/combined-tuning-resource";
+import decompressBuffer from "../../compression/decompress";
 
 /**
  * Reads the given buffer as a DBPF and returns a DTO for it.
@@ -56,6 +55,7 @@ interface IndexEntry {
   mnPosition: number;
   mnSize: number;
   mnCompressionType?: number;
+  mnSizeDecompressed: number;
 }
 
 //#endregion Types & Interfaces
@@ -152,7 +152,7 @@ function readDbpfIndex(decoder: BinaryDecoder, header: DbpfHeader, flags: DbpfFl
       const sizeAndCompression = decoder.uint32();
       entry.mnSize = sizeAndCompression & 0x7FFFFFFF; // 31 bits
       const isCompressed = (sizeAndCompression >>> 31) === 1; // mbExtendedCompressionType; 1 bit
-      decoder.skip(4); // mnSizeDecompressed (uint32; 4 bytes)
+      entry.mnSizeDecompressed = decoder.uint32();
       if (isCompressed) entry.mnCompressionType = decoder.uint16();
       decoder.skip(2); // mnCommitted (uint16; 2 bytes)
       return entry as IndexEntry;
@@ -169,20 +169,20 @@ function readDbpfIndex(decoder: BinaryDecoder, header: DbpfHeader, flags: DbpfFl
  * @returns Parsed model for the resource
  */
 function getResource(entry: IndexEntry, rawBuffer: Buffer, options?: FileReadingOptions): Resource {
-  let buffer: Buffer;
-
-  if (entry.mnCompressionType) {
-    if (entry.mnCompressionType === ZLIB_COMPRESSION) {
-      buffer = unzipSync(rawBuffer);
-    } else {
-      return RawResource.from(rawBuffer, `Incompatible Compression: ${entry.mnCompressionType}`);
-    }
-  } else {
-    buffer = rawBuffer;
+  if (options?.loadRaw && !options?.decompressRawResources) {
+    const isCompressed = Boolean(entry.mnCompressionType);
+    return RawResource.from(rawBuffer, entry.mnCompressionType, isCompressed);
   }
 
-  if (options.loadRaw) return RawResource.from(buffer);
+  try {
+    var buffer = decompressBuffer(buffer, entry.mnCompressionType, entry.mnSizeDecompressed);
+  } catch (e) {
+    return RawResource.from(buffer, entry.mnCompressionType, true, e);
+  }
 
+  const raw = (reason?: string) => RawResource.from(buffer, entry.mnCompressionType, false, reason);
+  if (options?.loadRaw) return raw();
+  
   const { type } = entry.key;
 
   try {
@@ -195,11 +195,11 @@ function getResource(entry: IndexEntry, rawBuffer: Buffer, options?: FileReading
     } else if ((type in TuningResourceType) || bufferContainsXml(buffer)) {
       return XmlResource.from(buffer, options);
     } else {
-      return RawResource.from(buffer, `Unrecognized non-XML type: ${type}`);
+      return raw(`Unrecognized non-XML type: ${type}`);
     }
   } catch (e) {
     if (options?.loadErrorsAsRaw) {
-      return RawResource.from(buffer, `Model is corrupt.`);
+      return raw("Model is corrupt.");
     } else {
       throw e;
     }

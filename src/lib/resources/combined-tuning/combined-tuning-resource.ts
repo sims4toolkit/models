@@ -1,6 +1,7 @@
 import WritableModel from "../../base/writable-model";
 import { bufferContainsXml } from "../../common/helpers";
 import { FileReadingOptions } from "../../common/options";
+import CompressionType from "../../compression/compression-type";
 import EncodingType from "../../enums/encoding-type";
 import Resource from "../resource";
 import readData from "./serialization/read-data";
@@ -13,6 +14,8 @@ import { CombinedTuningDto } from "./types";
  */
 export default class CombinedTuningResource extends WritableModel implements Resource {
   readonly encodingType: EncodingType = EncodingType.DATA;
+  readonly compressionType: CompressionType = CompressionType.ZLIB;
+  readonly isCompressed: boolean = false;
 
   get saveBuffer() { return true; }
   set saveBuffer(saveBuffer: boolean) {

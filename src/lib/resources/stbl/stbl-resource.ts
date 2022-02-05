@@ -8,12 +8,15 @@ import readStbl from "./serialization/read-stbl";
 import writeStbl from "./serialization/write-stbl";
 import EncodingType from "../../enums/encoding-type";
 import StringEntry from "./string-entry";
+import CompressionType from "../../compression/compression-type";
 
 /**
  * Model for string table (STBL) resources.
  */
 export default class StringTableResource extends PrimitiveMappedModel<string, StringEntry> implements Resource {
   readonly encodingType: EncodingType = EncodingType.STBL;
+  readonly compressionType: CompressionType = CompressionType.ZLIB;
+  readonly isCompressed: boolean = false;
 
   //#region Initialization
 

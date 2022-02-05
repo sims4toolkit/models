@@ -10,6 +10,18 @@ export type ResourceFilter = (type: number, group: number, instance: bigint) => 
  */
 export interface FileReadingOptions {
   /**
+   * (For packages only) If true, then any raw resources that use a supported 
+   * compression format will be decompressed before being loaded. Note that
+   * more compression formats can be read than can be written, so using this
+   * option could mean that the resource being loaded cannot be re-written.
+   * False by default.
+   * 
+   * It is never recommended to use this option when building packages. It
+   * should only be used for extraction.
+   */
+  decompressRawResources?: boolean;
+
+  /**
    * (For binary files only) If true, non-critical errors will be ignored while
    * reading the file(s), and an exception will only be thrown when it is
    * totally unavoidable. False by default.

@@ -1,12 +1,12 @@
 import clone from "just-clone";
 import compare from "just-compare";
-import { deflateSync } from "zlib";
 import type Resource from "../resources/resource";
 import type Package from "./package";
 import type { ResourceKey } from "./types";
 import WritableModel from "../base/writable-model";
 import { MappedModelEntry } from "../base/mapped-model";
 import DataType from "../enums/data-type";
+import compressBuffer from "../compression/compress";
 
 /**
  * An entry for a resource in a package file. This entry has a key and handles
@@ -86,6 +86,12 @@ export default class ResourceEntry extends WritableModel implements MappedModelE
   }
 
   protected _serialize(): Buffer {
-    return deflateSync(this.value.buffer);
+    const buffer = this.resource.buffer;
+
+    if (this.resource.isCompressed) {
+      return buffer;
+    } else {
+      compressBuffer(buffer, this.resource.compressionType);
+    }
   }
 }

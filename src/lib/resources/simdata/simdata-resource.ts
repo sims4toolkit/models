@@ -10,6 +10,7 @@ import readData from "./serialization/read-data";
 import writeData from "./serialization/write-data";
 import WritableModel from "../../base/writable-model";
 import EncodingType from "../../enums/encoding-type";
+import CompressionType from "../../compression/compression-type";
 
 /**
  * Model for SimData resources. While combined tuning is the same format, it is
@@ -21,6 +22,8 @@ import EncodingType from "../../enums/encoding-type";
  */
 export default class SimDataResource extends WritableModel implements Resource, SimDataDto {
   readonly encodingType: EncodingType = EncodingType.DATA;
+  readonly compressionType: CompressionType = CompressionType.ZLIB;
+  readonly isCompressed: boolean = false;
   private _schemas: SimDataSchema[];
   private _instances: SimDataInstance[];
 
