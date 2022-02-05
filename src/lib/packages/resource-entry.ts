@@ -86,12 +86,10 @@ export default class ResourceEntry extends WritableModel implements MappedModelE
   }
 
   protected _serialize(): Buffer {
-    const buffer = this.resource.buffer;
-
     if (this.resource.isCompressed) {
-      return buffer;
+      return this.resource.buffer;
     } else {
-      compressBuffer(buffer, this.resource.compressionType);
+      return compressBuffer(this.resource.buffer, this.resource.compressionType);
     }
   }
 }

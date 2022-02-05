@@ -21,7 +21,9 @@ describe('RawResource', function() {
     });
 
     it('should return the reason why this resource is raw', function() {
-      const raw = RawResource.from(Buffer.from("hello"), "Just because!");
+      const raw = RawResource.from(Buffer.from("hello"), {
+        reason: "Just because!"
+      });
       expect(raw.reason).to.equal("Just because!");
     });
   });
