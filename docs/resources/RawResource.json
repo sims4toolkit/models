@@ -181,7 +181,7 @@
           "returnType": {
             "name": "boolean"
           },
-          "description": "Always returns false.",
+          "description": "Returns true if this resource's buffer is detected to contain XML code, false otherwise.",
           "overrides": {
             "name": "Resource",
             "path": {
