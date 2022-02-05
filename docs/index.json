@@ -24,6 +24,7 @@
       "name": "enums",
       "items": [
         "BinaryResourceType",
+        "CompressionType",
         "DataType",
         "EncodingType",
         "SimDataGroup",
@@ -71,7 +72,6 @@
         "CellCloneOptions",
         "CellEncodingOptions",
         "CellToXmlOptions",
-        "CompressionType",
         "FileReadingOptions",
         "ObjectCellRow",
         "Resource",
