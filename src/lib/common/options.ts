@@ -10,76 +10,65 @@ export type ResourceFilter = (type: number, group: number, instance: bigint) => 
  */
 export interface FileReadingOptions {
   /**
-   * (For packages only) If true, then any raw resources that use a supported 
-   * compression format will be decompressed before being loaded. Note that
-   * more compression formats can be read than can be written, so using this
-   * option could mean that the resource being loaded cannot be re-written.
-   * False by default.
+   * (For packages only) If true, then the buffers that are saved on resources
+   * will be decompressed. This has no effect on non-raw resources unless the
+   * `saveBuffer` option is also enabled. False by default.
    * 
-   * It is never recommended to use this option when building packages. It
-   * should only be used for extraction.
+   * Recommended when extracting resources to write them to disk individually.
    */
-  decompressRawResources?: boolean;
+  decompressBuffer?: boolean;
 
   /**
    * (For binary files only) If true, non-critical errors will be ignored while
    * reading the file(s), and an exception will only be thrown when it is
    * totally unavoidable. False by default.
+   * 
+   * Recommended when recovering potentially corrupt resources from a package.
    */
   ignoreErrors?: boolean;
 
   /**
    * (For packages only) If true, then any erred resources will be loaded raw
-   * (i.e. just a buffer rather than a fully parsed model) instead of causing an
-   * exception. False by default.
+   * (i.e. just a buffer) instead of causing an exception. False by default.
+   * 
+   * Recommended when recovering potentially corrupt resources from a package.
    */
   loadErrorsAsRaw?: boolean;
 
   /**
    * (For packages only) If true, then all resources in the package will be
-   * loaded raw (i.e. just a buffer) rather than being fully parsed into its
-   * respective model. False by default.
+   * loaded raw (i.e. just a buffer) rather than being fully parsed into their
+   * respective models. False by default.
    * 
-   * This is recommended when parsed models are not required while extracting
-   * files from packages. If parsed models are required, consider using the
-   * `saveBuffer` option instead.
+   * Note that raw resources remain in their original compression format by
+   * default. If decompressed resources are needed (such as when extracting
+   * files to write to disk), set `decompressBuffer: true` as well.
    */
   loadRaw?: boolean;
 
   /**
    * (For packages only) If provided, then the only resources that will be
-   * loaded are those that pass (i.e. return true from) this function. If not
-   * provided, then all resources will be loaded.
+   * loaded are those whose keys return true from this function. If not
+   * provided, then all resources are loaded.
    * 
-   * If using a filter to extract files, it is strongly recommended to also use
-   * the `loadRaw` option, so that models are not needlessly created when all
-   * you need are the buffers.
+   * Recommended when extracting a certain type of resource from a package, such
+   * as all string tables and nothing else.
    */
   resourceFilter?: ResourceFilter;
 
   /**
-   * If true, then the decompressed buffer for a resource will be saved on its
-   * model. Note that raw resources always save their buffer regardless of this
-   * option, as it is their only defining feature. False by default.
+   * If true, then the buffer for this resource (or all resources, if used with
+   * a package) will be saved on its model. The buffer is cached when the
+   * resource is initially loaded, uncached whenever a change is detected, and
+   * re-cached the next time it is serialized (i.e. next time the `buffer`
+   * property is accessed). False by default.
    * 
-   * If this option is used on a package, it refers to the decompressed buffers
-   * for the resources within the package, not the buffer for the package
-   * itself. Package's buffer cannot be saved, as doing so would consume twice
-   * as much memory for no benefit. If you need to copy a package without
-   * mutating its contents, you can just copy/paste it (like an NFT).
+   * Whether the buffer being saved is compressed or not depends on what the
+   * `decompressBuffer` option is set to. It is also false by default.
    * 
-   * This is recommended when parsed models are required while extracting files
-   * from packages. If parsed models are not required, consider using the
-   * `loadRaw` option instead, so that models are not needlessly created.
+   * It is recommended to save compressed buffers whenever entire packages are
+   * going to be written, and it is recommended to save decompressed buffers
+   * whenever individual resources are going to be written.
    */
   saveBuffer?: boolean;
-
-  /**
-   * (For packages only) If true, then the compressed buffer for a resource will
-   * be saved on its resource entry. False by default.
-   * 
-   * This is recommended when editing a subset of the resources in a package and
-   * then writing it back to disk as a complete package.
-   */
-  saveCompressedBuffer?: boolean;
 }
