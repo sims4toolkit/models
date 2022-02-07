@@ -13,47 +13,15 @@ import clone from "just-clone";
  * DBPF for short).
  */
 export default class Package extends MappedModel<ResourceKey, Resource, ResourceEntry> {
-  private _saveCompressedBuffers: boolean;
-  private _saveDecompressedBuffers: boolean;
-
   get saveBuffer() { return false; }
   set saveBuffer(saveBuffer: boolean) {
     // intentionally blank; packages can never be cached
   }
 
-  /** Whether or not compressed buffers for entries should be cached. */
-  get saveCompressedBuffers() { return this._saveCompressedBuffers; }
-  set saveCompressedBuffers(saveBuffers: boolean) {
-    this._saveCompressedBuffers = saveBuffers ?? false;
-    if (!saveBuffers) {
-      this.entries.forEach(entry => {
-        entry.saveBuffer = saveBuffers;
-      });
-    }
-  }
-
-  /** Whether or not decompressed buffers for resources should be cached. */
-  get saveDecompressedBuffers() { return this._saveDecompressedBuffers; }
-  set saveDecompressedBuffers(saveBuffers: boolean) {
-    this._saveDecompressedBuffers = saveBuffers ?? false;
-    if (!saveBuffers) {
-      this.entries.forEach(entry => {
-        entry.resource.saveBuffer = saveBuffers;
-      });
-    }
-  }
-
   //#region Initialization
 
-  protected constructor(
-    entries?: ResourceKeyPair[],
-    saveCompressedBuffers = false,
-    saveDecompressedBuffers = false
-  ) {    
-    super(undefined, false); // never cache package buffer, it's pointless
-    this._saveCompressedBuffers = saveCompressedBuffers;
-    this._saveDecompressedBuffers = saveDecompressedBuffers;
-    this._initializeEntries(entries); // has to happen after props are set
+  protected constructor(entries?: ResourceKeyPair[]) {    
+    super(entries, false); // never cache package buffer, it's pointless
   }
 
   /**
@@ -68,25 +36,13 @@ export default class Package extends MappedModel<ResourceKey, Resource, Resource
    * package. False by default.
    * - `cloneResources`: Whether or not to clone the resource before adding them
    * to the package. False by default.
-   * - `saveCompressedBuffers`: Whether or not to cache the compressed buffers
-   * for individual entries. False by default.
-   * - `saveDecompressedBuffers`: Whether or not to cache the decompressed
-   * buffers for individual resources. False by default.
    * 
    * @param options Optional arguments for creating a new Package
    */
-  static create({
-    entries,
-    cloneKeys = false,
-    cloneResources = false,
-    saveCompressedBuffers,
-    saveDecompressedBuffers
-  }: {
+  static create({ entries, cloneKeys = false, cloneResources = false }: {
     entries?: ResourceKeyPair[];
     cloneKeys?: boolean;
     cloneResources?: boolean;
-    saveCompressedBuffers?: boolean;
-    saveDecompressedBuffers?: boolean;
   } = {}): Package {
     let entriesToUse: ResourceKeyPair[];
 
@@ -101,11 +57,7 @@ export default class Package extends MappedModel<ResourceKey, Resource, Resource
       entriesToUse = entries;
     }
 
-    return new Package(
-      entriesToUse,
-      saveCompressedBuffers,
-      saveDecompressedBuffers
-    );
+    return new Package(entriesToUse);
   }
 
   /**
@@ -155,11 +107,7 @@ export default class Package extends MappedModel<ResourceKey, Resource, Resource
    * @param options Options for reading and cacheing the resources
    */
   static from(buffer: Buffer, options?: FileReadingOptions): Package {
-    return new Package(
-      readDbpf(buffer, options),
-      options?.saveCompressedBuffer,
-      options?.saveBuffer
-    );
+    return new Package(readDbpf(buffer, options));
   }
 
   /**
@@ -178,11 +126,7 @@ export default class Package extends MappedModel<ResourceKey, Resource, Resource
   //#region Public Methods
 
   clone(): Package {
-    return new Package(
-      this.entries.map(entry => entry.clone()),
-      this.saveCompressedBuffers,
-      this.saveDecompressedBuffers
-    );
+    return new Package(this.entries.map(entry => entry.clone()));
   }
 
   equals(other: Package): boolean {
@@ -197,9 +141,8 @@ export default class Package extends MappedModel<ResourceKey, Resource, Resource
     return `${key.type}_${key.group}_${key.instance}`;
   }
 
-  protected _makeEntry(key: ResourceKey, value: Resource, dto?: ResourceKeyPair): ResourceEntry {
-    value.saveBuffer = this.saveDecompressedBuffers;
-    return new ResourceEntry(key, value, this.saveCompressedBuffers, dto?.buffer, this);
+  protected _makeEntry(key: ResourceKey, value: Resource): ResourceEntry {
+    return new ResourceEntry(key, value, this);
   }
 
   protected _serialize(): Buffer {
