@@ -32,7 +32,6 @@ export default function readDbpf(buffer: Buffer, options: FileReadingOptions = {
       key: indexEntry.key,
       value: getResource(indexEntry, compressedBuffer, options)
     };
-    if (options?.saveCompressedBuffer) entry.buffer = compressedBuffer;
     return entry;
   });
 }

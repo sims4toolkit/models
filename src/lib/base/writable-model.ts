@@ -1,22 +1,39 @@
 import { promisify } from '../common/helpers';
+import CompressionType from '../compression/compression-type';
 import ApiModelBase from './api-model';
 
 /**
  * Base class for models that can be written to disk.
  */
 export default abstract class WritableModel extends ApiModelBase {
-  // NOTE: Buffer is fine for now, but look out for memory/time bottlenecks...
-  // If any come up, it should be replaced with a stream. This would require
-  // significant refactoring of the entire codebase, though.
   private _buffer?: Buffer;
+  private _compressBuffer?: boolean;
+  private _compressionType?: CompressionType;
   private _saveBuffer: boolean;
+  private _sizeDecompressed?: number;
 
   /**
-   * The buffer for this model.
+   * The buffer to use when writing this model. If a cached buffer is available,
+   * it is returned. If there is no cached buffer, the model is serialized on
+   * the fly (when this property is retrieved).
    */
   get buffer(): Buffer {
     if (!this.saveBuffer) return this._serialize();
     return this._buffer ??= this._serialize();
+  }
+
+  /**
+   * How this model's buffer should be compressed when written in a package. If
+   *  `saveBuffer` and `compressBuffer` are true, this also dictates how the
+   * cached buffer will be compressed.
+   */
+  public get compressionType(): CompressionType { return this._compressionType; }
+  public set compressionType(value: CompressionType) {
+    this._compressionType = value;
+    if (this._compressBuffer && this.isCached) {
+      delete this._buffer;
+      delete this._sizeDecompressed;
+    }
   }
 
   /** 
@@ -26,6 +43,13 @@ export default abstract class WritableModel extends ApiModelBase {
     // intentionally != so that null is captured as well
     return this._buffer != undefined;
   }
+
+  /**
+   * Whether this model's cached buffer is compressed using the compression
+   * algorithm specified by `compressionType`. If there is no cached buffer,
+   * this is always false. 
+   */
+  get isCompressed(): boolean { return this._isCompressed ?? false; }
 
   /** Whether or not the buffer should be cached on this model. */
   get saveBuffer() { return this._saveBuffer; }

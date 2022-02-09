@@ -10,32 +10,43 @@ import CompressionType from "./compression-type";
  */
 export default function decompressBuffer(buffer: Buffer, compression: CompressionType, decompressedSize: number): Buffer {
   switch (compression) {
-    case CompressionType.Uncompressed:
-      return buffer;
     case CompressionType.ZLIB:
       return unzipSync(buffer);
     case CompressionType.InternalCompression:
       return internalDecompression(buffer, decompressedSize)
+    case CompressionType.Uncompressed:
+      // fallthrough
     case CompressionType.DeletedRecord:
-      return buffer; // deleted records are just empty buffers, no need to error
+      return buffer;
     default:
-      throw new Error(`Unrecognized compression type: ${compression}`);
+      throw new Error(`Unsupported compression type: ${compression}`);
   }
 }
 
 /**
- * Decompresses a buffer using the internal compression algorithm. Heavily based
- * on a script written by Scumbumbo in VB. The original source code can be found
- * here: https://modthesims.info/showthread.php?t=618074
+ * Decompresses a buffer using the internal compression algorithm.
+ * 
+ * Heavily based on this Visual Basic code by Scumbumbo:
+ * https://modthesims.info/showthread.php?t=618074
+ * 
+ * Scumbumbo's VB code was put through this VB -> C# translator:
+ * https://converter.telerik.com/
+ * 
+ * Note that the above translator is not perfect, and uses an outdated version
+ * of the converter library:
+ * https://github.com/icsharpcode/CodeConverter/issues/826#issuecomment-1030841329
+ * 
+ * The output code had to be touched up manually to fit TS syntax, but other
+ * than that, this is basically Scumbumbo's code. Major credit to him.
  * 
  * @param data Buffer to decompress
  * @param decompressedSize Size of buffer when decompressed
  */
-export function internalDecompression(data: Buffer, decompressedSize: number): Buffer {
+function internalDecompression(data: Buffer, decompressedSize: number): Buffer {
   const udata: Buffer = Buffer.alloc(decompressedSize);
 
   let udata_idx = 0;
-  let data_idx = 5; // Skip 2 bytes of flags + 3 indicating length (use the package header for uncompressed size)
+  let data_idx = 5; // Skip 2 bytes of flags + 3 indicating decompressedSize
   let compressionFormat = data[0];
   let controlCode: number; // byte
   let size: number;
@@ -56,7 +67,7 @@ export function internalDecompression(data: Buffer, decompressedSize: number): B
       data_idx += size;
       udata_idx += size;
       for (var I = 0; I <= copySize - 1; I++)
-          udata[udata_idx + I] = udata[(udata_idx + I) - copyOffset - 1];
+        udata[udata_idx + I] = udata[(udata_idx + I) - copyOffset - 1];
       udata_idx += copySize;
     } else if (controlCode <= 0xBF) {
       size = (data[data_idx] & 0xC0) / 64;
@@ -67,7 +78,7 @@ export function internalDecompression(data: Buffer, decompressedSize: number): B
       data_idx += size;
       udata_idx += size;
       for (var I = 0; I <= copySize - 1; I++)
-          udata[udata_idx + I] = udata[(udata_idx + I) - copyOffset - 1];
+        udata[udata_idx + I] = udata[(udata_idx + I) - copyOffset - 1];
       udata_idx += copySize;
     } else if (controlCode <= 0xDF) {
       size = controlCode & 0x3;
@@ -78,7 +89,7 @@ export function internalDecompression(data: Buffer, decompressedSize: number): B
       data_idx += size;
       udata_idx += size;
       for (var I = 0; I <= copySize - 1; I++)
-          udata[udata_idx + I] = udata[(udata_idx + I) - copyOffset - 1];
+        udata[udata_idx + I] = udata[(udata_idx + I) - copyOffset - 1];
       udata_idx += copySize;
     } else if (controlCode <= 0xFB) {
       size = ((controlCode & 0x1F) * 4) + 4;
