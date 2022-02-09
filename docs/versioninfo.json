@@ -1,0 +1,10 @@
+{
+  "$schema": "https://raw.githubusercontent.com/sims4toolkit/misc/main/json-schemas/docs-versioninfo-schema.json",
+  "knownIssues": [
+    {
+      "severity": "moderate",
+      "title": "Package Serialization",
+      "description": "Some resources (namely SimDatas) may not be serialized correctly. This is actively being looked into and should be fixed in the next release."
+    }
+  ]
+}
