@@ -1,6 +1,6 @@
 {
   "name": "@s4tk/models",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Models for reading and writing package files and the resources they contain.",
   "repository": {
     "type": "git",

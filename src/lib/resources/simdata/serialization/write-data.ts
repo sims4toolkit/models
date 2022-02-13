@@ -172,6 +172,11 @@ export default function writeData(model: SimDataDto): Buffer {
       offset: 0  // to be set when column size is calculated
     }));
 
+    // NOTE: This code looks weird, but SimData columns must be written in a
+    // very specific order. Within schemas, they must be written in ascending
+    // numeric order of their hash. Within objects, they must be written in
+    // ascending ASCII order of their names.
+
     sortByProperty(columns, "name");
 
     let size = 0;
