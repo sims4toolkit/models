@@ -5,6 +5,7 @@ import { SimDataDto, CellEncodingOptions } from "../types";
 import { HEADER_SIZE, TABLE_HEADER_OFFSET, RELOFFSET_NULL, NO_NAME_HASH, SUPPORTED_VERSION } from "../constants";
 import * as cells from "../cells";
 import DataType from "../../../enums/data-type";
+import { sortByProperty } from "../../../common/helpers";
 
 // NOTE: there could potentially be an issue with padding when writing booleans,
 // for an example use the scenario role that chip sent
@@ -171,8 +172,7 @@ export default function writeData(model: SimDataDto): Buffer {
       offset: 0  // to be set when column size is calculated
     }));
 
-    columns.forEach(column => hashName(column)); // needed for when there is 1
-    columns.sort((a, b) => hashName(a) - hashName(b));
+    sortByProperty(columns, "name");
 
     let size = 0;
     columns.forEach(column => {
@@ -181,6 +181,9 @@ export default function writeData(model: SimDataDto): Buffer {
       size += DataType.getBytes(column.dataType);
       size += getPaddingForAlignment(size, DataType.getAlignment(column.dataType) - 1);
     });
+
+    columns.forEach(column => hashName(column)); // needed for when there is 1
+    columns.sort((a, b) => hashName(a) - hashName(b));
 
     const serialSchema = {
       name: schema.name,

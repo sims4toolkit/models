@@ -163,7 +163,7 @@ describe("SimDataResource", () => {
     it("should sort all table columns by their name", () => {
       const unsorted = getSimDataFromXml("unsorted");
       const sortedBinary = getBuffer("sorted.simdata").toString('base64');
-      expect(unsorted.buffer.toString('base64')).to.equal(sortedBinary)
+      expect(unsorted.buffer.toString('base64')).to.equal(sortedBinary);
     });
   });
 

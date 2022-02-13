@@ -79,3 +79,19 @@ export function promisify<T>(fn: () => T): Promise<T> {
     }
   });
 }
+
+/**
+ * Sorts the given array of objects by the property that is given.
+ * 
+ * @param arr Array to sort
+ * @param prop Property to sort by
+ */
+export function sortByProperty<T extends any>(arr: T[], prop: string): T[] {
+  arr.sort((a, b) => {
+    if (a[prop] > b[prop]) return 1;
+    if (a[prop] < b[prop]) return -1;
+    return 0;
+  });
+
+  return arr;
+}
