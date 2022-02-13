@@ -248,9 +248,10 @@ export default class SimDataResource extends WritableModel implements Resource, 
 
   /**
    * Creates an XmlDocumentNode object that represents this SimData exactly as
-   * it would appear in Sims 4 Studio.
+   * it would appear in Sims 4 Studio. Note that columns are sorted by name,
+   * and may not line up exactly with the order they're in in the model.
    */
-  toXmlDocument({ sort = false }: { sort?: boolean; } = {}): XmlDocumentNode {
+  toXmlDocument(): XmlDocumentNode {
     const instNode = new XmlElementNode({
       tag: 'Instances',
       children: this.instances.map(i => i.toXmlNode())
@@ -261,28 +262,26 @@ export default class SimDataResource extends WritableModel implements Resource, 
       children: this.schemas.map(s => s.toXmlNode())
     });
 
-    if (sort) {
-      const sortAlgo = (a: XmlNode, b: XmlNode) => {
-        const aName = a.attributes.name;
-        const bName = b.attributes.name;
-        if (aName) {
-          if (bName) {
-            if (aName < bName) return -1;
-            if (aName > bName) return 1;
-            return 0;
-          }
-          return -1;
+    const sortAlgo = (a: XmlNode, b: XmlNode) => {
+      const aName = a.attributes.name;
+      const bName = b.attributes.name;
+      if (aName) {
+        if (bName) {
+          if (aName < bName) return -1;
+          if (aName > bName) return 1;
+          return 0;
         }
-        return bName ? 1 : 0;
-      };
+        return -1;
+      }
+      return bName ? 1 : 0;
+    };
 
-      instNode.deepSort(sortAlgo);
+    instNode.deepSort(sortAlgo);
 
-      schemasNode.children.forEach(schemaNode => {
-        if (!schemaNode.child) return;
-        schemaNode.child.sort(sortAlgo);
-      });
-    }
+    schemasNode.children.forEach(schemaNode => {
+      if (!schemaNode.child) return;
+      schemaNode.child.sort(sortAlgo);
+    });
 
     const doc = new XmlDocumentNode(new XmlElementNode({
       tag: 'SimData',

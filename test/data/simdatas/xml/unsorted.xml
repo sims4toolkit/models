@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<SimData version="0x00000101" u="0x00000000">
+  <Instances>
+    <I name="Unsorted" schema="UnsortedSchema" type="Object">
+      <T name="c">3</T>
+      <T name="a">1</T>
+      <T name="b">2</T>
+    </I>
+  </Instances>
+  <Schemas>
+    <Schema name="UnsortedSchema" schema_hash="0x0D045687">
+      <Columns>
+        <Column name="a" type="UInt32" flags="0x00000000" />
+        <Column name="b" type="UInt32" flags="0x00000000" />
+        <Column name="c" type="UInt32" flags="0x00000000" />
+      </Columns>
+    </Schema>
+  </Schemas>
+</SimData>
