@@ -118,7 +118,6 @@ namespace DataType {
    */
   export function getBytes(dataType: DataType): number {
     switch (dataType) {
-      case DataType.Boolean:
       case DataType.Character:
       case DataType.Int8:
       case DataType.UInt8:
@@ -126,6 +125,7 @@ namespace DataType {
       case DataType.Int16:
       case DataType.UInt16:
         return 2;
+      case DataType.Boolean: // booleans are 1 byte, but this requires some voodoo
       case DataType.Int32:
       case DataType.UInt32:
       case DataType.Float:

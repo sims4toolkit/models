@@ -26,6 +26,21 @@ app.get('/simdata-binary', (req, res) => {
   }
 });
 
+app.get('/simdata-binary-file', (req, res) => {
+  try {
+    const simdata = SimDataResource.fromXml(req.body);
+    const result = simdata.buffer; // just to let it throw if needed
+    res.writeHead(200, {
+      'Content-Type': 'application/octet-stream',
+      'Content-disposition': 'attachment;filename=response.simdata',
+      'Content-Length': result.byteLength
+    });
+    res.end(result);
+  } catch (err) {
+    res.status(400).send(`XML could not be parsed as SimData\n\n${err}`);
+  }
+});
+
 app.get('/simdata-xml', (req, res) => {
   try {
     const buffer = Buffer.from(req.body, 'base64');

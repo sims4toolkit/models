@@ -182,9 +182,9 @@ export default function writeData(model: SimDataDto): Buffer {
     let size = 0;
     columns.forEach(column => {
       schemaSectionSize += 20; // size of column header
+      size += getPaddingForAlignment(size, DataType.getAlignment(column.dataType) - 1);
       column.offset = size;
       size += DataType.getBytes(column.dataType);
-      size += getPaddingForAlignment(size, DataType.getAlignment(column.dataType) - 1);
     });
 
     columns.forEach(column => hashName(column)); // needed for when there is 1
