@@ -181,8 +181,8 @@ export default class SimDataResource extends WritableModel implements Resource, 
       throw new Error(`Expected <SimData>, but got <${dom.tag}>`);
 
     const version = parseInt(dom.attributes.version, 16);
-    if (version !== SUPPORTED_VERSION)
-      throw new Error(`Expected version to be ${SUPPORTED_VERSION}, got ${version}`);
+    if (version < 0x100 || version > 0x101)
+      throw new Error(`Expected version to be 0x100-0x101, got ${version}`);
     
     const unused = parseInt(dom.attributes.u, 16);
     if (Number.isNaN(unused))
