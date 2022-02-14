@@ -159,12 +159,8 @@ export default function writeData(model: SimDataDto): Buffer {
 
   //#region Prepare Schemas
 
-  let schemaSectionSize = 0;
   const serialSchemaMap: { [key: number]: SerialSchema } = {};
   const serialSchemas: SerialSchema[] = model.schemas.map(schema => {
-    schemaSectionSize += 24; // size of schema header
-    hashName(schema);
-
     const columns: SerialColumn[] = schema.columns.map(column => ({
       name: column.name,
       dataType: column.type,
@@ -181,7 +177,6 @@ export default function writeData(model: SimDataDto): Buffer {
 
     let size = 0;
     columns.forEach(column => {
-      schemaSectionSize += 20; // size of column header
       size += getPaddingForAlignment(size, DataType.getAlignment(column.dataType) - 1);
       column.offset = size;
       size += DataType.getBytes(column.dataType);
@@ -189,6 +184,8 @@ export default function writeData(model: SimDataDto): Buffer {
 
     columns.forEach(column => hashName(column)); // needed for when there is 1
     columns.sort((a, b) => hashName(a) - hashName(b));
+
+    hashName(schema); // hash after columns to match s4s
 
     const serialSchema = {
       name: schema.name,
