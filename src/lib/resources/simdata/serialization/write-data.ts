@@ -116,10 +116,11 @@ function isStringType(cell: cells.Cell): boolean {
  * @param model SimData model to write
  */
 export default function writeData(model: SimDataDto): Buffer {
-  if (model.version !== SUPPORTED_VERSION) {
+  // FIXME: if supporting 0x100, make sure it's written properly and add tests
+  // TODO: also, add tests for lists of objects of length 2 or greater
+  if ((model.version < 0x100) || (model.version > 0x101)) {
     const hexVersion = formatAsHexString(model.version, 0, true);
-    const hexSupVersion = formatAsHexString(SUPPORTED_VERSION, 0, true);
-    throw new Error(`S4TK cannot write SimData version ${hexVersion}, only ${hexSupVersion} is supported at this time.`);
+    throw new Error(`S4TK cannot write SimData version ${hexVersion}, only 0x100-0x101 are supported.`);
   }
   
   //#region Mappings & Getters
@@ -518,7 +519,7 @@ export default function writeData(model: SimDataDto): Buffer {
       encoder.savePos(() => {
         encoder.seek(tablePos);
         table.rows.forEach((row, i) => {
-          encoder.skip(table.schema.size * i);
+          if (i > 0) encoder.skip(table.schema.size);
           table.schema.columns.forEach((column, j) => {
             encoder.savePos(() => {
               encoder.skip(column.offset);
