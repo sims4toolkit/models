@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Make SimData's string table order parity S4S's order.
 - Write SimData object tables in order of schemas.
 - No longer sort schema columns alphabetically when writing SimData XML.
+- SimData equality now depends on schemas having columns in the same order.
 ### Fixed
 - SimData Booleans now occupy 4 bytes.
 - Undo "fix" from 0.2.1 that incorrectly sorted SimData columns alphabetically.

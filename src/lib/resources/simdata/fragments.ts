@@ -62,7 +62,11 @@ export class SimDataSchema extends ApiModelBase {
     if (!other) return false;
     if (this.name !== other.name) return false;
     if (this.hash !== other.hash) return false;
-    return arraysAreEqual(this.columns, other.columns);
+    if (this.columns.length !== other.columns.length) return false;
+    for (let i = 0; i < this.columns.length; i++) {
+      if (!this.columns[i].equals(other.columns[i])) return false;
+    }
+    return true;
   }
 
   /**
