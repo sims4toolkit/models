@@ -32,7 +32,7 @@ app.get('/simdata-binary-file', (req, res) => {
     const result = simdata.buffer; // just to let it throw if needed
     res.writeHead(200, {
       'Content-Type': 'application/octet-stream',
-      'Content-disposition': 'attachment;filename=response.simdata',
+      'Content-disposition': 'attachment;filename=s4tk_response.simdata',
       'Content-Length': result.byteLength
     });
     res.end(result);
