@@ -6,9 +6,6 @@ import { SimDataSchema, SimDataInstance, Cell, NumberCell, ObjectCell, VectorCel
 import MockOwner from "../../../mocks/mock-owner";
 import { DataType, EncodingType } from "../../../../dst/enums";
 
-// TODO: add tests for version 0x100 not writing unused
-// TODO: also, add tests for lists of objects of length 2 or greater
-
 //#region Helpers
 
 const cachedBuffers: { [key: string]: Buffer; } = {};
