@@ -2,7 +2,7 @@ import fs from "fs";
 import path from "path";
 import { expect } from "chai";
 import { SimDataResource } from "../../../../dst/models";
-import { SimDataSchema, SimDataInstance, Cell, NumberCell, ObjectCell, VectorCell, VariantCell, ResourceKeyCell, SimDataSchemaColumn } from "../../../../dst/simdata";
+import { SimDataSchema, SimDataInstance, Cell, NumberCell, ObjectCell, VectorCell, VariantCell, ResourceKeyCell, SimDataSchemaColumn, BooleanCell } from "../../../../dst/simdata";
 import MockOwner from "../../../mocks/mock-owner";
 import { DataType, EncodingType } from "../../../../dst/enums";
 
@@ -156,6 +156,14 @@ describe("SimDataResource", () => {
       const unsorted = getSimDataFromXml("unsorted");
       const sortedBinary = getBuffer("sorted.simdata").toString('base64');
       expect(unsorted.buffer.toString('base64')).to.equal(sortedBinary);
+    });
+
+    it("should write 0x100 with correct padding", () => {
+      const originalBuffer = getBuffer("version_100.simdata");
+      const original = SimDataResource.from(originalBuffer, { saveBuffer: false });
+      const serializedBuffer = original.buffer;
+      expect(originalBuffer).to.not.equal(serializedBuffer);
+      expect(originalBuffer.toString("base64")).to.equal(serializedBuffer.toString("base64"));
     });
   });
 
@@ -649,6 +657,43 @@ describe("SimDataResource", () => {
             expect(cell.children).to.have.lengthOf(2);
             expect(cell.children[0].asAny.children[0].value).to.equal(32);
             expect(cell.children[0].asAny.children[1].value).to.equal(64);
+          }
+        });
+      });
+
+      it("should read venue.simdata correctly", () => {
+        testBinarySimData({
+          filename: "venue",
+          unused: 0x00000009,
+          numInstances: 1,
+          instanceName: "venue_cafe",
+          numSchemas: 3,
+          schemaName: "Venue",
+          schemaHash: 0x476E745E,
+          numColumns: 23,
+          firstColumnName: "allowed_for_clubs",
+          firstColumnType: DataType.Boolean,
+          cellTest(cell: BooleanCell) {
+            expect(cell.value).to.be.true;
+          }
+        });
+      });
+
+      it("should read cas_camera.simdata correctly", () => {
+        testBinarySimData({
+          filename: "cas_camera",
+          unused: 0x00000019,
+          numInstances: 1,
+          instanceName: "Client_CASCameraTuning_AdultCat",
+          numSchemas: 2,
+          schemaName: "Client_CASCameraTuning",
+          schemaHash: 0x38540732,
+          numColumns: 15,
+          firstColumnName: "Cameras",
+          firstColumnType: DataType.Vector,
+          cellTest(cell: VectorCell) {
+            expect(cell.childType).to.equal(DataType.Object);
+            expect(cell.children.length).to.equal(14);
           }
         });
       });
