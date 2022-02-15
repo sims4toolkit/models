@@ -537,7 +537,7 @@
               "item": "XmlDocumentNode"
             }
           },
-          "description": "Creates an XmlDocumentNode object that represents this SimData exactly as it would appear in Sims 4 Studio. Note that columns are sorted by name, and may not line up exactly with the order they're in in the model."
+          "description": "Creates an XmlDocumentNode object that represents this SimData exactly as it would appear in Sims 4 Studio. Note that schema columns are written exactly as they appear in the schema (as this order must be preserved), but nodes in instances are sorted alphabetically for readability."
         }
       ]
     }

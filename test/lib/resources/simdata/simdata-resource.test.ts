@@ -2,7 +2,7 @@ import fs from "fs";
 import path from "path";
 import { expect } from "chai";
 import { SimDataResource } from "../../../../dst/models";
-import { SimDataSchema, SimDataInstance, Cell, NumberCell, ObjectCell, VectorCell, VariantCell, ResourceKeyCell, SimDataSchemaColumn } from "../../../../dst/simdata";
+import { SimDataSchema, SimDataInstance, Cell, NumberCell, ObjectCell, VectorCell, VariantCell, ResourceKeyCell, SimDataSchemaColumn, BooleanCell } from "../../../../dst/simdata";
 import MockOwner from "../../../mocks/mock-owner";
 import { DataType, EncodingType } from "../../../../dst/enums";
 
@@ -137,6 +137,15 @@ describe("SimDataResource", () => {
       testReserialization("vector_recursion.xml");
     });
 
+    it("should reserialize cas_camera.simdata correctly (with columns in right order)", () => {
+      const originalBuffer = getBuffer("cas_camera.simdata");
+      const original = SimDataResource.from(originalBuffer, { saveBuffer: false });
+      const serializedBuffer = original.buffer;
+      expect(originalBuffer).to.not.equal(serializedBuffer);
+      const simdata = SimDataResource.from(original.buffer, { saveBuffer: false });
+      expect(simdata.equals(original)).to.be.true;
+    });
+
     it("should reserialize correctly when intances reference different schema objects", () => {
       const original = getSimDataFromXml("buff");
       const originalSchema = original.schema;
@@ -149,21 +158,18 @@ describe("SimDataResource", () => {
       expect(simdata.equals(original)).to.be.true;
     });
 
-    it("should sort all schema columns by their hash", () => {
-      const original = getSimDataFromXml("unsorted");
-      expect(original.schema.columns[0].name).to.equal("a");
-      expect(original.schema.columns[1].name).to.equal("b");
-      expect(original.schema.columns[2].name).to.equal("c");
-      const simdata = SimDataResource.from(original.buffer);
-      expect(simdata.schema.columns[0].name).to.equal("c");
-      expect(simdata.schema.columns[1].name).to.equal("b");
-      expect(simdata.schema.columns[2].name).to.equal("a");
-    });
-
     it("should sort all table columns by their name", () => {
       const unsorted = getSimDataFromXml("unsorted");
       const sortedBinary = getBuffer("sorted.simdata").toString('base64');
       expect(unsorted.buffer.toString('base64')).to.equal(sortedBinary);
+    });
+
+    it("should write 0x100 with correct padding", () => {
+      const originalBuffer = getBuffer("version_100.simdata");
+      const original = SimDataResource.from(originalBuffer, { saveBuffer: false });
+      const serializedBuffer = original.buffer;
+      expect(originalBuffer).to.not.equal(serializedBuffer);
+      expect(originalBuffer.toString("base64")).to.equal(serializedBuffer.toString("base64"));
     });
   });
 
@@ -660,6 +666,43 @@ describe("SimDataResource", () => {
           }
         });
       });
+
+      it("should read venue.simdata correctly", () => {
+        testBinarySimData({
+          filename: "venue",
+          unused: 0x00000009,
+          numInstances: 1,
+          instanceName: "venue_cafe",
+          numSchemas: 3,
+          schemaName: "Venue",
+          schemaHash: 0x476E745E,
+          numColumns: 23,
+          firstColumnName: "allowed_for_clubs",
+          firstColumnType: DataType.Boolean,
+          cellTest(cell: BooleanCell) {
+            expect(cell.value).to.be.true;
+          }
+        });
+      });
+
+      it("should read cas_camera.simdata correctly", () => {
+        testBinarySimData({
+          filename: "cas_camera",
+          unused: 0x00000019,
+          numInstances: 1,
+          instanceName: "Client_CASCameraTuning_AdultCat",
+          numSchemas: 2,
+          schemaName: "Client_CASCameraTuning",
+          schemaHash: 0x38540732,
+          numColumns: 15,
+          firstColumnName: "Cameras",
+          firstColumnType: DataType.Vector,
+          cellTest(cell: VectorCell) {
+            expect(cell.childType).to.equal(DataType.Object);
+            expect(cell.children.length).to.equal(14);
+          }
+        });
+      });
   
       it("should set self as owner of new schemas/instances", () => {
         const simdata = getSimDataFromBinary("buff");
@@ -1048,6 +1091,8 @@ describe("SimDataResource", () => {
     it("should have a 'Schemas' section with all schemas written correctly", () => {
       const simdata = getSimDataFromBinary("mood");
       const doc = simdata.toXmlDocument();
+      console.log(doc.toXml());
+      
       const schemas = doc.child.children.find(node => node.tag === "Schemas");
       expect(schemas.numChildren).to.equal(6);
       expect(schemas.child.tag).to.equal("Schema");
@@ -1064,28 +1109,11 @@ describe("SimDataResource", () => {
       ]);
       simdata.schemas.push(schema);
       simdata.instances.push(new SimDataInstance("SomeInstance", schema, {
-        b: new NumberCell(DataType.UInt32, 2),
         a: new NumberCell(DataType.UInt32, 1),
+        b: new NumberCell(DataType.UInt32, 2),
       }));
       const doc = simdata.toXmlDocument();
       const props = doc.child.child.child;
-      expect(props.children[0].attributes.name).to.equal("a");
-      expect(props.children[1].attributes.name).to.equal("b");
-    });
-
-    it("should write schema columns in alphabetical order by name", () => {
-      const simdata = SimDataResource.create();
-      const schema = new SimDataSchema("Something", 1234, [
-        new SimDataSchemaColumn("b", DataType.UInt32),
-        new SimDataSchemaColumn("a", DataType.UInt32)
-      ]);
-      simdata.schemas.push(schema);
-      simdata.instances.push(new SimDataInstance("SomeInstance", schema, {
-        b: new NumberCell(DataType.UInt32, 2),
-        a: new NumberCell(DataType.UInt32, 1),
-      }));
-      const doc = simdata.toXmlDocument();
-      const props = doc.child.children[1].child.child;
       expect(props.children[0].attributes.name).to.equal("a");
       expect(props.children[1].attributes.name).to.equal("b");
     });

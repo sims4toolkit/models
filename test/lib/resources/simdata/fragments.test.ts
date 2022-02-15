@@ -282,6 +282,16 @@ describe("SimDataSchema", () => {
       other.columns.push(other.columns[0]);
       expect(schema.equals(other)).to.be.false;
     });
+
+    it("should return false if the columns are the same, but in another order", () => {
+      const schema = testSchema.clone();
+      const other = schema.clone();
+      const last = other.columns.pop();
+      const secondToLast = other.columns.pop();
+      other.columns.push(last);
+      other.columns.push(secondToLast);
+      expect(schema.equals(other)).to.be.false;
+    });
   });
 
   describe("#removeColumns()", () => {
