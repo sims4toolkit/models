@@ -5,6 +5,24 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.2] - 2022/02/15
+### Added
+- Added all remaining SimDataGroup types to enum.
+- Support reading and writing SimData version 0x100.
+### Changed
+- Temporarily stopped parsing DeletedRecords in packages (option will be added).
+- Sort columns by offset when reading SimData binary.
+- Make SimData's string table order parity S4S's order.
+- Write SimData object tables in order of schemas.
+- No longer sort schema columns alphabetically when writing SimData XML.
+### Fixed
+- SimData Booleans now occupy 4 bytes.
+- Undo "fix" from 0.2.1 that incorrectly sorted SimData columns alphabetically.
+- Fix null byte padding of SimData schemas and their columns.
+- Fix issue serializing vectors with >2 objects in SimData.
+### Removed
+- Removed SimDataGroup.Tuning from enum.
+
 ## [0.2.1] - 2022/02/13
 ### Changed
 - Forced SimData > XML to sort columns alphabetically.
