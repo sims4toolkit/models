@@ -7,9 +7,6 @@ import * as cells from "../cells";
 import DataType from "../../../enums/data-type";
 import { sortByProperty } from "../../../common/helpers";
 
-// NOTE: there could potentially be an issue with padding when writing booleans,
-// for an example use the scenario role that chip sent
-
 //#region Interfaces
 
 /** A DTO for schemas when they're being serialized. */
@@ -116,8 +113,6 @@ function isStringType(cell: cells.Cell): boolean {
  * @param model SimData model to write
  */
 export default function writeData(model: SimDataDto): Buffer {
-  // FIXME: if supporting 0x100, make sure it's written properly and add tests
-  // TODO: also, add tests for lists of objects of length 2 or greater
   if ((model.version < 0x100) || (model.version > 0x101)) {
     const hexVersion = formatAsHexString(model.version, 0, true);
     throw new Error(`S4TK cannot write SimData version ${hexVersion}, only 0x100-0x101 are supported.`);
@@ -172,7 +167,9 @@ export default function writeData(model: SimDataDto): Buffer {
     // NOTE: This code looks weird, but SimData columns must be written in a
     // very specific order. Within schemas, they must be written in ascending
     // numeric order of their hash. Within objects, they must be written in
-    // ascending ASCII order of their names.
+    // ascending ASCII order of their names. Also, padding for the largest
+    // column alignment (not necesarily the largest column) must be added to 
+    // the end of the schema, and included in its size.
 
     sortByProperty(columns, "name");
 
@@ -182,10 +179,17 @@ export default function writeData(model: SimDataDto): Buffer {
       column.offset = size;
       size += DataType.getBytes(column.dataType);
     });
+    
+    let largestPadding = 0;
+    columns.forEach(column => {
+      const padding = getPaddingForAlignment(size, DataType.getAlignment(column.dataType) - 1);
+      if (padding > largestPadding) largestPadding = padding;
+    });
+    size += largestPadding;
 
     columns.forEach(column => hashName(column)); // needed for when there is 1
     columns.sort((a, b) => hashName(a) - hashName(b));
-
+    
     hashName(schema); // hash after columns to match s4s
 
     const serialSchema = {
@@ -426,13 +430,25 @@ export default function writeData(model: SimDataDto): Buffer {
     return buffer;
   })();
 
+  // object tables have to be written in the order of the schemas, because if
+  // the alignment of even one changes by a single byte, the game will explode
+  function getSchemaIndex(table: ObjectTable) {
+    return serialSchemas.findIndex(schema => schema.hash === table.schema.hash);
+  }
+  
+  objectTables.sort((first, second) => {
+    return getSchemaIndex(first) - getSchemaIndex(second);
+  });
+
   // 3 sections combined to make alignment easier
   const headerAndTablesBuffer: Buffer = ((): Buffer => {
     let totalSize = HEADER_SIZE;
+    if (model.version < 0x101)
+      totalSize -= 4; // HACK: find a better way to handle versioning
     const hasCharTable = stringsToAddToCharTable.length > 0;
     const numTables = Object.keys(rawTables).length + Object.keys(objectTables).length + (hasCharTable ? 1 : 0);
     totalSize += numTables * 28;
-
+    
     /** Maps schema hash to position of object table. */
     const objectTablePositions: { [key: number]: number; } = {};
     objectTables.forEach(table => { 
@@ -468,7 +484,8 @@ export default function writeData(model: SimDataDto): Buffer {
     encoder.int32(numTables);
     encoder.int32(totalSize - encoder.tell()); // schema offset
     encoder.int32(model.schemas.length);
-    encoder.uint32(model.unused === undefined ? 0 : model.unused);
+    if (model.version >= 0x101) // HACK: find a better way to handle versioning
+      encoder.uint32(model.unused ?? 0);
     encoder.skip(4); // consistent padding
 
     // table header and data
