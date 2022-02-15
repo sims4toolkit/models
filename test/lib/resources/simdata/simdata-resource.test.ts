@@ -140,6 +140,15 @@ describe("SimDataResource", () => {
       testReserialization("vector_recursion.xml");
     });
 
+    it("should reserialize cas_camera.simdata correctly (with columns in right order)", () => {
+      const originalBuffer = getBuffer("cas_camera.simdata");
+      const original = SimDataResource.from(originalBuffer, { saveBuffer: false });
+      const serializedBuffer = original.buffer;
+      expect(originalBuffer).to.not.equal(serializedBuffer);
+      const simdata = SimDataResource.from(original.buffer, { saveBuffer: false });
+      expect(simdata.equals(original)).to.be.true;
+    });
+
     it("should reserialize correctly when intances reference different schema objects", () => {
       const original = getSimDataFromXml("buff");
       const originalSchema = original.schema;
