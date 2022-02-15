@@ -156,6 +156,7 @@ function readDbpfIndex(decoder: BinaryDecoder, header: DbpfHeader, flags: DbpfFl
       entry.mnSizeDecompressed = decoder.uint32();
       if (isCompressed) entry.mnCompressionType = decoder.uint16();
       decoder.skip(2); // mnCommitted (uint16; 2 bytes)
+      if (entry.mnCompressionType === CompressionType.DeletedRecord) return; // FIXME: make this an option
       return entry as IndexEntry;
     }
   }, true); // true to skip nulls/undefineds
