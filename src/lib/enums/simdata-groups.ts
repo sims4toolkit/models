@@ -19,6 +19,7 @@ enum SimDataGroup {
   CareerTrack = 0x00C75CAB,
   CasMenu = 0x005A8351,
   CasMenuItem = 0x00BA50F8,
+  CasOccultSkintone = 0x00C36C35, // uses TuningResourceType.Tuning
   CasPreferenceCategory = 0x0004FC85,
   CasPreferenceItem = 0x0068FDCE,
   CasStoriesAnswer = 0x00F12D97,
@@ -31,6 +32,7 @@ enum SimDataGroup {
   HolidayTradition = 0x00CD24B9,
   HouseholdMilestone = 0x0072E6CA,
   LotDecorationPreset = 0x001EF825,
+  Module = 0x006CA304, // uses TuningResourceType.Tuning
   Mood = 0x007B6002,
   Objective = 0x0069453E,
   PieMenuCategory = 0x00E9D967,
@@ -44,9 +46,9 @@ enum SimDataGroup {
   Snippet = 0x00F216E1,
   Spell = 0x003413C6,
   Statistic = 0x009BC58E,
+  Street = 0x00E4CBF6, // uses TuningResourceType.Tuning
   Subroot = 0x00FF8F22,
   Trait = 0x005FDD0C,
-  Tuning = 0x00E4CBF6,
   Tutorial = 0x004A2443,
   TutorialTip = 0x00B3E03E,
   University = 0x0058D568,
