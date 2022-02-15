@@ -166,12 +166,13 @@ export default function writeData(model: SimDataDto): Buffer {
 
     // NOTE: This code looks weird, but SimData columns must be written in a
     // very specific order. Within schemas, they must be written in ascending
-    // numeric order of their hash. Within objects, they must be written in
-    // ascending ASCII order of their names. Also, padding for the largest
-    // column alignment (not necesarily the largest column) must be added to 
-    // the end of the schema, and included in its size.
-
-    sortByProperty(columns, "name");
+    // numeric order of their hash. Within objects, they must be written in a
+    // an order consistent with all other SimDatas of their type. In the vast
+    // majority of cases, this is ascending ASCII order of their names. However,
+    // there are some SimData groups which are in an order that is utterly
+    // chaotic. Also, padding for the largest column alignment (not necesaril
+    // the largest column) must be added to the end of the schema, and included
+    // in its size.
 
     let size = 0;
     columns.forEach(column => {
