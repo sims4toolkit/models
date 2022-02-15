@@ -262,7 +262,13 @@ export default class SimDataResource extends WritableModel implements Resource, 
       children: this.schemas.map(s => s.toXmlNode())
     });
 
-    const sortAlgo = (a: XmlNode, b: XmlNode) => {
+    // Technically don't have to sort these, but it helps with readability.
+    // Sorting alphabetically does not guarantee the order will match schemas,
+    // alphabetically is just the convention, and will work more than 97.8% of
+    // the time (as of 2022/02/14). Even if it fails, the SimData can still be
+    // parsed and written correctly in S4S and S4TK since the schemas have the
+    // correct order.
+    instNode.deepSort((a: XmlNode, b: XmlNode) => {
       const aName = a.attributes.name;
       const bName = b.attributes.name;
       if (aName) {
@@ -274,13 +280,6 @@ export default class SimDataResource extends WritableModel implements Resource, 
         return -1;
       }
       return bName ? 1 : 0;
-    };
-
-    instNode.deepSort(sortAlgo);
-
-    schemasNode.children.forEach(schemaNode => {
-      if (!schemaNode.child) return;
-      schemaNode.child.sort(sortAlgo);
     });
 
     const doc = new XmlDocumentNode(new XmlElementNode({

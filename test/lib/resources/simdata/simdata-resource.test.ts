@@ -6,6 +6,9 @@ import { SimDataSchema, SimDataInstance, Cell, NumberCell, ObjectCell, VectorCel
 import MockOwner from "../../../mocks/mock-owner";
 import { DataType, EncodingType } from "../../../../dst/enums";
 
+// TODO: add tests for version 0x100 not writing unused
+// TODO: also, add tests for lists of objects of length 2 or greater
+
 //#region Helpers
 
 const cachedBuffers: { [key: string]: Buffer; } = {};
@@ -147,17 +150,6 @@ describe("SimDataResource", () => {
       expect(original.instance.schema).to.not.equal(original.schema);
       const simdata = SimDataResource.from(original.buffer);
       expect(simdata.equals(original)).to.be.true;
-    });
-
-    it("should sort all schema columns by their hash", () => {
-      const original = getSimDataFromXml("unsorted");
-      expect(original.schema.columns[0].name).to.equal("a");
-      expect(original.schema.columns[1].name).to.equal("b");
-      expect(original.schema.columns[2].name).to.equal("c");
-      const simdata = SimDataResource.from(original.buffer);
-      expect(simdata.schema.columns[0].name).to.equal("c");
-      expect(simdata.schema.columns[1].name).to.equal("b");
-      expect(simdata.schema.columns[2].name).to.equal("a");
     });
 
     it("should sort all table columns by their name", () => {
@@ -1048,6 +1040,8 @@ describe("SimDataResource", () => {
     it("should have a 'Schemas' section with all schemas written correctly", () => {
       const simdata = getSimDataFromBinary("mood");
       const doc = simdata.toXmlDocument();
+      console.log(doc.toXml());
+      
       const schemas = doc.child.children.find(node => node.tag === "Schemas");
       expect(schemas.numChildren).to.equal(6);
       expect(schemas.child.tag).to.equal("Schema");
@@ -1064,28 +1058,11 @@ describe("SimDataResource", () => {
       ]);
       simdata.schemas.push(schema);
       simdata.instances.push(new SimDataInstance("SomeInstance", schema, {
-        b: new NumberCell(DataType.UInt32, 2),
         a: new NumberCell(DataType.UInt32, 1),
+        b: new NumberCell(DataType.UInt32, 2),
       }));
       const doc = simdata.toXmlDocument();
       const props = doc.child.child.child;
-      expect(props.children[0].attributes.name).to.equal("a");
-      expect(props.children[1].attributes.name).to.equal("b");
-    });
-
-    it("should write schema columns in alphabetical order by name", () => {
-      const simdata = SimDataResource.create();
-      const schema = new SimDataSchema("Something", 1234, [
-        new SimDataSchemaColumn("b", DataType.UInt32),
-        new SimDataSchemaColumn("a", DataType.UInt32)
-      ]);
-      simdata.schemas.push(schema);
-      simdata.instances.push(new SimDataInstance("SomeInstance", schema, {
-        b: new NumberCell(DataType.UInt32, 2),
-        a: new NumberCell(DataType.UInt32, 1),
-      }));
-      const doc = simdata.toXmlDocument();
-      const props = doc.child.children[1].child.child;
       expect(props.children[0].attributes.name).to.equal("a");
       expect(props.children[1].attributes.name).to.equal("b");
     });
