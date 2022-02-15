@@ -44,12 +44,20 @@
               "value": "0x0020FC6D"
             },
             {
+              "name": "Automation",
+              "value": "0x00D16262"
+            },
+            {
               "name": "Breed",
               "value": "0x001D3F11"
             },
             {
               "name": "Buff",
               "value": "0x0017E8F6"
+            },
+            {
+              "name": "BuildBuy",
+              "value": "0x0003C397"
             },
             {
               "name": "Business",
@@ -80,6 +88,10 @@
               "value": "0x00BA50F8"
             },
             {
+              "name": "CasOccultSkintone",
+              "value": "0x00C36C35"
+            },
+            {
               "name": "CasPreferenceCategory",
               "value": "0x0004FC85"
             },
@@ -98,6 +110,62 @@
             {
               "name": "CasStoriesTraitChooser",
               "value": "0x00AD15C4"
+            },
+            {
+              "name": "ClientCasCameraTuning",
+              "value": "0x005ADEC7"
+            },
+            {
+              "name": "ClientCasLighting",
+              "value": "0x000A3610"
+            },
+            {
+              "name": "ClientCasModifierTuning",
+              "value": "0x00ABFFCF"
+            },
+            {
+              "name": "ClientCasOccultTuning",
+              "value": "0x009769C8"
+            },
+            {
+              "name": "ClientCasThumbnailCamera",
+              "value": "0x00496642"
+            },
+            {
+              "name": "ClientCasThumbnailPartTuning",
+              "value": "0x00D1D002"
+            },
+            {
+              "name": "ClientCasTuning",
+              "value": "0x004B5265"
+            },
+            {
+              "name": "ClientRegionSortTuning",
+              "value": "0x0057C8BA"
+            },
+            {
+              "name": "ClientTagCategoriesMetadata",
+              "value": "0x0012D444"
+            },
+            {
+              "name": "ClientTags",
+              "value": "0x00B98960"
+            },
+            {
+              "name": "ClientTagsMapping",
+              "value": "0x00057D11"
+            },
+            {
+              "name": "ClientTagsTraitGroupMetadata",
+              "value": "0x003E4215"
+            },
+            {
+              "name": "ClientThumbnailPoses",
+              "value": "0x00C27C36"
+            },
+            {
+              "name": "ClientTutorial",
+              "value": "0x0073074B"
             },
             {
               "name": "ClubInteractionGroup",
@@ -128,8 +196,20 @@
               "value": "0x001EF825"
             },
             {
+              "name": "Module",
+              "value": "0x006CA304"
+            },
+            {
               "name": "Mood",
               "value": "0x007B6002"
+            },
+            {
+              "name": "NativeBuildBuy",
+              "value": "0x0094E9AE"
+            },
+            {
+              "name": "NativeSeasonsWeather",
+              "value": "0x003A5A65"
             },
             {
               "name": "Objective",
@@ -150,6 +230,18 @@
             {
               "name": "RelationshipBit",
               "value": "0x004DFB84"
+            },
+            {
+              "name": "RendererCas",
+              "value": "0x00295874"
+            },
+            {
+              "name": "RendererHsvTweakerSettings",
+              "value": "0x00FC90DD"
+            },
+            {
+              "name": "RendererMinspec",
+              "value": "0x001F95DE"
             },
             {
               "name": "Reward",
@@ -180,16 +272,16 @@
               "value": "0x009BC58E"
             },
             {
+              "name": "Street",
+              "value": "0x00E4CBF6"
+            },
+            {
               "name": "Subroot",
               "value": "0x00FF8F22"
             },
             {
               "name": "Trait",
               "value": "0x005FDD0C"
-            },
-            {
-              "name": "Tuning",
-              "value": "0x00E4CBF6"
             },
             {
               "name": "Tutorial",
@@ -218,6 +310,10 @@
             {
               "name": "Venue",
               "value": "0x00BBD738"
+            },
+            {
+              "name": "VideoPlaylist",
+              "value": "0x00BF458B"
             },
             {
               "name": "WeatherForecast",
