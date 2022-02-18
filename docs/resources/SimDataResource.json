@@ -132,7 +132,7 @@
           "displayType": "property",
           "prefix": "get, set",
           "name": "unused",
-          "description": "An number in the SimData header that is not used, but is usually set to the group number for a pack.",
+          "description": "A number in the SimData header that is not used, but is usually set to the group number for a pack.",
           "type": {
             "name": "number"
           }
