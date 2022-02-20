@@ -26,7 +26,6 @@
       "name": "enums",
       "items": [
         "BinaryResourceType",
-        "CompressionType",
         "DataType",
         "EncodingType",
         "SimDataGroup",
