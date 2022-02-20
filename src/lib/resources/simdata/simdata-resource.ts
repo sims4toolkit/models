@@ -181,8 +181,8 @@ export default class SimDataResource extends WritableModel implements Resource, 
       throw new Error(`Expected <SimData>, but got <${dom.tag}>`);
 
     const version = parseInt(dom.attributes.version, 16);
-    if (version !== SUPPORTED_VERSION)
-      throw new Error(`Expected version to be ${SUPPORTED_VERSION}, got ${version}`);
+    if (version < 0x100 || version > 0x101)
+      throw new Error(`Expected version to be 0x100-0x101, got ${version}`);
     
     const unused = parseInt(dom.attributes.u, 16);
     if (Number.isNaN(unused))
@@ -248,9 +248,10 @@ export default class SimDataResource extends WritableModel implements Resource, 
 
   /**
    * Creates an XmlDocumentNode object that represents this SimData exactly as
-   * it would appear in Sims 4 Studio.
+   * it would appear in Sims 4 Studio. Note that columns are sorted by name,
+   * and may not line up exactly with the order they're in in the model.
    */
-  toXmlDocument({ sort = false }: { sort?: boolean; } = {}): XmlDocumentNode {
+  toXmlDocument(): XmlDocumentNode {
     const instNode = new XmlElementNode({
       tag: 'Instances',
       children: this.instances.map(i => i.toXmlNode())
@@ -261,28 +262,25 @@ export default class SimDataResource extends WritableModel implements Resource, 
       children: this.schemas.map(s => s.toXmlNode())
     });
 
-    if (sort) {
-      const sortAlgo = (a: XmlNode, b: XmlNode) => {
-        const aName = a.attributes.name;
-        const bName = b.attributes.name;
-        if (aName) {
-          if (bName) {
-            if (aName < bName) return -1;
-            if (aName > bName) return 1;
-            return 0;
-          }
-          return -1;
+    // Technically don't have to sort these, but it helps with readability.
+    // Sorting alphabetically does not guarantee the order will match schemas,
+    // alphabetically is just the convention, and will work more than 97.8% of
+    // the time (as of 2022/02/14). Even if it fails, the SimData can still be
+    // parsed and written correctly in S4S and S4TK since the schemas have the
+    // correct order.
+    instNode.deepSort((a: XmlNode, b: XmlNode) => {
+      const aName = a.attributes.name;
+      const bName = b.attributes.name;
+      if (aName) {
+        if (bName) {
+          if (aName < bName) return -1;
+          if (aName > bName) return 1;
+          return 0;
         }
-        return bName ? 1 : 0;
-      };
-
-      instNode.deepSort(sortAlgo);
-
-      schemasNode.children.forEach(schemaNode => {
-        if (!schemaNode.child) return;
-        schemaNode.child.sort(sortAlgo);
-      });
-    }
+        return -1;
+      }
+      return bName ? 1 : 0;
+    });
 
     const doc = new XmlDocumentNode(new XmlElementNode({
       tag: 'SimData',

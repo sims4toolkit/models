@@ -132,7 +132,7 @@
           "displayType": "property",
           "prefix": "get, set",
           "name": "unused",
-          "description": "An number in the SimData header that is not used, but is usually set to the group number for a pack.",
+          "description": "A number in the SimData header that is not used, but is usually set to the group number for a pack.",
           "type": {
             "name": "number"
           }
@@ -537,27 +537,7 @@
               "item": "XmlDocumentNode"
             }
           },
-          "description": "Creates an XmlDocumentNode object that represents this SimData exactly as it would appear in Sims 4 Studio.",
-          "arguments": [
-            {
-              "name": "args",
-              "type": {
-                "name": "object"
-              },
-              "optional": true,
-              "description": "Optional arguments.",
-              "properties": [
-                {
-                  "name": "sort",
-                  "optional": true,
-                  "type": {
-                    "name": "true"
-                  },
-                  "description": "Whether or not to sort the nodes alphabetically. Note that schemas will not be sorted, just instances and columns within schemas. Schemas will remain in order of priority (or insertion, if they were added manually)."
-                }
-              ]
-            }
-          ]
+          "description": "Creates an XmlDocumentNode object that represents this SimData exactly as it would appear in Sims 4 Studio. Note that schema columns are written exactly as they appear in the schema (as this order must be preserved), but nodes in instances are sorted alphabetically for readability."
         }
       ]
     }

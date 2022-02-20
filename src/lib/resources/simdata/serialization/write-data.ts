@@ -2,12 +2,10 @@ import { BinaryEncoder } from "@s4tk/encoding";
 import { formatAsHexString } from "@s4tk/hashing/formatting";
 import { fnv32 } from "@s4tk/hashing";
 import { SimDataDto, CellEncodingOptions } from "../types";
-import { HEADER_SIZE, TABLE_HEADER_OFFSET, RELOFFSET_NULL, NO_NAME_HASH, SUPPORTED_VERSION } from "../constants";
+import { HEADER_SIZE, TABLE_HEADER_OFFSET, RELOFFSET_NULL, NO_NAME_HASH } from "../constants";
 import * as cells from "../cells";
 import DataType from "../../../enums/data-type";
-
-// NOTE: there could potentially be an issue with padding when writing booleans,
-// for an example use the scenario role that chip sent
+import { sortByProperty } from "../../../common/helpers";
 
 //#region Interfaces
 
@@ -115,10 +113,9 @@ function isStringType(cell: cells.Cell): boolean {
  * @param model SimData model to write
  */
 export default function writeData(model: SimDataDto): Buffer {
-  if (model.version !== SUPPORTED_VERSION) {
+  if ((model.version < 0x100) || (model.version > 0x101)) {
     const hexVersion = formatAsHexString(model.version, 0, true);
-    const hexSupVersion = formatAsHexString(SUPPORTED_VERSION, 0, true);
-    throw new Error(`S4TK cannot write SimData version ${hexVersion}, only ${hexSupVersion} is supported at this time.`);
+    throw new Error(`S4TK cannot write SimData version ${hexVersion}, only 0x100-0x101 are supported.`);
   }
   
   //#region Mappings & Getters
@@ -158,12 +155,8 @@ export default function writeData(model: SimDataDto): Buffer {
 
   //#region Prepare Schemas
 
-  let schemaSectionSize = 0;
   const serialSchemaMap: { [key: number]: SerialSchema } = {};
   const serialSchemas: SerialSchema[] = model.schemas.map(schema => {
-    schemaSectionSize += 24; // size of schema header
-    hashName(schema);
-
     const columns: SerialColumn[] = schema.columns.map(column => ({
       name: column.name,
       dataType: column.type,
@@ -171,16 +164,34 @@ export default function writeData(model: SimDataDto): Buffer {
       offset: 0  // to be set when column size is calculated
     }));
 
-    columns.forEach(column => hashName(column)); // needed for when there is 1
-    columns.sort((a, b) => hashName(a) - hashName(b));
+    // NOTE: This code looks weird, but SimData columns must be written in a
+    // very specific order. Within schemas, they must be written in ascending
+    // numeric order of their hash. Within objects, they must be written in a
+    // an order consistent with all other SimDatas of their type. In the vast
+    // majority of cases, this is ascending ASCII order of their names. However,
+    // there are some SimData groups which are in an order that is utterly
+    // chaotic. Also, padding for the largest column alignment (not necesaril
+    // the largest column) must be added to the end of the schema, and included
+    // in its size.
 
     let size = 0;
     columns.forEach(column => {
-      schemaSectionSize += 20; // size of column header
+      size += getPaddingForAlignment(size, DataType.getAlignment(column.dataType) - 1);
       column.offset = size;
       size += DataType.getBytes(column.dataType);
-      size += getPaddingForAlignment(size, DataType.getAlignment(column.dataType) - 1);
     });
+    
+    let largestPadding = 0;
+    columns.forEach(column => {
+      const padding = getPaddingForAlignment(size, DataType.getAlignment(column.dataType) - 1);
+      if (padding > largestPadding) largestPadding = padding;
+    });
+    size += largestPadding;
+
+    columns.forEach(column => hashName(column)); // needed for when there is 1
+    columns.sort((a, b) => hashName(a) - hashName(b));
+    
+    hashName(schema); // hash after columns to match s4s
 
     const serialSchema = {
       name: schema.name,
@@ -420,13 +431,31 @@ export default function writeData(model: SimDataDto): Buffer {
     return buffer;
   })();
 
+  // object tables have to be written in the order of the schemas, because if
+  // the alignment of even one changes by a single byte, the game will explode
+  function getSchemaIndex(table: ObjectTable) {
+    return serialSchemas.findIndex(schema => schema.hash === table.schema.hash);
+  }
+  
+  objectTables.sort((first, second) => {
+    return getSchemaIndex(first) - getSchemaIndex(second);
+  });
+
   // 3 sections combined to make alignment easier
   const headerAndTablesBuffer: Buffer = ((): Buffer => {
     let totalSize = HEADER_SIZE;
+    // As of 2022/02/15, when the only versions are 0x100 and 0x101, the header
+    // will always have 8 more bytes than the base HEADER_SIZE. For 0x101, this
+    // is 4 bytes of data and 4 bytes of padding. For 0x100, it's all padding.
+    // This should be made more flexible, but using an alignment of 15 does not
+    // work, so I'm hardcoding the bytes for now, since it works.
+    if (model.version >= 0x101) totalSize += 4; // unused
+    const headerPadding = model.version < 0x101 ? 8 : 4; // HACK: use alignment?
+    totalSize += headerPadding;
     const hasCharTable = stringsToAddToCharTable.length > 0;
     const numTables = Object.keys(rawTables).length + Object.keys(objectTables).length + (hasCharTable ? 1 : 0);
     totalSize += numTables * 28;
-
+    
     /** Maps schema hash to position of object table. */
     const objectTablePositions: { [key: number]: number; } = {};
     objectTables.forEach(table => { 
@@ -462,8 +491,8 @@ export default function writeData(model: SimDataDto): Buffer {
     encoder.int32(numTables);
     encoder.int32(totalSize - encoder.tell()); // schema offset
     encoder.int32(model.schemas.length);
-    encoder.uint32(model.unused === undefined ? 0 : model.unused);
-    encoder.skip(4); // consistent padding
+    if (model.version >= 0x101) encoder.uint32(model.unused ?? 0);
+    encoder.skip(headerPadding);
 
     // table header and data
     const bytesLeft = () => totalSize - encoder.tell();
@@ -513,7 +542,7 @@ export default function writeData(model: SimDataDto): Buffer {
       encoder.savePos(() => {
         encoder.seek(tablePos);
         table.rows.forEach((row, i) => {
-          encoder.skip(table.schema.size * i);
+          if (i > 0) encoder.skip(table.schema.size);
           table.schema.columns.forEach((column, j) => {
             encoder.savePos(() => {
               encoder.skip(column.offset);

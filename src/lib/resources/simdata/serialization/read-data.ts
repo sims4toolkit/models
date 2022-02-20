@@ -158,6 +158,7 @@ function readSchema(decoder: BinaryDecoder): BinarySchema {
   decoder.savePos(() => {
     decoder.seek(startof_mnColumnOffset + mnColumnOffset);
     const mColumn = makeList<BinarySchemaColumn>(mnNumColumns, () => readSchemaColumn(decoder));
+    mColumn.sort((a, b) => a.mnOffset - b.mnOffset);
     schema = {
       startof_mnNameOffset,
       mnNameOffset,
@@ -339,7 +340,7 @@ export default function readData(buffer: Buffer, options?: FileReadingOptions): 
           binaryColumn.mnDataType,
           binaryColumn.mnFlags
         );
-      }))
+      }));
   });
 
   // Parsing instances
