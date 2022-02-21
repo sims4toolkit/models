@@ -10,7 +10,7 @@ import readData from "./serialization/read-data";
 import writeData from "./serialization/write-data";
 import WritableModel from "../../base/writable-model";
 import EncodingType from "../../enums/encoding-type";
-import CompressionType from "../../compression/compression-type";
+import { CompressionType } from "@s4tk/compression";
 
 /**
  * Model for SimData resources. While combined tuning is the same format, it is

@@ -1,10 +1,10 @@
 import { XmlDocumentNode, XmlNode } from "@s4tk/xml-dom";
+import { CompressionType } from "@s4tk/compression";
 import WritableModel from "../../base/writable-model";
 import Resource from "../resource";
 import EncodingType from "../../enums/encoding-type";
 import { FileReadingOptions } from "../../common/options";
 import { promisify } from "../../common/helpers";
-import CompressionType from "../../compression/compression-type";
 
 /**
  * Model for a plain text, XML resource. This does not necessarily need to be

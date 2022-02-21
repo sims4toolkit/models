@@ -1,7 +1,9 @@
+import decompressBuffer from "@s4tk/compression";
+import { CompressionType } from "@s4tk/compression";
+import { BinaryDecoder } from "@s4tk/encoding";
 import type Resource from "../../resources/resource";
 import type { FileReadingOptions, ResourceFilter } from "../../common/options";
 import type { ResourceKeyPair, ResourceKey } from "../types";
-import { BinaryDecoder } from "@s4tk/encoding";
 import { bufferContainsXml, makeList } from "../../common/helpers";
 import RawResource from "../../resources/raw/raw-resource";
 import BinaryResourceType from "../../enums/binary-resources";
@@ -10,8 +12,6 @@ import StringTableResource from "../../resources/stbl/stbl-resource";
 import SimDataResource from "../../resources/simdata/simdata-resource";
 import XmlResource from "../../resources/xml/xml-resource";
 import CombinedTuningResource from "../../resources/combined-tuning/combined-tuning-resource";
-import decompressBuffer from "../../compression/decompress";
-import CompressionType from "../../compression/compression-type";
 
 /**
  * Reads the given buffer as a DBPF and returns a DTO for it.

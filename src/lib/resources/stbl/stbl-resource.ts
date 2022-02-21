@@ -1,5 +1,6 @@
 import type { KeyStringPair } from "./types";
 import { fnv32 } from "@s4tk/hashing";
+import { CompressionType } from "@s4tk/compression";
 import { PrimitiveMappedModel } from "../../base/primitive-mapped-model";
 import Resource from "../resource";
 import { arraysAreEqual, promisify } from "../../common/helpers";
@@ -8,7 +9,6 @@ import readStbl from "./serialization/read-stbl";
 import writeStbl from "./serialization/write-stbl";
 import EncodingType from "../../enums/encoding-type";
 import StringEntry from "./string-entry";
-import CompressionType from "../../compression/compression-type";
 
 /**
  * Model for string table (STBL) resources.

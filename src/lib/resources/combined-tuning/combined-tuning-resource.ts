@@ -1,7 +1,7 @@
 import WritableModel from "../../base/writable-model";
 import { bufferContainsXml } from "../../common/helpers";
 import { FileReadingOptions } from "../../common/options";
-import CompressionType from "../../compression/compression-type";
+import { CompressionType } from "@s4tk/compression";
 import EncodingType from "../../enums/encoding-type";
 import Resource from "../resource";
 import readData from "./serialization/read-data";

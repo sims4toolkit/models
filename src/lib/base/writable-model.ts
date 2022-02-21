@@ -1,5 +1,5 @@
+import { CompressionType } from '@s4tk/compression';
 import { promisify } from '../common/helpers';
-import CompressionType from '../compression/compression-type';
 import ApiModelBase from './api-model';
 
 /**

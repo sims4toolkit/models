@@ -2,7 +2,7 @@ import type Resource from '../resource';
 import WritableModel from '../../base/writable-model';
 import EncodingType from '../../enums/encoding-type';
 import { bufferContainsXml } from '../../common/helpers';
-import CompressionType from '../../compression/compression-type';
+import { CompressionType } from '@s4tk/compression';
 
 /**
  * Model for resources that have not been parsed.
