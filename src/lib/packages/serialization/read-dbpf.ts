@@ -1,5 +1,4 @@
-import decompressBuffer from "@s4tk/compression";
-import { CompressionType } from "@s4tk/compression";
+import { CompressionType, decompressBuffer } from "@s4tk/compression";
 import { BinaryDecoder } from "@s4tk/encoding";
 import type Resource from "../../resources/resource";
 import type { FileReadingOptions, ResourceFilter } from "../../common/options";
