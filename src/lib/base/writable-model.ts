@@ -10,7 +10,6 @@ export default abstract class WritableModel extends ApiModelBase {
   private _compressBuffer?: boolean;
   private _compressionType?: CompressionType;
   private _saveBuffer: boolean;
-  private _sizeDecompressed?: number;
 
   /**
    * The buffer to use when writing this model. If a cached buffer is available,
@@ -32,7 +31,6 @@ export default abstract class WritableModel extends ApiModelBase {
     this._compressionType = value;
     if (this._compressBuffer && this.isCached) {
       delete this._buffer;
-      delete this._sizeDecompressed;
     }
   }
 
@@ -49,7 +47,9 @@ export default abstract class WritableModel extends ApiModelBase {
    * algorithm specified by `compressionType`. If there is no cached buffer,
    * this is always false. 
    */
-  get isCompressed(): boolean { return this._isCompressed ?? false; }
+  get isCompressed(): boolean {
+    return this._saveBuffer && this._compressBuffer; // FIXME: this is probably useless 
+  }
 
   /** Whether or not the buffer should be cached on this model. */
   get saveBuffer() { return this._saveBuffer; }
