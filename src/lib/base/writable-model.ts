@@ -1,6 +1,6 @@
-import { CompressionType } from '@s4tk/compression';
-import { promisify } from '../common/helpers';
+import { compressBuffer, CompressionType } from '@s4tk/compression';
 import ApiModelBase from './api-model';
+import { promisify } from '../common/helpers';
 
 /**
  * Base class for models that can be written to disk.
@@ -8,7 +8,7 @@ import ApiModelBase from './api-model';
 export default abstract class WritableModel extends ApiModelBase {
   private _buffer?: Buffer;
   private _compressBuffer?: boolean;
-  private _compressionType?: CompressionType;
+  private _compressionType: CompressionType;
   private _saveBuffer: boolean;
 
   /**
@@ -17,39 +17,37 @@ export default abstract class WritableModel extends ApiModelBase {
    * the fly (when this property is retrieved).
    */
   get buffer(): Buffer {
-    if (!this.saveBuffer) return this._serialize();
-    return this._buffer ??= this._serialize();
+    if (!this.saveBuffer) return this._serializeCompressed();
+    return this._buffer ??= this._serializeCompressed();
+  }
+
+  /**
+   * Whether or not the buffer cached on and returned by this model should be
+   * compressed. For best performance, this should be true when writing
+   * resources to packages, and false when writing them to disk by themselves.
+   */
+  public get compressBuffer(): boolean { return this._compressBuffer; }
+  public set compressBuffer(value: boolean) {
+    if (this._compressBuffer && this.isCached) delete this._buffer;
+    this._compressBuffer = value ?? false;
   }
 
   /**
    * How this model's buffer should be compressed when written in a package. If
-   *  `saveBuffer` and `compressBuffer` are true, this also dictates how the
+   * `saveBuffer` and `compressBuffer` are true, this also dictates how the
    * cached buffer will be compressed.
    */
   public get compressionType(): CompressionType { return this._compressionType; }
   public set compressionType(value: CompressionType) {
-    this._compressionType = value;
-    if (this._compressBuffer && this.isCached) {
-      delete this._buffer;
-    }
+    if (this._compressBuffer && this.isCached) delete this._buffer;
+    this._compressionType = value ?? CompressionType.Uncompressed;
   }
 
-  /** 
-   * Whether this model currently has a cached buffer.
-   */
-  get isCached(): boolean {
-    // intentionally != so that null is captured as well
-    return this._buffer != undefined;
-  }
+  /**  Whether this model currently has a cached buffer. */
+  get isCached(): boolean { return this._buffer != undefined; }
 
-  /**
-   * Whether this model's cached buffer is compressed using the compression
-   * algorithm specified by `compressionType`. If there is no cached buffer,
-   * this is always false. 
-   */
-  get isCompressed(): boolean {
-    return this._saveBuffer && this._compressBuffer; // FIXME: this is probably useless 
-  }
+  /** Alias for `compressBuffer` for readability. */
+  get isCompressed(): boolean { return this.compressBuffer; }
 
   /** Whether or not the buffer should be cached on this model. */
   get saveBuffer() { return this._saveBuffer; }
@@ -59,12 +57,16 @@ export default abstract class WritableModel extends ApiModelBase {
   }
 
   protected constructor(
-    saveBuffer: boolean = false,
+    saveBuffer: boolean,
+    compressBuffer: boolean,
+    compressionType: CompressionType,
     buffer?: Buffer,
     owner?: ApiModelBase,
   ) {
     super(owner);
-    this._saveBuffer = saveBuffer;
+    this._saveBuffer = saveBuffer ?? false;
+    this._compressBuffer = compressBuffer ?? false;
+    this._compressionType = compressionType ?? CompressionType.ZLIB;
     if (saveBuffer) this._buffer = buffer;
   }
 
@@ -77,6 +79,23 @@ export default abstract class WritableModel extends ApiModelBase {
     return promisify(() => this.buffer);
   }
 
+  /**
+   * Returns the buffer for this model in its proper compression format.
+   */
+  getCompressedBuffer(): Buffer {
+    return this.isCompressed
+      ? this.buffer
+      : compressBuffer(this.buffer, this.compressionType);
+  }
+
+  /**
+   * Returns the buffer for this model in its proper compression format
+   * asynchronously.
+   */
+  async getCompressedBufferAsync(): Promise<Buffer> {
+    return promisify(() => this.getCompressedBuffer());
+  }
+
   onChange() {
     delete this._buffer;
     super.onChange();
@@ -84,4 +103,12 @@ export default abstract class WritableModel extends ApiModelBase {
 
   /** Returns a newly serialized buffer for this model. */
   protected abstract _serialize(): Buffer;
+
+  /** Gets the buffer for this model, compressed if need be. */
+  private _serializeCompressed(): Buffer {
+    const buffer = this._serialize();
+    return this.compressBuffer
+      ? compressBuffer(buffer, this.compressionType)
+      : buffer;
+  }
 }
