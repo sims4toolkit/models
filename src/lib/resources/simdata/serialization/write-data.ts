@@ -5,7 +5,6 @@ import { SimDataDto, CellEncodingOptions } from "../types";
 import { HEADER_SIZE, TABLE_HEADER_OFFSET, RELOFFSET_NULL, NO_NAME_HASH } from "../constants";
 import * as cells from "../cells";
 import DataType from "../../../enums/data-type";
-import { sortByProperty } from "../../../common/helpers";
 
 //#region Interfaces
 
