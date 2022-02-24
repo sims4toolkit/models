@@ -13,15 +13,10 @@ import clone from "just-clone";
  * DBPF for short).
  */
 export default class Package extends MappedModel<ResourceKey, Resource, ResourceEntry> {
-  get saveBuffer() { return false; }
-  set saveBuffer(saveBuffer: boolean) {
-    // intentionally blank; packages can never be cached
-  }
-
   //#region Initialization
 
   protected constructor(entries?: ResourceKeyPair[]) {    
-    super(entries, false); // never cache package buffer, it's pointless
+    super(entries, false, undefined, undefined); // never cache package buffer, it's pointless
   }
 
   /**

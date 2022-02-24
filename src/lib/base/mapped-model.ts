@@ -1,3 +1,4 @@
+import type { CompressionType } from "@s4tk/compression";
 import type ApiModelBase from "./api-model";
 import WritableModel from "./writable-model";
 
@@ -26,12 +27,14 @@ export abstract class MappedModel<Key, Value, Entry extends MappedModelEntry<Key
   }
 
   protected constructor(
-    entries?: { key: Key; value: Value; }[],
-    saveBuffer?: boolean,
+    entries: { key: Key; value: Value; }[],
+    saveBuffer: boolean,
+    compressBuffer: boolean,
+    compressionType: CompressionType,
     buffer?: Buffer,
-    owner?: ApiModelBase
+    owner?: ApiModelBase,
   ) {
-    super(saveBuffer, buffer, owner);
+    super(saveBuffer, compressBuffer, compressionType, buffer, owner);
     this._entryMap = new Map();
     this._keyMap = new Map();
     this._initializeEntries(entries);

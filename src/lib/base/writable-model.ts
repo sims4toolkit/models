@@ -10,7 +10,7 @@ export default abstract class WritableModel extends ApiModelBase {
   private _compressBuffer?: boolean;
   private _compressionType: CompressionType;
   private _saveBuffer: boolean;
-
+  
   /**
    * The buffer to use when writing this model. If a cached buffer is available,
    * it is returned. If there is no cached buffer, the model is serialized on
@@ -22,24 +22,25 @@ export default abstract class WritableModel extends ApiModelBase {
   }
 
   /**
-   * Whether or not the buffer cached on and returned by this model should be
-   * compressed. For best performance, this should be true when writing
-   * resources to packages, and false when writing them to disk by themselves.
+   * Whether or not the buffer created by this model should be compressed. For
+   * best performance, this should be true when writing resources to packages,
+   * and false when writing them to disk by themselves.
    */
   public get compressBuffer(): boolean { return this._compressBuffer; }
   public set compressBuffer(value: boolean) {
-    if (this._compressBuffer && this.isCached) delete this._buffer;
+    if (this._compressBuffer && this.isCached) delete this._buffer; // FIXME: logic off
     this._compressBuffer = value ?? false;
   }
 
   /**
-   * How this model's buffer should be compressed when written in a package. If
-   * `saveBuffer` and `compressBuffer` are true, this also dictates how the
-   * cached buffer will be compressed.
+   * How this model's buffer should be compressed. If `compressBuffer` is true,
+   * this dictates which compression format is used when the `buffer` property
+   * is accessed. If `compressBuffer` is false, this property only affects
+   * resources that are being written in a package
    */
   public get compressionType(): CompressionType { return this._compressionType; }
   public set compressionType(value: CompressionType) {
-    if (this._compressBuffer && this.isCached) delete this._buffer;
+    if (this._compressBuffer && this.isCached) delete this._buffer; // FIXME: logic off
     this._compressionType = value ?? CompressionType.Uncompressed;
   }
 
@@ -66,7 +67,7 @@ export default abstract class WritableModel extends ApiModelBase {
     super(owner);
     this._saveBuffer = saveBuffer ?? false;
     this._compressBuffer = compressBuffer ?? false;
-    this._compressionType = compressionType ?? CompressionType.ZLIB;
+    this._compressionType = compressionType ?? CompressionType.Uncompressed;
     if (saveBuffer) this._buffer = buffer;
   }
 
