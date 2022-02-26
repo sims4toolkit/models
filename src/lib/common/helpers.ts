@@ -57,7 +57,7 @@ export function arraysAreEqual(arr1: Equalable[], arr2: any[]): boolean {
  * This is determined by the presence of an XML header, so it will return false
  * for XML files that do not have a header.
  * 
- * @param buffer Buffer to check contens of
+ * @param buffer Buffer to check contents of
  * @returns True if this buffer contains XML, false otherwise
  */
 export function bufferContainsXml(buffer: Buffer): boolean {

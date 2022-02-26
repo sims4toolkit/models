@@ -8,11 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.3.0] - 2022/02/26
 ### Changed
 - Replace compression code with @s4tk/compression package.
-- Handle file compression in WritableModel.
+- Handle file compression in WritableModel rather than ResourceEntry.
+- Only support cacheing one kind of buffer per resource, rather than both compressed and uncompressed.
 - TODO: Stream data when extracting resources.
 ### Removed
-- Remove package-level options for whether or not to cache resources.
-- Remove buffer cacheing in resource entries.
+- Remove buffer cacheing in ResourceEntry.
+- Remove package-level options for cacheing resources.
 
 ## [0.2.2] - 2022/02/15
 ### Added
