@@ -169,7 +169,7 @@ export default function writeData(model: SimDataDto): Buffer {
     // an order consistent with all other SimDatas of their type. In the vast
     // majority of cases, this is ascending ASCII order of their names. However,
     // there are some SimData groups which are in an order that is utterly
-    // chaotic. Also, padding for the largest column alignment (not necesaril
+    // chaotic. Also, padding for the largest column alignment (not necesarily
     // the largest column) must be added to the end of the schema, and included
     // in its size.
 
