@@ -14,6 +14,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
 - Remove buffer cacheing in ResourceEntry.
 - Remove package-level options for cacheing resources.
+### Added
+- Add Cell.create() method for creating arbitrary cells of a known data type.
 
 ## [0.2.2] - 2022/02/15
 ### Added
