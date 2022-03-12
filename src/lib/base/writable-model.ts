@@ -7,7 +7,7 @@ import { promisify } from '../common/helpers';
 /**
  * Constructor arguments for writable models.
  */
-export type WritableModelArgs = Partial<{
+export type WritableModelConstArgs = Partial<{
   /** Initial buffer for this model. */
   buffer: Buffer;
 
@@ -109,7 +109,7 @@ export default abstract class WritableModel extends ApiModelBase {
 
   //#region Initialization
 
-  protected constructor(args: WritableModelArgs) {
+  protected constructor(args: WritableModelConstArgs) {
     super(args.owner);
     this._saveBuffer = args.saveBuffer ?? false;
     this._compressBuffer = args.compressBuffer ?? false;
