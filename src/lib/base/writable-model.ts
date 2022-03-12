@@ -10,7 +10,8 @@ export default abstract class WritableModel extends ApiModelBase {
   private _compressBuffer?: boolean;
   private _compressionType: CompressionType;
   private _saveBuffer: boolean;
-  
+  private _sizeDecompressed: number;
+
   /**
    * The buffer to use when writing this model. If a cached buffer is available,
    * it is returned. If there is no cached buffer, the model is serialized on
@@ -26,9 +27,9 @@ export default abstract class WritableModel extends ApiModelBase {
    * best performance, this should be true when writing resources to packages,
    * and false when writing them to disk by themselves.
    */
-  public get compressBuffer(): boolean { return this._compressBuffer; }
-  public set compressBuffer(value: boolean) {
-    if (this._compressBuffer && this.isCached) delete this._buffer; // FIXME: logic off
+  get compressBuffer(): boolean { return this._compressBuffer; }
+  set compressBuffer(value: boolean) {
+    if (this._compressBuffer !== value) delete this._buffer;
     this._compressBuffer = value ?? false;
   }
 
@@ -38,9 +39,9 @@ export default abstract class WritableModel extends ApiModelBase {
    * is accessed. If `compressBuffer` is false, this property only affects
    * resources that are being written in a package
    */
-  public get compressionType(): CompressionType { return this._compressionType; }
-  public set compressionType(value: CompressionType) {
-    if (this._compressBuffer && this.isCached) delete this._buffer; // FIXME: logic off
+  get compressionType(): CompressionType { return this._compressionType; }
+  set compressionType(value: CompressionType) {
+    if (this._compressionType !== value) delete this._buffer;
     this._compressionType = value ?? CompressionType.Uncompressed;
   }
 
@@ -57,17 +58,30 @@ export default abstract class WritableModel extends ApiModelBase {
     if (!this._saveBuffer) delete this._buffer;
   }
 
+  /**
+   * The size of this resource (in bytes) when it is decompressed. Unless the
+   * size is already cached, this will cause the buffer to be serialized, and
+   * cached if `saveBuffer == true`.
+   * */
+  get sizeDecompressed(): number {
+    // buffer calls serialize, which caches the decompressed size
+    if (this._sizeDecompressed == undefined) this.buffer;
+    return this._sizeDecompressed;
+  }
+
   protected constructor(
     saveBuffer: boolean,
     compressBuffer: boolean,
     compressionType: CompressionType,
     buffer?: Buffer,
+    sizeDecompressed?: number,
     owner?: ApiModelBase,
   ) {
     super(owner);
     this._saveBuffer = saveBuffer ?? false;
     this._compressBuffer = compressBuffer ?? false;
     this._compressionType = compressionType ?? CompressionType.Uncompressed;
+    this._sizeDecompressed = sizeDecompressed;
     if (saveBuffer) this._buffer = buffer;
   }
 
@@ -81,7 +95,8 @@ export default abstract class WritableModel extends ApiModelBase {
   }
 
   /**
-   * Returns the buffer for this model in its proper compression format.
+   * Returns the buffer for this model in its proper compression format,
+   * regardless of the value of `compressBuffer`.
    */
   getCompressedBuffer(): Buffer {
     return this.isCompressed
@@ -99,6 +114,7 @@ export default abstract class WritableModel extends ApiModelBase {
 
   onChange() {
     delete this._buffer;
+    delete this._sizeDecompressed;
     super.onChange();
   }
 
@@ -108,6 +124,7 @@ export default abstract class WritableModel extends ApiModelBase {
   /** Gets the buffer for this model, compressed if need be. */
   private _serializeCompressed(): Buffer {
     const buffer = this._serialize();
+    this._sizeDecompressed = buffer.byteLength;
     return this.compressBuffer
       ? compressBuffer(buffer, this.compressionType)
       : buffer;
