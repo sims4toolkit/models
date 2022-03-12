@@ -11,14 +11,12 @@ export type WritableModelConstArgs = Partial<{
   /** Initial buffer for this model. */
   buffer: Buffer;
 
-  /** Whether or not the buffer is/should be compressed by the model. */
+  /** Whether or not this model's buffer is/should be compressed. */
   compressBuffer: boolean;
 
   /**
-   * How the buffer is/should be compressed. If `compressBuffer` is true, this
-   * also dictates how the buffer returned by the model is compressed. If
-   * `compressBuffer` is false, this only determines how the buffer is
-   * compressed when written in a package.
+   * How this model's buffer is/should be compressed. If `compressBuffer` is
+   * false, this only affects the result of `getCompressedBuffer()`.
    */
   compressionType: CompressionType;
 
@@ -28,7 +26,7 @@ export type WritableModelConstArgs = Partial<{
   /** Whether or not this model should cache its buffer. */
   saveBuffer: boolean;
 
-  /** The number of bytes this model's buffer requires when decompressed. */
+  /** The number of bytes this model's buffer takes up when decompressed. */
   sizeDecompressed: number;
 }>;
 
@@ -50,8 +48,8 @@ export default abstract class WritableModel extends ApiModelBase {
 
   /**
    * The buffer to use when writing this model. If a cached buffer is available,
-   * it is returned. If there is no cached buffer, the model is serialized on
-   * the fly (when this property is retrieved).
+   * it is returned. If there is no cached buffer, the model is serialized when
+   * this property is accessed.
    */
   get buffer(): Buffer {
     if (!this.saveBuffer) return this._serializeCompressed();
@@ -113,8 +111,8 @@ export default abstract class WritableModel extends ApiModelBase {
     super(args.owner);
     this._saveBuffer = args.saveBuffer ?? false;
     this._compressBuffer = args.compressBuffer ?? false;
-    this._compressionType = args.compressionType ?? CompressionType.Uncompressed;
-    this._sizeDecompressed = args.sizeDecompressed;
+    this._compressionType = args.compressionType ?? CompressionType.ZLIB;
+    this._sizeDecompressed = args.sizeDecompressed ?? args.buffer?.byteLength;
     if (args.saveBuffer) this._buffer = args.buffer;
   }
 

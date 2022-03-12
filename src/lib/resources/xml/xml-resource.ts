@@ -1,10 +1,35 @@
 import { XmlDocumentNode, XmlNode } from "@s4tk/xml-dom";
-import { CompressionType } from "@s4tk/compression";
-import WritableModel from "../../base/writable-model";
+import WritableModel, { WritableModelConstArgs } from "../../base/writable-model";
 import Resource from "../resource";
 import EncodingType from "../../enums/encoding-type";
 import { FileReadingOptions } from "../../common/options";
 import { promisify } from "../../common/helpers";
+
+//#region Types
+
+/**
+ * Additional arguments specific to XML resources.
+ */
+type XmlResourceAdditionalArgs = Partial<{
+  /** Initial XML content as a string. */
+  content?: string;
+
+  /** Initial DOM to use for this resource. */
+  dom?: XmlDocumentNode;
+}>;
+
+/** Arguments for `XmlResource`'s constructor. */
+interface XmlResourceConstArgs extends WritableModelConstArgs, XmlResourceAdditionalArgs { };
+
+/** Arguments for `XmlResource.from()`. */
+interface XmlResourceFromOptions extends Omit<XmlResourceConstArgs, "buffer"> { };
+
+/** Arguments for `XmlResource.create()`. */
+interface XmlResourceCreateArgs extends Omit<XmlResourceFromOptions, "sizeDecompressed"> { };
+
+//#endregion Types
+
+//#region Classes
 
 /**
  * Model for a plain text, XML resource. This does not necessarily need to be
@@ -12,8 +37,6 @@ import { promisify } from "../../common/helpers";
  */
 export default class XmlResource extends WritableModel implements Resource {
   readonly encodingType: EncodingType = EncodingType.XML;
-  readonly compressionType: CompressionType = CompressionType.ZLIB;
-  readonly isCompressed: boolean = false;
   private _content?: string;
   private _dom?: XmlDocumentNode;
 
@@ -25,7 +48,6 @@ export default class XmlResource extends WritableModel implements Resource {
       throw new Error(`Failed to write XML for DOM:\n${e}`);
     }
   }
-
   set content(content: string) {
     this._content = content;
     delete this._dom;
@@ -46,7 +68,6 @@ export default class XmlResource extends WritableModel implements Resource {
       throw new Error(`Failed to generate DOM from XML:\n${e}`);
     }
   }
-
   set dom(dom: XmlDocumentNode) {
     this._dom = dom;
     delete this._content;
@@ -60,7 +81,6 @@ export default class XmlResource extends WritableModel implements Resource {
    * (EX: `resource.root = resource.root`).
    */
   get root(): XmlNode { return this.dom.child; }
-
   set root(node: XmlNode) {
     this.updateDom(dom => {
       dom.child = node;
@@ -69,38 +89,22 @@ export default class XmlResource extends WritableModel implements Resource {
 
   //#region Initialization
 
-  protected constructor(
-    content?: string,
-    dom?: XmlDocumentNode,
-    saveBuffer?: boolean,
-    buffer?: Buffer
-  ) {
-    super(saveBuffer, buffer);
-    this._content = content;
-    this._dom = dom;
+  protected constructor(args: XmlResourceConstArgs) {
+    super(args);
+    this._content = args.content;
+    this._dom = args.dom;
   }
 
   /**
    * Creates a new XML resource with the given content. If no content is
    * given, the tuning resource is blank. It is recommended to supply just
-   * XML content or a DOM, but not both (because the model assumes the content
-   * and DOM will always be in sync, but this cannot be guaranteed if both are
-   * user-supplied rather than one being generated from the other).
+   * XML content or a DOM, but not both.
    * 
-   * Options
-   * - `content`: The XML content of the resource as a string.
-   * - `dom`: The XmlDocumentNode to use as this resource's DOM.
-   * - `saveBuffer`: Whether or not buffers created for this resource should
-   * be cached. False by default.
-   * 
-   * @param options Object containing initial content of this resource
+   * @param args Object containing initial content and options
    */
-  static create({ content, dom, saveBuffer }: {
-    content?: string;
-    dom?: XmlDocumentNode;
-    saveBuffer?: boolean;
-  } = {}): XmlResource {
-    return new XmlResource(content, dom, saveBuffer);
+  static create(args: XmlResourceCreateArgs = {}): XmlResource {
+    // TODO: log if both content and dom are supplied
+    return new XmlResource(args);
   }
 
   /**
@@ -109,7 +113,7 @@ export default class XmlResource extends WritableModel implements Resource {
    * @param buffer Buffer to create an XML resource from
    * @param options Options for reading and cacheing the XML resource
    */
-  static from(buffer: Buffer, options?: FileReadingOptions): XmlResource {
+  static from(buffer: Buffer, options?: XmlResourceFromOptions): XmlResource {
     return new XmlResource(
       buffer.toString('utf-8'),
       undefined,
@@ -147,7 +151,7 @@ export default class XmlResource extends WritableModel implements Resource {
   isXml(): boolean {
     return true;
   }
-  
+
   /**
    * Accepts a callback function to which the DOM is passed as an argument, so
    * that it can be mutated in a way that ensures cacheing is handled properly.
@@ -192,3 +196,5 @@ export default class XmlResource extends WritableModel implements Resource {
 
   //#endregion Protected Methods
 }
+
+//#endregion Classes
