@@ -2,10 +2,46 @@ import { compressBuffer, CompressionType } from '@s4tk/compression';
 import ApiModelBase from './api-model';
 import { promisify } from '../common/helpers';
 
+//#region Types
+
+/**
+ * Constructor arguments for writable models.
+ */
+export type WritableModelArgs = Partial<{
+  /** Initial buffer for this model. */
+  buffer: Buffer;
+
+  /** Whether or not the buffer is/should be compressed by the model. */
+  compressBuffer: boolean;
+
+  /**
+   * How the buffer is/should be compressed. If `compressBuffer` is true, this
+   * also dictates how the buffer returned by the model is compressed. If
+   * `compressBuffer` is false, this only determines how the buffer is
+   * compressed when written in a package.
+   */
+  compressionType: CompressionType;
+
+  /** The model that contains this one.  */
+  owner: ApiModelBase;
+
+  /** Whether or not this model should cache its buffer. */
+  saveBuffer: boolean;
+
+  /** The number of bytes this model's buffer requires when decompressed. */
+  sizeDecompressed: number;
+}>;
+
+//#endregion Types
+
+//#region Classes
+
 /**
  * Base class for models that can be written to disk.
  */
 export default abstract class WritableModel extends ApiModelBase {
+  //#region Properties
+
   private _buffer?: Buffer;
   private _compressBuffer?: boolean;
   private _compressionType: CompressionType;
@@ -69,21 +105,22 @@ export default abstract class WritableModel extends ApiModelBase {
     return this._sizeDecompressed;
   }
 
-  protected constructor(
-    saveBuffer: boolean,
-    compressBuffer: boolean,
-    compressionType: CompressionType,
-    buffer?: Buffer,
-    sizeDecompressed?: number,
-    owner?: ApiModelBase,
-  ) {
-    super(owner);
-    this._saveBuffer = saveBuffer ?? false;
-    this._compressBuffer = compressBuffer ?? false;
-    this._compressionType = compressionType ?? CompressionType.Uncompressed;
-    this._sizeDecompressed = sizeDecompressed;
-    if (saveBuffer) this._buffer = buffer;
+  //#endregion Properties
+
+  //#region Initialization
+
+  protected constructor(args: WritableModelArgs) {
+    super(args.owner);
+    this._saveBuffer = args.saveBuffer ?? false;
+    this._compressBuffer = args.compressBuffer ?? false;
+    this._compressionType = args.compressionType ?? CompressionType.Uncompressed;
+    this._sizeDecompressed = args.sizeDecompressed;
+    if (args.saveBuffer) this._buffer = args.buffer;
   }
+
+  //#endregion Initialization
+
+  //#region Public Methods
 
   /**
    * Generates the buffer for this model asynchronously, and returns a Promise
@@ -118,6 +155,10 @@ export default abstract class WritableModel extends ApiModelBase {
     super.onChange();
   }
 
+  //#endregion Public Methods
+
+  //#region Protected Methods
+
   /** Deletes this model's buffer, if it is able to. */
   protected _deleteBufferIfSupported() {
     delete this._buffer;
@@ -125,6 +166,10 @@ export default abstract class WritableModel extends ApiModelBase {
 
   /** Returns a newly serialized buffer for this model. */
   protected abstract _serialize(): Buffer;
+
+  //#endregion Protected Methods
+
+  //#region Private Methods
 
   /** Gets the buffer for this model, compressed if need be. */
   private _serializeCompressed(): Buffer {
@@ -134,4 +179,8 @@ export default abstract class WritableModel extends ApiModelBase {
       ? compressBuffer(buffer, this.compressionType)
       : buffer;
   }
+
+  //#endregion Private Methods
 }
+
+//#endregion Classes
