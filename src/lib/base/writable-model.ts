@@ -29,7 +29,7 @@ export default abstract class WritableModel extends ApiModelBase {
    */
   get compressBuffer(): boolean { return this._compressBuffer; }
   set compressBuffer(value: boolean) {
-    if (this._compressBuffer !== value) delete this._buffer;
+    if (this._compressBuffer !== value) this._deleteBufferIfSupported();
     this._compressBuffer = value ?? false;
   }
 
@@ -41,7 +41,7 @@ export default abstract class WritableModel extends ApiModelBase {
    */
   get compressionType(): CompressionType { return this._compressionType; }
   set compressionType(value: CompressionType) {
-    if (this._compressionType !== value) delete this._buffer;
+    if (this._compressionType !== value) this._deleteBufferIfSupported();
     this._compressionType = value ?? CompressionType.Uncompressed;
   }
 
@@ -55,7 +55,7 @@ export default abstract class WritableModel extends ApiModelBase {
   get saveBuffer() { return this._saveBuffer; }
   set saveBuffer(saveBuffer: boolean) {
     this._saveBuffer = saveBuffer ?? false;
-    if (!this._saveBuffer) delete this._buffer;
+    if (!this._saveBuffer) this._deleteBufferIfSupported();
   }
 
   /**
@@ -116,6 +116,11 @@ export default abstract class WritableModel extends ApiModelBase {
     delete this._buffer;
     delete this._sizeDecompressed;
     super.onChange();
+  }
+
+  /** Deletes this model's buffer, if it is able to. */
+  protected _deleteBufferIfSupported() {
+    delete this._buffer;
   }
 
   /** Returns a newly serialized buffer for this model. */

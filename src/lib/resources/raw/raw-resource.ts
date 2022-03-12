@@ -5,7 +5,8 @@ import { bufferContainsXml } from '../../common/helpers';
 import { CompressionType } from '@s4tk/compression';
 
 /**
- * Model for resources that have not been parsed.
+ * Model for resources that have not been parsed. These models are immutable;
+ * nothing on them can be changed, including how the buffer is compressed.
  */
 export default class RawResource extends WritableModel implements Resource {
   readonly encodingType: EncodingType = EncodingType.Unknown;
@@ -13,33 +14,48 @@ export default class RawResource extends WritableModel implements Resource {
   /** The contents of this resource as plain text. */
   get plainText(): string { return this.buffer.toString('utf-8'); }
 
-  get saveBuffer() { return true; }
-  set saveBuffer(saveBuffer: boolean) {
-    // intentionally blank -- raw resource must always have its buffer saved
+  // FIXME: does super function how I think it does here?
+  get compressBuffer() { return super.compressBuffer; }
+  set compressBuffer(value: boolean) {
+    // FIXME: might throw an error somewhere unexpected, may need to be blank
+    throw new Error("Cannot change value of compressBuffer on RawResource. You must clone this resource and change the value during initialization.");
+  }
+
+  get compressionType() { return super.compressionType; }
+  set compressionType(value: CompressionType) {
+    // FIXME: might throw an error somewhere unexpected, may need to be blank
+    throw new Error("Cannot change value of compressionType on RawResource. You must clone this resource and change the value during initialization.");
+  }
+
+  get saveBuffer() { return super.saveBuffer; }
+  set saveBuffer(value: boolean) {
+    // FIXME: might throw an error somewhere unexpected, may need to be blank
+    throw new Error("Cannot change value of saveBuffer on RawResource. It must always be true.");
   }
 
   //#region Initialization
 
   protected constructor(
+    compressBuffer: boolean,
+    compressionType: CompressionType,
     buffer: Buffer,
-    readonly compressionType: CompressionType,
-    readonly isCompressed: boolean,
-    readonly sizeDecompressed?: number,
+    sizeDecompressed: number,
     public reason?: string,
   ) {
-    super(true, buffer); // raw resource must always save its buffer
+    // raw resource must always save its buffer
+    super(true, compressBuffer, compressionType, buffer, sizeDecompressed);
   }
 
   /**
-   * Creates a new RawResource.
+   * Creates a new RawResource from the given buffer.
    * 
    * Options
-   * - `compressionType`: How this resource is/should be compressed. ZLIB by
-   * default.
-   * - `isCompressed`: Whether or not the buffer in this raw resource is
-   * compressed using the algorithm specified in `compressionType`. False by
-   * default.
-   * - `sizeDecompressed`: The length of the buffer when it is decompressed.
+   * - `compressionType`: How this resource is/should be compressed. Even if the
+   * buffer itself is not compressed, this will dictate how to compress this
+   * resource when written to a package. ZLIB by default.
+   * - `isCompressed`: Whether or not the provided buffer is compressed using
+   * the algorithm specified by `compressionType`. False by default.
+   * - `sizeDecompressed`: The byte length of the buffer when decompressed.
    * Equals the length of the given buffer by default.
    * - `reason`: Reason why this resource is being loaded raw.
    * 
@@ -53,10 +69,10 @@ export default class RawResource extends WritableModel implements Resource {
     reason?: string;
   } = {}): RawResource {
     return new RawResource(
-      buffer,
-      compressionType ?? CompressionType.ZLIB,
       isCompressed ?? false,
-      sizeDecompressed ?? buffer.length,
+      compressionType ?? CompressionType.ZLIB,
+      buffer,
+      sizeDecompressed ?? buffer.byteLength,
       reason
     );
   }
@@ -67,9 +83,9 @@ export default class RawResource extends WritableModel implements Resource {
 
   clone(): RawResource {
     return new RawResource(
-      this.buffer,
-      this.compressionType,
       this.isCompressed,
+      this.compressionType,
+      this.buffer,
       this.sizeDecompressed,
       this.reason
     );
@@ -94,8 +110,7 @@ export default class RawResource extends WritableModel implements Resource {
   //#region Protected Methods
 
   protected _serialize(): Buffer {
-    // this should never be thrown in prod, just for development
-    throw new Error("Cannot serialize a raw resource.");
+    throw new Error("Cannot serialize a raw resource. If you're reading this error, you somehow deleted the cached buffer from a raw resource. This should be impossible to do, so please report this error to me ASAP: https://github.com/sims4toolkit/models/issues");
   }
 
   //#endregion Protected Methods
