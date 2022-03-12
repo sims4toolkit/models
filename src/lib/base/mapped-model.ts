@@ -32,9 +32,10 @@ export abstract class MappedModel<Key, Value, Entry extends MappedModelEntry<Key
     compressBuffer: boolean,
     compressionType: CompressionType,
     buffer?: Buffer,
+    sizeDecompressed?: number,
     owner?: ApiModelBase,
   ) {
-    super(saveBuffer, compressBuffer, compressionType, buffer, owner);
+    super(saveBuffer, compressBuffer, compressionType, buffer, sizeDecompressed, owner);
     this._entryMap = new Map();
     this._keyMap = new Map();
     this._initializeEntries(entries);
@@ -120,7 +121,7 @@ export abstract class MappedModel<Key, Value, Entry extends MappedModelEntry<Key
    */
   delete(id: number): boolean {
     const entry = this._entryMap.get(id);
-    
+
     if (entry) {
       this._entryMap.delete(id);
 
@@ -131,7 +132,7 @@ export abstract class MappedModel<Key, Value, Entry extends MappedModelEntry<Key
       } else {
         this._keyMap.set(keyId, ids[0]);
       }
-      
+
       this.onChange();
       return true;
     } else {
@@ -199,7 +200,7 @@ export abstract class MappedModel<Key, Value, Entry extends MappedModelEntry<Key
    * @param value Value of entry to retrieve
    */
   getByValue(value: Value): Entry {
-    for (const [ , entry ] of this._entryMap) {
+    for (const [, entry] of this._entryMap) {
       if (entry.valueEquals(value)) return entry;
     }
 
@@ -227,7 +228,7 @@ export abstract class MappedModel<Key, Value, Entry extends MappedModelEntry<Key
   getIdsForKey(key: Key): number[] {
     const ids: number[] = [];
 
-    for (const [ id, entry ] of this._entryMap) {
+    for (const [id, entry] of this._entryMap) {
       if (entry.keyEquals(key)) ids.push(id);
     }
 
@@ -282,7 +283,7 @@ export abstract class MappedModel<Key, Value, Entry extends MappedModelEntry<Key
     } else {
       this._keyMap.set(previousIdentifier, ids[0]);
     }
-    
+
     const currentIdentifier = this._getKeyIdentifier(current);
     if (!this._keyMap.has(currentIdentifier)) {
       this._keyMap.set(currentIdentifier, currentId);
@@ -309,7 +310,7 @@ export abstract class MappedModel<Key, Value, Entry extends MappedModelEntry<Key
    */
   resetKeyMap() {
     this._keyMap.clear();
-    for (const [ id, entry ] of this._entryMap) {
+    for (const [id, entry] of this._entryMap) {
       const keyIdentifier = this._getKeyIdentifier(entry.key);
       if (!this._keyMap.has(keyIdentifier)) this._keyMap.set(keyIdentifier, id);
     }
