@@ -103,7 +103,6 @@ export default class XmlResource extends WritableModel implements Resource {
    * @param args Object containing initial content and options
    */
   static create(args: XmlResourceCreateArgs = {}): XmlResource {
-    // TODO: log if both content and dom are supplied
     return new XmlResource(args);
   }
 
@@ -111,15 +110,10 @@ export default class XmlResource extends WritableModel implements Resource {
    * Creates an XML resource from a buffer containing XML.
    * 
    * @param buffer Buffer to create an XML resource from
-   * @param options Options for reading and cacheing the XML resource
+   * @param options Optional arguments for the XML resource
    */
   static from(buffer: Buffer, options?: XmlResourceFromOptions): XmlResource {
-    return new XmlResource(
-      buffer.toString('utf-8'),
-      undefined,
-      options?.saveBuffer,
-      buffer
-    );
+    return new XmlResource(Object.assign({ buffer }, options));
   }
 
   /**
@@ -138,14 +132,18 @@ export default class XmlResource extends WritableModel implements Resource {
   //#region Public Methods
 
   clone(): XmlResource {
-    // copy content only, it is pointless to clone the entire DOM structure
-    // because it can just be generated
-    const buffer = this.isCached ? this.buffer : undefined;
-    return new XmlResource(this.content, undefined, this.saveBuffer, buffer);
+    return new XmlResource({
+      buffer: this.isCached ? this.buffer : undefined,
+      compressBuffer: this.compressBuffer,
+      compressionType: this.compressionType,
+      saveBuffer: this.saveBuffer,
+      sizeDecompressed: this.sizeDecompressed,
+      content: this.content
+    });
   }
 
   equals(other: XmlResource): boolean {
-    return other && this.content === other.content;
+    return other && (this.content === other.content);
   }
 
   isXml(): boolean {
