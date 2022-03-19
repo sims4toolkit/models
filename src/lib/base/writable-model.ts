@@ -1,4 +1,4 @@
-import { compressBuffer, CompressionType } from "@s4tk/compression";
+import { compressBuffer, CompressionType, decompressBuffer } from "@s4tk/compression";
 import ApiModelBase from "./api-model";
 import { promisify } from "../common/helpers";
 import CompressedBufferWrapper from "./compressed-buffer";
@@ -71,8 +71,15 @@ export default abstract class WritableModel extends ApiModelBase {
    * if this argument is false. False by default.
    */
   getBuffer(cache: boolean = false): Buffer {
-    if (this._bufferCache?.compressionType === CompressionType.Uncompressed) {
-      return this._bufferCache.buffer;
+    if (this._bufferCache) {
+      const { buffer, compressionType } = this._bufferCache;
+
+      if (compressionType === CompressionType.Uncompressed) {
+        return buffer;
+      } else {
+        // FIXME: should replace cache here?
+        return decompressBuffer(buffer, compressionType);
+      }
     }
 
     const buffer = this._serialize();
@@ -114,17 +121,30 @@ export default abstract class WritableModel extends ApiModelBase {
    */
   getCompressedBuffer(
     cache: boolean = false,
-    compressionType: CompressionType = this.defaultCompressionType,
+    targetCompressionType: CompressionType = this.defaultCompressionType,
   ): CompressedBufferWrapper {
-    if (this._bufferCache?.compressionType === compressionType) {
-      return this._bufferCache;
+    if (this._bufferCache) {
+      const { buffer, compressionType } = this._bufferCache;
+
+      if (compressionType === targetCompressionType) {
+        return this._bufferCache;
+      } else {
+        // FIXME: should replace cache here?
+        const decompressedBuffer = decompressBuffer(buffer, compressionType);
+        const compressedBuffer = compressBuffer(decompressedBuffer, targetCompressionType);
+        return {
+          buffer: compressedBuffer,
+          sizeDecompressed: decompressedBuffer.byteLength,
+          compressionType: targetCompressionType
+        };
+      }
     }
 
     const uncompressedBuffer = this._serialize();
     const wrapper: CompressedBufferWrapper = {
-      buffer: compressBuffer(uncompressedBuffer, compressionType),
+      buffer: compressBuffer(uncompressedBuffer, targetCompressionType),
       sizeDecompressed: uncompressedBuffer.byteLength,
-      compressionType
+      compressionType: targetCompressionType
     };
 
     if (cache) this._bufferCache = wrapper;
