@@ -1,35 +1,24 @@
 import { XmlDocumentNode, XmlNode } from "@s4tk/xml-dom";
-import WritableModel, { WritableModelConstArgs } from "../../base/writable-model";
+import WritableModel, { WritableModelConstructorArguments } from "../../base/writable-model";
 import Resource from "../resource";
 import EncodingType from "../../enums/encoding-type";
 import { FileReadingOptions } from "../../common/options";
 import { promisify } from "../../common/helpers";
 
-//#region Types
-
-/**
- * Additional arguments specific to XML resources.
- */
-type XmlResourceAdditionalArgs = Partial<{
-  /** Initial XML content as a string. */
+/** Additional arguments specific to XML resources. */
+type XmlResourceAdditionalArguments = Partial<{
+  /** Initial XML content as a string. Do NOT supply if DOM is already given. */
   content?: string;
 
-  /** Initial DOM to use for this resource. */
+  /** Initial DOM to use. Do NOT supply if content is already given. */
   dom?: XmlDocumentNode;
 }>;
 
 /** Arguments for `XmlResource`'s constructor. */
-interface XmlResourceConstArgs extends WritableModelConstArgs, XmlResourceAdditionalArgs { };
+interface XmlResourceConstructorArguments extends WritableModelConstructorArguments, XmlResourceAdditionalArguments { };
 
 /** Arguments for `XmlResource.from()`. */
-interface XmlResourceFromOptions extends Omit<XmlResourceConstArgs, "buffer"> { };
-
-/** Arguments for `XmlResource.create()`. */
-interface XmlResourceCreateArgs extends Omit<XmlResourceFromOptions, "sizeDecompressed"> { };
-
-//#endregion Types
-
-//#region Classes
+interface XmlResourceFromOptions extends Omit<WritableModelConstructorArguments, "initialBufferCache"> { };
 
 /**
  * Model for a plain text, XML resource. This does not necessarily need to be
@@ -89,12 +78,6 @@ export default class XmlResource extends WritableModel implements Resource {
 
   //#region Initialization
 
-  protected constructor(args: XmlResourceConstArgs) {
-    super(args);
-    this._content = args.content;
-    this._dom = args.dom;
-  }
-
   /**
    * Creates a new XML resource with the given content. If no content is
    * given, the tuning resource is blank. It is recommended to supply just
@@ -102,8 +85,10 @@ export default class XmlResource extends WritableModel implements Resource {
    * 
    * @param args Object containing initial content and options
    */
-  static create(args: XmlResourceCreateArgs = {}): XmlResource {
-    return new XmlResource(args);
+  constructor(args: XmlResourceConstructorArguments) {
+    super(args);
+    this._content = args.content;
+    this._dom = args.dom;
   }
 
   /**
@@ -113,17 +98,20 @@ export default class XmlResource extends WritableModel implements Resource {
    * @param options Optional arguments for the XML resource
    */
   static from(buffer: Buffer, options?: XmlResourceFromOptions): XmlResource {
-    return new XmlResource(Object.assign({ buffer }, options));
+    return new XmlResource({
+      content: buffer.toString("utf-8"),
+      defaultCompressionType: options?.defaultCompressionType,
+      owner: options?.owner
+    });
   }
 
   /**
-   * Creates an XML resource asynchronously from a buffer containing XML, and
-   * returns a Promise that resolves with it.
+   * Creates an XML resource from a buffer containing XML.
    * 
    * @param buffer Buffer to create an XML resource from
-   * @param options Options for reading and cacheing the XML resource
+   * @param options Optional arguments for the XML resource
    */
-  static async fromAsync(buffer: Buffer, options?: FileReadingOptions): Promise<XmlResource> {
+  static async fromAsync(buffer: Buffer, options?: XmlResourceFromOptions): Promise<XmlResource> {
     return promisify(() => XmlResource.from(buffer, options));
   }
 
@@ -133,12 +121,9 @@ export default class XmlResource extends WritableModel implements Resource {
 
   clone(): XmlResource {
     return new XmlResource({
-      buffer: this.isCached ? this.buffer : undefined,
-      compressBuffer: this.compressBuffer,
-      compressionType: this.compressionType,
-      saveBuffer: this.saveBuffer,
-      sizeDecompressed: this.sizeDecompressed,
-      content: this.content
+      content: this.content,
+      defaultCompressionType: this.defaultCompressionType,
+      initialBufferCache: this._getBufferCache()
     });
   }
 
@@ -194,5 +179,3 @@ export default class XmlResource extends WritableModel implements Resource {
 
   //#endregion Protected Methods
 }
-
-//#endregion Classes
