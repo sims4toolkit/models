@@ -8,14 +8,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.3.0] - 2022/02/26
 ### Changed
 - Replace compression code with @s4tk/compression package.
-- Handle file compression in WritableModel rather than ResourceEntry.
-- Only support cacheing one kind of buffer per resource, rather than both compressed and uncompressed.
+- Handle resource buffer compression in WritableModel rather than ResourceEntry.
+- Replace all resources' static `create()` methods with constructors.
+- Replace `buffer` property in writable models with `getBuffer()` and `getCompressedBuffer()` methods (and their async variants).
+- Replace all properties related to cacheing on writable models with arguments that are passed to new buffer getter methods.
 - TODO: Stream data when extracting resources.
 ### Removed
 - Remove buffer cacheing in ResourceEntry.
 - Remove package-level options for cacheing resources.
+- Remove `plainText` property from raw resources.
 ### Added
-- Add Cell.create() method for creating arbitrary cells of a known data type.
+- FIXME: Add Cell.create() method for creating arbitrary cells of a known data type.
 
 ## [0.2.2] - 2022/02/15
 ### Added
