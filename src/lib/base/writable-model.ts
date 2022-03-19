@@ -159,6 +159,13 @@ export default abstract class WritableModel extends ApiModelBase {
   //#region Protected Methods
 
   /**
+   * Returns the current buffer cache. Undefined if there is none.
+   */
+  protected _getBufferCache(): CompressedBufferWrapper {
+    return this._bufferCache;
+  }
+
+  /**
    * Clears this model's cache, if it is able to. Subclasses for which the cache
    * cannot be cleared must override this method and NOT call super.
    */
