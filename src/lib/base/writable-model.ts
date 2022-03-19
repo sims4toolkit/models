@@ -4,7 +4,7 @@ import { promisify } from "../common/helpers";
 import CompressedBufferWrapper from "./compressed-buffer";
 
 /**
- * Optional arguments for writable models.
+ * Optional arguments for writable models' constructors.
  */
 export type WritableModelConstructorArguments = Partial<{
   /**

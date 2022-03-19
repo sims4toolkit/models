@@ -1,28 +1,17 @@
 import type Resource from '../resource';
-import WritableModel, { WritableModelConstArgs } from '../../base/writable-model';
+import WritableModel, { WritableModelConstructorArguments } from '../../base/writable-model';
 import EncodingType from '../../enums/encoding-type';
 import { bufferContainsXml } from '../../common/helpers';
 import { CompressionType } from '@s4tk/compression';
 
-//#region Types
-
-/**
- * Additional arguments specific to raw resources.
- */
-type RawResourceAdditionalArgs = Partial<{
-  /** Reason why this resource is not being parsed. */
+/** Additional arguments specific to Raw resources. */
+type RawResourceAdditionalArguments = Partial<{
+  /** Why this resource is loaded raw. Used for debugging. */
   reason?: string;
 }>;
 
 /** Arguments for `RawResource`'s constructor. */
-interface RawResourcsConstArgs extends Omit<WritableModelConstArgs, "saveBuffer">, RawResourceAdditionalArgs { };
-
-/** Arguments for `RawResource.from()`. */
-interface RawResourceFromOptions extends Omit<RawResourcsConstArgs, "buffer"> { };
-
-//#endregion Types
-
-//#region Classes
+interface RawResourceConstructorArguments extends WritableModelConstructorArguments, RawResourceAdditionalArguments { };
 
 /**
  * Model for resources that have not been parsed and cannot be modified.
@@ -31,51 +20,23 @@ export default class RawResource extends WritableModel implements Resource {
   readonly encodingType: EncodingType = EncodingType.Unknown;
   readonly reason?: string;
 
-  /** The contents of this resource as plain text. */
-  get plainText(): string { return this.buffer.toString('utf-8'); }
-
-  // FIXME: does super function how I think it does here?
-  get compressBuffer() { return super.compressBuffer; }
-  set compressBuffer(value: boolean) {
-    // FIXME: might throw an error somewhere unexpected, may need to be blank
-    throw new Error("Cannot change value of compressBuffer on RawResource. You must clone this resource and change the value during initialization.");
-  }
-
-  get compressionType() { return super.compressionType; }
-  set compressionType(value: CompressionType) {
-    // FIXME: might throw an error somewhere unexpected, may need to be blank
-    throw new Error("Cannot change value of compressionType on RawResource. You must clone this resource and change the value during initialization.");
-  }
-
-  get saveBuffer() { return super.saveBuffer; }
-  set saveBuffer(value: boolean) {
-    // FIXME: might throw an error somewhere unexpected, may need to be blank
-    throw new Error("Cannot change value of saveBuffer on RawResource. It must always be true.");
-  }
+  /** Alias for getBuffer(), since the buffer will never change. */
+  get buffer(): Buffer { return this.getBuffer(); }
 
   //#region Initialization
 
-  protected constructor(args: RawResourcsConstArgs) {
+  constructor(args: RawResourceConstructorArguments) {
     super(args);
     this.reason = args.reason;
   }
 
-  /**
-   * Creates a new RawResource from the given buffer.
-   * 
-   * @param buffer Buffer for raw resource
-   * @param options Optional arguments
-   */
-  static from(buffer: Buffer, options: RawResourceFromOptions = {}): RawResource {
-    return new RawResource(Object.assign({ buffer, saveBuffer: true }, options));
-  }
+  // FIXME: guarantee that a buffer is passed, and add a from() method? if adding from(), remove that line from changlog
 
   //#endregion Initialization
 
   //#region Public Methods
 
   clone(): RawResource {
-    // TODO: option to clone buffer?
     return new RawResource(this);
   }
 
@@ -95,7 +56,7 @@ export default class RawResource extends WritableModel implements Resource {
 
   //#region Protected Methods
 
-  protected _deleteBufferIfSupported(): void {
+  protected _clearBufferCacheIfSupported(): void {
     // intentionally blank
   }
 

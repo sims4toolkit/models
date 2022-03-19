@@ -16,8 +16,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
 - Remove buffer cacheing in ResourceEntry.
 - Remove package-level options for cacheing resources.
-- Remove `plainText` property from raw resources.
+- Remove `plainText` property and static `from()` method from RawResource.
 ### Added
+- Added `buffer` property to RawResource (and RawResource only).
 - FIXME: Add Cell.create() method for creating arbitrary cells of a known data type.
 
 ## [0.2.2] - 2022/02/15
