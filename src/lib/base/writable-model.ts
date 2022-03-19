@@ -6,7 +6,7 @@ import CompressedBufferWrapper from "./compressed-buffer";
 /**
  * Optional arguments for writable models.
  */
-type WritableModelConstructorArguments = Partial<{
+export type WritableModelConstructorArguments = Partial<{
   /**
    * How this model's buffer should be compressed by default. If not supplied,
    * ZLIB compression is assumed.
