@@ -61,7 +61,7 @@ export default class RawResource extends WritableModel implements Resource {
   }
 
   protected _serialize(): Buffer {
-    throw new Error("Cannot serialize a raw resource. If you're reading this error, you somehow deleted the cached buffer from a raw resource. This should be impossible to do, so please report this error to me ASAP: https://github.com/sims4toolkit/models/issues");
+    throw new Error("Cannot serialize a raw resource. If you're reading this error, the cached buffer in a raw resource somehow got deleted, which should be impossible. Please report this error ASAP: https://github.com/sims4toolkit/models/issues");
   }
 
   //#endregion Protected Methods

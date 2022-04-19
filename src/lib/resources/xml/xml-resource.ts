@@ -98,6 +98,7 @@ export default class XmlResource extends WritableModel implements Resource {
    * @param options Optional arguments for the XML resource
    */
   static from(buffer: Buffer, options?: XmlResourceFromOptions): XmlResource {
+    // FIXME: cacheing buffer? add options
     return new XmlResource({
       content: buffer.toString("utf-8"),
       defaultCompressionType: options?.defaultCompressionType,
