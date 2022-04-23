@@ -1,5 +1,3 @@
-import type { CompressionType } from "@s4tk/compression";
-import type ApiModelBase from "./api-model";
 import WritableModel, { WritableModelConstructorArguments } from "./writable-model";
 
 /**
