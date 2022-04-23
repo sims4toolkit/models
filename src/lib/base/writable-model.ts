@@ -1,7 +1,6 @@
-import { compressBuffer, CompressionType, decompressBuffer } from "@s4tk/compression";
+import { CompressionType, CompressedBuffer, compressBuffer, decompressBuffer } from "@s4tk/compression";
 import ApiModelBase from "./api-model";
 import { promisify } from "../common/helpers";
-import CompressedBufferWrapper from "./compressed-buffer";
 
 /**
  * Optional arguments for writable models' constructors.
@@ -9,7 +8,7 @@ import CompressedBufferWrapper from "./compressed-buffer";
 export type WritableModelConstructorArguments = Partial<{
   /**
    * How this model's buffer should be compressed by default. If not supplied,
-   * ZLIB compression is assumed.
+   * no compression is assumed.
    */
   defaultCompressionType: CompressionType;
 
@@ -17,11 +16,11 @@ export type WritableModelConstructorArguments = Partial<{
    * The initial cache to use for this model's buffer. This will not be cleared
    * until a change is detected.
    */
-  initialBufferCache: CompressedBufferWrapper;
+  initialBufferCache: CompressedBuffer;
 
   /**
    * The model that contains this one. The owner is notified whenever the child
-   * model is changed.
+   * model is changed, and will uncache its buffer.
    */
   owner: ApiModelBase;
 }>;
@@ -32,7 +31,7 @@ export type WritableModelConstructorArguments = Partial<{
 export default abstract class WritableModel extends ApiModelBase {
   //#region Properties
 
-  private _bufferCache?: CompressedBufferWrapper;
+  private _bufferCache?: CompressedBuffer;
   private _defaultCompressionType: CompressionType;
 
   /**
@@ -41,12 +40,18 @@ export default abstract class WritableModel extends ApiModelBase {
    */
   get defaultCompressionType(): CompressionType { return this._defaultCompressionType; }
   set defaultCompressionType(value: CompressionType) {
-    if (this._defaultCompressionType !== value) this._clearBufferCacheIfSupported();
+    if (this._bufferCache && (this._bufferCache.compressionType !== value)) {
+      this._clearBufferCacheIfSupported();
+    }
+
     this._defaultCompressionType = value ?? CompressionType.Uncompressed;
   }
 
   /** Whether this model currently has a cached buffer. */
-  get hasBufferCache(): boolean { return this._bufferCache != undefined; }
+  get hasBufferCache(): boolean {
+    // intentionally != so that null is captured
+    return this._bufferCache != undefined;
+  }
 
   //#endregion Properties
 
@@ -54,7 +59,7 @@ export default abstract class WritableModel extends ApiModelBase {
 
   protected constructor(args: WritableModelConstructorArguments) {
     super(args.owner);
-    this._defaultCompressionType = args.defaultCompressionType ?? CompressionType.ZLIB;
+    this._defaultCompressionType = args.defaultCompressionType ?? CompressionType.Uncompressed;
     if (args.initialBufferCache) this._bufferCache = args.initialBufferCache;
   }
 
@@ -77,22 +82,22 @@ export default abstract class WritableModel extends ApiModelBase {
       if (compressionType === CompressionType.Uncompressed) {
         return buffer;
       } else {
-        // FIXME: should replace cache here?
-        return decompressBuffer(buffer, compressionType);
+        var decompressedBuffer = decompressBuffer(buffer, compressionType);
       }
     }
 
-    const buffer = this._serialize();
+    var decompressedBuffer: Buffer;
+    decompressedBuffer ??= this._serialize();
 
     if (cache) {
       this._bufferCache = {
-        buffer,
-        sizeDecompressed: buffer.byteLength,
+        buffer: decompressedBuffer,
+        sizeDecompressed: decompressedBuffer.byteLength,
         compressionType: CompressionType.Uncompressed
       };
     }
 
-    return buffer;
+    return decompressedBuffer;
   }
 
   /**
@@ -110,44 +115,40 @@ export default abstract class WritableModel extends ApiModelBase {
 
   /**
    * Returns a wrapper for the compressed buffer for this model. If a buffer in
-   * the correct compression format is available on this model, it will be
+   * the correct compression format is cached on this model, it will be
    * returned.
    * 
    * @param cache Whether or not the buffer that is returned by this method
    * should be cached. If the buffer is already cached, it will not be deleted
    * if this argument is false. False by default.
-   * @param compressionType How the buffer should be compressed. If not given,
-   * the default compression type for this model is used.
+   * @param targetCompressionType How the buffer should be compressed. If not
+   * given, the default compression type for this model is used.
    */
   getCompressedBuffer(
     cache: boolean = false,
     targetCompressionType: CompressionType = this.defaultCompressionType,
-  ): CompressedBufferWrapper {
+  ): CompressedBuffer {
     if (this._bufferCache) {
       const { buffer, compressionType } = this._bufferCache;
 
       if (compressionType === targetCompressionType) {
         return this._bufferCache;
       } else {
-        // FIXME: should replace cache here?
-        const decompressedBuffer = decompressBuffer(buffer, compressionType);
-        const compressedBuffer = compressBuffer(decompressedBuffer, targetCompressionType);
-        return {
-          buffer: compressedBuffer,
-          sizeDecompressed: decompressedBuffer.byteLength,
-          compressionType: targetCompressionType
-        };
+        var decompressedBuffer = decompressBuffer(buffer, compressionType);
       }
     }
 
-    const uncompressedBuffer = this._serialize();
-    const wrapper: CompressedBufferWrapper = {
-      buffer: compressBuffer(uncompressedBuffer, targetCompressionType),
-      sizeDecompressed: uncompressedBuffer.byteLength,
+    var decompressedBuffer: Buffer;
+    decompressedBuffer ??= this._serialize();
+
+    const wrapper: CompressedBuffer = {
+      buffer: compressBuffer(decompressedBuffer, targetCompressionType),
+      sizeDecompressed: decompressedBuffer.byteLength,
       compressionType: targetCompressionType
     };
 
     if (cache) this._bufferCache = wrapper;
+
     return wrapper;
   }
 
@@ -165,7 +166,7 @@ export default abstract class WritableModel extends ApiModelBase {
   async getCompressedBufferAsync(
     cache?: boolean,
     compressionType?: CompressionType,
-  ): Promise<CompressedBufferWrapper> {
+  ): Promise<CompressedBuffer> {
     return promisify(() => this.getCompressedBuffer(cache, compressionType));
   }
 
@@ -181,7 +182,7 @@ export default abstract class WritableModel extends ApiModelBase {
   /**
    * Returns the current buffer cache. Undefined if there is none.
    */
-  protected _getBufferCache(): CompressedBufferWrapper {
+  protected _getBufferCache(): CompressedBuffer {
     return this._bufferCache;
   }
 
