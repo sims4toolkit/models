@@ -1,4 +1,4 @@
-import WritableModel, { WritableModelConstructorOptions } from "./writable-model";
+import WritableModel, { WritableModelCreationOptions } from "./writable-model";
 
 /**
  * A base for writable models that contain mapped data.
@@ -26,7 +26,7 @@ export abstract class MappedModel<Key, Value, Entry extends MappedModelEntry<Key
 
   protected constructor(
     entries: { key: Key; value: Value; }[],
-    options?: WritableModelConstructorOptions,
+    options?: WritableModelCreationOptions,
   ) {
     super(options);
     this._entryMap = new Map();

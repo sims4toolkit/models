@@ -3,9 +3,9 @@ import ApiModelBase from "./api-model";
 import { promisify } from "../common/helpers";
 
 /**
- * Optional arguments for WritableModel's constructor.
+ * Optional arguments for initializing WritableModels.
  */
-export type WritableModelConstructorOptions = Partial<{
+export type WritableModelCreationOptions = Partial<{
   /**
    * How this model's buffer should be compressed by default. If not supplied,
    * then CompressionType.Uncompressed is assumed.
@@ -57,7 +57,7 @@ export default abstract class WritableModel extends ApiModelBase {
 
   //#region Initialization
 
-  protected constructor(options?: WritableModelConstructorOptions) {
+  protected constructor(options?: WritableModelCreationOptions) {
     super(options?.owner);
     this._defaultCompressionType = options?.defaultCompressionType ?? CompressionType.Uncompressed;
     if (options?.initialBufferCache) this._bufferCache = options.initialBufferCache;

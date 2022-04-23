@@ -1,43 +1,73 @@
 import type Resource from '../resource';
-import WritableModel, { WritableModelConstructorArguments } from '../../base/writable-model';
+import WritableModel, { WritableModelCreationOptions } from '../../base/writable-model';
 import EncodingType from '../../enums/encoding-type';
 import { bufferContainsXml } from '../../common/helpers';
-import { CompressionType } from '@s4tk/compression';
+import { CompressedBuffer, CompressionType } from '@s4tk/compression';
 
-/** Additional arguments specific to Raw resources. */
-type RawResourceAdditionalArguments = Partial<{
-  /** Why this resource is loaded raw. Used for debugging. */
-  reason?: string;
-}>;
-
-/** Arguments for `RawResource`'s constructor. */
-interface RawResourceConstructorArguments extends WritableModelConstructorArguments, RawResourceAdditionalArguments { };
+/**  Optional arguments for initializing RawResources. */
+interface RawResourceCreationOptions extends
+  Omit<WritableModelCreationOptions, "initialBufferCache">,
+  Partial<{
+    /** Why this resource is loaded raw. Used for debugging. */
+    reason: string;
+  }> { };
 
 /**
  * Model for resources that have not been parsed and cannot be modified.
  */
 export default class RawResource extends WritableModel implements Resource {
   readonly encodingType: EncodingType = EncodingType.Unknown;
+  /** Why this resource was loaded raw. */
   readonly reason?: string;
 
-  /** Alias for getBuffer(), since the buffer will never change. */
+  /** Shorthand for `this.getBuffer()`, since a raw buffer will never change. */
   get buffer(): Buffer { return this.getBuffer(); }
 
   //#region Initialization
 
-  constructor(args: RawResourceConstructorArguments) {
-    super(args);
-    this.reason = args.reason;
+  /**
+   * Creates a new RawResource from the given buffer wrapper and options.
+   * 
+   * @param bufferWrapper The CompressedBuffer wrapper for this resource's buffer.
+   * @param options Object containing optional arguments.
+   */
+  constructor(bufferWrapper: CompressedBuffer, options?: RawResourceCreationOptions) {
+    const superOptions: WritableModelCreationOptions = {
+      initialBufferCache: bufferWrapper
+    };
+
+    super(Object.assign(superOptions, options));
+    this.reason = options?.reason;
   }
 
-  // FIXME: guarantee that a buffer is passed, and add a from() method? if adding from(), remove that line from changlog
+  /**
+   * Creates a new RawResource from the given buffer. The buffer is assumed to
+   * be uncompressed; passing in a compressed buffer can lead to unexpected
+   * behavior.
+   * 
+   * @param buffer The decompressed buffer for this RawResource
+   * @param options Object containing optional arguments
+   */
+  static from(buffer: Buffer, options?: RawResourceCreationOptions): RawResource {
+    const wrapper: CompressedBuffer = {
+      buffer,
+      compressionType: CompressionType.Uncompressed,
+      sizeDecompressed: buffer.byteLength
+    };
+
+    return new RawResource(wrapper, options);
+  }
 
   //#endregion Initialization
 
   //#region Public Methods
 
   clone(): RawResource {
-    return new RawResource(this);
+    return new RawResource(this._getBufferCache(), {
+      defaultCompressionType: this.defaultCompressionType,
+      reason: this.reason,
+      owner: this.owner
+    });
   }
 
   equals(other: RawResource): boolean {
