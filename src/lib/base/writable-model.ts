@@ -180,7 +180,9 @@ export default abstract class WritableModel extends ApiModelBase {
   //#region Protected Methods
 
   /**
-   * Returns the current buffer cache. Undefined if there is none.
+   * Returns the current buffer cache, or undefined if there is none. This only
+   * exists so that subclasses can access the cache without being able to set
+   * it.
    */
   protected _getBufferCache(): CompressedBuffer {
     return this._bufferCache;
