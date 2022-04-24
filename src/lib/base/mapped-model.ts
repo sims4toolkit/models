@@ -1,4 +1,3 @@
-import { CompressedBuffer } from "@s4tk/compression";
 import WritableModel, { WritableModelCreationOptions } from "./writable-model";
 
 /**
