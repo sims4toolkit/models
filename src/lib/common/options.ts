@@ -40,8 +40,8 @@ export interface PackageFileReadingOptions extends
   BinaryFileReadingOptions,
   Partial<{
     /**
-     * (For packages only) If true, then the buffers that are saved on resources
-     * will be decompressed. This has no effect on non-raw resources unless the
+     * If true, then the buffers that are saved on resources will be
+     * decompressed. This has no effect on non-raw resources unless the
      * `saveBuffer` option is also enabled. False by default.
      * 
      * Recommended when extracting resources to write them to disk individually.
@@ -49,9 +49,9 @@ export interface PackageFileReadingOptions extends
     decompressBuffers: boolean;
 
     /**
-     * (For packages only) If true, then all resources in the package will be
-     * loaded raw (i.e. just a buffer) rather than being fully parsed into their
-     * respective models. False by default.
+     * If true, then all resources in the package will be loaded raw (i.e. just
+     * a buffer) rather than being fully parsed into their respective models.
+     * False by default.
      * 
      * Note that raw resources remain in their original compression format by
      * default. If decompressed resources are needed (such as when extracting
@@ -60,9 +60,9 @@ export interface PackageFileReadingOptions extends
     loadRaw: boolean;
 
     /**
-     * (For packages only) If provided, then the only resources that will be
-     * loaded are those whose keys return true from this function. If not
-     * provided, then all resources are loaded.
+     * If provided, then the only resources that will be loaded are those whose
+     * keys return true from this function. If not provided, then all resources
+     * are loaded.
      * 
      * Recommended when extracting a certain type of resource from a package,
      * such as all string tables and nothing else.

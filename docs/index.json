@@ -70,11 +70,12 @@
     {
       "name": "types",
       "items": [
+        "BinaryFileReadingOptions",
         "CellCloneOptions",
         "CellEncodingOptions",
         "CellToXmlOptions",
-        "FileReadingOptions",
         "ObjectCellRow",
+        "PackageFileReadingOptions",
         "Resource",
         "ResourceEntry",
         "ResourceFilter",
