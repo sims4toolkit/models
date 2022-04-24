@@ -1,68 +1,72 @@
-import type { KeyStringPair } from "./types";
 import { fnv32 } from "@s4tk/hashing";
 import { CompressionType } from "@s4tk/compression";
+import type { KeyStringPair } from "./types";
 import { PrimitiveMappedModel } from "../../base/primitive-mapped-model";
 import Resource from "../resource";
 import { arraysAreEqual, promisify } from "../../common/helpers";
-import { FileReadingOptions } from "../../common/options";
+import { BinaryFileReadingOptions } from "../../common/options";
 import readStbl from "./serialization/read-stbl";
 import writeStbl from "./serialization/write-stbl";
 import EncodingType from "../../enums/encoding-type";
 import StringEntry from "./string-entry";
+import { WritableModelCreationOptions } from "../../base/writable-model";
+
+/** Arguments for SimDataResource's constructor. */
+interface StblResourceCreationOptions extends
+  WritableModelCreationOptions { };
+
+/** Arguments for SimDataResource `from()` methods. */
+interface StblResourceFromOptions extends
+  Omit<WritableModelCreationOptions, "initialBufferCache">,
+  BinaryFileReadingOptions { };
 
 /**
  * Model for string table (STBL) resources.
  */
 export default class StringTableResource extends PrimitiveMappedModel<string, StringEntry> implements Resource {
   readonly encodingType: EncodingType = EncodingType.STBL;
-  readonly compressionType: CompressionType = CompressionType.ZLIB;
-  readonly isCompressed: boolean = false;
 
   //#region Initialization
 
-  protected constructor(
-    entries?: KeyStringPair[],
-    saveBuffer?: boolean,
-    buffer?: Buffer
-  ) {
-    super(entries, saveBuffer, buffer);
-  }
-
   /**
-   * Creates a new StringTableResource instance with the given entries, if any.
-   * If no entries are provided, an empty STBL is created.
+   * Creates a new STBL resource from the given entries.
    * 
-   * @param entries Optional entries to create STBL with
+   * @param entries Entries to initialize the STBL model with
+   * @param options Object of options
    */
-  static create({ entries, saveBuffer }: {
-    entries?: KeyStringPair[];
-    saveBuffer?: boolean;
-  } = {}): StringTableResource { 
-    return new StringTableResource(entries, saveBuffer);
+  constructor(entries: KeyStringPair[] = [], options?: StblResourceCreationOptions) {
+    super(entries, options);
   }
 
   /**
-   * Reads the given buffer as a StringTableResource and returns it.
+   * Creates a STBL resource from a buffer containing binary data. This buffer
+   * is assumed to be uncompressed; providing a compressed buffer will lead to
+   * unexpected behavior.
    * 
    * @param buffer Buffer to read as a string table
-   * @param options Options for reading and cacheing the STBL
+   * @param options Object of options
    */
-  static from(buffer: Buffer, options?: FileReadingOptions): StringTableResource {
-    return new StringTableResource(
-      readStbl(buffer, options),
-      options?.saveBuffer,
-      buffer
-    );
+  static from(buffer: Buffer, options?: StblResourceFromOptions): StringTableResource {
+    return new StringTableResource(readStbl(buffer, options), {
+      defaultCompressionType: options?.defaultCompressionType,
+      owner: options?.owner,
+      initialBufferCache: options?.saveBuffer ? {
+        buffer,
+        compressionType: CompressionType.Uncompressed,
+        sizeDecompressed: buffer.byteLength
+      } : undefined
+    });
   }
 
   /**
-   * Reads the given buffer as a StringTableResource asynchronously and returns
-   * a Promise that resolves with it.
+   * Asynchronously creates a STBL resource from a buffer containing binary
+   * data. This buffer is assumed to be uncompressed; providing a compressed
+   * buffer will lead to unexpected behavior.
    * 
    * @param buffer Buffer to read as a string table
-   * @param options Options for reading and cacheing the STBL
+   * @param options Object of options
    */
-  static async fromAsync(buffer: Buffer, options?: FileReadingOptions): Promise<StringTableResource> {
+  static async fromAsync(buffer: Buffer, options?: StblResourceFromOptions): Promise<StringTableResource> {
     return promisify(() => StringTableResource.from(buffer, options));
   }
 
@@ -90,8 +94,10 @@ export default class StringTableResource extends PrimitiveMappedModel<string, St
   }
 
   clone(): StringTableResource {
-    const buffer = this.isCached ? this.buffer : undefined;
-    return new StringTableResource(this.entries, this.saveBuffer, buffer);
+    return new StringTableResource(this.entries, {
+      defaultCompressionType: this.defaultCompressionType,
+      initialBufferCache: this._getBufferCache()
+    });
   }
 
   equals(other: StringTableResource): boolean {

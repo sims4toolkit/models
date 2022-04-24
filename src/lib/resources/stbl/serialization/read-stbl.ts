@@ -1,6 +1,6 @@
-import type { KeyStringPair } from "../types";
-import type { FileReadingOptions } from "../../../common/options";
 import { BinaryDecoder } from "@s4tk/encoding";
+import type { KeyStringPair } from "../types";
+import type { BinaryFileReadingOptions } from "../../../common/options";
 
 /**
  * Reads STBL content from the given buffer.
@@ -8,10 +8,12 @@ import { BinaryDecoder } from "@s4tk/encoding";
  * @param buffer Buffer to read as a STBL
  * @param options Options to configure
  */
-export default function readStbl(buffer: Buffer, options?: FileReadingOptions): KeyStringPair[] {
+export default function readStbl(buffer: Buffer, options?: BinaryFileReadingOptions): KeyStringPair[] {
   const decoder = new BinaryDecoder(buffer);
 
-  if (options === undefined || !options.ignoreErrors) {
+  if (options?.recoveryMode) {
+    decoder.skip(6);
+  } else {
     // mnFileIdentifier
     if (decoder.charsUtf8(4) !== "STBL")
       throw new Error("Not a string table.");
@@ -19,10 +21,8 @@ export default function readStbl(buffer: Buffer, options?: FileReadingOptions): 
     // mnVersion
     if (decoder.uint16() !== 5)
       throw new Error("Version must be 5.");
-  } else {
-    decoder.skip(6);
   }
-  
+
   decoder.skip(1); // mnCompressed
   const mnNumEntries = decoder.uint64();
   decoder.skip(2); // mReserved
