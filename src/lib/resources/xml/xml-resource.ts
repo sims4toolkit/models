@@ -6,7 +6,7 @@ import EncodingType from "../../enums/encoding-type";
 import { promisify } from "../../common/helpers";
 import type { BinaryFileReadingOptions } from "../../common/options";
 
-/** Arguments for `XmlResource.from()`. */
+/** Arguments for XmlResource `from()` methods. */
 export interface XmlResourceFromOptions extends
   WritableModelCreationOptions,
   BinaryFileReadingOptions,
