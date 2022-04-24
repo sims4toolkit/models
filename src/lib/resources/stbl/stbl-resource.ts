@@ -1,5 +1,5 @@
 import { fnv32 } from "@s4tk/hashing";
-import { CompressionType } from "@s4tk/compression";
+import { CompressedBuffer, CompressionType } from "@s4tk/compression";
 import type { KeyStringPair } from "./types";
 import { PrimitiveMappedModel } from "../../base/primitive-mapped-model";
 import Resource from "../resource";
@@ -17,7 +17,7 @@ interface StblResourceCreationOptions extends
 
 /** Arguments for SimDataResource `from()` methods. */
 interface StblResourceFromOptions extends
-  Omit<WritableModelCreationOptions, "initialBufferCache">,
+  StblResourceCreationOptions,
   BinaryFileReadingOptions { };
 
 /**
@@ -47,14 +47,17 @@ export default class StringTableResource extends PrimitiveMappedModel<string, St
    * @param options Object of options
    */
   static from(buffer: Buffer, options?: StblResourceFromOptions): StringTableResource {
+    let initialBufferCache: CompressedBuffer;
+    if (options?.saveBuffer) initialBufferCache = options?.initialBufferCache ?? {
+      buffer,
+      compressionType: CompressionType.Uncompressed,
+      sizeDecompressed: buffer.byteLength
+    };
+
     return new StringTableResource(readStbl(buffer, options), {
       defaultCompressionType: options?.defaultCompressionType,
       owner: options?.owner,
-      initialBufferCache: options?.saveBuffer ? {
-        buffer,
-        compressionType: CompressionType.Uncompressed,
-        sizeDecompressed: buffer.byteLength
-      } : undefined
+      initialBufferCache
     });
   }
 

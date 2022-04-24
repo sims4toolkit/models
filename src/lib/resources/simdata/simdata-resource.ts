@@ -19,7 +19,7 @@ interface SimDataResourceCreationOptions extends
 
 /** Arguments for SimDataResource `from()` methods. */
 interface SimDataResourceFromOptions extends
-  Omit<WritableModelCreationOptions, "initialBufferCache">,
+  WritableModelCreationOptions,
   BinaryFileReadingOptions { };
 
 /**
@@ -98,7 +98,7 @@ export default class SimDataResource extends WritableModel implements Resource, 
     const dto: SimDataResourceCreationOptions = readData(buffer, options);
     dto.defaultCompressionType = options?.defaultCompressionType;
     dto.owner = options?.owner;
-    if (options?.saveBuffer) dto.initialBufferCache = {
+    if (options?.saveBuffer) dto.initialBufferCache = options.initialBufferCache ?? {
       buffer,
       compressionType: CompressionType.Uncompressed,
       sizeDecompressed: buffer.byteLength

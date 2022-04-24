@@ -1,4 +1,4 @@
-import { CompressionType } from "@s4tk/compression";
+import { CompressedBuffer, CompressionType } from "@s4tk/compression";
 import { XmlDocumentNode, XmlNode } from "@s4tk/xml-dom";
 import WritableModel, { WritableModelCreationOptions } from "../../base/writable-model";
 import Resource from "../resource";
@@ -12,7 +12,7 @@ interface XmlResourceCreationOptions extends
 
 /** Arguments for `XmlResource.from()`. */
 interface XmlResourceFromOptions extends
-  Omit<XmlResourceCreationOptions, "initialBufferCache">,
+  XmlResourceCreationOptions,
   BinaryFileReadingOptions,
   Partial<{
     /** How the provided buffer is encoded. UTF8 by default. */
@@ -106,14 +106,17 @@ export default class XmlResource extends WritableModel implements Resource {
    * @param options Object of optional arguments
    */
   static from(buffer: Buffer, options?: XmlResourceFromOptions): XmlResource {
+    let initialBufferCache: CompressedBuffer;
+    if (options?.saveBuffer) initialBufferCache = options?.initialBufferCache ?? {
+      buffer,
+      compressionType: CompressionType.Uncompressed,
+      sizeDecompressed: buffer.byteLength
+    };
+
     return new XmlResource(buffer.toString(options?.bufferEncoding ?? "utf8"), null, {
       defaultCompressionType: options?.defaultCompressionType,
-      initialBufferCache: options?.saveBuffer ? {
-        buffer,
-        compressionType: CompressionType.Uncompressed,
-        sizeDecompressed: buffer.byteLength
-      } : undefined,
-      owner: options?.owner
+      owner: options?.owner,
+      initialBufferCache,
     });
   }
 
