@@ -34,7 +34,7 @@ export default class StringTableResource extends PrimitiveMappedModel<string, St
    * @param entries Entries to initialize the STBL model with
    * @param options Object of options
    */
-  constructor(entries: KeyStringPair[] = [], options?: StblResourceCreationOptions) {
+  constructor(entries?: KeyStringPair[], options?: StblResourceCreationOptions) {
     super(entries, options);
   }
 
