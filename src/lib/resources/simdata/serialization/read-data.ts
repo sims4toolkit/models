@@ -1,6 +1,6 @@
-import type { FileReadingOptions } from "../../../common/options";
-import type { ObjectCellRow, SimDataDto } from "../types";
 import { BinaryDecoder } from "@s4tk/encoding";
+import type { BinaryFileReadingOptions } from "../../../common/options";
+import type { ObjectCellRow, SimDataDto, SimDataVersion } from "../types";
 import { makeList } from "../../../common/helpers";
 import { SimDataSchema, SimDataSchemaColumn, SimDataInstance } from "../fragments";
 import * as cells from "../cells";
@@ -88,7 +88,7 @@ function getTableInfo(mTable: BinaryTableInfo[], position: number): BinaryTableI
 
   if (tableInfo === undefined)
     throw new Error(`Position ${position} is not located in a TableData.`);
-  
+
   return tableInfo;
 }
 
@@ -185,9 +185,9 @@ function readSchema(decoder: BinaryDecoder): BinarySchema {
  * @param buffer Buffer to read
  * @param options Options for reading
  */
-export default function readData(buffer: Buffer, options?: FileReadingOptions): SimDataDto {
+export default function readData(buffer: Buffer, options?: BinaryFileReadingOptions): SimDataDto {
   const decoder = new BinaryDecoder(buffer);
-  const throwErrors = options === undefined || !options.ignoreErrors;
+  const throwErrors = options === undefined || !options.recoveryMode;
 
   //#region Cell Helpers
 
@@ -198,7 +198,7 @@ export default function readData(buffer: Buffer, options?: FileReadingOptions): 
     const childCell: cells.Cell = (dataType === DataType.Object) ?
       readObjectCell(getTableInfo(mTable, decoder.tell())) :
       readCell(dataType);
-    
+
     return new cells.VariantCell(typeHash, childCell);
   }
 
@@ -301,7 +301,7 @@ export default function readData(buffer: Buffer, options?: FileReadingOptions): 
         return cells.ResourceKeyCell.decode(decoder);
       case DataType.Undefined:
         throw new Error(`Cannot get value for data type ${dataType}`);
-      default: 
+      default:
         return readCellFromPointer(dataType);
     }
   }
@@ -359,7 +359,7 @@ export default function readData(buffer: Buffer, options?: FileReadingOptions): 
   //#endregion Main Content
 
   return {
-    version: mnVersion,
+    version: mnVersion as SimDataVersion,
     unused: mUnused,
     schemas,
     instances
