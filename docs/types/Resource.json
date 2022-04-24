@@ -33,7 +33,7 @@
           "type": {
             "name": "CompressionType",
             "path": {
-              "pkg": "models",
+              "pkg": "compression",
               "group": "enums",
               "item": "CompressionType"
             }
