@@ -13,12 +13,12 @@ import EncodingType from "../../enums/encoding-type";
 import { CompressionType } from "@s4tk/compression";
 
 /** Arguments for SimDataResource's constructor. */
-interface SimDataResourceCreationOptions extends
+export interface SimDataResourceCreationOptions extends
   WritableModelCreationOptions,
   SimDataDto { };
 
 /** Arguments for SimDataResource `from()` methods. */
-interface SimDataResourceFromOptions extends
+export interface SimDataResourceFromOptions extends
   WritableModelCreationOptions,
   BinaryFileReadingOptions { };
 

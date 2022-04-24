@@ -7,7 +7,7 @@ import { promisify } from "../../common/helpers";
 import type { BinaryFileReadingOptions } from "../../common/options";
 
 /** Arguments for `XmlResource.from()`. */
-interface XmlResourceFromOptions extends
+export interface XmlResourceFromOptions extends
   WritableModelCreationOptions,
   BinaryFileReadingOptions,
   Partial<{

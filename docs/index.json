@@ -76,6 +76,7 @@
         "CellToXmlOptions",
         "ObjectCellRow",
         "PackageFileReadingOptions",
+        "RawResourceCreationOptions",
         "Resource",
         "ResourceEntry",
         "ResourceFilter",
@@ -83,8 +84,13 @@
         "ResourceKeyPair",
         "SimDataBigInt",
         "SimDataNumber",
+        "SimDataResourceCreationOptions",
+        "SimDataResourceFromOptions",
         "SimDataText",
-        "StringEntry"
+        "StblResourceFromOptions",
+        "StringEntry",
+        "WritableModelCreationOptions",
+        "XmlResourceFromOptions"
       ]
     }
   ]

@@ -5,7 +5,7 @@ import { bufferContainsXml, promisify } from '../../common/helpers';
 import { CompressedBuffer, CompressionType } from '@s4tk/compression';
 
 /**  Optional arguments for initializing RawResources. */
-interface RawResourceCreationOptions extends
+export interface RawResourceCreationOptions extends
   Omit<WritableModelCreationOptions, "initialBufferCache">,
   Partial<{
     /** Why this resource is loaded raw. Used for debugging. */

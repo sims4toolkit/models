@@ -13,8 +13,7 @@ export type WritableModelCreationOptions = Partial<{
   defaultCompressionType: CompressionType;
 
   /**
-   * The initial buffer to save on this model. It is only saved if `saveBuffer`
-   * is true, unless otherwise specified.
+   * The initial buffer to save on this model.
    */
   initialBufferCache: CompressedBuffer;
 

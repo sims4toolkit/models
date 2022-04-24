@@ -12,7 +12,7 @@ import StringEntry from "./string-entry";
 import { WritableModelCreationOptions } from "../../base/writable-model";
 
 /** Arguments for SimDataResource `from()` methods. */
-interface StblResourceFromOptions extends
+export interface StblResourceFromOptions extends
   WritableModelCreationOptions,
   BinaryFileReadingOptions { };
 
