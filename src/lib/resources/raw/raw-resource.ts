@@ -6,7 +6,7 @@ import { CompressedBuffer, CompressionType } from '@s4tk/compression';
 
 /**  Optional arguments for initializing RawResources. */
 interface RawResourceCreationOptions extends
-  Omit<WritableModelCreationOptions, "initialBufferCache">,
+  Omit<WritableModelCreationOptions, "saveBuffer">,
   Partial<{
     /** Why this resource is loaded raw. Used for debugging. */
     reason: string;
@@ -32,11 +32,7 @@ export default class RawResource extends WritableModel implements Resource {
    * @param options Object containing optional arguments.
    */
   constructor(bufferWrapper: CompressedBuffer, options?: RawResourceCreationOptions) {
-    const superOptions: WritableModelCreationOptions = {
-      initialBufferCache: bufferWrapper
-    };
-
-    super(Object.assign(superOptions, options));
+    super(bufferWrapper, Object.assign({ saveBuffer: true }, options));
     this.reason = options?.reason;
   }
 
@@ -49,13 +45,11 @@ export default class RawResource extends WritableModel implements Resource {
    * @param options Object containing optional arguments
    */
   static from(buffer: Buffer, options?: RawResourceCreationOptions): RawResource {
-    const wrapper: CompressedBuffer = {
+    return new RawResource({
       buffer,
       compressionType: CompressionType.Uncompressed,
       sizeDecompressed: buffer.byteLength
-    };
-
-    return new RawResource(wrapper, options);
+    }, options);
   }
 
   //#endregion Initialization

@@ -1,3 +1,4 @@
+import { CompressedBuffer } from "@s4tk/compression";
 import WritableModel, { WritableModelCreationOptions } from "./writable-model";
 
 /**
@@ -26,9 +27,10 @@ export abstract class MappedModel<Key, Value, Entry extends MappedModelEntry<Key
 
   protected constructor(
     entries: { key: Key; value: Value; }[],
+    initialBufferCache?: CompressedBuffer,
     options?: WritableModelCreationOptions,
   ) {
-    super(options);
+    super(initialBufferCache, options);
     this._entryMap = new Map();
     this._keyMap = new Map();
     this._initializeEntries(entries);

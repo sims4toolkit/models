@@ -8,21 +8,20 @@ import { promisify } from "../common/helpers";
 export type WritableModelCreationOptions = Partial<{
   /**
    * How this model's buffer should be compressed by default. If not supplied,
-   * then CompressionType.Uncompressed is assumed.
+   * then `CompressionType.Uncompressed` is assumed.
    */
   defaultCompressionType: CompressionType;
-
-  /**
-   * The initial cache to use for this model's buffer. This will not be cleared
-   * until a change is detected.
-   */
-  initialBufferCache: CompressedBuffer;
 
   /**
    * The model that contains this one. The owner is notified whenever the child
    * model is changed, and will uncache its buffer.
    */
   owner: ApiModelBase;
+
+  /**
+   * Whether or not to cache the initial buffer for this model. False by default.
+   */
+  saveBuffer: boolean;
 }>;
 
 /**
@@ -57,10 +56,15 @@ export default abstract class WritableModel extends ApiModelBase {
 
   //#region Initialization
 
-  protected constructor(options?: WritableModelCreationOptions) {
+  protected constructor(
+    initialBufferCache?: CompressedBuffer,
+    options?: WritableModelCreationOptions
+  ) {
     super(options?.owner);
     this._defaultCompressionType = options?.defaultCompressionType ?? CompressionType.Uncompressed;
-    if (options?.initialBufferCache) this._bufferCache = options.initialBufferCache;
+    if (initialBufferCache && options?.saveBuffer)
+      // this looks a lil weird, but it's mainly for subclasses
+      this._bufferCache = initialBufferCache;
   }
 
   //#endregion Initialization
