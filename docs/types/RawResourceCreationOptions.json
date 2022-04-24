@@ -1,0 +1,58 @@
+{
+  "$schema": "https://raw.githubusercontent.com/sims4toolkit/misc/main/json-schemas/docs-item-schema.json",
+  "imports": [
+    "import type { RawResourceCreationOptions } from \"@s4tk/models/types\"; // TypeScript only"
+  ],
+  "header": {
+    "title": {
+      "prefix": "interface",
+      "name": "RawResourceCreationOptions",
+      "extends": [
+        {
+          "name": "WritableModelCreationOptions",
+          "path": {
+            "pkg": "models",
+            "group": "types",
+            "item": "WritableModelCreationOptions"
+          }
+        }
+      ]
+    },
+    "description": "Optional arguments for initializing RawResources.",
+    "sourceCode": "src/lib/resources/raw/raw-resource.ts"
+  },
+  "sections": [
+    {
+      "title": "Properties",
+      "content": [
+        {
+          "displayType": "property",
+          "name": "reason",
+          "optional": true,
+          "description": "Why this resource is loaded raw. Used for debugging.",
+          "type": {
+            "name": "string"
+          }
+        },
+        {
+          "displayType": "general",
+          "paragraphs": [
+            "Prohibits the `initialBufferCache` property inherited from WritableModelCreationOptions.If provided, it will be disregarded."
+          ]
+        }
+      ]
+    }
+  ],
+  "footer": {
+    "seeAlso": [
+      {
+        "name": "RawResource",
+        "path": {
+          "pkg": "models",
+          "group": "resources",
+          "item": "RawResource"
+        }
+      }
+    ]
+  }
+}
