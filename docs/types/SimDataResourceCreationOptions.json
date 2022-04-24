@@ -1,0 +1,57 @@
+{
+  "$schema": "https://raw.githubusercontent.com/sims4toolkit/misc/main/json-schemas/docs-item-schema.json",
+  "imports": [
+    "import type { SimDataResourceCreationOptions } from \"@s4tk/models/types\"; // TypeScript only"
+  ],
+  "header": {
+    "title": {
+      "prefix": "interface",
+      "name": "SimDataResourceCreationOptions",
+      "extends": [
+        {
+          "name": "WritableModelCreationOptions",
+          "path": {
+            "pkg": "models",
+            "group": "types",
+            "item": "WritableModelCreationOptions"
+          }
+        },
+        {
+          "name": "SimDataDto",
+          "path": {
+            "pkg": "models",
+            "group": "types",
+            "item": "SimDataDto"
+          }
+        }
+      ]
+    },
+    "description": "Arguments for SimDataResource's constructor.",
+    "sourceCode": "src/lib/resources/simdata/simdata-resource.ts"
+  },
+  "sections": [
+    {
+      "title": "Information",
+      "content": [
+        {
+          "displayType": "general",
+          "paragraphs": [
+            "The only properties on this object are those that it inherits."
+          ]
+        }
+      ]
+    }
+  ],
+  "footer": {
+    "seeAlso": [
+      {
+        "name": "SimDataResource",
+        "path": {
+          "pkg": "models",
+          "group": "resources",
+          "item": "SimDataResource"
+        }
+      }
+    ]
+  }
+}
