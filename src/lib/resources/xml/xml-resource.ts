@@ -1,24 +1,21 @@
+import { CompressionType } from "@s4tk/compression";
 import { XmlDocumentNode, XmlNode } from "@s4tk/xml-dom";
-import WritableModel, { WritableModelConstructorArguments } from "../../base/writable-model";
+import WritableModel, { WritableModelCreationOptions } from "../../base/writable-model";
 import Resource from "../resource";
 import EncodingType from "../../enums/encoding-type";
-import { FileReadingOptions } from "../../common/options";
 import { promisify } from "../../common/helpers";
 
-/** Additional arguments specific to XML resources. */
-type XmlResourceAdditionalArguments = Partial<{
-  /** Initial XML content as a string. Do NOT supply if DOM is already given. */
-  content?: string;
-
-  /** Initial DOM to use. Do NOT supply if content is already given. */
-  dom?: XmlDocumentNode;
-}>;
-
-/** Arguments for `XmlResource`'s constructor. */
-interface XmlResourceConstructorArguments extends WritableModelConstructorArguments, XmlResourceAdditionalArguments { };
+/** Arguments for XmlResource's constructor. */
+interface XmlResourceCreationOptions extends
+  WritableModelCreationOptions { };
 
 /** Arguments for `XmlResource.from()`. */
-interface XmlResourceFromOptions extends Omit<WritableModelConstructorArguments, "initialBufferCache"> { };
+interface XmlResourceFromOptions extends
+  Omit<XmlResourceCreationOptions, "initialBufferCache">,
+  Partial<{
+    /** How the provided buffer is encoded. UTF8 by default. */
+    bufferEncoding: BufferEncoding;
+  }> { };
 
 /**
  * Model for a plain text, XML resource. This does not necessarily need to be
@@ -79,29 +76,41 @@ export default class XmlResource extends WritableModel implements Resource {
   //#region Initialization
 
   /**
-   * Creates a new XML resource with the given content. If no content is
-   * given, the tuning resource is blank. It is recommended to supply just
-   * XML content or a DOM, but not both.
-   * 
-   * @param args Object containing initial content and options
+   * Creates a new XML resource with the given content or DOM. If no content or
+   * DOM is given, the tuning resource is blank. Supply just XML content *or* a
+   * DOM, but not both, or else an exception will occur.
+   *
+   * @param content XML content of this resource as a string
+   * @param dom DOM of this resource's XML contents
+   * @param options Object of optional arguments
    */
-  constructor(args: XmlResourceConstructorArguments) {
-    super(args);
-    this._content = args.content;
-    this._dom = args.dom;
+  constructor(content: string = "", dom?: XmlDocumentNode, options?: XmlResourceCreationOptions) {
+    super(options);
+
+    if (dom) {
+      if (content) throw new Error("Cannot initialize XmlResource with both content and DOM.");
+      this._dom = dom;
+    } else {
+      this._content = content;
+    }
   }
 
   /**
-   * Creates an XML resource from a buffer containing XML.
+   * Creates an XML resource from a buffer containing XML. This buffer is
+   * assumed to be uncompressed; providing a compressed buffer will lead to
+   * unexpected behavior.
    * 
-   * @param buffer Buffer to create an XML resource from
-   * @param options Optional arguments for the XML resource
+   * @param buffer Uncompressed fuffer to create an XML resource from
+   * @param options Object of optional arguments
    */
   static from(buffer: Buffer, options?: XmlResourceFromOptions): XmlResource {
-    // FIXME: cacheing buffer? add options
-    return new XmlResource({
-      content: buffer.toString("utf-8"),
+    return new XmlResource(buffer.toString(options?.bufferEncoding ?? "utf8"), null, {
       defaultCompressionType: options?.defaultCompressionType,
+      initialBufferCache: {
+        buffer,
+        compressionType: CompressionType.Uncompressed,
+        sizeDecompressed: buffer.byteLength
+      },
       owner: options?.owner
     });
   }
@@ -121,8 +130,7 @@ export default class XmlResource extends WritableModel implements Resource {
   //#region Public Methods
 
   clone(): XmlResource {
-    return new XmlResource({
-      content: this.content,
+    return new XmlResource(this.content, null, {
       defaultCompressionType: this.defaultCompressionType,
       initialBufferCache: this._getBufferCache()
     });
