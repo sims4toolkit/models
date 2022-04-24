@@ -86,19 +86,6 @@ export default class SimDataResource extends WritableModel implements Resource, 
     this._watchProps('version', 'unused');
   }
 
-  clone(): SimDataResource {
-    const newSchemas = this.schemas.map(s => s.clone());
-    const newInstances = this.instances.map(i => i.clone({ newSchemas }));
-    return new SimDataResource({
-      version: this.version,
-      unused: this.unused,
-      schemas: newSchemas,
-      instances: newInstances,
-      initialBufferCache: this._getBufferCache(),
-      defaultCompressionType: this.defaultCompressionType,
-    });
-  }
-
   /**
    * Creates an SimData resource from a buffer containing binary SimData data.
    * This buffer is assumed to be uncompressed; providing a compressed buffer
@@ -205,6 +192,19 @@ export default class SimDataResource extends WritableModel implements Resource, 
   //#endregion Initialization
 
   //#region Public Methods
+
+  clone(): SimDataResource {
+    const newSchemas = this.schemas.map(s => s.clone());
+    const newInstances = this.instances.map(i => i.clone({ newSchemas }));
+    return new SimDataResource({
+      version: this.version,
+      unused: this.unused,
+      schemas: newSchemas,
+      instances: newInstances,
+      initialBufferCache: this._getBufferCache(),
+      defaultCompressionType: this.defaultCompressionType,
+    });
+  }
 
   equals(other: SimDataResource): boolean {
     if (!(other instanceof SimDataResource)) return false;
