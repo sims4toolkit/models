@@ -4,7 +4,7 @@ import type { BinaryFileReadingOptions } from "../../common/options";
 import Resource from "../resource";
 import { arraysAreEqual, promisify, removeFromArray } from "../../common/helpers";
 import { SimDataInstance, SimDataSchema } from "./fragments";
-import { SimDataDto, SimDataVersion } from "./types";
+import { SimDataDto } from "./types";
 import { SUPPORTED_VERSION } from "./constants";
 import readData from "./serialization/read-data";
 import writeData from "./serialization/write-data";
@@ -32,7 +32,7 @@ interface SimDataResourceFromOptions extends
  */
 export default class SimDataResource extends WritableModel implements Resource, SimDataDto {
   readonly encodingType: EncodingType = EncodingType.DATA;
-  public version: SimDataVersion;
+  public version: number;
   public unused: number;
   private _schemas: SimDataSchema[];
   private _instances: SimDataInstance[];
@@ -152,18 +152,19 @@ export default class SimDataResource extends WritableModel implements Resource, 
    */
   static fromXmlDocument(doc: XmlDocumentNode, options?: SimDataResourceFromOptions): SimDataResource {
     const dom = doc.child;
+    const canThrow = !(options?.recoveryMode);
 
-    if (!dom || dom.tag !== "SimData")
+    if (canThrow && (!dom || dom.tag !== "SimData"))
       throw new Error(`Expected <SimData>, but got <${dom.tag}>`);
 
     const args: SimDataResourceCreationOptions = {};
 
-    args.version = parseInt(dom.attributes.version, 16) as SimDataVersion;
-    if (!(options?.recoveryMode) && (args.version < 0x100 || args.version > 0x101))
-      throw new Error(`Expected version to be 0x100-0x101, got ${args.version}`);
+    args.version = parseInt(dom.attributes.version, 16);
+    if (canThrow && (args.version < 0x100 || args.version > SUPPORTED_VERSION))
+      throw new Error(`Received unexpected version number: ${args.version}`);
 
     args.unused = parseInt(dom.attributes.u, 16);
-    if (!(options?.recoveryMode) && Number.isNaN(args.unused))
+    if (canThrow && Number.isNaN(args.unused))
       throw new Error(`Expected unused to be a number, got ${dom.attributes.u}`);
 
     const schemasNode = dom.children.find(node => node.tag === "Schemas");

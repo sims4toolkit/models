@@ -2,16 +2,11 @@ import type { Cell } from "./cells";
 import type { SimDataInstance, SimDataSchema } from "./fragments";
 
 /**
- * Valid versions for SimData binaries.
- */
-export type SimDataVersion = 0x100 | 0x101;
-
-/**
  * A transfer object for SimData models.
  */
 export interface SimDataDto extends Partial<{
   /** The version of SimData being loaded. */
-  version: SimDataVersion;
+  version: number;
 
   /** The unused number (usually matches the pack group). */
   unused: number;

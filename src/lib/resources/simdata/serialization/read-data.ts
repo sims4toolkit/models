@@ -1,6 +1,6 @@
 import { BinaryDecoder } from "@s4tk/encoding";
 import type { BinaryFileReadingOptions } from "../../../common/options";
-import type { ObjectCellRow, SimDataDto, SimDataVersion } from "../types";
+import type { ObjectCellRow, SimDataDto } from "../types";
 import { makeList } from "../../../common/helpers";
 import { SimDataSchema, SimDataSchemaColumn, SimDataInstance } from "../fragments";
 import * as cells from "../cells";
@@ -359,7 +359,7 @@ export default function readData(buffer: Buffer, options?: BinaryFileReadingOpti
   //#endregion Main Content
 
   return {
-    version: mnVersion as SimDataVersion,
+    version: mnVersion,
     unused: mUnused,
     schemas,
     instances
