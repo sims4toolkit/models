@@ -23,11 +23,6 @@ export type WritableModelCreationOptions = Partial<{
    * model is changed, and will uncache its buffer.
    */
   owner: ApiModelBase;
-
-  /**
-   * Whether or not to cache the initial buffer for this model. False by default.
-   */
-  saveBuffer: boolean;
 }>;
 
 /**
@@ -65,9 +60,7 @@ export default abstract class WritableModel extends ApiModelBase {
   protected constructor(options?: WritableModelCreationOptions) {
     super(options?.owner);
     this._defaultCompressionType = options?.defaultCompressionType ?? CompressionType.Uncompressed;
-    if (options?.initialBufferCache && options?.saveBuffer)
-      // this is a lil weird, but it's just to make it easier for subclasses
-      this._bufferCache = options.initialBufferCache;
+    if (options?.initialBufferCache) this._bufferCache = options.initialBufferCache;
   }
 
   //#endregion Initialization

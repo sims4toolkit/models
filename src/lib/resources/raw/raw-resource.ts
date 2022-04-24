@@ -6,7 +6,7 @@ import { CompressedBuffer, CompressionType } from '@s4tk/compression';
 
 /**  Optional arguments for initializing RawResources. */
 interface RawResourceCreationOptions extends
-  Omit<WritableModelCreationOptions, "initialBufferCache" | "saveBuffer">,
+  Omit<WritableModelCreationOptions, "initialBufferCache">,
   Partial<{
     /** Why this resource is loaded raw. Used for debugging. */
     reason: string;
@@ -32,11 +32,7 @@ export default class RawResource extends WritableModel implements Resource {
    * @param options Object containing optional arguments.
    */
   constructor(bufferWrapper: CompressedBuffer, options?: RawResourceCreationOptions) {
-    super(Object.assign({
-      initialBufferCache: bufferWrapper,
-      saveBuffer: true,
-    }, options));
-
+    super(Object.assign({ initialBufferCache: bufferWrapper }, options));
     this.reason = options?.reason;
   }
 
