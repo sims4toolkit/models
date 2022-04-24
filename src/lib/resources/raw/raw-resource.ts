@@ -1,7 +1,7 @@
 import type Resource from '../resource';
 import WritableModel, { WritableModelCreationOptions } from '../../base/writable-model';
 import EncodingType from '../../enums/encoding-type';
-import { bufferContainsXml } from '../../common/helpers';
+import { bufferContainsXml, promisify } from '../../common/helpers';
 import { CompressedBuffer, CompressionType } from '@s4tk/compression';
 
 /**  Optional arguments for initializing RawResources. */
@@ -52,6 +52,18 @@ export default class RawResource extends WritableModel implements Resource {
     }, options);
   }
 
+  /**
+   * Asynchronously creates a new RawResource from the given buffer. The buffer
+   * is assumed to be uncompressed; passing in a compressed buffer can lead to
+   * unexpected behavior.
+   * 
+   * @param buffer The decompressed buffer for this RawResource
+   * @param options Object containing optional arguments
+   */
+  static async fromAsync(buffer: Buffer, options?: RawResourceCreationOptions): Promise<RawResource> {
+    return promisify(() => RawResource.from(buffer, options));
+  }
+
   //#endregion Initialization
 
   //#region Public Methods
@@ -60,7 +72,6 @@ export default class RawResource extends WritableModel implements Resource {
     return new RawResource(this._getBufferCache(), {
       defaultCompressionType: this.defaultCompressionType,
       reason: this.reason,
-      owner: this.owner
     });
   }
 
