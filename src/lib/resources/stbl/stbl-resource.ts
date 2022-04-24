@@ -11,13 +11,9 @@ import EncodingType from "../../enums/encoding-type";
 import StringEntry from "./string-entry";
 import { WritableModelCreationOptions } from "../../base/writable-model";
 
-/** Arguments for SimDataResource's constructor. */
-interface StblResourceCreationOptions extends
-  WritableModelCreationOptions { };
-
 /** Arguments for SimDataResource `from()` methods. */
 interface StblResourceFromOptions extends
-  StblResourceCreationOptions,
+  WritableModelCreationOptions,
   BinaryFileReadingOptions { };
 
 /**
@@ -34,7 +30,7 @@ export default class StringTableResource extends PrimitiveMappedModel<string, St
    * @param entries Entries to initialize the STBL model with
    * @param options Object of options
    */
-  constructor(entries?: KeyStringPair[], options?: StblResourceCreationOptions) {
+  constructor(entries?: KeyStringPair[], options?: WritableModelCreationOptions) {
     super(entries, options);
   }
 

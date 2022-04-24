@@ -6,13 +6,9 @@ import EncodingType from "../../enums/encoding-type";
 import { promisify } from "../../common/helpers";
 import type { BinaryFileReadingOptions } from "../../common/options";
 
-/** Arguments for XmlResource's constructor. */
-interface XmlResourceCreationOptions extends
-  WritableModelCreationOptions { };
-
 /** Arguments for `XmlResource.from()`. */
 interface XmlResourceFromOptions extends
-  XmlResourceCreationOptions,
+  WritableModelCreationOptions,
   BinaryFileReadingOptions,
   Partial<{
     /** How the provided buffer is encoded. UTF8 by default. */
@@ -86,7 +82,7 @@ export default class XmlResource extends WritableModel implements Resource {
    * @param dom DOM of this resource's XML contents
    * @param options Object of optional arguments
    */
-  constructor(content: string = "", dom?: XmlDocumentNode, options?: XmlResourceCreationOptions) {
+  constructor(content: string = "", dom?: XmlDocumentNode, options?: WritableModelCreationOptions) {
     super(options);
 
     if (dom) {
