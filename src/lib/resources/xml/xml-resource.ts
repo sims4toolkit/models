@@ -4,6 +4,7 @@ import WritableModel, { WritableModelCreationOptions } from "../../base/writable
 import Resource from "../resource";
 import EncodingType from "../../enums/encoding-type";
 import { promisify } from "../../common/helpers";
+import type { BinaryFileReadingOptions } from "../../common/options";
 
 /** Arguments for XmlResource's constructor. */
 interface XmlResourceCreationOptions extends
@@ -12,6 +13,7 @@ interface XmlResourceCreationOptions extends
 /** Arguments for `XmlResource.from()`. */
 interface XmlResourceFromOptions extends
   Omit<XmlResourceCreationOptions, "initialBufferCache">,
+  BinaryFileReadingOptions,
   Partial<{
     /** How the provided buffer is encoded. UTF8 by default. */
     bufferEncoding: BufferEncoding;
@@ -106,20 +108,22 @@ export default class XmlResource extends WritableModel implements Resource {
   static from(buffer: Buffer, options?: XmlResourceFromOptions): XmlResource {
     return new XmlResource(buffer.toString(options?.bufferEncoding ?? "utf8"), null, {
       defaultCompressionType: options?.defaultCompressionType,
-      initialBufferCache: {
+      initialBufferCache: options?.saveBuffer ? {
         buffer,
         compressionType: CompressionType.Uncompressed,
         sizeDecompressed: buffer.byteLength
-      },
+      } : undefined,
       owner: options?.owner
     });
   }
 
   /**
-   * Creates an XML resource from a buffer containing XML.
+   * Asynchronously creates an XML resource from a buffer containing XML. This
+   * buffer is assumed to be uncompressed; providing a compressed buffer will
+   * lead to unexpected behavior.
    * 
-   * @param buffer Buffer to create an XML resource from
-   * @param options Optional arguments for the XML resource
+   * @param buffer Uncompressed fuffer to create an XML resource from
+   * @param options Object of optional arguments
    */
   static async fromAsync(buffer: Buffer, options?: XmlResourceFromOptions): Promise<XmlResource> {
     return promisify(() => XmlResource.from(buffer, options));
