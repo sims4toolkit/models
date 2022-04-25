@@ -24,7 +24,7 @@ export interface SimDataResourceFromOptions extends
 
 /**
  * Model for SimData resources. While combined tuning is the same format, it is
- * NOT supported by this model. Use CombinedTuningResource instead.
+ * NOT supported by this model at this time.
  * 
  * SimDatas are mini relational databases, and to simplify working with them
  * (and for consistency with its XML format), this model uses the concept of
@@ -148,7 +148,7 @@ export default class SimDataResource extends WritableModel implements Resource, 
    * Creates a SimDataResource from an S4S-style XML document.
    * 
    * @param doc XML document from which to parse SimData
-   * @param options Options for reading and cacheing the SimData
+   * @param options Object of optional arguments
    */
   static fromXmlDocument(doc: XmlDocumentNode, options?: SimDataResourceFromOptions): SimDataResource {
     const dom = doc.child;
@@ -184,7 +184,7 @@ export default class SimDataResource extends WritableModel implements Resource, 
    * Asynchronously creates a SimDataResource from an S4S-style XML document.
    * 
    * @param doc XML document from which to parse SimData
-   * @param options Options for reading and cacheing the SimData
+   * @param options Object of optional arguments
    */
   static async fromXmlDocumentAsync(doc: XmlDocumentNode, options?: SimDataResourceFromOptions): Promise<SimDataResource> {
     return promisify(() => SimDataResource.fromXmlDocument(doc, options));
