@@ -3,7 +3,9 @@ import { XmlDocumentNode, XmlNode } from "@s4tk/xml-dom";
 import WritableModel, { WritableModelCreationOptions, WritableModelFromOptions } from "../../base/writable-model";
 import Resource from "../resource";
 import EncodingType from "../../enums/encoding-type";
-import { promisify } from "../../common/helpers";
+import { bufferContainsXml, promisify } from "../../common/helpers";
+import ResourceRegistry from "../../packages/resource-registry";
+import TuningResourceType from "../../enums/tuning-resources";
 
 /** Arguments for XmlResource `from()` methods. */
 export interface XmlResourceFromOptions extends
@@ -190,3 +192,8 @@ export default class XmlResource extends WritableModel implements Resource {
 
   //#endregion Protected Methods
 }
+
+ResourceRegistry.register(
+  XmlResource,
+  (type, buffer) => (type in TuningResourceType) || bufferContainsXml(buffer)
+);

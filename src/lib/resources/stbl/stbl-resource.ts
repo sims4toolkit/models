@@ -9,6 +9,8 @@ import writeStbl from "./serialization/write-stbl";
 import EncodingType from "../../enums/encoding-type";
 import StringEntry from "./string-entry";
 import { WritableModelCreationOptions, WritableModelFromOptions } from "../../base/writable-model";
+import ResourceRegistry from "../../packages/resource-registry";
+import BinaryResourceType from "../../enums/binary-resources";
 
 /**
  * Model for string table (STBL) resources.
@@ -115,3 +117,8 @@ export default class StringTableResource extends PrimitiveMappedModel<string, St
 
   //#region Protected Methods
 }
+
+ResourceRegistry.register(
+  StringTableResource,
+  type => type === BinaryResourceType.StringTable
+);

@@ -3,13 +3,9 @@ import { BinaryDecoder } from "@s4tk/encoding";
 import type Resource from "../../resources/resource";
 import type { PackageFileReadingOptions, ResourceFilter } from "../../common/options";
 import type { ResourceKeyPair, ResourceKey } from "../types";
-import { bufferContainsXml, makeList } from "../../common/helpers";
+import { makeList } from "../../common/helpers";
 import RawResource from "../../resources/raw/raw-resource";
-import BinaryResourceType from "../../enums/binary-resources";
-import TuningResourceType from "../../enums/tuning-resources";
-import StringTableResource from "../../resources/stbl/stbl-resource";
-import SimDataResource from "../../resources/simdata/simdata-resource";
-import XmlResource from "../../resources/xml/xml-resource";
+import ResourceRegistry from "../resource-registry";
 
 /**
  * Reads the given buffer as a DBPF and returns a DTO for it.
@@ -208,18 +204,15 @@ function getResource(entry: IndexEntry, rawBuffer: Buffer, options?: PackageFile
   };
 
   try {
-    // FIXME: this can definitely be abstracted
-    if (type === BinaryResourceType.StringTable) {
-      return StringTableResource.from(decompressedBuffer, resourceOptions);
-    } else if (type === BinaryResourceType.SimData) {
-      return SimDataResource.from(decompressedBuffer, resourceOptions);
-    } else if ((type in TuningResourceType) || bufferContainsXml(decompressedBuffer)) {
-      return XmlResource.from(decompressedBuffer, resourceOptions);
-    } else {
-      return new RawResource(bufferWrapper, {
-        reason: `Unrecognized non-XML type: ${type}`
-      });
-    }
+    const resource = ResourceRegistry.generateResourceFromBuffer(
+      type,
+      decompressedBuffer,
+      resourceOptions
+    );
+
+    return resource ? resource : new RawResource(bufferWrapper, {
+      reason: `Unregistered resource type: ${type}`
+    });
   } catch (e) {
     if (!(options?.recoveryMode)) throw e;
     return new RawResource(bufferWrapper, {

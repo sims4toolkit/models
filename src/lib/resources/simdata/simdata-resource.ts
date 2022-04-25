@@ -10,6 +10,8 @@ import writeData from "./serialization/write-data";
 import WritableModel, { WritableModelCreationOptions, WritableModelFromOptions } from "../../base/writable-model";
 import EncodingType from "../../enums/encoding-type";
 import { CompressionType } from "@s4tk/compression";
+import ResourceRegistry from "../../packages/resource-registry";
+import BinaryResourceType from "../../enums/binary-resources";
 
 /** Arguments for SimDataResource's constructor. */
 export interface SimDataResourceCreationOptions extends
@@ -295,3 +297,8 @@ export default class SimDataResource extends WritableModel implements Resource, 
 
   //#endregion Protected Methods
 }
+
+ResourceRegistry.register(
+  SimDataResource,
+  type => type === BinaryResourceType.SimData
+);
