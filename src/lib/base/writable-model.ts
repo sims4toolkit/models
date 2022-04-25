@@ -8,7 +8,7 @@ import { promisify } from "../common/helpers";
 export type WritableModelCreationOptions = Partial<{
   /**
    * How this model's buffer should be compressed by default. If not supplied,
-   * then `CompressionType.Uncompressed` is assumed.
+   * then `CompressionType.ZLIB` is assumed.
    */
   defaultCompressionType: CompressionType;
 
@@ -58,7 +58,7 @@ export default abstract class WritableModel extends ApiModelBase {
 
   protected constructor(options?: WritableModelCreationOptions) {
     super(options?.owner);
-    this._defaultCompressionType = options?.defaultCompressionType ?? CompressionType.Uncompressed;
+    this._defaultCompressionType = options?.defaultCompressionType ?? CompressionType.ZLIB;
     if (options?.initialBufferCache) this._bufferCache = options.initialBufferCache;
   }
 
