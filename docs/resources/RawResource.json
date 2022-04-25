@@ -81,7 +81,6 @@
     },
     {
       "title": "Initialization",
-      "description": "The constructor is not a part of the public API, and may be changed without warning. Avoid using it, favoring the static 'from' method instead. Note that there is no async variant of the 'from' method, since there is nothing to be done asynchronously - RawResource is essentially a wrapper for a plain Buffer.",
       "content": [
         {
           "displayType": "function",
