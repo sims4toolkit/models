@@ -152,7 +152,7 @@ function readDbpfIndex(decoder: BinaryDecoder, header: DbpfHeader, flags: DbpfFl
       entry.mnSizeDecompressed = decoder.uint32();
       if (isCompressed) entry.mnCompressionType = decoder.uint16();
       decoder.skip(2); // mnCommitted (uint16; 2 bytes)
-      if (entry.mnCompressionType === CompressionType.DeletedRecord) return; // FIXME: make this an option
+      if (entry.mnCompressionType === CompressionType.DeletedRecord) return; // TODO: make this an option
       return entry as IndexEntry;
     }
   }, true); // true to skip nulls/undefineds
@@ -174,19 +174,19 @@ function getResource(entry: IndexEntry, rawBuffer: Buffer, options?: PackageFile
       bufferWrapper = {
         buffer: decompressBuffer(rawBuffer, entry.mnCompressionType),
         compressionType: CompressionType.Uncompressed,
-        sizeDecompressed: this.buffer.byteLength
+        sizeDecompressed: entry.mnSizeDecompressed
       };
     } catch (e) {
       if (!(options?.recoveryMode)) throw e;
       rawReason = `Could not decompress "${entry.mnCompressionType} (${CompressionType[entry.mnCompressionType]})".`;
     }
+  } else {
+    bufferWrapper = {
+      buffer: rawBuffer,
+      compressionType: entry.mnCompressionType,
+      sizeDecompressed: entry.mnSizeDecompressed
+    };
   }
-
-  bufferWrapper ??= {
-    buffer: rawBuffer,
-    compressionType: entry.mnCompressionType,
-    sizeDecompressed: rawBuffer.byteLength
-  };
 
   if (options?.loadRaw || rawReason) {
     return new RawResource(bufferWrapper, {
@@ -208,6 +208,7 @@ function getResource(entry: IndexEntry, rawBuffer: Buffer, options?: PackageFile
   };
 
   try {
+    // FIXME: this can definitely be abstracted
     if (type === BinaryResourceType.StringTable) {
       return StringTableResource.from(decompressedBuffer, resourceOptions);
     } else if (type === BinaryResourceType.SimData) {
