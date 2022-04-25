@@ -1,8 +1,8 @@
+import { CompressedBuffer, CompressionType } from '@s4tk/compression';
 import type Resource from '../resource';
 import WritableModel, { WritableModelCreationOptions } from '../../base/writable-model';
 import EncodingType from '../../enums/encoding-type';
 import { bufferContainsXml, promisify } from '../../common/helpers';
-import { CompressedBuffer, CompressionType } from '@s4tk/compression';
 
 /**  Optional arguments for initializing RawResources. */
 export interface RawResourceCreationOptions extends
@@ -80,6 +80,7 @@ export default class RawResource extends WritableModel implements Resource {
   }
 
   isXml(): boolean {
+    // FIXME: consider compression?
     return bufferContainsXml(this.buffer);
   }
 
