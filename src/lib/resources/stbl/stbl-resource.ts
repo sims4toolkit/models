@@ -39,7 +39,7 @@ export default class StringTableResource extends PrimitiveMappedModel<string, St
    * is assumed to be uncompressed; providing a compressed buffer will lead to
    * unexpected behavior.
    * 
-   * @param buffer Buffer to read as a string table
+   * @param buffer Uncompressed buffer to read as a string table
    * @param options Object of options
    */
   static from(buffer: Buffer, options?: StblResourceFromOptions): StringTableResource {
