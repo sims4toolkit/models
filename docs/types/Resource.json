@@ -28,20 +28,6 @@
         {
           "displayType": "property",
           "prefix": "readonly",
-          "name": "compressionType",
-          "description": "How this resource is or should be compressed when written in a package. For all non-raw resources, this should always be ZLIB.",
-          "type": {
-            "name": "CompressionType",
-            "path": {
-              "pkg": "compression",
-              "group": "enums",
-              "item": "CompressionType"
-            }
-          }
-        },
-        {
-          "displayType": "property",
-          "prefix": "readonly",
           "name": "encodingType",
           "description": "How this resource is encoded.",
           "type": {
@@ -51,25 +37,6 @@
               "group": "enums",
               "item": "EncodingType"
             }
-          }
-        },
-        {
-          "displayType": "property",
-          "prefix": "readonly",
-          "name": "isCompressed",
-          "description": "True if this resource is permanently compressed in the format specified by 'compressionType'. Note that this property is true for uncompressed data if 'compressionType === CompressionType.Uncompressed'. This can only be true for raw resources; parsed resources are not responsible for their own compression.",
-          "type": {
-            "name": "boolean"
-          }
-        },
-        {
-          "displayType": "property",
-          "prefix": "readonly",
-          "name": "sizeDecompressed",
-          "optional": true,
-          "description": "(Only for resources that are permanently compressed; i.e. their 'isCompressed' property is true) The size of this resource in bytes when it is decompressed.",
-          "type": {
-            "name": "number"
           }
         }
       ]
