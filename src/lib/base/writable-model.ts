@@ -100,9 +100,8 @@ export default abstract class WritableModel extends ApiModelBase {
   }
 
   /**
-   * Generates an uncompressed buffer for this model asynchronously and returns
-   * it in a Promise. If an uncompressed buffer is available in the cache, it
-   * will be returned.
+   * Asynchronously returns an uncompressed buffer for this model. If an
+   * uncompressed buffer is available in the cache, it will be returned.
    * 
    * @param cache Whether or not the buffer that is returned by this method
    * should be cached. If the buffer is already cached, it will not be deleted
