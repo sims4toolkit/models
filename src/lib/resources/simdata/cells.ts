@@ -176,6 +176,53 @@ export abstract class Cell extends ApiModelBase {
       default:
         throw new Error(`Cannot parse a "${dataType}" node as a cell.`);
     }
+
+  }
+
+  /**
+   * Creates the appropriate cell for the given type and data.
+   * 
+   * @param dataType DataType of cell to create
+   * @param data Data to use in cell's constructor
+   */
+  static create(dataType: DataType, ...data: any[]): Cell {
+    switch (dataType) {
+      case DataType.Boolean:
+        return new BooleanCell(data[0]);
+      case DataType.Character:
+      case DataType.String:
+      case DataType.HashedString:
+        return new TextCell(dataType, data[0]);
+      case DataType.Int8:
+      case DataType.UInt8:
+      case DataType.Int16:
+      case DataType.UInt16:
+      case DataType.Int32:
+      case DataType.UInt32:
+      case DataType.LocalizationKey:
+      case DataType.Float:
+        return new NumberCell(dataType, data[0]);
+      case DataType.Int64:
+      case DataType.UInt64:
+      case DataType.TableSetReference:
+        return new BigIntCell(dataType, data[0]);
+      case DataType.Float2:
+        return new Float2Cell(data[0], data[1]);
+      case DataType.Float3:
+        return new Float3Cell(data[0], data[1], data[2]);
+      case DataType.Float4:
+        return new Float4Cell(data[0], data[1], data[2], data[3]);
+      case DataType.ResourceKey:
+        return new ResourceKeyCell(data[0], data[1], data[2]);
+      case DataType.Object:
+        return new ObjectCell(data[0], data[1]);
+      case DataType.Vector:
+        return new VectorCell(data[0]);
+      case DataType.Variant:
+        return new VariantCell(data[0], data[1]);
+      default:
+        throw new Error(`DataType "${dataType}" is not recognized.`);
+    }
   }
 
   //#endregion Static Methods

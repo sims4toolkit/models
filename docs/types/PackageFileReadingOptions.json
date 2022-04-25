@@ -1,0 +1,63 @@
+{
+  "$schema": "https://raw.githubusercontent.com/sims4toolkit/misc/main/json-schemas/docs-item-schema.json",
+  "imports": [
+    "import type { PackageFileReadingOptions } from \"@s4tk/models/types\"; // TypeScript only"
+  ],
+  "header": {
+    "title": {
+      "prefix": "interface",
+      "name": "PackageFileReadingOptions",
+      "extends": [
+        {
+          "name": "BinaryFileReadingOptions",
+          "path": {
+            "pkg": "models",
+            "group": "types",
+            "item": "BinaryFileReadingOptions"
+          }
+        }
+      ]
+    },
+    "description": "Object containing options to configure when loading a package model from a buffer.",
+    "sourceCode": "src/lib/common/options.ts"
+  },
+  "sections": [
+    {
+      "title": "Properties",
+      "content": [
+        {
+          "displayType": "property",
+          "name": "decompressBuffers",
+          "optional": true,
+          "description": "If true, then the buffers that are saved on resources will be decompressed. This has no effect on non-raw resources unless the saveBuffer option is also enabled. False by default.\n\nRecommended when extracting resources to write them to disk individually.",
+          "type": {
+            "name": "boolean"
+          }
+        },
+        {
+          "displayType": "property",
+          "name": "loadRaw",
+          "optional": true,
+          "description": "If true, then all resources in the package will be loaded raw (i.e. just a buffer) rather than being fully parsed into their respective models. False by default.\n\nNote that raw resources remain in their original compression format by default. If decompressed resources are needed (such as when extracting files to write to disk), set decompressBuffers: true as well.",
+          "type": {
+            "name": "boolean"
+          }
+        },
+        {
+          "displayType": "property",
+          "name": "resourceFilter",
+          "optional": true,
+          "description": "If provided, then the only resources that will be loaded are those whose keys return true from this function. If not provided, then all resources are loaded.\n\nRecommended when extracting a certain type of resource from a package, such as all string tables and nothing else.",
+          "type": {
+            "name": "ResourceFilter",
+            "path": {
+              "pkg": "models",
+              "group": "types",
+              "item": "ResourceFilter"
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

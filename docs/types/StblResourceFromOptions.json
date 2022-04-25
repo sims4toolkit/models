@@ -1,0 +1,57 @@
+{
+  "$schema": "https://raw.githubusercontent.com/sims4toolkit/misc/main/json-schemas/docs-item-schema.json",
+  "imports": [
+    "import type { StblResourceFromOptions } from \"@s4tk/models/types\"; // TypeScript only"
+  ],
+  "header": {
+    "title": {
+      "prefix": "interface",
+      "name": "StblResourceFromOptions",
+      "extends": [
+        {
+          "name": "WritableModelCreationOptions",
+          "path": {
+            "pkg": "models",
+            "group": "types",
+            "item": "WritableModelCreationOptions"
+          }
+        },
+        {
+          "name": "BinaryFileReadingOptions",
+          "path": {
+            "pkg": "models",
+            "group": "types",
+            "item": "BinaryFileReadingOptions"
+          }
+        }
+      ]
+    },
+    "description": "Arguments for StringTableResource `from()` methods.",
+    "sourceCode": "src/lib/resources/stbl/stbl-resource.ts"
+  },
+  "sections": [
+    {
+      "title": "Information",
+      "content": [
+        {
+          "displayType": "general",
+          "paragraphs": [
+            "The only properties on this object are those that it inherits."
+          ]
+        }
+      ]
+    }
+  ],
+  "footer": {
+    "seeAlso": [
+      {
+        "name": "StringTableResource",
+        "path": {
+          "pkg": "models",
+          "group": "resources",
+          "item": "StringTableResource"
+        }
+      }
+    ]
+  }
+}

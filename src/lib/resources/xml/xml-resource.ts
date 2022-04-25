@@ -1,19 +1,27 @@
+import { CompressedBuffer, CompressionType } from "@s4tk/compression";
 import { XmlDocumentNode, XmlNode } from "@s4tk/xml-dom";
-import WritableModel from "../../base/writable-model";
+import WritableModel, { WritableModelCreationOptions } from "../../base/writable-model";
 import Resource from "../resource";
 import EncodingType from "../../enums/encoding-type";
-import { FileReadingOptions } from "../../common/options";
 import { promisify } from "../../common/helpers";
-import CompressionType from "../../compression/compression-type";
+import type { BinaryFileReadingOptions } from "../../common/options";
+
+/** Arguments for XmlResource `from()` methods. */
+export interface XmlResourceFromOptions extends
+  WritableModelCreationOptions,
+  BinaryFileReadingOptions,
+  Partial<{
+    /** How the provided buffer is encoded. UTF8 by default. */
+    bufferEncoding: BufferEncoding;
+  }> { };
 
 /**
- * Model for a plain text, XML resource. This does not necessarily need to be
- * tuning, however, the XML DOM is tailored towards use with tuning.
+ * Model for a plain text, XML resource. This does not necessarily need to be 
+ * tuning (e.g. it can load XML-formatted SimDatas, ASMs, etc.), however, the
+ * XML DOM is tailored towards use with tuning.
  */
 export default class XmlResource extends WritableModel implements Resource {
   readonly encodingType: EncodingType = EncodingType.XML;
-  readonly compressionType: CompressionType = CompressionType.ZLIB;
-  readonly isCompressed: boolean = false;
   private _content?: string;
   private _dom?: XmlDocumentNode;
 
@@ -25,7 +33,6 @@ export default class XmlResource extends WritableModel implements Resource {
       throw new Error(`Failed to write XML for DOM:\n${e}`);
     }
   }
-
   set content(content: string) {
     this._content = content;
     delete this._dom;
@@ -46,7 +53,6 @@ export default class XmlResource extends WritableModel implements Resource {
       throw new Error(`Failed to generate DOM from XML:\n${e}`);
     }
   }
-
   set dom(dom: XmlDocumentNode) {
     this._dom = dom;
     delete this._content;
@@ -60,7 +66,6 @@ export default class XmlResource extends WritableModel implements Resource {
    * (EX: `resource.root = resource.root`).
    */
   get root(): XmlNode { return this.dom.child; }
-
   set root(node: XmlNode) {
     this.updateDom(dom => {
       dom.child = node;
@@ -69,63 +74,58 @@ export default class XmlResource extends WritableModel implements Resource {
 
   //#region Initialization
 
-  protected constructor(
-    content?: string,
-    dom?: XmlDocumentNode,
-    saveBuffer?: boolean,
-    buffer?: Buffer
-  ) {
-    super(saveBuffer, buffer);
-    this._content = content;
-    this._dom = dom;
+  /**
+   * Creates a new XML resource with the given content or DOM. If no content or
+   * DOM is given, the tuning resource is blank. Supply just XML content *or* a
+   * DOM, but not both, or else an exception will occur.
+   *
+   * @param content XML content of this resource as a string
+   * @param dom DOM of this resource's XML contents
+   * @param options Object of optional arguments
+   */
+  constructor(content: string = "", dom?: XmlDocumentNode, options?: WritableModelCreationOptions) {
+    super(options);
+
+    if (dom) {
+      if (content) throw new Error("Cannot initialize XmlResource with both content and DOM.");
+      this._dom = dom;
+    } else {
+      this._content = content;
+    }
   }
 
   /**
-   * Creates a new XML resource with the given content. If no content is
-   * given, the tuning resource is blank. It is recommended to supply just
-   * XML content or a DOM, but not both (because the model assumes the content
-   * and DOM will always be in sync, but this cannot be guaranteed if both are
-   * user-supplied rather than one being generated from the other).
+   * Creates an XML resource from a buffer containing XML. This buffer is
+   * assumed to be uncompressed; providing a compressed buffer will lead to
+   * unexpected behavior.
    * 
-   * Options
-   * - `content`: The XML content of the resource as a string.
-   * - `dom`: The XmlDocumentNode to use as this resource's DOM.
-   * - `saveBuffer`: Whether or not buffers created for this resource should
-   * be cached. False by default.
-   * 
-   * @param options Object containing initial content of this resource
+   * @param buffer Uncompressed fuffer to create an XML resource from
+   * @param options Object of optional arguments
    */
-  static create({ content, dom, saveBuffer }: {
-    content?: string;
-    dom?: XmlDocumentNode;
-    saveBuffer?: boolean;
-  } = {}): XmlResource {
-    return new XmlResource(content, dom, saveBuffer);
+  static from(buffer: Buffer, options?: XmlResourceFromOptions): XmlResource {
+    let initialBufferCache: CompressedBuffer;
+    if (options?.saveBuffer) initialBufferCache = options?.initialBufferCache ?? {
+      buffer,
+      compressionType: CompressionType.Uncompressed,
+      sizeDecompressed: buffer.byteLength
+    };
+
+    return new XmlResource(buffer.toString(options?.bufferEncoding ?? "utf8"), null, {
+      defaultCompressionType: options?.defaultCompressionType,
+      owner: options?.owner,
+      initialBufferCache,
+    });
   }
 
   /**
-   * Creates an XML resource from a buffer containing XML.
+   * Asynchronously creates an XML resource from a buffer containing XML. This
+   * buffer is assumed to be uncompressed; providing a compressed buffer will
+   * lead to unexpected behavior.
    * 
-   * @param buffer Buffer to create an XML resource from
-   * @param options Options for reading and cacheing the XML resource
+   * @param buffer Uncompressed fuffer to create an XML resource from
+   * @param options Object of optional arguments
    */
-  static from(buffer: Buffer, options?: FileReadingOptions): XmlResource {
-    return new XmlResource(
-      buffer.toString('utf-8'),
-      undefined,
-      options?.saveBuffer,
-      buffer
-    );
-  }
-
-  /**
-   * Creates an XML resource asynchronously from a buffer containing XML, and
-   * returns a Promise that resolves with it.
-   * 
-   * @param buffer Buffer to create an XML resource from
-   * @param options Options for reading and cacheing the XML resource
-   */
-  static async fromAsync(buffer: Buffer, options?: FileReadingOptions): Promise<XmlResource> {
+  static async fromAsync(buffer: Buffer, options?: XmlResourceFromOptions): Promise<XmlResource> {
     return promisify(() => XmlResource.from(buffer, options));
   }
 
@@ -134,20 +134,20 @@ export default class XmlResource extends WritableModel implements Resource {
   //#region Public Methods
 
   clone(): XmlResource {
-    // copy content only, it is pointless to clone the entire DOM structure
-    // because it can just be generated
-    const buffer = this.isCached ? this.buffer : undefined;
-    return new XmlResource(this.content, undefined, this.saveBuffer, buffer);
+    return new XmlResource(this.content, null, {
+      defaultCompressionType: this.defaultCompressionType,
+      initialBufferCache: this._getBufferCache()
+    });
   }
 
   equals(other: XmlResource): boolean {
-    return other && this.content === other.content;
+    return other && (this.content === other.content);
   }
 
   isXml(): boolean {
     return true;
   }
-  
+
   /**
    * Accepts a callback function to which the DOM is passed as an argument, so
    * that it can be mutated in a way that ensures cacheing is handled properly.

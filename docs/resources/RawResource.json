@@ -29,13 +29,22 @@
         }
       ]
     },
-    "description": "Model for resources that have not been parsed. Note that the buffer within a raw resource may be compressed (this is the default behavior if extracted from a package) - check the 'isCompressed' and 'compressionType' properties to determine how to read this resource.",
+    "description": "Model for resources that have not been parsed and cannot be modified.",
     "sourceCode": "src/lib/resources/raw/raw-resource.ts"
   },
   "sections": [
     {
       "title": "Properties",
       "content": [
+        {
+          "displayType": "property",
+          "prefix": "get",
+          "name": "buffer",
+          "description": "Shorthand for `this.getBuffer()`, since a raw buffer will never change.",
+          "type": {
+            "name": "Buffer"
+          }
+        },
         {
           "displayType": "property",
           "prefix": "readonly",
@@ -60,113 +69,123 @@
         },
         {
           "displayType": "property",
-          "prefix": "get",
-          "name": "plainText",
-          "description": "The contents of this resource as plain text (using UTF-8 encoding).",
-          "type": {
-            "name": "string"
-          }
-        },
-        {
-          "displayType": "property",
           "prefix": "get, set",
           "name": "reason",
           "optional": true,
-          "description": "Why this resource was loaded raw instead of being parsed.",
+          "description": "Why this resource was loaded raw.",
           "type": {
             "name": "string"
-          }
-        },
-        {
-          "displayType": "property",
-          "prefix": "get",
-          "name": "saveBuffer",
-          "description": "Always true. Cannot be set to false. The only defining feature of a RawResource is its buffer, so deleting it is just like deleting the entire model.",
-          "overrides": {
-            "name": "WritableModel",
-            "path": {
-              "pkg": "models",
-              "group": "abstracts",
-              "item": "WritableModel"
-            }
-          },
-          "type": {
-            "name": "boolean"
           }
         }
       ]
     },
     {
       "title": "Initialization",
-      "description": "The constructor is not a part of the public API, and may be changed without warning. Avoid using it, favoring the static 'from' method instead. Note that there is no async variant of the 'from' method, since there is nothing to be done asynchronously - RawResource is essentially a wrapper for a plain Buffer.",
       "content": [
+        {
+          "displayType": "function",
+          "name": "constructor",
+          "description": "Creates a new RawResource.",
+          "returnType": {
+            "name": "RawResource"
+          },
+          "arguments": [
+            {
+              "name": "bufferWrapper",
+              "type": {
+                "name": "CompressedBuffer",
+                "path": {
+                  "pkg": "compression",
+                  "group": "interfaces",
+                  "item": "CompressedBuffer"
+                }
+              },
+              "description": "The CompressedBuffer wrapper for this resource's buffer"
+            },
+            {
+              "name": "options",
+              "optional": true,
+              "type": {
+                "name": "RawResourceCreationOptions",
+                "path": {
+                  "pkg": "models",
+                  "group": "types",
+                  "item": "RawResourceCreationOptions"
+                }
+              },
+              "description": "Object containing optional arguments"
+            }
+          ]
+        },
         {
           "displayType": "function",
           "prefix": "static",
           "name": "from",
-          "description": "Creates a new RawResource from the given buffer.",
+          "description": "Creates a new RawResource from the given buffer. The buffer is assumed to be uncompressed; passing in a compressed buffer can lead to unexpected behavior.",
+          "returnType": {
+            "name": "RawResource"
+          },
           "arguments": [
             {
               "name": "buffer",
               "type": {
                 "name": "Buffer"
               },
-              "description": "Buffer to load into this resource."
+              "description": "The decompressed buffer for this RawResource"
             },
             {
               "name": "options",
               "type": {
-                "name": "object"
+                "name": "RawResourceCreationOptions",
+                "path": {
+                  "pkg": "models",
+                  "group": "types",
+                  "item": "RawResourceCreationOptions"
+                }
               },
               "optional": true,
-              "description": "Optional arguments",
-              "properties": [
-                {
-                  "name": "compressionType",
-                  "optional": true,
-                  "description": "How this resource is/should be compressed. ZLIB by default.",
-                  "type": {
-                    "name": "CompressionType",
-                    "path": {
-                      "pkg": "models",
-                      "group": "enums",
-                      "item": "CompressionType"
-                    }
-                  }
-                },
-                {
-                  "name": "isCompressed",
-                  "optional": true,
-                  "description": "Whether or not the buffer in this raw resource is compressed using the algorithm specified in compressionType. False by default.",
-                  "type": {
-                    "name": "boolean"
-                  }
-                },
-                {
-                  "name": "sizeDecompressed",
-                  "optional": true,
-                  "description": "The length of the buffer when it is decompressed. Equals the length of the given buffer by default.",
-                  "type": {
-                    "name": "number"
-                  }
-                },
-                {
-                  "name": "reason",
-                  "optional": true,
-                  "description": "Reason why this resource is being loaded raw.",
-                  "type": {
-                    "name": "string"
-                  }
-                }
-              ]
+              "description": "Object containing optional arguments"
             }
           ],
           "examples": [
             {
-              "code": "// For raw resources that are not compressed\nconst raw = RawResource.from(buffer, {\n  reason: \"Because I said so.\"\n});"
+              "code": "const raw = RawResource.from(bufferWrapper, {\n  reason: \"Because I said so.\"\n});"
+            }
+          ]
+        },
+        {
+          "displayType": "function",
+          "prefix": "static async",
+          "name": "fromAsync",
+          "description": "Asynchronously creates a new RawResource from the given buffer. The buffer is assumed to be uncompressed; passing in a compressed buffer can lead to unexpected behavior.",
+          "returnType": {
+            "name": "Promise<RawResource>"
+          },
+          "arguments": [
+            {
+              "name": "buffer",
+              "type": {
+                "name": "Buffer"
+              },
+              "description": "The decompressed buffer for this RawResource"
             },
             {
-              "code": "// For raw resources that are already compressed\nconst raw = RawResource.from(buffer, {\n  compressionType: CompressionType.StreamableCompresssion,\n  isCompressed: true,\n  sizeDecompressed: 123456,\n  reason: \"Incompatible compression format.\"\n});"
+              "name": "options",
+              "type": {
+                "name": "RawResourceCreationOptions",
+                "path": {
+                  "pkg": "models",
+                  "group": "types",
+                  "item": "RawResourceCreationOptions"
+                }
+              },
+              "optional": true,
+              "description": "Object containing optional arguments"
+            }
+          ],
+          "examples": [
+            {
+              "code": "RawResource.fromAsync(bufferWrapper, {\n  reason: \"Because I said so.\"\n}).then(raw => {\n  // do stuff\n});"
             }
           ]
         }

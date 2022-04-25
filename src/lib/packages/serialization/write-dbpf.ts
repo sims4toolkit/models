@@ -1,20 +1,16 @@
-import type { ResourceKeyPair } from "../types";
+import type { CompressedBuffer } from "@s4tk/compression";
 import { BinaryEncoder } from "@s4tk/encoding";
+import type { ResourceKeyPair } from "../types";
 
 const HEADER_BYTE_SIZE = 96;
 
 /**
  * Writes the given resource entries into a DBPF buffer.
  * 
- * @param dbpf DBPF model to serialize into a buffer
+ * @param entries DBPF entries to serialize into a buffer
  */
 export default function writeDbpf(entries: ResourceKeyPair[]): Buffer {
-  const entryBuffers: Buffer[] = []; // just in case models aren't cached
-  const recordsBuffer = Buffer.concat(entries.map(entry => {
-    const buffer = entry.buffer;
-    entryBuffers.push(buffer);
-    return buffer;
-  }));
+  const entryBuffers: CompressedBuffer[] = [];
 
   const indexBuffer: Buffer = (() => {
     // each entry is 32 bytes, and flags are 4
@@ -24,23 +20,25 @@ export default function writeDbpf(entries: ResourceKeyPair[]): Buffer {
     encoder.skip(4); // flags will always be written as null
 
     let recordOffset = 0;
-    entries.forEach((entry, i) => {
-      const entryBuffer = entryBuffers[i];
+    entries.forEach((entry) => {
+      const entryBuffer = entry.value.getCompressedBuffer();
+      entryBuffers.push(entryBuffer);
       encoder.uint32(entry.key.type); // mType
       encoder.uint32(entry.key.group); // mGroup
       encoder.uint32(Number(entry.key.instance >> 32n)); // mInstanceEx
       encoder.uint32(Number(entry.key.instance & 0xFFFFFFFFn)); // mInstance
       encoder.uint32(HEADER_BYTE_SIZE + recordOffset); // mnPosition
-      recordOffset += entryBuffer.byteLength;
-      encoder.uint32(entryBuffer.byteLength + 0x80000000); // mnSize + mbExtendedCompressionType
-      // FIXME: if models aren't cached, then buffer is being serialized here again
-      encoder.uint32(entry.value.sizeDecompressed ?? entry.value.buffer.byteLength); // mnSizeDecompressed
-      encoder.uint16(entry.value.compressionType); // mnCompressionType
+      recordOffset += entryBuffer.buffer.byteLength;
+      encoder.uint32(entryBuffer.buffer.byteLength + 0x80000000); // mnSize + mbExtendedCompressionType
+      encoder.uint32(entryBuffer.sizeDecompressed); // mnSizeDecompressed
+      encoder.uint16(entryBuffer.compressionType); // mnCompressionType
       encoder.uint16(1); // mnCommitted // NOTE: is this always 1?
     });
 
     return buffer;
   })();
+
+  const recordsBuffer = Buffer.concat(entryBuffers.map(e => e.buffer));
 
   const headerBuffer: Buffer = (() => {
     const buffer = Buffer.alloc(HEADER_BYTE_SIZE);

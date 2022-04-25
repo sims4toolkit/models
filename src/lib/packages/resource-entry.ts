@@ -3,16 +3,15 @@ import compare from "just-compare";
 import type Resource from "../resources/resource";
 import type Package from "./package";
 import type { ResourceKey } from "./types";
-import WritableModel from "../base/writable-model";
 import { MappedModelEntry } from "../base/mapped-model";
 import DataType from "../enums/data-type";
-import compressBuffer from "../compression/compress";
+import ApiModelBase from "../base/api-model";
 
 /**
- * An entry for a resource in a package file. This entry has a key and handles
- * compression of the buffer.
+ * An entry for a resource in a package file. This is just a pairing of a
+ * key and a resource.
  */
-export default class ResourceEntry extends WritableModel implements MappedModelEntry<ResourceKey, Resource> {
+export default class ResourceEntry extends ApiModelBase implements MappedModelEntry<ResourceKey, Resource> {
   public owner?: Package;
   private _key: ResourceKey;
   private _resource: Resource;
@@ -41,14 +40,8 @@ export default class ResourceEntry extends WritableModel implements MappedModelE
   get resource(): Resource { return this.value; }
   set resource(resource: Resource) { this.value = resource; }
   
-  constructor(
-    key: ResourceKey,
-    resource: Resource,
-    saveBuffer?: boolean,
-    buffer?: Buffer,
-    owner?: Package
-  ) {
-    super(saveBuffer, buffer, owner);
+  constructor(key: ResourceKey, resource: Resource, owner?: Package) {
+    super(owner);
     this.key = key;
     if (resource) resource.owner = this;
     this._resource = resource;
@@ -83,13 +76,5 @@ export default class ResourceEntry extends WritableModel implements MappedModelE
 
   protected _getCollectionOwner(): Package {
     return this.owner;
-  }
-
-  protected _serialize(): Buffer {
-    if (this.resource.isCompressed) {
-      return this.resource.buffer;
-    } else {
-      return compressBuffer(this.resource.buffer, this.resource.compressionType);
-    }
   }
 }

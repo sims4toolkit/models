@@ -1,27 +1,33 @@
-import DataType from "../../enums/data-type";
 import type { Cell } from "./cells";
 import type { SimDataInstance, SimDataSchema } from "./fragments";
 
 /**
- * A transfer object for SimData models.
+ * A data transfer object for SimData models.
  */
-export interface SimDataDto {
-  version?: number;
-  unused?: number;
-  schemas?: SimDataSchema[];
-  instances?: SimDataInstance[];
-  saveBuffer?: boolean;
-}
+export interface SimDataDto extends Partial<{
+  /** The version of SimData being loaded. */
+  version: number;
+
+  /** The unused number (usually matches the pack group). */
+  unused: number;
+
+  /** Array of schemas in the SimData. */
+  schemas: SimDataSchema[];
+
+  /** Array of instances in the SimData. */
+  instances: SimDataInstance[];
+}> { };
 
 /**
  * Additional options required for a cell to encode itself.
  */
-export interface CellEncodingOptions {
-  offset?: number;
-}
+export interface CellEncodingOptions extends Partial<{
+  /** The relative offset at which the cell is to be encoded. */
+  offset: number;
+}> { };
 
 /**
- * A row in an ObjectCell.
+ * A row in an ObjectCell that maps names to other cells.
  */
 export interface ObjectCellRow {
   [key: string]: Cell;
@@ -30,15 +36,21 @@ export interface ObjectCellRow {
 /**
  * Additional options required for a cell to clone itself.
  */
-export interface CellCloneOptions {
-  cloneSchema?: boolean;
-  newSchemas?: SimDataSchema[];
-};
+export interface CellCloneOptions extends Partial<{
+  /** Whether or not schemas should be cloned instead of reusing objects. */
+  cloneSchema: boolean;
+
+  /** Array of new schema objects to use. */
+  newSchemas: SimDataSchema[];
+}> { };
 
 /**
  * Additional options for a cell to generate itself as XML.
  */
-export interface CellToXmlOptions {
-  nameAttr?: string;
-  typeAttr?: boolean;
-}
+export interface CellToXmlOptions extends Partial<{
+  /** The value to appear in the "name" attribute. */
+  nameAttr: string;
+
+  /** Whether or not to display the "type" attribute. */
+  typeAttr: boolean;
+}> { };

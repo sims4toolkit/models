@@ -1,64 +1,67 @@
+import { CompressedBuffer, CompressionType } from '@s4tk/compression';
 import type Resource from '../resource';
-import WritableModel from '../../base/writable-model';
+import WritableModel, { WritableModelCreationOptions } from '../../base/writable-model';
 import EncodingType from '../../enums/encoding-type';
-import { bufferContainsXml } from '../../common/helpers';
-import CompressionType from '../../compression/compression-type';
+import { bufferContainsXml, promisify } from '../../common/helpers';
+
+/**  Optional arguments for initializing RawResources. */
+export interface RawResourceCreationOptions extends
+  Omit<WritableModelCreationOptions, "initialBufferCache">,
+  Partial<{
+    /** Why this resource is loaded raw. Used for debugging. */
+    reason: string;
+  }> { };
 
 /**
- * Model for resources that have not been parsed.
+ * Model for resources that have not been parsed and cannot be modified.
  */
 export default class RawResource extends WritableModel implements Resource {
   readonly encodingType: EncodingType = EncodingType.Unknown;
+  /** Why this resource was loaded raw. */
+  readonly reason?: string;
 
-  /** The contents of this resource as plain text. */
-  get plainText(): string { return this.buffer.toString('utf-8'); }
-
-  get saveBuffer() { return true; }
-  set saveBuffer(saveBuffer: boolean) {
-    // intentionally blank -- raw resource must always have its buffer saved
-  }
+  /** Shorthand for `this.getBuffer()`, since a raw buffer will never change. */
+  get buffer(): Buffer { return this.getBuffer(); }
 
   //#region Initialization
 
-  protected constructor(
-    buffer: Buffer,
-    readonly compressionType: CompressionType,
-    readonly isCompressed: boolean,
-    readonly sizeDecompressed?: number,
-    public reason?: string,
-  ) {
-    super(true, buffer); // raw resource must always save its buffer
+  /**
+   * Creates a new RawResource from the given buffer wrapper and options.
+   * 
+   * @param bufferWrapper The CompressedBuffer wrapper for this resource's buffer.
+   * @param options Object containing optional arguments.
+   */
+  constructor(bufferWrapper: CompressedBuffer, options?: RawResourceCreationOptions) {
+    super(Object.assign({ initialBufferCache: bufferWrapper }, options));
+    this.reason = options?.reason;
   }
 
   /**
-   * Creates a new RawResource.
+   * Creates a new RawResource from the given buffer. The buffer is assumed to
+   * be uncompressed; passing in a compressed buffer can lead to unexpected
+   * behavior.
    * 
-   * Options
-   * - `compressionType`: How this resource is/should be compressed. ZLIB by
-   * default.
-   * - `isCompressed`: Whether or not the buffer in this raw resource is
-   * compressed using the algorithm specified in `compressionType`. False by
-   * default.
-   * - `sizeDecompressed`: The length of the buffer when it is decompressed.
-   * Equals the length of the given buffer by default.
-   * - `reason`: Reason why this resource is being loaded raw.
-   * 
-   * @param buffer Buffer for raw resource
-   * @param options Optional arguments
+   * @param buffer The decompressed buffer for this RawResource
+   * @param options Object containing optional arguments
    */
-  static from(buffer: Buffer, { compressionType, isCompressed, sizeDecompressed, reason }: {
-    compressionType?: CompressionType;
-    isCompressed?: boolean;
-    sizeDecompressed?: number;
-    reason?: string;
-  } = {}): RawResource {
-    return new RawResource(
+  static from(buffer: Buffer, options?: RawResourceCreationOptions): RawResource {
+    return new RawResource({
       buffer,
-      compressionType ?? CompressionType.ZLIB,
-      isCompressed ?? false,
-      sizeDecompressed ?? buffer.length,
-      reason
-    );
+      compressionType: CompressionType.Uncompressed,
+      sizeDecompressed: buffer.byteLength
+    }, options);
+  }
+
+  /**
+   * Asynchronously creates a new RawResource from the given buffer. The buffer
+   * is assumed to be uncompressed; passing in a compressed buffer can lead to
+   * unexpected behavior.
+   * 
+   * @param buffer The decompressed buffer for this RawResource
+   * @param options Object containing optional arguments
+   */
+  static async fromAsync(buffer: Buffer, options?: RawResourceCreationOptions): Promise<RawResource> {
+    return promisify(() => RawResource.from(buffer, options));
   }
 
   //#endregion Initialization
@@ -66,13 +69,10 @@ export default class RawResource extends WritableModel implements Resource {
   //#region Public Methods
 
   clone(): RawResource {
-    return new RawResource(
-      this.buffer,
-      this.compressionType,
-      this.isCompressed,
-      this.sizeDecompressed,
-      this.reason
-    );
+    return new RawResource(this._getBufferCache(), {
+      defaultCompressionType: this.defaultCompressionType,
+      reason: this.reason,
+    });
   }
 
   equals(other: RawResource): boolean {
@@ -80,22 +80,24 @@ export default class RawResource extends WritableModel implements Resource {
   }
 
   isXml(): boolean {
+    // FIXME: consider compression?
     return bufferContainsXml(this.buffer);
   }
 
   onChange() {
-    // intentionally blank because this model cannot be changed, and its buffer
-    // cannot be deleted -- it is the only defining feature of this model
-    return;
+    // intentionally blank
   }
 
   //#endregion Public Methods
 
   //#region Protected Methods
 
+  protected _clearBufferCacheIfSupported(): void {
+    // intentionally blank
+  }
+
   protected _serialize(): Buffer {
-    // this should never be thrown in prod, just for development
-    throw new Error("Cannot serialize a raw resource.");
+    throw new Error("Cannot serialize a raw resource. If you're reading this error, the cached buffer in a raw resource somehow got deleted, which should be impossible. Please report this error ASAP: https://github.com/sims4toolkit/models/issues");
   }
 
   //#endregion Protected Methods
