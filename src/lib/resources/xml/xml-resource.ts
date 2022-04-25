@@ -16,8 +16,9 @@ export interface XmlResourceFromOptions extends
   }> { };
 
 /**
- * Model for a plain text, XML resource. This does not necessarily need to be
- * tuning, however, the XML DOM is tailored towards use with tuning.
+ * Model for a plain text, XML resource. This does not necessarily need to be 
+ * tuning (e.g. it can load XML-formatted SimDatas, ASMs, etc.), however, the
+ * XML DOM is tailored towards use with tuning.
  */
 export default class XmlResource extends WritableModel implements Resource {
   readonly encodingType: EncodingType = EncodingType.XML;

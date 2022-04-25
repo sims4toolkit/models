@@ -29,7 +29,7 @@
         }
       ]
     },
-    "description": "Model for a plain text, XML resource. This does not necessarily need to be tuning (e.g. it can load XML-formatted SimDatas, ASMs, etc.), however, the XML DOM is tailored towards use with tuning only.",
+    "description": "Model for a plain text, XML resource. This does not necessarily need to be tuning (e.g. it can load XML-formatted SimDatas, ASMs, etc.), however, the XML DOM is tailored towards use with tuning.",
     "sourceCode": "src/lib/resources/xml/xml-resource.ts"
   },
   "sections": [
@@ -85,7 +85,7 @@
           "displayType": "property",
           "prefix": "get, set",
           "name": "root",
-          "description": "Alias for dom.child, since most XML resources should have just one child anyways. To mutate the root and keep it in sync with the content/buffer, either use the 'updateRoot()' method, or set the root equal to itself when finished (EX: 'resource.root = resource.root').",
+          "description": "Alias for 'dom.child', since most XML resources should have just one child anyways. To mutate the root and keep it in sync with the content/buffer, either use the 'updateRoot()' method, or set the root equal to itself when finished (EX: 'resource.root = resource.root').",
           "type": {
             "name": "XmlNode",
             "path": {
@@ -99,66 +99,59 @@
     },
     {
       "title": "Initialization",
-      "description": "The constructor is not a part of the public API, and may be changed without warning. Avoid using it, favoring the static methods instead.",
       "content": [
         {
           "displayType": "function",
-          "prefix": "static",
-          "name": "create",
+          "name": "constructor",
           "returnType": {
             "name": "XmlResource"
           },
-          "description": "Creates a new XML resource with the given content. If no content is given, the tuning resource is blank. It is recommended to supply just XML content or a DOM, but not both (because the model assumes the content and DOM will always be in sync, but this cannot be guaranteed if both are user-supplied rather than one being generated from the other).",
+          "description": "Creates a new XmlResource with the given content. Only supply the content as a string OR a DOM, but NOT both, or else an exception will be thrown.",
           "arguments": [
             {
-              "description": "Optional arguments.",
+              "description": "XML content of this resource as a string",
+              "optional": true,
+              "name": "content",
+              "type": {
+                "name": "string"
+              }
+            },
+            {
+              "description": "DOM of this resource's XML contents",
+              "optional": true,
+              "name": "dom",
+              "type": {
+                "name": "XmlDocumentNode",
+                "path": {
+                  "pkg": "xml-dom",
+                  "group": "classes",
+                  "item": "XmlDocumentNode"
+                }
+              }
+            },
+            {
+              "description": "Object of optional arguments",
               "optional": true,
               "name": "options",
               "type": {
-                "name": "object"
-              },
-              "properties": [
-                {
-                  "name": "content",
-                  "optional": true,
-                  "description": "The XML content of the resource as a string.",
-                  "type": {
-                    "name": "string"
-                  }
-                },
-                {
-                  "name": "dom",
-                  "optional": true,
-                  "description": "The XmlDocumentNode to use as this resource's DOM.",
-                  "type": {
-                    "name": "XmlDocumentNode",
-                    "path": {
-                      "pkg": "xml-dom",
-                      "group": "classes",
-                      "item": "XmlDocumentNode"
-                    }
-                  }
-                },
-                {
-                  "name": "saveBuffer",
-                  "optional": true,
-                  "description": "Whether or not buffers created for this resource should be cached. False by default.",
-                  "type": {
-                    "name": "boolean"
-                  }
+                "name": "WritableModelCreationOptions",
+                "path": {
+                  "pkg": "models",
+                  "group": "types",
+                  "item": "WritableModelCreationOptions"
                 }
-              ]
+              }
             }
           ],
           "examples": [
             {
-              "code": "const emptyXml = XmlResource.create();"
+              "code": "const emptyXml = new XmlResource();"
             },
             {
-              "code": "const xmlFromString = XmlResource.create({\n  content: \"<I n=\\\"some_file\\\"><T n=\\\"something\\\">50</T></I>\"\n});"
+              "code": "const xmlFromString = new XmlResource(\"<I n=\\\"some_file\\\"><T n=\\\"something\\\">50</T></I>\");"
             },
             {
-              "code": "const xmlFromDom = XmlResource.create({\n  dom: new XmlDocumentNode(...) // create it however you want\n});"
+              "code": "const xmlFromDom = new XmlResource(\n  null,\n  new XmlDocumentNode(...) // create it however you want\n);"
             }
           ]
         },
@@ -169,11 +162,11 @@
           "returnType": {
             "name": "XmlResource"
           },
-          "description": "Creates an XML resource from a buffer containing UTF-8 encoded XML.",
+          "description": "Creates an XML resource from a buffer containing XML. This buffer is assumed to be uncompressed; providing a compressed buffer will lead to unexpected behavior.",
           "arguments": [
             {
               "name": "buffer",
-              "description": "Buffer to create this resource from.",
+              "description": "Uncompressed fuffer to create an XML resource from",
               "type": {
                 "name": "Buffer"
               }
@@ -181,13 +174,13 @@
             {
               "name": "options",
               "optional": true,
-              "description": "Optional arguments for reading the buffer.",
+              "description": "Object of optional arguments",
               "type": {
-                "name": "FileReadingOptions",
+                "name": "XmlResourceFromOptions",
                 "path": {
                   "pkg": "models",
                   "group": "types",
-                  "item": "FileReadingOptions"
+                  "item": "XmlResourceFromOptions"
                 }
               }
             }
@@ -200,16 +193,16 @@
         },
         {
           "displayType": "function",
-          "prefix": "static",
+          "prefix": "static async",
           "name": "fromAsync",
           "returnType": {
             "name": "Promise<XmlResource>"
           },
-          "description": "Creates an XML resource asynchronously from a buffer containing XML, and returns a Promise that resolves with it.",
+          "description": "Asynchronously creates an XML resource from a buffer containing XML. This buffer is assumed to be uncompressed; providing a compressed buffer will lead to unexpected behavior.",
           "arguments": [
             {
               "name": "buffer",
-              "description": "Buffer to create this resource from.",
+              "description": "Uncompressed fuffer to create an XML resource from",
               "type": {
                 "name": "Buffer"
               }
@@ -217,13 +210,13 @@
             {
               "name": "options",
               "optional": true,
-              "description": "Optional arguments for reading the buffer.",
+              "description": "Object of optional arguments",
               "type": {
-                "name": "FileReadingOptions",
+                "name": "XmlResourceFromOptions",
                 "path": {
                   "pkg": "models",
                   "group": "types",
-                  "item": "FileReadingOptions"
+                  "item": "XmlResourceFromOptions"
                 }
               }
             }
