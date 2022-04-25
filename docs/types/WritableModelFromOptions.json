@@ -1,12 +1,12 @@
 {
   "$schema": "https://raw.githubusercontent.com/sims4toolkit/misc/main/json-schemas/docs-item-schema.json",
   "imports": [
-    "import type { SimDataResourceFromOptions } from \"@s4tk/models/types\"; // TypeScript only"
+    "import type { WritableModelFromOptions } from \"@s4tk/models/types\"; // TypeScript only"
   ],
   "header": {
     "title": {
       "prefix": "interface",
-      "name": "SimDataResourceFromOptions",
+      "name": "WritableModelFromOptions",
       "extends": [
         {
           "name": "WritableModelCreationOptions",
@@ -26,8 +26,8 @@
         }
       ]
     },
-    "description": "Arguments for SimDataResource `from()` methods.",
-    "sourceCode": "src/lib/resources/simdata/simdata-resource.ts"
+    "description": "Optional arguments for creating WritableModels with their `from()` methods.",
+    "sourceCode": "src/lib/base/writable-model.ts"
   },
   "sections": [
     {
@@ -45,11 +45,11 @@
   "footer": {
     "seeAlso": [
       {
-        "name": "SimDataResource",
+        "name": "WritableModel",
         "path": {
           "pkg": "models",
-          "group": "resources",
-          "item": "SimDataResource"
+          "group": "abstracts",
+          "item": "WritableModel"
         }
       }
     ]

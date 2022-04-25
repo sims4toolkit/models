@@ -4,17 +4,11 @@ import type { KeyStringPair } from "./types";
 import { PrimitiveMappedModel } from "../../base/primitive-mapped-model";
 import Resource from "../resource";
 import { arraysAreEqual, promisify } from "../../common/helpers";
-import { BinaryFileReadingOptions } from "../../common/options";
 import readStbl from "./serialization/read-stbl";
 import writeStbl from "./serialization/write-stbl";
 import EncodingType from "../../enums/encoding-type";
 import StringEntry from "./string-entry";
-import { WritableModelCreationOptions } from "../../base/writable-model";
-
-/** Arguments for SimDataResource `from()` methods. */
-export interface StblResourceFromOptions extends
-  WritableModelCreationOptions,
-  BinaryFileReadingOptions { };
+import { WritableModelCreationOptions, WritableModelFromOptions } from "../../base/writable-model";
 
 /**
  * Model for string table (STBL) resources.
@@ -42,7 +36,7 @@ export default class StringTableResource extends PrimitiveMappedModel<string, St
    * @param buffer Uncompressed buffer to read as a string table
    * @param options Object of options
    */
-  static from(buffer: Buffer, options?: StblResourceFromOptions): StringTableResource {
+  static from(buffer: Buffer, options?: WritableModelFromOptions): StringTableResource {
     let initialBufferCache: CompressedBuffer;
     if (options?.saveBuffer) initialBufferCache = options?.initialBufferCache ?? {
       buffer,
@@ -65,7 +59,7 @@ export default class StringTableResource extends PrimitiveMappedModel<string, St
    * @param buffer Buffer to read as a string table
    * @param options Object of options
    */
-  static async fromAsync(buffer: Buffer, options?: StblResourceFromOptions): Promise<StringTableResource> {
+  static async fromAsync(buffer: Buffer, options?: WritableModelFromOptions): Promise<StringTableResource> {
     return promisify(() => StringTableResource.from(buffer, options));
   }
 

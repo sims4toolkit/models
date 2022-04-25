@@ -200,11 +200,11 @@
               "optional": true,
               "description": "Object of optional arguments.",
               "type": {
-                "name": "SimDataResourceFromOptions",
+                "name": "WritableModelFromOptions",
                 "path": {
                   "pkg": "models",
                   "group": "types",
-                  "item": "SimDataResourceFromOptions"
+                  "item": "WritableModelFromOptions"
                 }
               }
             }
@@ -236,11 +236,11 @@
               "optional": true,
               "description": "Object of optional arguments.",
               "type": {
-                "name": "SimDataResourceFromOptions",
+                "name": "WritableModelFromOptions",
                 "path": {
                   "pkg": "models",
                   "group": "types",
-                  "item": "SimDataResourceFromOptions"
+                  "item": "WritableModelFromOptions"
                 }
               }
             }
@@ -272,11 +272,11 @@
               "optional": true,
               "description": "Object of optional arguments.",
               "type": {
-                "name": "SimDataResourceFromOptions",
+                "name": "WritableModelFromOptions",
                 "path": {
                   "pkg": "models",
                   "group": "types",
-                  "item": "SimDataResourceFromOptions"
+                  "item": "WritableModelFromOptions"
                 }
               }
             }
@@ -308,11 +308,11 @@
               "optional": true,
               "description": "Object of optional arguments.",
               "type": {
-                "name": "SimDataResourceFromOptions",
+                "name": "WritableModelFromOptions",
                 "path": {
                   "pkg": "models",
                   "group": "types",
-                  "item": "SimDataResourceFromOptions"
+                  "item": "WritableModelFromOptions"
                 }
               }
             }
@@ -349,11 +349,11 @@
               "optional": true,
               "description": "Optional arguments for reading the document.",
               "type": {
-                "name": "SimDataResourceFromOptions",
+                "name": "WritableModelFromOptions",
                 "path": {
                   "pkg": "models",
                   "group": "types",
-                  "item": "SimDataResourceFromOptions"
+                  "item": "WritableModelFromOptions"
                 }
               }
             }
@@ -390,11 +390,11 @@
               "optional": true,
               "description": "Optional arguments for reading the document.",
               "type": {
-                "name": "SimDataResourceFromOptions",
+                "name": "WritableModelFromOptions",
                 "path": {
                   "pkg": "models",
                   "group": "types",
-                  "item": "SimDataResourceFromOptions"
+                  "item": "WritableModelFromOptions"
                 }
               }
             }

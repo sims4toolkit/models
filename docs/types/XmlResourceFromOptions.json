@@ -9,19 +9,11 @@
       "name": "XmlResourceFromOptions",
       "extends": [
         {
-          "name": "WritableModelCreationOptions",
+          "name": "WritableModelFromOptions",
           "path": {
             "pkg": "models",
             "group": "types",
-            "item": "WritableModelCreationOptions"
-          }
-        },
-        {
-          "name": "BinaryFileReadingOptions",
-          "path": {
-            "pkg": "models",
-            "group": "types",
-            "item": "BinaryFileReadingOptions"
+            "item": "WritableModelFromOptions"
           }
         }
       ]

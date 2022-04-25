@@ -1,6 +1,5 @@
 import { XmlDocumentNode, XmlElementNode, XmlNode } from "@s4tk/xml-dom";
 import { formatAsHexString } from "@s4tk/hashing/formatting";
-import type { BinaryFileReadingOptions } from "../../common/options";
 import Resource from "../resource";
 import { arraysAreEqual, promisify, removeFromArray } from "../../common/helpers";
 import { SimDataInstance, SimDataSchema } from "./fragments";
@@ -8,7 +7,7 @@ import { SimDataDto } from "./types";
 import { SUPPORTED_VERSION } from "./constants";
 import readData from "./serialization/read-data";
 import writeData from "./serialization/write-data";
-import WritableModel, { WritableModelCreationOptions } from "../../base/writable-model";
+import WritableModel, { WritableModelCreationOptions, WritableModelFromOptions } from "../../base/writable-model";
 import EncodingType from "../../enums/encoding-type";
 import { CompressionType } from "@s4tk/compression";
 
@@ -16,11 +15,6 @@ import { CompressionType } from "@s4tk/compression";
 export interface SimDataResourceCreationOptions extends
   WritableModelCreationOptions,
   SimDataDto { };
-
-/** Arguments for SimDataResource `from()` methods. */
-export interface SimDataResourceFromOptions extends
-  WritableModelCreationOptions,
-  BinaryFileReadingOptions { };
 
 /**
  * Model for SimData resources. While combined tuning is the same format, it is
@@ -94,7 +88,7 @@ export default class SimDataResource extends WritableModel implements Resource, 
    * @param buffer Uncompressed fuffer to create a SimData resource from
    * @param options Object of optional arguments
    */
-  static from(buffer: Buffer, options?: SimDataResourceFromOptions): SimDataResource {
+  static from(buffer: Buffer, options?: WritableModelFromOptions): SimDataResource {
     const dto: SimDataResourceCreationOptions = readData(buffer, options);
     dto.defaultCompressionType = options?.defaultCompressionType;
     dto.owner = options?.owner;
@@ -114,7 +108,7 @@ export default class SimDataResource extends WritableModel implements Resource, 
    * @param buffer Uncompressed fuffer to create a SimData resource from
    * @param options Object of optional arguments
    */
-  static async fromAsync(buffer: Buffer, options?: SimDataResourceFromOptions): Promise<SimDataResource> {
+  static async fromAsync(buffer: Buffer, options?: WritableModelFromOptions): Promise<SimDataResource> {
     return promisify(() => SimDataResource.from(buffer, options));
   }
 
@@ -126,7 +120,7 @@ export default class SimDataResource extends WritableModel implements Resource, 
    * @param xml XML string or buffer to parse as a SimData
    * @param options Object of optional arguments
    */
-  static fromXml(xml: string | Buffer, options?: SimDataResourceFromOptions): SimDataResource {
+  static fromXml(xml: string | Buffer, options?: WritableModelFromOptions): SimDataResource {
     return SimDataResource.fromXmlDocument(XmlDocumentNode.from(xml, {
       ignoreComments: true
     }), options);
@@ -140,7 +134,7 @@ export default class SimDataResource extends WritableModel implements Resource, 
    * @param xml XML string or buffer to parse as a SimData
    * @param options Object of optional arguments
    */
-  static async fromXmlAsync(xml: string | Buffer, options?: SimDataResourceFromOptions): Promise<SimDataResource> {
+  static async fromXmlAsync(xml: string | Buffer, options?: WritableModelFromOptions): Promise<SimDataResource> {
     return promisify(() => SimDataResource.fromXml(xml, options));
   }
 
@@ -150,7 +144,7 @@ export default class SimDataResource extends WritableModel implements Resource, 
    * @param doc XML document from which to parse SimData
    * @param options Object of optional arguments
    */
-  static fromXmlDocument(doc: XmlDocumentNode, options?: SimDataResourceFromOptions): SimDataResource {
+  static fromXmlDocument(doc: XmlDocumentNode, options?: WritableModelFromOptions): SimDataResource {
     const dom = doc.child;
     const canThrow = !(options?.recoveryMode);
 
@@ -186,7 +180,7 @@ export default class SimDataResource extends WritableModel implements Resource, 
    * @param doc XML document from which to parse SimData
    * @param options Object of optional arguments
    */
-  static async fromXmlDocumentAsync(doc: XmlDocumentNode, options?: SimDataResourceFromOptions): Promise<SimDataResource> {
+  static async fromXmlDocumentAsync(doc: XmlDocumentNode, options?: WritableModelFromOptions): Promise<SimDataResource> {
     return promisify(() => SimDataResource.fromXmlDocument(doc, options));
   }
 

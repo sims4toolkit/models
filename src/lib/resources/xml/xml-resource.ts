@@ -1,15 +1,13 @@
 import { CompressedBuffer, CompressionType } from "@s4tk/compression";
 import { XmlDocumentNode, XmlNode } from "@s4tk/xml-dom";
-import WritableModel, { WritableModelCreationOptions } from "../../base/writable-model";
+import WritableModel, { WritableModelCreationOptions, WritableModelFromOptions } from "../../base/writable-model";
 import Resource from "../resource";
 import EncodingType from "../../enums/encoding-type";
 import { promisify } from "../../common/helpers";
-import type { BinaryFileReadingOptions } from "../../common/options";
 
 /** Arguments for XmlResource `from()` methods. */
 export interface XmlResourceFromOptions extends
-  WritableModelCreationOptions,
-  BinaryFileReadingOptions,
+  WritableModelFromOptions,
   Partial<{
     /** How the provided buffer is encoded. UTF8 by default. */
     bufferEncoding: BufferEncoding;

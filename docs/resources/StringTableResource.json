@@ -128,11 +128,11 @@
               "optional": true,
               "description": "Object of options",
               "type": {
-                "name": "StblResourceFromOptions",
+                "name": "WritableModelFromOptions",
                 "path": {
                   "pkg": "models",
                   "group": "types",
-                  "item": "StblResourceFromOptions"
+                  "item": "WritableModelFromOptions"
                 }
               }
             }
@@ -164,11 +164,11 @@
               "optional": true,
               "description": "Object of options",
               "type": {
-                "name": "StblResourceFromOptions",
+                "name": "WritableModelFromOptions",
                 "path": {
                   "pkg": "models",
                   "group": "types",
-                  "item": "StblResourceFromOptions"
+                  "item": "WritableModelFromOptions"
                 }
               }
             }

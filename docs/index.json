@@ -87,11 +87,10 @@
         "SimDataDto",
         "SimDataNumber",
         "SimDataResourceCreationOptions",
-        "SimDataResourceFromOptions",
         "SimDataText",
-        "StblResourceFromOptions",
         "StringEntry",
         "WritableModelCreationOptions",
+        "WritableModelFromOptions",
         "XmlResourceFromOptions"
       ]
     }

@@ -1,9 +1,10 @@
 import { CompressionType, CompressedBuffer, compressBuffer, decompressBuffer } from "@s4tk/compression";
 import ApiModelBase from "./api-model";
 import { promisify } from "../common/helpers";
+import { BinaryFileReadingOptions } from "../common/options";
 
 /**
- * Optional arguments for initializing WritableModels.
+ * Optional arguments for creating WritableModels.
  */
 export type WritableModelCreationOptions = Partial<{
   /**
@@ -23,6 +24,13 @@ export type WritableModelCreationOptions = Partial<{
    */
   owner: ApiModelBase;
 }>;
+
+/**
+ * Optional arguments for creating WritableModels with their `from()` methods.
+ */
+export interface WritableModelFromOptions extends
+  WritableModelCreationOptions,
+  BinaryFileReadingOptions { }
 
 /**
  * Base class for models that can be written to disk.
