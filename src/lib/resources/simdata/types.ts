@@ -2,7 +2,7 @@ import type { Cell } from "./cells";
 import type { SimDataInstance, SimDataSchema } from "./fragments";
 
 /**
- * A transfer object for SimData models.
+ * A data transfer object for SimData models.
  */
 export interface SimDataDto extends Partial<{
   /** The version of SimData being loaded. */

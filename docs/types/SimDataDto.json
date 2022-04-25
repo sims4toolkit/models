@@ -1,0 +1,76 @@
+{
+  "$schema": "https://raw.githubusercontent.com/sims4toolkit/misc/main/json-schemas/docs-item-schema.json",
+  "header": {
+    "title": {
+      "prefix": "interface",
+      "name": "SimDataDto"
+    },
+    "description": " A data transfer object for SimData models.",
+    "sourceCode": "src/lib/resources/simdata/simdata-resource.ts"
+  },
+  "sections": [
+    {
+      "title": "Properties",
+      "content": [
+        {
+          "displayType": "property",
+          "name": "version",
+          "description": "The version of the SimData being loaded.",
+          "optional": true,
+          "type": {
+            "name": "number"
+          }
+        },
+        {
+          "displayType": "property",
+          "name": "unused",
+          "description": "The unused number (usually matches the pack group).",
+          "optional": true,
+          "type": {
+            "name": "number"
+          }
+        },
+        {
+          "displayType": "property",
+          "name": "schemas",
+          "description": "Array of schemas in the SimData.",
+          "optional": true,
+          "type": {
+            "name": "SimDataSchema[]",
+            "path": {
+              "pkg": "models",
+              "group": "simdata-fragments",
+              "item": "SimDataSchema"
+            }
+          }
+        },
+        {
+          "displayType": "property",
+          "name": "instances",
+          "description": "Array of instances in the SimData.",
+          "optional": true,
+          "type": {
+            "name": "SimDataInstance[]",
+            "path": {
+              "pkg": "models",
+              "group": "simdata-fragments",
+              "item": "SimDataInstance"
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "footer": {
+    "seeAlso": [
+      {
+        "name": "SimDataResource",
+        "path": {
+          "pkg": "models",
+          "group": "resources",
+          "item": "SimDataResource"
+        }
+      }
+    ]
+  }
+}
