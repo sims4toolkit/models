@@ -75,19 +75,22 @@ export default abstract class WritableModel extends ApiModelBase {
    * if this argument is false. False by default.
    */
   getBuffer(cache: boolean = false): Buffer {
+    let decompressedBuffer: Buffer;
+
     if (this._bufferCache) {
       const { buffer, compressionType } = this._bufferCache;
 
       if (compressionType === CompressionType.Uncompressed) {
         return buffer;
       } else {
-        var decompressedBuffer = decompressBuffer(buffer, compressionType);
+        decompressedBuffer = decompressBuffer(buffer, compressionType);
       }
+    } else {
+      decompressedBuffer = this._serialize();
     }
 
-    var decompressedBuffer: Buffer;
-    decompressedBuffer ??= this._serialize();
-
+    // at this point, there either is no cache or the cache isn't uncompressed, so overwrite it
+    // FIXME: does this cause issues with raw resources? what if the resource is internally compressed, the buffer is retrieved and it is decompressed, and suddenly you can no longer write the resource because internal compression cannot be performed?
     if (cache) {
       this._bufferCache = {
         buffer: decompressedBuffer,
@@ -126,18 +129,19 @@ export default abstract class WritableModel extends ApiModelBase {
     cache: boolean = false,
     targetCompressionType: CompressionType = this.defaultCompressionType,
   ): CompressedBuffer {
+    let decompressedBuffer: Buffer;
+
     if (this._bufferCache) {
       const { buffer, compressionType } = this._bufferCache;
 
       if (compressionType === targetCompressionType) {
         return this._bufferCache;
       } else {
-        var decompressedBuffer = decompressBuffer(buffer, compressionType);
+        decompressedBuffer = decompressBuffer(buffer, compressionType);
       }
+    } else {
+      decompressedBuffer = this._serialize();
     }
-
-    var decompressedBuffer: Buffer;
-    decompressedBuffer ??= this._serialize();
 
     const wrapper: CompressedBuffer = {
       buffer: compressBuffer(decompressedBuffer, targetCompressionType),
