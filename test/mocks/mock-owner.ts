@@ -1,5 +1,8 @@
 import ApiModelBase from "../../dst/lib/base/api-model";
 
+/**
+ * A bare-bones implementation of an API model that can own another one.
+ */
 export default class MockOwner extends ApiModelBase {
   private _cached: boolean;
 
@@ -13,7 +16,7 @@ export default class MockOwner extends ApiModelBase {
   clone(): ApiModelBase {
     throw new Error("Method not implemented.");
   }
-  
+
   equals(other: any): boolean {
     throw new Error("Method not implemented.");
   }
