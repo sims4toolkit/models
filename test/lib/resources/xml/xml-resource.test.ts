@@ -54,7 +54,7 @@ describe('XmlResource', function () {
 
       it("should return the content for tuning created from a DOM", function () {
         const dom = XmlDocumentNode.from(`<I n="some_file"></I>`);
-        const tun = new XmlResource(null, dom);
+        const tun = new XmlResource(dom);
         expect(tun.content).to.equal(`${XML_DECLARATION}\n<I n="some_file"/>`)
       });
     });
@@ -105,7 +105,7 @@ describe('XmlResource', function () {
 
       it("should return the original DOM for tuning created from a DOM", function () {
         const dom = XmlDocumentNode.from("<T>50</T>");
-        const tun = new XmlResource(null, dom);
+        const tun = new XmlResource(dom);
         expect(tun.dom).to.equal(dom);
       });
 
@@ -122,7 +122,7 @@ describe('XmlResource', function () {
     context('setting', function () {
       it("should update the DOM", function () {
         const dom = XmlDocumentNode.from("<T>50</T>");
-        const tun = new XmlResource(null, dom);
+        const tun = new XmlResource(dom);
         tun.dom = XmlDocumentNode.from("<T>25</T>");
         expect(tun.dom.child.innerValue).to.equal("25");
       });
@@ -166,7 +166,7 @@ describe('XmlResource', function () {
     context('setting', function () {
       it("should update the first child of the DOM", function () {
         const dom = XmlDocumentNode.from("<T>50</T>");
-        const tun = new XmlResource(null, dom);
+        const tun = new XmlResource(dom);
         tun.root = new XmlElementNode({
           tag: "E",
           children: [
@@ -191,7 +191,7 @@ describe('XmlResource', function () {
 
       it("should reset the content", function () {
         const dom = XmlDocumentNode.from("<T>50</T>");
-        const tun = new XmlResource(null, dom);
+        const tun = new XmlResource(dom);
         expect(tun.content).to.equal(`${XML_DECLARATION}\n<T>50</T>`);
         tun.root = new XmlElementNode({
           tag: "E",
@@ -209,6 +209,11 @@ describe('XmlResource', function () {
   //#region Initialization
 
   describe("#constructor", () => {
+    it("should be empty if no content given", () => {
+      const tun = new XmlResource();
+      expect(tun.content).to.equal("");
+    });
+
     it("should use the content that is given", () => {
       const tun = new XmlResource("stuff");
       expect(tun.content).to.equal("stuff");
@@ -216,17 +221,16 @@ describe('XmlResource', function () {
 
     it("should use the DOM that is given", () => {
       const dom = new XmlDocumentNode(new XmlElementNode({ tag: "I" }));
-      const tun = new XmlResource(null, dom);
+      const tun = new XmlResource(dom);
       expect(tun.dom).to.equal(dom);
     });
 
-    it("should throw if both content and DOM are given", () => {
-      const dom = new XmlDocumentNode(new XmlElementNode({ tag: "I" }));
-      expect(() => new XmlResource("stuff", dom)).to.throw();
-    });
-
     it("should use defaultCompressionType that is given", () => {
-      // TODO:
+      const tun = new XmlResource("stuff", {
+        defaultCompressionType: CompressionType.InternalCompression
+      });
+
+      expect(tun.defaultCompressionType).to.equal(CompressionType.InternalCompression);
     });
 
     it("should use defaultCompressionType of ZLIB if not given", () => {
@@ -397,7 +401,7 @@ describe('XmlResource', function () {
 
     it("should not mutate the original's DOM", function () {
       const dom = XmlDocumentNode.from("<T>50</T>")
-      const tun = new XmlResource(null, dom);
+      const tun = new XmlResource(dom);
       const clone = tun.clone();
       clone.root.innerValue = "25";
       expect(tun.root.innerValue).to.equal("50");
