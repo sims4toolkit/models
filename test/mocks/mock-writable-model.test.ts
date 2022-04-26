@@ -1,36 +1,53 @@
 import { expect } from "chai";
-import { CompressionType } from "@s4tk/compression";
+import { CompressedBuffer, CompressionType } from "@s4tk/compression";
 import MockWritableModel from "./mock-writable-model";
 import MockOwner from "./mock-owner";
 
 describe("MockWritableModel", () => {
+  const CONST_BUFFER_CACHE: CompressedBuffer = {
+    buffer: Buffer.from("hi"),
+    compressionType: CompressionType.Uncompressed,
+    sizeDecompressed: 2
+  };
+
   //#region Properties
 
   describe("#defaultCompressionType", () => {
-    it("should return the value", () => {
-      // TODO:
-    });
-
     it("should change the value when set", () => {
-      // TODO:
+      const model = new MockWritableModel();
+      expect(model.defaultCompressionType).to.equal(CompressionType.ZLIB);
+      model.defaultCompressionType = CompressionType.InternalCompression;
+      expect(model.defaultCompressionType).to.equal(CompressionType.InternalCompression);
     });
   });
 
   describe("#hasBufferCache", () => {
     it("should be true when there is a buffer cached", () => {
-      // TODO:
+      const model = new MockWritableModel("hi", {
+        initialBufferCache: CONST_BUFFER_CACHE
+      });
+
+      expect(model.hasBufferCache).to.be.true;
     });
 
     it("should be true when there wasn't a buffer cached, but one was generated", () => {
-      // TODO:
+      const model = new MockWritableModel("hi");
+      model.getBuffer(true);
+      expect(model.hasBufferCache).to.be.true;
     });
 
     it("should be false when there is no buffer cached", () => {
-      // TODO:
+      const model = new MockWritableModel("hi");
+      expect(model.hasBufferCache).to.be.false;
     });
 
     it("should be false when there was buffer cached, but it was deleted", () => {
-      // TODO:
+      const model = new MockWritableModel("hi", {
+        initialBufferCache: CONST_BUFFER_CACHE
+      });
+
+      model.onChange();
+      expect(model.hasBufferCache).to.be.false;
     });
   });
 
@@ -70,11 +87,7 @@ describe("MockWritableModel", () => {
 
     it("should use the initialBufferCache that was provided", () => {
       const model = new MockWritableModel("hi", {
-        initialBufferCache: {
-          buffer: Buffer.from("hi"),
-          compressionType: CompressionType.Uncompressed,
-          sizeDecompressed: 2
-        }
+        initialBufferCache: CONST_BUFFER_CACHE
       });
 
       expect(model.hasBufferCache).to.be.true;
