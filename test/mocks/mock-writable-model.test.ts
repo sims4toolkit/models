@@ -315,11 +315,18 @@ describe("MockWritableModel", () => {
 
       context("does not have cache", () => {
         it("should serialize the model and return a compressed buffer", () => {
-          // TODO:
+          const mock = new MockWritableModel("hi");
+          const wrapper = mock.getCompressedBuffer(CompressionType.ZLIB, true);
+          expect(wrapper.compressionType).to.equal(CompressionType.ZLIB);
+          expect(wrapper.buffer.compare(ZLIB_BUFFER_CACHE.buffer)).to.equal(0);
         });
 
         it("should set the cache", () => {
-          // TODO:
+          const mock = new MockWritableModel("hi");
+          expect(mock.hasBufferCache).to.be.false;
+          const wrapper = mock.getCompressedBuffer(CompressionType.ZLIB, true);
+          expect(mock.hasBufferCache).to.be.true;
+          expect(wrapper).to.equal(mock.cache);
         });
       });
     });
@@ -327,31 +334,59 @@ describe("MockWritableModel", () => {
     context("cache = false", () => {
       context("has correctly compressed cache", () => {
         it("should return the cached buffer", () => {
-          // TODO:
+          const mock = new MockWritableModel("hi", {
+            initialBufferCache: ZLIB_BUFFER_CACHE
+          });
+
+          const wrapper = mock.getCompressedBuffer(CompressionType.ZLIB);
+          expect(wrapper).to.equal(ZLIB_BUFFER_CACHE);
         });
 
         it("should not delete the cache", () => {
-          // TODO:
+          const mock = new MockWritableModel("hi", {
+            initialBufferCache: ZLIB_BUFFER_CACHE
+          });
+
+          mock.getCompressedBuffer(CompressionType.ZLIB);
+          expect(mock.cache).to.equal(ZLIB_BUFFER_CACHE);
         });
       });
 
       context("has other cache", () => {
         it("should compress/convert the cache and return the result", () => {
-          // TODO:
+          const mock = new MockWritableModel("hi", {
+            initialBufferCache: UNCOMPRESSED_BUFFER_CACHE
+          });
+
+          const wrapper = mock.getCompressedBuffer(CompressionType.ZLIB);
+          expect(wrapper.buffer.compare(ZLIB_BUFFER_CACHE.buffer)).to.equal(0);
+          expect(wrapper.compressionType).to.equal(CompressionType.ZLIB);
         });
 
         it("should not overwrite the existing cache", () => {
-          // TODO:
+          const mock = new MockWritableModel("hi", {
+            initialBufferCache: UNCOMPRESSED_BUFFER_CACHE
+          });
+
+          mock.getCompressedBuffer(CompressionType.ZLIB);
+          expect(mock.cache).to.equal(UNCOMPRESSED_BUFFER_CACHE);
         });
       });
 
       context("does not have cache", () => {
         it("should serialize the model and return a compressed buffer", () => {
-          // TODO:
+          const mock = new MockWritableModel("hi");
+          const wrapper = mock.getCompressedBuffer(CompressionType.ZLIB);
+          expect(wrapper.compressionType).to.equal(CompressionType.ZLIB);
+          expect(wrapper.buffer.compare(ZLIB_BUFFER_CACHE.buffer)).to.equal(0);
         });
 
         it("should not set the cache", () => {
-          // TODO:
+          const mock = new MockWritableModel("hi");
+          expect(mock.hasBufferCache).to.be.false;
+          const wrapper = mock.getCompressedBuffer(CompressionType.ZLIB);
+          expect(mock.hasBufferCache).to.be.false;
+          expect(wrapper).to.not.equal(mock.cache);
         });
       });
     });
