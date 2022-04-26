@@ -127,15 +127,15 @@ export default abstract class WritableModel extends ApiModelBase {
    * the correct compression format is cached on this model, it will be
    * returned.
    * 
+   * @param targetCompressionType How the buffer should be compressed. If not
+   * given, the default compression type for this model is used.
    * @param cache Whether or not the buffer that is returned by this method
    * should be cached. If the buffer is already cached, it will not be deleted
    * if this argument is false. False by default.
-   * @param targetCompressionType How the buffer should be compressed. If not
-   * given, the default compression type for this model is used.
    */
   getCompressedBuffer(
-    cache: boolean = false,
     targetCompressionType: CompressionType = this.defaultCompressionType,
+    cache: boolean = false,
   ): CompressedBuffer {
     let decompressedBuffer: Buffer;
 
@@ -167,17 +167,17 @@ export default abstract class WritableModel extends ApiModelBase {
    * asynchronously, and returns it in a Promise. If a buffer in the correct
    * compression format is available on this model, it will be returned.
    * 
+   * @param targetCompressionType How the buffer should be compressed. If not
+   * given, the default compression type for this model is used.
    * @param cache Whether or not the buffer that is returned by this method
    * should be cached. If the buffer is already cached, it will not be deleted
    * if this argument is false. False by default.
-   * @param compressionType How the buffer should be compressed. If not given,
-   * the default compression type for this model is used.
    */
   async getCompressedBufferAsync(
+    targetCompressionType?: CompressionType,
     cache?: boolean,
-    compressionType?: CompressionType,
   ): Promise<CompressedBuffer> {
-    return promisify(() => this.getCompressedBuffer(cache, compressionType));
+    return promisify(() => this.getCompressedBuffer(targetCompressionType, cache));
   }
 
   onChange() {
