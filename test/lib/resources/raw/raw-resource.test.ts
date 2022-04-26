@@ -174,33 +174,97 @@ describe('RawResource', function () {
 
   //#region Methods
 
-  describe('#clone()', function () {
-    it('should create another raw resource with the same content', function () {
+  describe("#clone()", function () {
+    it("should copy the buffer", () => {
       const raw = RawResource.from(Buffer.from("file content"));
       const clone = raw.clone();
-      expect(clone.buffer.toString()).to.equal("file content");
+      expect(clone.buffer).to.equal(raw.buffer);
+    });
+
+    it("should copy defaultCompressionType", () => {
+      const raw = RawResource.from(Buffer.from("file content"), {
+        defaultCompressionType: CompressionType.InternalCompression
+      });
+
+      const clone = raw.clone();
+      expect(clone.defaultCompressionType).to.equal(CompressionType.InternalCompression);
+    });
+
+    it("should copy the reason", () => {
+      const raw = RawResource.from(Buffer.from("file content"), {
+        reason: "because"
+      });
+
+      const clone = raw.clone();
+      expect(clone.reason).to.equal("because");
     });
   });
 
-  // TODO: equals()
+  describe("#equals()", () => {
+    it("should return true if the buffers are the same", () => {
+      const raw = new RawResource(UNCOMPRESSED_BUFFER_CACHE);
+      const clone = raw.clone();
+      expect(raw.buffer).to.equal(clone.buffer);
+      expect(raw.equals(clone)).to.be.true;
+    });
 
-  // TODO: isXml()
+    it("should return true if the buffers are different, but have the same content", () => {
+      const raw = RawResource.from(Buffer.from("hi"));
+      const other = RawResource.from(Buffer.from("hi"));
+      expect(raw.buffer).to.not.equal(other.buffer);
+      expect(raw.equals(other)).to.be.true;
+    });
 
-  describe('#onChange()', function () {
-    it('should not affect the content', function () {
+    it("should return true if the buffers are the same but the reason is different", () => {
+      const raw = new RawResource(UNCOMPRESSED_BUFFER_CACHE);
+      const other = new RawResource(UNCOMPRESSED_BUFFER_CACHE, {
+        reason: "something"
+      });
+      expect(raw.buffer).to.equal(other.buffer);
+      expect(raw.equals(other)).to.be.true;
+    });
+
+    it("should return false if the buffers have different content", () => {
+      const raw = RawResource.from(Buffer.from("hi"));
+      const other = RawResource.from(Buffer.from("bye"));
+      expect(raw.equals(other)).to.be.false;
+    });
+
+    // TODO: what about when the buffers ARE the same, but one is compressed and one isn't?
+  });
+
+  describe("#isXml()", () => {
+    it("should return true if the buffer contains XML", () => {
+      const raw = RawResource.from(Buffer.from(`<?xml version="1.0" encoding="utf-8"?>\n<I c="GameObject" i="object" m="objects.game_object" n="frankk_LB:objectTuning_textbook_Tartosiano" s="10565256321594783463"/>`));
+      expect(raw.isXml()).to.be.true;
+    });
+
+    it("should return false if the buffer does not contain XML", () => {
+      const raw = RawResource.from(Buffer.from(`something`));
+      expect(raw.isXml()).to.be.false;
+    });
+
+    // TODO: what about when buffer is compressed, and uncompressed is XML?
+  });
+
+  describe("#onChange()", () => {
+    it("should not affect the content", () => {
       const raw = RawResource.from(Buffer.from("file content"));
       expect(raw.buffer.toString()).to.equal("file content");
       raw.onChange();
       expect(raw.buffer.toString()).to.equal("file content");
     });
 
-    it('should not uncache the buffer', function () {
+    it("should not uncache the buffer", () => {
       const raw = RawResource.from(Buffer.from("file content"));
       expect(raw.hasBufferCache).to.be.true;
       raw.onChange();
       expect(raw.hasBufferCache).to.be.true;
     });
   });
+
+  // TODO: what about getBuffer, getCompressedBuffer when cache = true? does
+  // the buffer get replaced? if so, does that affect isXml()?
 
   //#endregion Methods
 });
