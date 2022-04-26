@@ -52,6 +52,8 @@ describe('RawResource', function () {
       const raw = RawResource.from(originalBuffer);
       expect(raw.buffer).to.equal(originalBuffer);
     });
+
+    // TODO: does it cache the buffer? should it?
   });
 
   //#endregion Properties
@@ -254,7 +256,17 @@ describe('RawResource', function () {
       expect(raw.isXml()).to.be.false;
     });
 
-    // TODO: what about when buffer is compressed, and uncompressed is XML?
+    it("should return true when the buffer is compressed, but contains XML when uncompressed", () => {
+      const xmlBuffer = Buffer.from(`<?xml version="1.0" encoding="utf-8"?>\n<I c="GameObject" i="object" m="objects.game_object" n="frankk_LB:objectTuning_textbook_Tartosiano" s="10565256321594783463"/>`);
+
+      const raw = new RawResource({
+        buffer: compressBuffer(xmlBuffer, CompressionType.ZLIB),
+        compressionType: CompressionType.ZLIB,
+        sizeDecompressed: xmlBuffer.byteLength
+      });
+
+      expect(raw.isXml()).to.be.true;
+    });
   });
 
   describe("#onChange()", () => {
@@ -272,9 +284,6 @@ describe('RawResource', function () {
       expect(raw.hasBufferCache).to.be.true;
     });
   });
-
-  // TODO: what about getBuffer, getCompressedBuffer when cache = true? does
-  // the buffer get replaced? if so, does that affect isXml()?
 
   //#endregion Methods
 });

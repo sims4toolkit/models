@@ -80,7 +80,6 @@ export default class RawResource extends WritableModel implements Resource {
   }
 
   isXml(): boolean {
-    // FIXME: consider compression?
     return bufferContainsXml(this.buffer);
   }
 
