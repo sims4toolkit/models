@@ -47,13 +47,23 @@ describe('RawResource', function () {
       expect(() => raw.buffer = Buffer.from("hi")).to.throw();
     });
 
-    it('should return the original buffer', function () {
+    it('should return the original buffer if uncompressed', function () {
       const originalBuffer = Buffer.from("file content");
       const raw = RawResource.from(originalBuffer);
       expect(raw.buffer).to.equal(originalBuffer);
     });
 
-    // TODO: does it cache the buffer? should it?
+    it('should decompress the buffer if compressed', function () {
+      const raw = new RawResource(ZLIB_BUFFER_CACHE);
+      expect(raw.buffer.compare(UNCOMPRESSED_BUFFER_CACHE.buffer)).to.equal(0);
+    });
+
+    it('should not cache the decompressed buffer if compressed', function () {
+      const raw = new RawResource(ZLIB_BUFFER_CACHE);
+      const firstBuffer = raw.buffer;
+      const secondBuffer = raw.buffer;
+      expect(firstBuffer).to.not.equal(secondBuffer);
+    });
   });
 
   //#endregion Properties
