@@ -243,8 +243,10 @@ describe("MockWritableModel", () => {
   });
 
   describe("#getBufferAsync()", () => {
-    it("should return the same result as getBuffer()", () => {
-      // TODO:
+    it("should return the same result as getBuffer()", async () => {
+      const mock = new MockWritableModel("hi");
+      const buffer = await mock.getBufferAsync();
+      expect(buffer.toString()).to.equal("hi");
     });
   });
 
@@ -315,8 +317,11 @@ describe("MockWritableModel", () => {
   });
 
   describe("#getCompressedBufferAsync()", () => {
-    it("should return the same result as getCompressedBuffer()", () => {
-      // TODO:
+    it("should return the same result as getCompressedBuffer()", async () => {
+      const mock = new MockWritableModel("hi");
+      const wrapper = await mock.getCompressedBufferAsync();
+      expect(wrapper.compressionType).to.equal(CompressionType.ZLIB);
+      expect(wrapper.buffer.compare(ZLIB_BUFFER_CACHE.buffer)).to.equal(0);
     });
   });
 
