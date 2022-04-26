@@ -1,4 +1,5 @@
 import { expect } from "chai";
+import { CompressionType } from "@s4tk/compression";
 import MockWritableModel from "./mock-writable-model";
 import MockOwner from "./mock-owner";
 
@@ -39,27 +40,44 @@ describe("MockWritableModel", () => {
 
   describe("#constructor", () => {
     it("should have an undefined owner if one was not provided", () => {
-      // TODO:
+      const model = new MockWritableModel();
+      expect(model.owner).to.be.undefined;
     });
 
     it("should use the owner that was provided", () => {
-      // TODO:
+      const owner = new MockOwner();
+      const model = new MockWritableModel("", { owner });
+      expect(model.owner).to.equal(owner);
     });
 
     it("should set defaultCompressionType to ZLIB if not provided", () => {
-      // TODO:
+      const model = new MockWritableModel();
+      expect(model.defaultCompressionType).to.equal(CompressionType.ZLIB);
     });
 
     it("should use the defaultCompressionType that was provided", () => {
-      // TODO:
+      const model = new MockWritableModel("", {
+        defaultCompressionType: CompressionType.Uncompressed
+      });
+
+      expect(model.defaultCompressionType).to.equal(CompressionType.Uncompressed);
     });
 
     it("should not have a cache if initialBufferCache was not provided", () => {
-      // TODO:
+      const model = new MockWritableModel();
+      expect(model.hasBufferCache).to.be.false;
     });
 
     it("should use the initialBufferCache that was provided", () => {
-      // TODO:
+      const model = new MockWritableModel("hi", {
+        initialBufferCache: {
+          buffer: Buffer.from("hi"),
+          compressionType: CompressionType.Uncompressed,
+          sizeDecompressed: 2
+        }
+      });
+
+      expect(model.hasBufferCache).to.be.true;
     });
   });
 
