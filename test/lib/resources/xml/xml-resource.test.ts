@@ -234,23 +234,36 @@ describe('XmlResource', function () {
     });
 
     it("should use defaultCompressionType of ZLIB if not given", () => {
-      // TODO:
+      const tun = new XmlResource();
+      expect(tun.defaultCompressionType).to.equal(CompressionType.ZLIB);
     });
 
     it("should use owner that is given", () => {
-      // TODO:
+      const owner = new MockOwner();
+      const tun = new XmlResource("something", { owner });
+      expect(tun.owner).to.equal(owner);
     });
 
     it("should have undefined owner if not given", () => {
-      // TODO:
+      const tun = new XmlResource();
+      expect(tun.owner).to.be.undefined;
     });
 
     it("should use initialBufferCache that is given", () => {
-      // TODO:
+      const initialBufferCache: CompressedBuffer = {
+        buffer: Buffer.from("something"),
+        compressionType: CompressionType.Uncompressed,
+        sizeDecompressed: 9
+      };
+
+      const tun = new XmlResource("something", { initialBufferCache });
+      expect(tun.hasBufferCache).to.be.true;
+      expect(tun.getCompressedBuffer(CompressionType.Uncompressed)).to.equal(initialBufferCache);
     });
 
     it("should not be cached if initialBufferCache is not given", () => {
-      // TODO:
+      const tun = new XmlResource("something");
+      expect(tun.hasBufferCache).to.be.false;
     });
   });
 
