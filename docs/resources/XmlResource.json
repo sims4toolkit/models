@@ -106,22 +106,14 @@
           "returnType": {
             "name": "XmlResource"
           },
-          "description": "Creates a new XmlResource with the given content. Only supply the content as a string OR a DOM, but NOT both, or else an exception will be thrown.",
+          "description": "Creates a new XML resource with the given content. If no content is given, the tuning resource is blank.",
           "arguments": [
             {
-              "description": "XML content of this resource as a string",
+              "description": "Either string or DOM content of this model",
               "optional": true,
               "name": "content",
               "type": {
-                "name": "string"
-              }
-            },
-            {
-              "description": "DOM of this resource's XML contents",
-              "optional": true,
-              "name": "dom",
-              "type": {
-                "name": "XmlDocumentNode",
+                "name": "string | XmlDocumentNode",
                 "path": {
                   "pkg": "xml-dom",
                   "group": "classes",
@@ -151,7 +143,7 @@
               "code": "const xmlFromString = new XmlResource(\"<I n=\\\"some_file\\\"><T n=\\\"something\\\">50</T></I>\");"
             },
             {
-              "code": "const xmlFromDom = new XmlResource(\n  null,\n  new XmlDocumentNode(...) // create it however you want\n);"
+              "code": "const xmlFromDom = new XmlResource(\n  new XmlDocumentNode(...) // create it however you want\n);"
             }
           ]
         },

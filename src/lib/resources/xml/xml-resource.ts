@@ -75,22 +75,19 @@ export default class XmlResource extends WritableModel implements Resource {
   //#region Initialization
 
   /**
-   * Creates a new XML resource with the given content or DOM. If no content or
-   * DOM is given, the tuning resource is blank. Supply just XML content *or* a
-   * DOM, but not both, or else an exception will occur.
+   * Creates a new XML resource with the given content. If no content is given,
+   * the tuning resource is blank.
    *
-   * @param content XML content of this resource as a string
-   * @param dom DOM of this resource's XML contents
+   * @param content Either string or DOM content of this model
    * @param options Object of optional arguments
    */
-  constructor(content: string = "", dom?: XmlDocumentNode, options?: WritableModelCreationOptions) {
+  constructor(content: string | XmlDocumentNode = "", options?: WritableModelCreationOptions) {
     super(options);
 
-    if (dom) {
-      if (content) throw new Error("Cannot initialize XmlResource with both content and DOM.");
-      this._dom = dom;
+    if (!content || (typeof content === "string")) {
+      this._content = (content as string) ?? "";
     } else {
-      this._content = content;
+      this._dom = content;
     }
   }
 
@@ -110,7 +107,7 @@ export default class XmlResource extends WritableModel implements Resource {
       sizeDecompressed: buffer.byteLength
     };
 
-    return new XmlResource(buffer.toString(options?.bufferEncoding ?? "utf8"), null, {
+    return new XmlResource(buffer.toString(options?.bufferEncoding ?? "utf8"), {
       defaultCompressionType: options?.defaultCompressionType,
       owner: options?.owner,
       initialBufferCache,
@@ -134,7 +131,7 @@ export default class XmlResource extends WritableModel implements Resource {
   //#region Public Methods
 
   clone(): XmlResource {
-    return new XmlResource(this.content, null, {
+    return new XmlResource(this.content, {
       defaultCompressionType: this.defaultCompressionType,
       initialBufferCache: this._getBufferCache()
     });

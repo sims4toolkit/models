@@ -208,7 +208,47 @@ describe('XmlResource', function () {
 
   //#region Initialization
 
-  // TODO: constructor w/ arguments
+  describe("#constructor", () => {
+    it("should use the content that is given", () => {
+      const tun = new XmlResource("stuff");
+      expect(tun.content).to.equal("stuff");
+    });
+
+    it("should use the DOM that is given", () => {
+      const dom = new XmlDocumentNode(new XmlElementNode({ tag: "I" }));
+      const tun = new XmlResource(null, dom);
+      expect(tun.dom).to.equal(dom);
+    });
+
+    it("should throw if both content and DOM are given", () => {
+      const dom = new XmlDocumentNode(new XmlElementNode({ tag: "I" }));
+      expect(() => new XmlResource("stuff", dom)).to.throw();
+    });
+
+    it("should use defaultCompressionType that is given", () => {
+      // TODO:
+    });
+
+    it("should use defaultCompressionType of ZLIB if not given", () => {
+      // TODO:
+    });
+
+    it("should use owner that is given", () => {
+      // TODO:
+    });
+
+    it("should have undefined owner if not given", () => {
+      // TODO:
+    });
+
+    it("should use initialBufferCache that is given", () => {
+      // TODO:
+    });
+
+    it("should not be cached if initialBufferCache is not given", () => {
+      // TODO:
+    });
+  });
 
   describe('#from()', function () {
     it("should create a tuning resource with the content of the given buffer", function () {
