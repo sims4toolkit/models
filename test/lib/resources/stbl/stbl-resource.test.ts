@@ -28,58 +28,11 @@ function getStbl(filename: string, saveBuffer = false): StringTableResource {
 describe("StringTableResource", () => {
   //#region Properties
 
-  describe("#buffer", () => {
-    it("should serialize a stbl that is empty", () => {
-      const original = StringTableResource.create();
-      const stbl = StringTableResource.from(original.buffer);
-      expect(stbl).to.not.equal(original);
-      expect(stbl.size).to.equal(0);
-    });
-
-    it("should return the cached buffer if it wasn't changed", () => {
-      const buffer = getBuffer("Normal");
-      const stbl = StringTableResource.from(buffer, { saveBuffer: true });
-      expect(stbl.buffer).to.equal(buffer);
-    });
-
-    it("should serialize a stbl that wasn't changed, but was uncached", () => {
-      const buffer = getBuffer("Normal");
-      const stbl = StringTableResource.from(buffer, { saveBuffer: true });
-      stbl.onChange();
-      expect(stbl.buffer).to.not.equal(buffer);
-      expect(stbl.equals(getStbl("Normal"))).to.be.true;
-    });
-
-    it("should serialize a stbl that had entries added", () => {
-      const original = getStbl("Normal", true);
-      original.addAndHash("new string");
-      const stbl = StringTableResource.from(original.buffer);
-      expect(stbl).to.not.equal(original);
-      expect(stbl.equals(original)).to.be.true;
-    });
-
-    it("should serialize a stbl that had entries removed", () => {
-      const original = getStbl("Normal", true);
-      original.delete(0);
-      const stbl = StringTableResource.from(original.buffer);
-      expect(stbl).to.not.equal(original);
-      expect(stbl.equals(original)).to.be.true;
-    });
-
-    it("should serialize a stbl that had entries mutated", () => {
-      const original = getStbl("Normal", true);
-      original.get(0).value = "new string";
-      const stbl = StringTableResource.from(original.buffer);
-      expect(stbl).to.not.equal(original);
-      expect(stbl.equals(original)).to.be.true;
-    });
-  });
-
   describe("#entries", () => {
     it("should return the entries in an array", () => {
       const stbl = getStbl("Normal");
       expect(stbl.entries).to.be.an('Array').with.lengthOf(3);
-      const [ first, second, third ] = stbl.entries;
+      const [first, second, third] = stbl.entries;
       expect(first.key).to.equal(0x7E08629A);
       expect(first.value).to.equal("This is a string.");
       expect(second.key).to.equal(0xF098F4B5);
@@ -99,10 +52,10 @@ describe("StringTableResource", () => {
 
     it("should not uncache the model when mutated", () => {
       const stbl = getStbl("Normal", true);
-      expect(stbl.isCached).to.be.true;
+      expect(stbl.hasBufferCache).to.be.true;
       const entries = stbl.entries;
       entries.splice(0, 1);
-      expect(stbl.isCached).to.be.true;
+      expect(stbl.hasBufferCache).to.be.true;
     });
 
     it("should be the same object when accessed more than once without changes", () => {
@@ -133,48 +86,11 @@ describe("StringTableResource", () => {
     });
   });
 
-  describe("#saveBuffer", () => {
-    it("should be false by default", () => {
-      const stbl = StringTableResource.from(getBuffer("Normal"));
-      expect(stbl.saveBuffer).to.be.false;
-    });
-
-    it("should delete the buffer if set to false", () => {
-      const stbl = StringTableResource.from(getBuffer("Normal"), { saveBuffer: true });
-      expect(stbl.isCached).to.be.true;
-      stbl.saveBuffer = false;
-      expect(stbl.isCached).to.be.false;
-    });
-
-    it("should not generate a buffer if set to true", () => {
-      const stbl = StringTableResource.from(getBuffer("Normal"), { saveBuffer: false });
-      expect(stbl.isCached).to.be.false;
-      stbl.saveBuffer = true;
-      expect(stbl.isCached).to.be.false;
-    });
-
-    it("should cache the buffer after getting it when set to true", () => {
-      const stbl = StringTableResource.from(getBuffer("Normal"));
-      stbl.saveBuffer = true;
-      expect(stbl.isCached).to.be.false;
-      stbl.buffer;
-      expect(stbl.isCached).to.be.true;
-    });
-
-    it("should not cache the buffer after getting it when set to false", () => {
-      const stbl = StringTableResource.from(getBuffer("Normal"));
-      stbl.saveBuffer = false;
-      expect(stbl.isCached).to.be.false;
-      stbl.buffer;
-      expect(stbl.isCached).to.be.false;
-    });
-  });
-
   // #isChanged tested as part of other properties/methods
 
   describe("#size", () => {
     it("should return 0 when the stbl is empty", () => {
-      const stbl = StringTableResource.create();
+      const stbl = new StringTableResource();
       expect(stbl.size).to.equal(0);
     });
 
@@ -209,72 +125,32 @@ describe("StringTableResource", () => {
 
   //#region Initialization
 
-  describe("static#create()", () => {
-    it("should not be cached", () => {
-      const stbl = StringTableResource.create();
-      expect(stbl.isCached).to.be.false;
-    });
-
-    it("should not be cached, even if saveBuffer = true", () => {
-      const stbl = StringTableResource.create({ saveBuffer: true });
-      expect(stbl.isCached).to.be.false;
-    });
-
-    it("should be empty if nothing is given", () => {
-      const stbl = StringTableResource.create();
-      expect(stbl.size).to.equal(0);
-    });
-
-    it("should create entries from the given ones", () => {
-      const stbl = StringTableResource.create({ entries: [
-        { key: 123, value: "hi" },
-        { key: 456, value: "bye" }
-      ]});
-
-      expect(stbl.size).to.equal(2);
-      expect(stbl.get(0).key).to.equal(123);
-      expect(stbl.get(0).value).to.equal("hi");
-      expect(stbl.get(1).key).to.equal(456);
-      expect(stbl.get(1).value).to.equal("bye");
-    });
-
-    it("should not mutate the given entries", () => {
-      const original = StringTableResource.create();
-      const originalEntry = original.add(123, "hi");
-      const stbl = StringTableResource.create({ entries: [ originalEntry ]});
-
-      stbl.get(0).value = "bye";
-      expect(originalEntry.value).to.equal("hi");
-      expect(stbl.get(0).value).to.equal("bye");
-    });
-  });
-
   describe("static#from()", () => {
     context("stbl content is valid", () => {
       it("should be cached if saveBuffer = true", () => {
         const stbl = StringTableResource.from(getBuffer("Normal"), { saveBuffer: true });
-        expect(stbl.isCached).to.be.true;
+        expect(stbl.hasBufferCache).to.be.true;
       });
 
       it("should not be cached if saveBuffer = false", () => {
         const stbl = StringTableResource.from(getBuffer("Normal"), { saveBuffer: false });
-        expect(stbl.isCached).to.be.false;
+        expect(stbl.hasBufferCache).to.be.false;
       });
 
       it("should not be cached by default", () => {
         const stbl = StringTableResource.from(getBuffer("Normal"));
-        expect(stbl.isCached).to.be.false;
+        expect(stbl.hasBufferCache).to.be.false;
       });
-  
+
       it("should read empty stbl", () => {
         const stbl = StringTableResource.from(getBuffer("Empty"));
         expect(stbl.size).to.equal(0);
       });
-  
+
       it("should read stbl with entries", () => {
         const stbl = StringTableResource.from(getBuffer("Normal"));
         expect(stbl.size).to.equal(3);
-        const [ first, second, third ] = stbl.entries;
+        const [first, second, third] = stbl.entries;
         expect(first.key).to.equal(0x7E08629A);
         expect(first.value).to.equal("This is a string.");
         expect(second.key).to.equal(0xF098F4B5);
@@ -292,7 +168,7 @@ describe("StringTableResource", () => {
       it("should load identical entries as their own objects", () => {
         const stbl = StringTableResource.from(getBuffer("RepeatedStrings"));
         expect(stbl.size).to.equal(6);
-        const [ first, second, third, fourth, fifth, sixth ] = stbl.entries;
+        const [first, second, third, fourth, fifth, sixth] = stbl.entries;
 
         expect(first).to.not.equal(second);
         expect(first.equals(second)).to.be.true;
@@ -306,28 +182,28 @@ describe("StringTableResource", () => {
         expect(fifth.value).to.not.equal(sixth.value);
       });
     });
-    
+
     context("stbl content is invalid", () => {
-      it("should throw if ignoreErrors = false", () => {
+      it("should throw if recoveryMode = false", () => {
         const buffer = getBuffer("Corrupt");
-        expect(() => StringTableResource.from(buffer, { ignoreErrors: false })).to.throw();
+        expect(() => StringTableResource.from(buffer, { recoveryMode: false })).to.throw();
       });
 
-      it("should throw even if ignoreErrors = true", () => {
+      it("should throw even if recoveryMode = true", () => {
         const buffer = getBuffer("Corrupt");
-        expect(() => StringTableResource.from(buffer, { ignoreErrors: true })).to.throw();
+        expect(() => StringTableResource.from(buffer, { recoveryMode: true })).to.throw();
       });
     });
 
     context("stbl header is invalid", () => {
-      it("should throw if ignoreErrors = false", () => {
+      it("should throw if recoveryMode = false", () => {
         const buffer = getBuffer("CorruptHeader");
-        expect(() => StringTableResource.from(buffer, { ignoreErrors: false })).to.throw();
+        expect(() => StringTableResource.from(buffer, { recoveryMode: false })).to.throw();
       });
 
-      it("should not throw if ignoreErrors = true", () => {
+      it("should not throw if recoveryMode = true", () => {
         const buffer = getBuffer("CorruptHeader");
-        expect(() => StringTableResource.from(buffer, { ignoreErrors: true })).to.not.throw();
+        expect(() => StringTableResource.from(buffer, { recoveryMode: true })).to.not.throw();
       });
     });
   });
@@ -353,7 +229,7 @@ describe("StringTableResource", () => {
 
   describe("#add()", () => {
     it("should add the given entry to an empty table", () => {
-      const stbl = StringTableResource.create();
+      const stbl = new StringTableResource();
       expect(stbl.size).to.equal(0);
       stbl.add(123, "hi");
       expect(stbl.size).to.equal(1);
@@ -374,13 +250,13 @@ describe("StringTableResource", () => {
 
     it("should uncache the buffer", () => {
       const stbl = getStbl("Normal", true);
-      expect(stbl.isCached).to.be.true;
+      expect(stbl.hasBufferCache).to.be.true;
       stbl.add(123, "hi");
-      expect(stbl.isCached).to.be.false;
+      expect(stbl.hasBufferCache).to.be.false;
     });
 
     it("should add the key to the key map", () => {
-      const stbl = StringTableResource.create();
+      const stbl = new StringTableResource();
       expect(stbl.hasKey(123)).to.be.false;
       stbl.add(123, "hi");
       expect(stbl.hasKey(123)).to.be.true;
@@ -397,14 +273,14 @@ describe("StringTableResource", () => {
 
   describe("#addAll()", () => {
     it("should add the given entries", () => {
-      const stbl = StringTableResource.create();
+      const stbl = new StringTableResource();
       expect(stbl.size).to.equal(0);
       stbl.addAll([
         { key: 123, value: "hi" },
         { key: 456, value: "bye" }
       ]);
       expect(stbl.size).to.equal(2);
-      const [ first, second ] = stbl.entries;
+      const [first, second] = stbl.entries;
       expect(first.key).to.equal(123);
       expect(first.value).to.equal("hi");
       expect(second.key).to.equal(456);
@@ -414,7 +290,7 @@ describe("StringTableResource", () => {
 
   describe("#addAndHash()", () => {
     it("should add the given string with its fnv32 hash", () => {
-      const stbl = StringTableResource.create();
+      const stbl = new StringTableResource();
       expect(stbl.size).to.equal(0);
       stbl.addAndHash("hello");
       expect(stbl.size).to.equal(1);
@@ -440,9 +316,9 @@ describe("StringTableResource", () => {
 
     it("should uncache the buffer", () => {
       const stbl = getStbl("Normal", true);
-      expect(stbl.isCached).to.be.true;
+      expect(stbl.hasBufferCache).to.be.true;
       stbl.clear();
-      expect(stbl.isCached).to.be.false;
+      expect(stbl.hasBufferCache).to.be.false;
     });
 
     it("should reset the entries property", () => {
@@ -464,15 +340,15 @@ describe("StringTableResource", () => {
 
   describe("#clone()", () => {
     it("should copy the entries", () => {
-      const stbl = StringTableResource.create({ entries: [
+      const stbl = new StringTableResource([
         { key: 123, value: "hi" },
         { key: 456, value: "bye" }
-      ]});
+      ]);
 
       const clone = stbl.clone();
 
       expect(clone.size).to.equal(2);
-      const [ first, second ] = clone.entries;
+      const [first, second] = clone.entries;
       expect(first.key).to.equal(123);
       expect(first.value).to.equal("hi");
       expect(second.key).to.equal(456);
@@ -480,10 +356,10 @@ describe("StringTableResource", () => {
     });
 
     it("should not mutate the original", () => {
-      const stbl = StringTableResource.create({ entries: [
+      const stbl = new StringTableResource([
         { key: 123, value: "hi" },
         { key: 456, value: "bye" }
-      ]});
+      ]);
 
       const clone = stbl.clone();
       clone.add(789, "yeehaw");
@@ -492,10 +368,10 @@ describe("StringTableResource", () => {
     });
 
     it("should not mutate the entries of the original", () => {
-      const stbl = StringTableResource.create({ entries: [
+      const stbl = new StringTableResource([
         { key: 123, value: "hi" },
         { key: 456, value: "bye" }
-      ]});
+      ]);
 
       const clone = stbl.clone();
       clone.getByKey(123).value = "hello";
@@ -505,7 +381,7 @@ describe("StringTableResource", () => {
 
     it("should not copy the owner", () => {
       const owner = new MockOwner();
-      const stbl = StringTableResource.create();
+      const stbl = new StringTableResource();
       stbl.owner = owner;
       expect(stbl.owner).to.equal(owner);
       const clone = stbl.clone();
@@ -513,13 +389,13 @@ describe("StringTableResource", () => {
     });
 
     it("should set itself as the owner of the new entries", () => {
-      const stbl = StringTableResource.create({ entries: [
+      const stbl = new StringTableResource([
         { key: 123, value: "hi" },
         { key: 456, value: "bye" }
-      ]});
+      ]);
 
       const clone = stbl.clone();
-      const [ first, second ] = clone.entries;
+      const [first, second] = clone.entries;
       expect(first.owner).to.equal(clone);
       expect(second.owner).to.equal(clone);
     });
@@ -535,9 +411,9 @@ describe("StringTableResource", () => {
 
     it("should uncache the buffer", () => {
       const stbl = getStbl("Normal", true);
-      expect(stbl.isCached).to.be.true;
+      expect(stbl.hasBufferCache).to.be.true;
       stbl.delete(1);
-      expect(stbl.isCached).to.be.false;
+      expect(stbl.hasBufferCache).to.be.false;
     });
 
     it("should remove the key from the key map", () => {
@@ -641,20 +517,20 @@ describe("StringTableResource", () => {
     });
 
     it("should return an entry after adding it", () => {
-      const stbl = StringTableResource.create();
+      const stbl = new StringTableResource();
       stbl.add(123, "hi");
       expect(stbl.getByKey(123).value).to.equal("hi");
     });
 
     it("should return the correct entry after changing its key", () => {
-      const stbl = StringTableResource.create();
+      const stbl = new StringTableResource();
       const entry = stbl.add(123, "hi");
       entry.key = 456;
       expect(stbl.getByKey(456).value).to.equal("hi");
     });
 
     it("should return undefined after removing the entry", () => {
-      const stbl = StringTableResource.create();
+      const stbl = new StringTableResource();
       const entry = stbl.add(123, "hi");
       entry.key = 456;
       expect(stbl.getByKey(123)).to.be.undefined;
@@ -671,7 +547,7 @@ describe("StringTableResource", () => {
     });
 
     it("should return the correct entry if there are more than one entry with this key, and the first was deleted", () => {
-      const stbl = StringTableResource.create();
+      const stbl = new StringTableResource();
       stbl.add(123, "hi");
       stbl.add(123, "bye");
       expect(stbl.getByKey(123).value).to.equal("hi");
@@ -684,12 +560,12 @@ describe("StringTableResource", () => {
 
   describe("#getByValue()", () => {
     it("should return the first entry with the given value", () => {
-      const stbl = StringTableResource.create({ entries: [
+      const stbl = new StringTableResource([
         { key: 1, value: "first" },
         { key: 2, value: "second" },
         { key: 3, value: "last" },
         { key: 4, value: "last" },
-      ]});
+      ]);
 
       expect(stbl.getByValue("first").key).to.equal(1);
       expect(stbl.getByValue("second").key).to.equal(2);
@@ -697,11 +573,11 @@ describe("StringTableResource", () => {
     });
 
     it("should return undefined if no entries have the given value", () => {
-      const stbl = StringTableResource.create({ entries: [
+      const stbl = new StringTableResource([
         { key: 1, value: "first" },
         { key: 2, value: "second" },
         { key: 3, value: "third" },
-      ]});
+      ]);
 
       expect(stbl.getByValue("last")).to.be.undefined;
     });
@@ -727,7 +603,7 @@ describe("StringTableResource", () => {
     });
 
     it("should return the ID for an entry after adding it", () => {
-      const stbl = StringTableResource.create();
+      const stbl = new StringTableResource();
       stbl.add(123, "hi");
       expect(stbl.getIdForKey(123)).to.equal(0);
     });
@@ -811,7 +687,7 @@ describe("StringTableResource", () => {
     });
 
     it("should return true if there are more than one entry with this key, and the first was deleted", () => {
-      const stbl = StringTableResource.create();
+      const stbl = new StringTableResource();
       stbl.add(123, "hi");
       stbl.add(123, "bye");
       stbl.deleteByKey(123);
@@ -821,30 +697,24 @@ describe("StringTableResource", () => {
 
   describe("#hasValue()", () => {
     it("should return true if the stbl contains the given value", () => {
-      const stbl = StringTableResource.create({
-        entries: [ { key: 1, value: "hi" } ]
-      });
-
+      const stbl = new StringTableResource([{ key: 1, value: "hi" }]);
       expect(stbl.hasValue("hi")).to.be.true;
     });
 
     it("should return false if the stbl does not contain the given value", () => {
-      const stbl = StringTableResource.create({
-        entries: [ { key: 1, value: "hello" } ]
-      });
-
+      const stbl = new StringTableResource([{ key: 1, value: "hello" }]);
       expect(stbl.hasValue("hi")).to.be.false;
     });
 
     it("should return false if the stbl is empty", () => {
-      const stbl = StringTableResource.create();
+      const stbl = new StringTableResource();
       expect(stbl.hasValue("hi")).to.be.false;
     });
   });
 
   describe("#isXml()", () => {
     it("should return false", () => {
-      const stbl = StringTableResource.create();
+      const stbl = new StringTableResource();
       expect(stbl.isXml()).to.be.false;
     });
   });
@@ -862,9 +732,9 @@ describe("StringTableResource", () => {
   describe("#onChange()", () => {
     it("should uncache the buffer if saveBuffer = true", () => {
       const stbl = getStbl("Normal", true);
-      expect(stbl.isCached).to.be.true;
+      expect(stbl.hasBufferCache).to.be.true;
       stbl.onChange();
-      expect(stbl.isCached).to.be.false;
+      expect(stbl.hasBufferCache).to.be.false;
     });
 
     it("should notify the owner to uncache if saveBuffer = true", () => {
