@@ -2,8 +2,10 @@ import * as fs from "fs";
 import * as path from "path";
 import { expect } from "chai";
 import { XmlDocumentNode, XmlElementNode, XmlValueNode } from "@s4tk/xml-dom";
+import { CompressedBuffer, CompressionType } from "@s4tk/compression";
 import { XmlResource } from '../../../../dst/models';
 import { EncodingType } from "../../../../dst/enums";
+import MockOwner from "../../../mocks/mock-owner";
 
 //#region Helpers & Constants
 
@@ -209,16 +211,74 @@ describe('XmlResource', function () {
   // TODO: constructor w/ arguments
 
   describe('#from()', function () {
-    // TODO: test new arguments
-
     it("should create a tuning resource with the content of the given buffer", function () {
       const tun = XmlResource.from(Buffer.from("Hello"));
       expect(tun.content).to.equal("Hello");
     });
 
-    it("should cache the buffer if saveBuffer = true", function () {
-      const tun = XmlResource.from(Buffer.from("Hello"), { saveBuffer: true });
+    it("should use the owner that is provided", () => {
+      const owner = new MockOwner();
+      const tun = XmlResource.from(Buffer.from("Hello"), { owner });
+      expect(tun.owner).to.equal(owner);
+    });
+
+    it("should have an undefined owner if none is provided", () => {
+      const tun = XmlResource.from(Buffer.from("Hello"));
+      expect(tun.owner).to.be.undefined;
+    });
+
+    it("should have a defaultCompressionType of ZLIB if none is provided", () => {
+      const tun = XmlResource.from(Buffer.from("Hello"));
+      expect(tun.defaultCompressionType).to.equal(CompressionType.ZLIB);
+    });
+
+    it("should use the provided defaultCompressionType", () => {
+      const tun = XmlResource.from(Buffer.from("Hello"), {
+        defaultCompressionType: CompressionType.InternalCompression
+      });
+
+      expect(tun.defaultCompressionType).to.equal(CompressionType.InternalCompression);
+    });
+
+    it("should cache the initialBufferCache that is provided if saveBuffer is true", () => {
+      const buffer = Buffer.from("Hello");
+
+      const wrapper: CompressedBuffer = {
+        buffer,
+        sizeDecompressed: 5,
+        compressionType: CompressionType.Uncompressed
+      };
+
+      const tun = XmlResource.from(buffer, {
+        saveBuffer: true,
+        initialBufferCache: wrapper
+      });
+
       expect(tun.hasBufferCache).to.be.true;
+      expect(tun.getCompressedBuffer(CompressionType.Uncompressed)).to.equal(wrapper);
+    });
+
+    it("should not cache the initialBufferCache that is provided if saveBuffer is false", () => {
+      const buffer = Buffer.from("Hello");
+
+      const wrapper: CompressedBuffer = {
+        buffer,
+        sizeDecompressed: 5,
+        compressionType: CompressionType.Uncompressed
+      };
+
+      const tun = XmlResource.from(buffer, {
+        initialBufferCache: wrapper
+      });
+
+      expect(tun.hasBufferCache).to.be.false;
+    });
+
+    it("should cache the given buffer if no initialBufferCache is provided and saveBuffer is true", function () {
+      const buffer = Buffer.from("Hello");
+      const tun = XmlResource.from(buffer, { saveBuffer: true });
+      expect(tun.hasBufferCache).to.be.true;
+      expect(tun.getBuffer()).to.equal(buffer);
     });
 
     it("should not cache the buffer if saveBuffer = false", function () {
