@@ -76,7 +76,7 @@ export default class RawResource extends WritableModel implements Resource {
   }
 
   equals(other: RawResource): boolean {
-    return other && (this.buffer.compare(other.buffer) === 0);
+    return Boolean(other) && (this.buffer.compare(other.buffer) === 0);
   }
 
   isXml(): boolean {

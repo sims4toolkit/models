@@ -230,7 +230,17 @@ describe('RawResource', function () {
       expect(raw.equals(other)).to.be.false;
     });
 
-    // TODO: what about when the buffers ARE the same, but one is compressed and one isn't?
+    it("should return true when the buffers are the same, but in different compression formats", () => {
+      const uncompressed = new RawResource(UNCOMPRESSED_BUFFER_CACHE);
+      const compressed = new RawResource(ZLIB_BUFFER_CACHE);
+      expect(UNCOMPRESSED_BUFFER_CACHE.buffer.compare(ZLIB_BUFFER_CACHE.buffer)).to.not.equal(0);
+      expect(uncompressed.equals(compressed)).to.be.true;
+    });
+
+    it("should return false if other is not provided", () => {
+      const raw = new RawResource(UNCOMPRESSED_BUFFER_CACHE);
+      expect(raw.equals(null)).to.be.false;
+    });
   });
 
   describe("#isXml()", () => {
