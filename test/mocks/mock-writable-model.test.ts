@@ -32,6 +32,7 @@ describe("MockWritableModel", () => {
 
     it("should be true when there wasn't a buffer cached, but one was generated", () => {
       const model = new MockWritableModel("hi");
+      expect(model.hasBufferCache).to.be.false;
       model.getBuffer(true);
       expect(model.hasBufferCache).to.be.true;
     });
@@ -41,12 +42,23 @@ describe("MockWritableModel", () => {
       expect(model.hasBufferCache).to.be.false;
     });
 
-    it("should be false when there was buffer cached, but it was deleted", () => {
+    it("should be false when there was a buffer cached, but it was deleted", () => {
       const model = new MockWritableModel("hi", {
         initialBufferCache: CONST_BUFFER_CACHE
       });
 
+      expect(model.hasBufferCache).to.be.true;
       model.onChange();
+      expect(model.hasBufferCache).to.be.false;
+    });
+
+    it("should be false when there was a buffer cached, but a watched property was changed", () => {
+      const model = new MockWritableModel("hi", {
+        initialBufferCache: CONST_BUFFER_CACHE
+      });
+
+      expect(model.hasBufferCache).to.be.true;
+      model.content = "hello";
       expect(model.hasBufferCache).to.be.false;
     });
   });
@@ -244,11 +256,19 @@ describe("MockWritableModel", () => {
 
   describe("#onChange()", () => {
     it("should clear the cache", () => {
-      // TODO:
+      const model = new MockWritableModel("hi");
+      model.getBuffer(true);
+      expect(model.hasBufferCache).to.be.true;
+      model.onChange();
+      expect(model.hasBufferCache).to.be.false;
     });
 
     it("should clear the owner's cache", () => {
-      // TODO:
+      const owner = new MockOwner();
+      const model = new MockWritableModel("hi", { owner });
+      expect(owner.cached).to.be.true;
+      model.onChange();
+      expect(owner.cached).to.be.false;
     });
   });
 
