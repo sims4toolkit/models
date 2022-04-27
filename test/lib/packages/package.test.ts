@@ -525,7 +525,7 @@ describe("Package", () => {
     });
 
     it("should not uncache other entries", () => {
-      const dbpf = getPackage("CompleteTrait");
+      const dbpf = getPackage("CompleteTrait", { saveBuffer: true });
 
       dbpf.entries.forEach(entry => {
         expect(entry.resource.hasBufferCache).to.be.true;
