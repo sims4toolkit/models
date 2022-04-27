@@ -176,7 +176,8 @@ describe("Package", () => {
       it("should not have cached entries by default", () => {
         const dbpf = Package.from(getBuffer("CompleteTrait"));
         dbpf.entries.forEach(entry => {
-          expect(entry.resource.hasBufferCache).to.be.false;
+          if (entry.resource.encodingType !== EncodingType.Unknown)
+            expect(entry.value.hasBufferCache).to.be.false;
         });
       });
 
@@ -1066,7 +1067,7 @@ describe("Package", () => {
     });
 
     it("should not uncache the entries", () => {
-      const dbpf = getPackage("Trait");
+      const dbpf = getPackage("Trait", { saveBuffer: true });
       dbpf.onChange();
       dbpf.entries.forEach(({ resource }) => {
         expect(resource.hasBufferCache).to.be.true;
