@@ -24,6 +24,20 @@
       "content": [
         {
           "displayType": "property",
+          "prefix": "get",
+          "name": "bufferCache",
+          "type": {
+            "name": "CompressedBuffer",
+            "path": {
+              "pkg": "compression",
+              "group": "enums",
+              "item": "CompressedBuffer"
+            }
+          },
+          "description": "The current buffer cache, if there is any."
+        },
+        {
+          "displayType": "property",
           "prefix": "get, set",
           "name": "defaultCompressionType",
           "type": {

@@ -198,7 +198,7 @@ export default class SimDataResource extends WritableModel implements Resource, 
       unused: this.unused,
       schemas: newSchemas,
       instances: newInstances,
-      initialBufferCache: this._getBufferCache(),
+      initialBufferCache: this.bufferCache,
       defaultCompressionType: this.defaultCompressionType,
     });
   }

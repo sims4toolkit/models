@@ -8,13 +8,6 @@ import WritableModel, { WritableModelCreationOptions } from "../../dst/lib/base/
  * override any of its implemented methods, that method should be tested again.
  */
 export default class MockWritableModel extends WritableModel {
-  /**
-   * This does not exist on the base class. It is only here for ease of testing.
-   */
-  get cache(): CompressedBuffer {
-    return this._getBufferCache();
-  }
-
   constructor(public content: string = "", options?: WritableModelCreationOptions) {
     super(options);
     this._watchProps("content");

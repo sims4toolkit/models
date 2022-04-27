@@ -134,11 +134,11 @@ describe("MockWritableModel", () => {
             initialBufferCache: ZLIB_BUFFER_CACHE
           });
 
-          expect(mock.cache).to.equal(ZLIB_BUFFER_CACHE);
+          expect(mock.bufferCache).to.equal(ZLIB_BUFFER_CACHE);
           const buffer = mock.getBuffer(true);
-          expect(mock.cache).to.not.equal(ZLIB_BUFFER_CACHE);
-          expect(mock.cache.buffer).to.equal(buffer);
-          expect(mock.cache.compressionType).to.equal(CompressionType.Uncompressed);
+          expect(mock.bufferCache).to.not.equal(ZLIB_BUFFER_CACHE);
+          expect(mock.bufferCache.buffer).to.equal(buffer);
+          expect(mock.bufferCache.compressionType).to.equal(CompressionType.Uncompressed);
         });
       });
 
@@ -158,9 +158,9 @@ describe("MockWritableModel", () => {
             initialBufferCache: UNCOMPRESSED_BUFFER_CACHE
           });
 
-          expect(mock.cache).to.equal(UNCOMPRESSED_BUFFER_CACHE);
+          expect(mock.bufferCache).to.equal(UNCOMPRESSED_BUFFER_CACHE);
           mock.getBuffer(true);
-          expect(mock.cache).to.equal(UNCOMPRESSED_BUFFER_CACHE);
+          expect(mock.bufferCache).to.equal(UNCOMPRESSED_BUFFER_CACHE);
         });
       });
 
@@ -197,9 +197,9 @@ describe("MockWritableModel", () => {
             initialBufferCache: ZLIB_BUFFER_CACHE
           });
 
-          expect(mock.cache).to.equal(ZLIB_BUFFER_CACHE);
+          expect(mock.bufferCache).to.equal(ZLIB_BUFFER_CACHE);
           mock.getBuffer();
-          expect(mock.cache).to.equal(ZLIB_BUFFER_CACHE);
+          expect(mock.bufferCache).to.equal(ZLIB_BUFFER_CACHE);
         });
       });
 
@@ -219,9 +219,9 @@ describe("MockWritableModel", () => {
             initialBufferCache: UNCOMPRESSED_BUFFER_CACHE
           });
 
-          expect(mock.cache).to.equal(UNCOMPRESSED_BUFFER_CACHE);
+          expect(mock.bufferCache).to.equal(UNCOMPRESSED_BUFFER_CACHE);
           mock.getBuffer();
-          expect(mock.cache).to.equal(UNCOMPRESSED_BUFFER_CACHE);
+          expect(mock.bufferCache).to.equal(UNCOMPRESSED_BUFFER_CACHE);
         });
       });
 
@@ -286,7 +286,7 @@ describe("MockWritableModel", () => {
           });
 
           mock.getCompressedBuffer(CompressionType.ZLIB, true);
-          expect(mock.cache).to.equal(ZLIB_BUFFER_CACHE);
+          expect(mock.bufferCache).to.equal(ZLIB_BUFFER_CACHE);
         });
       });
 
@@ -307,9 +307,9 @@ describe("MockWritableModel", () => {
           });
 
           mock.getCompressedBuffer(CompressionType.ZLIB, true);
-          expect(mock.cache).to.not.equal(UNCOMPRESSED_BUFFER_CACHE);
-          expect(mock.cache.compressionType).to.equal(CompressionType.ZLIB);
-          expect(mock.cache.buffer.compare(ZLIB_BUFFER_CACHE.buffer)).to.equal(0);
+          expect(mock.bufferCache).to.not.equal(UNCOMPRESSED_BUFFER_CACHE);
+          expect(mock.bufferCache.compressionType).to.equal(CompressionType.ZLIB);
+          expect(mock.bufferCache.buffer.compare(ZLIB_BUFFER_CACHE.buffer)).to.equal(0);
         });
       });
 
@@ -326,7 +326,7 @@ describe("MockWritableModel", () => {
           expect(mock.hasBufferCache).to.be.false;
           const wrapper = mock.getCompressedBuffer(CompressionType.ZLIB, true);
           expect(mock.hasBufferCache).to.be.true;
-          expect(wrapper).to.equal(mock.cache);
+          expect(wrapper).to.equal(mock.bufferCache);
         });
       });
     });
@@ -348,7 +348,7 @@ describe("MockWritableModel", () => {
           });
 
           mock.getCompressedBuffer(CompressionType.ZLIB);
-          expect(mock.cache).to.equal(ZLIB_BUFFER_CACHE);
+          expect(mock.bufferCache).to.equal(ZLIB_BUFFER_CACHE);
         });
       });
 
@@ -369,7 +369,7 @@ describe("MockWritableModel", () => {
           });
 
           mock.getCompressedBuffer(CompressionType.ZLIB);
-          expect(mock.cache).to.equal(UNCOMPRESSED_BUFFER_CACHE);
+          expect(mock.bufferCache).to.equal(UNCOMPRESSED_BUFFER_CACHE);
         });
       });
 
@@ -386,7 +386,7 @@ describe("MockWritableModel", () => {
           expect(mock.hasBufferCache).to.be.false;
           const wrapper = mock.getCompressedBuffer(CompressionType.ZLIB);
           expect(mock.hasBufferCache).to.be.false;
-          expect(wrapper).to.not.equal(mock.cache);
+          expect(wrapper).to.not.equal(mock.bufferCache);
         });
       });
     });

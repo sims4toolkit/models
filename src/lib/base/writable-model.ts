@@ -41,6 +41,11 @@ export default abstract class WritableModel extends ApiModelBase {
   private _bufferCache?: CompressedBuffer;
   private _defaultCompressionType: CompressionType;
 
+  /** The current buffer cache, if there is any. */
+  get bufferCache(): CompressedBuffer {
+    return this._bufferCache;
+  }
+
   /**
    * How this model's buffer should be compressed by default. This is not
    * necessarily the same as the compression type of the current buffer cache.
@@ -188,15 +193,6 @@ export default abstract class WritableModel extends ApiModelBase {
   //#endregion Public Methods
 
   //#region Protected Methods
-
-  /**
-   * Returns the current buffer cache, or undefined if there is none. This only
-   * exists so that subclasses can access the cache without being able to set
-   * it.
-   */
-  protected _getBufferCache(): CompressedBuffer {
-    return this._bufferCache;
-  }
 
   /**
    * Clears this model's cache, if it is able to. Subclasses for which the cache

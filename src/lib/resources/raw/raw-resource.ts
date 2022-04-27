@@ -69,7 +69,7 @@ export default class RawResource extends WritableModel implements Resource {
   //#region Public Methods
 
   clone(): RawResource {
-    return new RawResource(this._getBufferCache(), {
+    return new RawResource(this.bufferCache, {
       defaultCompressionType: this.defaultCompressionType,
       reason: this.reason,
     });

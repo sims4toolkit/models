@@ -133,7 +133,7 @@ export default class XmlResource extends WritableModel implements Resource {
   clone(): XmlResource {
     return new XmlResource(this.content, {
       defaultCompressionType: this.defaultCompressionType,
-      initialBufferCache: this._getBufferCache()
+      initialBufferCache: this.bufferCache
     });
   }
 

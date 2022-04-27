@@ -91,7 +91,7 @@ export default class StringTableResource extends PrimitiveMappedModel<string, St
   clone(): StringTableResource {
     return new StringTableResource(this.entries, {
       defaultCompressionType: this.defaultCompressionType,
-      initialBufferCache: this._getBufferCache()
+      initialBufferCache: this.bufferCache
     });
   }
 
