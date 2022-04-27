@@ -5,6 +5,7 @@ import { fnv32 } from "@s4tk/hashing";
 import { StringTableResource } from "../../../../dst/models";
 import MockOwner from "../../../mocks/mock-owner";
 import { EncodingType } from "../../../../dst/enums";
+import { CompressedBuffer, CompressionType } from "@s4tk/compression";
 
 //#region Helpers
 
@@ -86,8 +87,6 @@ describe("StringTableResource", () => {
     });
   });
 
-  // #isChanged tested as part of other properties/methods
-
   describe("#size", () => {
     it("should return 0 when the stbl is empty", () => {
       const stbl = new StringTableResource();
@@ -124,6 +123,77 @@ describe("StringTableResource", () => {
   //#endregion Properties
 
   //#region Initialization
+
+  describe("#constructor", () => {
+    it("should create an empty stbl when given nothing", () => {
+      const stbl = new StringTableResource();
+      expect(stbl.entries).to.be.an('Array').that.is.empty;
+    });
+
+    it("should create an empty stbl when given an empty array", () => {
+      const stbl = new StringTableResource([]);
+      expect(stbl.entries).to.be.an('Array').that.is.empty;
+    });
+
+    it("should create an empty stbl when given null", () => {
+      const stbl = new StringTableResource(null);
+      expect(stbl.entries).to.be.an('Array').that.is.empty;
+    });
+
+    it("should use the entries that are given", () => {
+      const stbl = new StringTableResource([
+        { key: 123, value: "First" },
+        { key: 456, value: "Second" }
+      ]);
+
+      expect(stbl.entries).to.be.an('Array').with.lengthOf(2);
+      expect(stbl.entries[0].key).to.equal(123);
+      expect(stbl.entries[0].string).to.equal("First");
+      expect(stbl.entries[1].key).to.equal(456);
+      expect(stbl.entries[1].string).to.equal("Second");
+    });
+
+    it("should use the given owner", () => {
+      const owner = new MockOwner();
+      const stbl = new StringTableResource(null, { owner });
+      expect(stbl.owner).to.equal(owner);
+    });
+
+    it("should not have an owner if not given", () => {
+      const stbl = new StringTableResource();
+      expect(stbl.owner).to.be.undefined;
+    });
+
+    it("should use the given defaultCompressionType", () => {
+      const stbl = new StringTableResource(null, {
+        defaultCompressionType: CompressionType.InternalCompression
+      });
+
+      expect(stbl.defaultCompressionType).to.equal(CompressionType.InternalCompression);
+    });
+
+    it("should use defaultCompressionType of ZLIB if not given", () => {
+      const stbl = new StringTableResource();
+      expect(stbl.defaultCompressionType).to.equal(CompressionType.ZLIB);
+    });
+
+    it("should use the given initialBufferCache", () => {
+      const buffer = getBuffer("Normal");
+      const initialBufferCache: CompressedBuffer = {
+        buffer,
+        compressionType: CompressionType.Uncompressed,
+        sizeDecompressed: buffer.byteLength
+      };
+      const stbl = new StringTableResource(null, { initialBufferCache });
+      expect(stbl.hasBufferCache).to.be.true;
+      expect(stbl.getCompressedBuffer(CompressionType.Uncompressed)).to.equal(initialBufferCache);
+    });
+
+    it("should not be cached if initialBufferCache not given", () => {
+      const stbl = new StringTableResource();
+      expect(stbl.hasBufferCache).to.be.false;
+    });
+  });
 
   describe("static#from()", () => {
     context("stbl content is valid", () => {
@@ -180,6 +250,30 @@ describe("StringTableResource", () => {
         expect(fifth).to.not.equal(sixth);
         expect(fifth.key).to.equal(sixth.key);
         expect(fifth.value).to.not.equal(sixth.value);
+      });
+
+      it("should use the given owner", () => {
+        // TODO:
+      });
+
+      it("should not have an owner if not given", () => {
+        // TODO:
+      });
+
+      it("should use the given defaultCompressionType", () => {
+        // TODO:
+      });
+
+      it("should use defaultCompressionType of ZLIB if not given", () => {
+        // TODO:
+      });
+
+      it("should use the given initialBufferCache if saveBuffer is true", () => {
+        // TODO:
+      });
+
+      it("should not use the given initialBufferCache if saveBuffer is false", () => {
+        // TODO:
       });
     });
 
