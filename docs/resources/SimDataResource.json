@@ -175,7 +175,7 @@
           ],
           "examples": [
             {
-              "code": "// TODO: If you're reading this, it means I forgot to write the example. Please let me know."
+              "code": "const simdata = new SimDataResource({\n  version: 0x102,\n  unused: 0x1A,\n  schemas: [schema],\n  instances: [instance]\n});"
             }
           ]
         },
