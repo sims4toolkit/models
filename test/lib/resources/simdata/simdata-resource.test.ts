@@ -992,5 +992,9 @@ describe("SimDataResource", () => {
     });
   });
 
+  describe("#getBuffer()", () => {
+    // TODO:
+  });
+
   //#endregion Methods
 });

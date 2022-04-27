@@ -907,5 +907,9 @@ describe("StringTableResource", () => {
     });
   });
 
+  describe("#getBuffer()", () => {
+    // TODO:
+  });
+
   //#endregion Methods
 });

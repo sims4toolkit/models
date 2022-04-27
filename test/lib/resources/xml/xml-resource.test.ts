@@ -505,5 +505,9 @@ describe('XmlResource', function () {
     });
   });
 
+  describe("#getBuffer()", () => {
+    // TODO:
+  });
+
   //#endregion Methods
 });
