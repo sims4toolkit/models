@@ -253,27 +253,56 @@ describe("StringTableResource", () => {
       });
 
       it("should use the given owner", () => {
-        // TODO:
+        const owner = new MockOwner();
+        const stbl = StringTableResource.from(getBuffer("Normal"), {
+          owner
+        });
+        expect(stbl.owner).to.equal(owner);
       });
 
       it("should not have an owner if not given", () => {
-        // TODO:
+        const stbl = StringTableResource.from(getBuffer("Normal"));
+        expect(stbl.owner).to.be.undefined;
       });
 
       it("should use the given defaultCompressionType", () => {
-        // TODO:
+        const stbl = StringTableResource.from(getBuffer("Normal"), {
+          defaultCompressionType: CompressionType.InternalCompression
+        });
+        expect(stbl.defaultCompressionType).to.equal(CompressionType.InternalCompression);
       });
 
       it("should use defaultCompressionType of ZLIB if not given", () => {
-        // TODO:
+        const stbl = StringTableResource.from(getBuffer("Normal"));
+        expect(stbl.defaultCompressionType).to.equal(CompressionType.ZLIB);
       });
 
       it("should use the given initialBufferCache if saveBuffer is true", () => {
-        // TODO:
+        const buffer = getBuffer("Normal");
+        const initialBufferCache: CompressedBuffer = {
+          buffer,
+          compressionType: CompressionType.Uncompressed,
+          sizeDecompressed: buffer.byteLength
+        };
+        const stbl = StringTableResource.from(buffer, {
+          initialBufferCache,
+          saveBuffer: true
+        });
+        expect(stbl.hasBufferCache).to.be.true;
+        expect(stbl.getCompressedBuffer(CompressionType.Uncompressed)).to.equal(initialBufferCache);
       });
 
       it("should not use the given initialBufferCache if saveBuffer is false", () => {
-        // TODO:
+        const buffer = getBuffer("Normal");
+        const initialBufferCache: CompressedBuffer = {
+          buffer,
+          compressionType: CompressionType.Uncompressed,
+          sizeDecompressed: buffer.byteLength
+        };
+        const stbl = StringTableResource.from(buffer, {
+          initialBufferCache
+        });
+        expect(stbl.hasBufferCache).to.be.false;
       });
     });
 
