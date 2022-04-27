@@ -506,7 +506,33 @@ describe('XmlResource', function () {
   });
 
   describe("#getBuffer()", () => {
-    // TODO:
+    it("should return the buffer for an empty resource", function () {
+      const tun = new XmlResource();
+      expect(tun.getBuffer().toString()).to.equal('');
+    });
+
+    it("should return the original buffer if saveBuffer = true", function () {
+      const buffer = Buffer.from("Hello");
+      const tun = XmlResource.from(buffer, { saveBuffer: true });
+      expect(tun.getBuffer()).to.equal(buffer);
+    });
+
+    it("should return a new buffer if saveBuffer = false", function () {
+      const buffer = Buffer.from("Hello");
+      const tun = XmlResource.from(buffer, { saveBuffer: false });
+      expect(tun.getBuffer()).to.not.equal(buffer);
+    });
+
+    it("should return the buffer for a resource created from a string", function () {
+      const tun = new XmlResource("Hello");
+      expect(tun.getBuffer().toString()).to.equal('Hello');
+    });
+
+    it("should return the buffer for a resource created from a DOM", function () {
+      const dom = XmlDocumentNode.from("<T>50</T>");
+      const tun = new XmlResource(dom);
+      expect(tun.getBuffer().toString()).to.equal(`${XML_DECLARATION}\n<T>50</T>`);
+    });
   });
 
   //#endregion Methods

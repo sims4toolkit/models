@@ -993,7 +993,103 @@ describe("SimDataResource", () => {
   });
 
   describe("#getBuffer()", () => {
-    // TODO:
+    function testReserialization(filename: string) {
+      const original = SimDataResource.fromXml(getBuffer(filename));
+      original.onChange();
+      const simdata = SimDataResource.from(original.getBuffer());
+      expect(simdata.equals(original)).to.be.true;
+    }
+
+    it("should be the same as the original buffer if saveBuffer = true", () => {
+      const buffer = getBuffer("buff.simdata");
+      const simdata = SimDataResource.from(buffer, { saveBuffer: true });
+      expect(simdata.getBuffer()).to.equal(buffer);
+    });
+
+    it("should not be the same as the original buffer if saveBuffer = false", () => {
+      const buffer = getBuffer("buff.simdata");
+      const simdata = SimDataResource.from(buffer, { saveBuffer: false });
+      expect(simdata.getBuffer()).to.not.equal(buffer);
+    });
+
+    it("should not be the same as the original buffer by default", () => {
+      const buffer = getBuffer("buff.simdata");
+      const simdata = SimDataResource.from(buffer);
+      expect(simdata.getBuffer()).to.not.equal(buffer);
+    });
+
+    it("should throw if the current model cannot be serialized", () => {
+      const simdata = new SimDataResource({
+        instances: [
+          new SimDataInstance("", undefined, undefined)
+        ]
+      });
+
+      expect(() => simdata.getBuffer()).to.throw();
+    });
+
+    it("should reserialize all_data_types.xml correctly", () => {
+      testReserialization("all_data_types.xml");
+    });
+
+    it("should reserialize buff.xml correctly", () => {
+      testReserialization("buff.xml");
+    });
+
+    it("should reserialize mood.xml correctly", () => {
+      testReserialization("mood.xml");
+    });
+
+    it("should reserialize trait.xml correctly", () => {
+      testReserialization("trait.xml");
+    });
+
+    it("should reserialize two_instances.xml correctly", () => {
+      testReserialization("two_instances.xml");
+    });
+
+    it("should reserialize variant_recursion.xml correctly", () => {
+      testReserialization("variant_recursion.xml");
+    });
+
+    it("should reserialize vector_recursion.xml correctly", () => {
+      testReserialization("vector_recursion.xml");
+    });
+
+    it("should reserialize cas_camera.simdata correctly (with columns in right order)", () => {
+      const originalBuffer = getBuffer("cas_camera.simdata");
+      const original = SimDataResource.from(originalBuffer, { saveBuffer: false });
+      const serializedBuffer = original.getBuffer();
+      expect(originalBuffer).to.not.equal(serializedBuffer);
+      const simdata = SimDataResource.from(original.getBuffer(), { saveBuffer: false });
+      expect(simdata.equals(original)).to.be.true;
+    });
+
+    it("should reserialize correctly when intances reference different schema objects", () => {
+      const original = getSimDataFromXml("buff");
+      const originalSchema = original.schema;
+      expect(original.instance.schema).to.equal(originalSchema);
+      expect(original.instance.schema).to.equal(original.schema);
+      original.schema = originalSchema.clone();
+      expect(original.instance.schema).to.equal(originalSchema);
+      expect(original.instance.schema).to.not.equal(original.schema);
+      const simdata = SimDataResource.from(original.getBuffer());
+      expect(simdata.equals(original)).to.be.true;
+    });
+
+    it("should sort all table columns by their name", () => {
+      const unsorted = getSimDataFromXml("unsorted");
+      const sortedBinary = getBuffer("sorted.simdata").toString('base64');
+      expect(unsorted.getBuffer().toString('base64')).to.equal(sortedBinary);
+    });
+
+    it("should write 0x100 with correct padding", () => {
+      const originalBuffer = getBuffer("version_100.simdata");
+      const original = SimDataResource.from(originalBuffer, { saveBuffer: false });
+      const serializedBuffer = original.getBuffer();
+      expect(originalBuffer).to.not.equal(serializedBuffer);
+      expect(originalBuffer.toString("base64")).to.equal(serializedBuffer.toString("base64"));
+    });
   });
 
   //#endregion Methods
