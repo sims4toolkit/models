@@ -73,106 +73,6 @@ function testSimData(simdata: SimDataResource, args: SimDataTestArgs) {
 describe("SimDataResource", () => {
   //#region Properties
 
-  describe("#buffer", () => {
-    function testReserialization(filename: string) {
-      const original = SimDataResource.fromXml(getBuffer(filename));
-      original.onChange();
-      const simdata = SimDataResource.from(original.buffer);
-      expect(simdata.equals(original)).to.be.true;
-    }
-
-    it("should be the same as the original buffer if saveBuffer = true", () => {
-      const buffer = getBuffer("buff.simdata");
-      const simdata = SimDataResource.from(buffer, { saveBuffer: true });
-      expect(simdata.buffer).to.equal(buffer);
-    });
-
-    it("should not be the same as the original buffer if saveBuffer = false", () => {
-      const buffer = getBuffer("buff.simdata");
-      const simdata = SimDataResource.from(buffer, { saveBuffer: false });
-      expect(simdata.buffer).to.not.equal(buffer);
-    });
-
-    it("should not be the same as the original buffer by default", () => {
-      const buffer = getBuffer("buff.simdata");
-      const simdata = SimDataResource.from(buffer);
-      expect(simdata.buffer).to.not.equal(buffer);
-    });
-
-    it("should throw if the current model cannot be serialized", () => {
-      const simdata = SimDataResource.create({
-        instances: [
-          new SimDataInstance("", undefined, undefined)
-        ]
-      });
-
-      expect(() => simdata.buffer).to.throw();
-    });
-
-    it("should reserialize all_data_types.xml correctly", () => {
-      testReserialization("all_data_types.xml");
-    });
-
-    it("should reserialize buff.xml correctly", () => {
-      testReserialization("buff.xml");
-    });
-
-    it("should reserialize mood.xml correctly", () => {
-      testReserialization("mood.xml");
-    });
-
-    it("should reserialize trait.xml correctly", () => {
-      testReserialization("trait.xml");
-    });
-
-    it("should reserialize two_instances.xml correctly", () => {
-      testReserialization("two_instances.xml");
-    });
-
-    it("should reserialize variant_recursion.xml correctly", () => {
-      testReserialization("variant_recursion.xml");
-    });
-
-    it("should reserialize vector_recursion.xml correctly", () => {
-      testReserialization("vector_recursion.xml");
-    });
-
-    it("should reserialize cas_camera.simdata correctly (with columns in right order)", () => {
-      const originalBuffer = getBuffer("cas_camera.simdata");
-      const original = SimDataResource.from(originalBuffer, { saveBuffer: false });
-      const serializedBuffer = original.buffer;
-      expect(originalBuffer).to.not.equal(serializedBuffer);
-      const simdata = SimDataResource.from(original.buffer, { saveBuffer: false });
-      expect(simdata.equals(original)).to.be.true;
-    });
-
-    it("should reserialize correctly when intances reference different schema objects", () => {
-      const original = getSimDataFromXml("buff");
-      const originalSchema = original.schema;
-      expect(original.instance.schema).to.equal(originalSchema);
-      expect(original.instance.schema).to.equal(original.schema);
-      original.schema = originalSchema.clone();
-      expect(original.instance.schema).to.equal(originalSchema);
-      expect(original.instance.schema).to.not.equal(original.schema);
-      const simdata = SimDataResource.from(original.buffer);
-      expect(simdata.equals(original)).to.be.true;
-    });
-
-    it("should sort all table columns by their name", () => {
-      const unsorted = getSimDataFromXml("unsorted");
-      const sortedBinary = getBuffer("sorted.simdata").toString('base64');
-      expect(unsorted.buffer.toString('base64')).to.equal(sortedBinary);
-    });
-
-    it("should write 0x100 with correct padding", () => {
-      const originalBuffer = getBuffer("version_100.simdata");
-      const original = SimDataResource.from(originalBuffer, { saveBuffer: false });
-      const serializedBuffer = original.buffer;
-      expect(originalBuffer).to.not.equal(serializedBuffer);
-      expect(originalBuffer.toString("base64")).to.equal(serializedBuffer.toString("base64"));
-    });
-  });
-
   describe("#instance", () => {
     it("should return the first child of the instances array when there is only one", () => {
       const simdata = getSimDataFromBinary("buff");
@@ -185,7 +85,7 @@ describe("SimDataResource", () => {
     });
 
     it("should be undefined when there are no instances in this simdata", () => {
-      const simdata = SimDataResource.create();
+      const simdata = new SimDataResource();
       expect(simdata.instance).to.be.undefined;
     });
 
@@ -197,39 +97,39 @@ describe("SimDataResource", () => {
 
     it("should uncache the owner when set", () => {
       const simdata = getSimDataFromBinary("two_instances", true);
-      expect(simdata.isCached).to.be.true;
+      expect(simdata.hasBufferCache).to.be.true;
       simdata.instance = simdata.instances[1];
-      expect(simdata.isCached).to.be.false;
+      expect(simdata.hasBufferCache).to.be.false;
     });
   });
 
   describe("#instances", () => {
     it("should uncache the owner when pushed to", () => {
       const simdata = getSimDataFromBinary("buff", true);
-      expect(simdata.isCached).to.be.true;
+      expect(simdata.hasBufferCache).to.be.true;
       simdata.instances.push(simdata.instance.clone());
-      expect(simdata.isCached).to.be.false;
+      expect(simdata.hasBufferCache).to.be.false;
     });
 
     it("should uncache the owner when spliced", () => {
       const simdata = getSimDataFromBinary("two_instances", true);
-      expect(simdata.isCached).to.be.true;
+      expect(simdata.hasBufferCache).to.be.true;
       simdata.instances.splice(1, 1);
-      expect(simdata.isCached).to.be.false;
+      expect(simdata.hasBufferCache).to.be.false;
     });
 
     it("should uncache the owner when child is set", () => {
       const simdata = getSimDataFromBinary("two_instances", true);
-      expect(simdata.isCached).to.be.true;
+      expect(simdata.hasBufferCache).to.be.true;
       simdata.instances[0] = simdata.instances[1];
-      expect(simdata.isCached).to.be.false;
+      expect(simdata.hasBufferCache).to.be.false;
     });
 
     it("should uncache the owner when child is mutated", () => {
       const simdata = getSimDataFromBinary("buff", true);
-      expect(simdata.isCached).to.be.true;
+      expect(simdata.hasBufferCache).to.be.true;
       simdata.instances[0].name = "Better_Name";
-      expect(simdata.isCached).to.be.false;
+      expect(simdata.hasBufferCache).to.be.false;
     });
 
     it("should set the owner of a pushed child to this simdata", () => {
@@ -268,7 +168,7 @@ describe("SimDataResource", () => {
       expect(simdata.props.mood_weight.asAny.value).equals(2);
     });
   });
-  
+
   describe("#schema", () => {
     it("should return the first child of the schemas array", () => {
       const simdata = getSimDataFromBinary("mood");
@@ -285,9 +185,9 @@ describe("SimDataResource", () => {
 
     it("should uncache the owner when set", () => {
       const simdata = getSimDataFromBinary("mood", true);
-      expect(simdata.isCached).to.be.true;
+      expect(simdata.hasBufferCache).to.be.true;
       simdata.schema = simdata.schemas[1];
-      expect(simdata.isCached).to.be.false;
+      expect(simdata.hasBufferCache).to.be.false;
     });
 
     it("should mutate the first schema", () => {
@@ -301,30 +201,30 @@ describe("SimDataResource", () => {
   describe("#schemas", () => {
     it("should uncache the owner when pushed to", () => {
       const simdata = getSimDataFromBinary("buff", true);
-      expect(simdata.isCached).to.be.true;
+      expect(simdata.hasBufferCache).to.be.true;
       simdata.schemas.push(simdata.schema.clone());
-      expect(simdata.isCached).to.be.false;
+      expect(simdata.hasBufferCache).to.be.false;
     });
 
     it("should uncache the owner when spliced", () => {
       const simdata = getSimDataFromBinary("buff", true);
-      expect(simdata.isCached).to.be.true;
+      expect(simdata.hasBufferCache).to.be.true;
       simdata.schemas.splice(0, 1);
-      expect(simdata.isCached).to.be.false;
+      expect(simdata.hasBufferCache).to.be.false;
     });
 
     it("should uncache the owner when child is set", () => {
       const simdata = getSimDataFromBinary("buff", true);
-      expect(simdata.isCached).to.be.true;
+      expect(simdata.hasBufferCache).to.be.true;
       simdata.schemas[0] = simdata.schema.clone();
-      expect(simdata.isCached).to.be.false;
+      expect(simdata.hasBufferCache).to.be.false;
     });
 
     it("should uncache the owner when child is mutated", () => {
       const simdata = getSimDataFromBinary("buff", true);
-      expect(simdata.isCached).to.be.true;
+      expect(simdata.hasBufferCache).to.be.true;
       simdata.schemas[0].name = "NewName";
-      expect(simdata.isCached).to.be.false;
+      expect(simdata.hasBufferCache).to.be.false;
     });
 
     it("should set the owner of a pushed child to this simdata", () => {
@@ -347,9 +247,9 @@ describe("SimDataResource", () => {
   describe("#unused", () => {
     it("should uncache when set", () => {
       const simdata = getSimDataFromBinary("buff", true);
-      expect(simdata.isCached).to.be.true;
+      expect(simdata.hasBufferCache).to.be.true;
       simdata.unused = 0x12;
-      expect(simdata.isCached).to.be.false;
+      expect(simdata.hasBufferCache).to.be.false;
     });
   });
 
@@ -363,9 +263,9 @@ describe("SimDataResource", () => {
   describe("#version", () => {
     it("should uncache when set", () => {
       const simdata = getSimDataFromBinary("buff", true);
-      expect(simdata.isCached).to.be.true;
+      expect(simdata.hasBufferCache).to.be.true;
       simdata.version = 0x100;
-      expect(simdata.isCached).to.be.false;
+      expect(simdata.hasBufferCache).to.be.false;
     });
   });
 
@@ -427,16 +327,16 @@ describe("SimDataResource", () => {
     });
   });
 
-  describe("static#create()", () => {
+  describe("#constructor", () => {
     it("should use all properties that are given", () => {
       const schema = new SimDataSchema("Shema", 0, []);
       const instance = new SimDataInstance("", schema, {});
 
-      const simdata = SimDataResource.create({
+      const simdata = new SimDataResource({
         version: 0x102,
         unused: 0x1A,
-        schemas: [ schema ],
-        instances: [ instance ]
+        schemas: [schema],
+        instances: [instance]
       });
 
       expect(simdata.version).to.equal(0x102);
@@ -446,22 +346,22 @@ describe("SimDataResource", () => {
     });
 
     it("should use a default version of 0x101", () => {
-      const simdata = SimDataResource.create();
+      const simdata = new SimDataResource();
       expect(simdata.version).to.equal(0x101);
     });
 
     it("should use a default unused value of 0", () => {
-      const simdata = SimDataResource.create();
+      const simdata = new SimDataResource();
       expect(simdata.unused).to.equal(0);
     });
 
     it("should use an empty list as default for schemas", () => {
-      const simdata = SimDataResource.create();
+      const simdata = new SimDataResource();
       expect(simdata.schemas).to.be.an('Array').that.is.empty;
     });
 
     it("should use an empty list as default for instances", () => {
-      const simdata = SimDataResource.create();
+      const simdata = new SimDataResource();
       expect(simdata.instances).to.be.an('Array').that.is.empty;
     });
 
@@ -472,51 +372,13 @@ describe("SimDataResource", () => {
       expect(schema.owner).to.be.undefined;
       expect(instance.owner).to.be.undefined;
 
-      const simdata = SimDataResource.create({
-        schemas: [ schema ],
-        instances: [ instance ]
+      const simdata = new SimDataResource({
+        schemas: [schema],
+        instances: [instance]
       });
 
       expect(schema.owner).to.equal(simdata);
       expect(instance.owner).to.equal(simdata);
-    });
-
-    it("should not cache the buffer by default", () => {
-      const original = getSimDataFromBinary("buff");
-      const simdata = SimDataResource.create({
-        schemas: original.schemas,
-        instances: original.instances
-      });
-
-      expect(simdata.isCached).to.be.false;
-      simdata.buffer;
-      expect(simdata.isCached).to.be.false;
-    });
-
-    it("should not cache the buffer if saveBuffer = false", () => {
-      const original = getSimDataFromBinary("buff");
-      const simdata = SimDataResource.create({
-        schemas: original.schemas,
-        instances: original.instances,
-        saveBuffer: false
-      });
-
-      expect(simdata.isCached).to.be.false;
-      simdata.buffer;
-      expect(simdata.isCached).to.be.false;
-    });
-
-    it("should cache the buffer if saveBuffer = true", () => {
-      const original = getSimDataFromBinary("buff");
-      const simdata = SimDataResource.create({
-        schemas: original.schemas,
-        instances: original.instances,
-        saveBuffer: true
-      });
-
-      expect(simdata.isCached).to.be.false;
-      simdata.buffer;
-      expect(simdata.isCached).to.be.true;
     });
   });
 
@@ -544,7 +406,7 @@ describe("SimDataResource", () => {
           }
         });
       });
-  
+
       it("should read buff.simdata correctly", () => {
         testBinarySimData({
           filename: "buff",
@@ -564,7 +426,7 @@ describe("SimDataResource", () => {
           }
         });
       });
-  
+
       it("should read mood.simdata correctly", () => {
         testBinarySimData({
           filename: "mood",
@@ -587,7 +449,7 @@ describe("SimDataResource", () => {
           }
         });
       });
-  
+
       it("should read trait.simdata correctly", () => {
         testBinarySimData({
           filename: "trait",
@@ -606,7 +468,7 @@ describe("SimDataResource", () => {
           }
         });
       });
-  
+
       it("should read two_instances.simdata correctly", () => {
         testBinarySimData({
           filename: "two_instances",
@@ -624,7 +486,7 @@ describe("SimDataResource", () => {
           }
         });
       });
-  
+
       it("should read variant_recursion.simdata correctly", () => {
         testBinarySimData({
           filename: "variant_recursion",
@@ -645,7 +507,7 @@ describe("SimDataResource", () => {
           }
         });
       });
-  
+
       it("should read vector_recursion.simdata correctly", () => {
         testBinarySimData({
           filename: "vector_recursion",
@@ -703,46 +565,46 @@ describe("SimDataResource", () => {
           }
         });
       });
-  
+
       it("should set self as owner of new schemas/instances", () => {
         const simdata = getSimDataFromBinary("buff");
-  
+
         simdata.schemas.forEach(schema => {
           expect(schema.owner).to.equal(simdata);
         });
-  
+
         simdata.instances.forEach(inst => {
           expect(inst.owner).to.equal(simdata);
         });
       });
-  
+
       it("should not cache the buffer by default", () => {
         const simdata = SimDataResource.from(getBuffer("buff.simdata"));
-        expect(simdata.isCached).to.be.false;
+        expect(simdata.hasBufferCache).to.be.false;
       });
     });
 
     context("options set", () => {
       it("should not cache the buffer if saveBuffer = false", () => {
         const simdata = SimDataResource.from(getBuffer("buff.simdata"), { saveBuffer: false });
-        expect(simdata.isCached).to.be.false;
-      });
-  
-      it("should cache the buffer if saveBuffer = true", () => {
-        const simdata = SimDataResource.from(getBuffer("buff.simdata"), { saveBuffer: true });
-        expect(simdata.isCached).to.be.true;
+        expect(simdata.hasBufferCache).to.be.false;
       });
 
-      it("should throw if the header is corrupt if ignoreErrors = false", () => {
+      it("should cache the buffer if saveBuffer = true", () => {
+        const simdata = SimDataResource.from(getBuffer("buff.simdata"), { saveBuffer: true });
+        expect(simdata.hasBufferCache).to.be.true;
+      });
+
+      it("should throw if the header is corrupt if recoveryMode = false", () => {
         expect(() => {
           SimDataResource.from(getBuffer("corrupt_header.simdata"), {
-            ignoreErrors: false
+            recoveryMode: false
           });
         }).to.throw();
       });
 
-      it("should still read a file even if the header is corrupt if ignoreErrors = true", () => {
-        const simdata = SimDataResource.from(getBuffer("corrupt_header.simdata"), { ignoreErrors: true });
+      it("should still read a file even if the header is corrupt if recoveryMode = true", () => {
+        const simdata = SimDataResource.from(getBuffer("corrupt_header.simdata"), { recoveryMode: true });
         expect(simdata.version).to.equal(0x101);
       });
     });
@@ -920,27 +782,6 @@ describe("SimDataResource", () => {
         expect(inst.owner).to.equal(simdata);
       });
     });
-
-    it("should not cache the buffer by default", () => {
-      const simdata = SimDataResource.fromXml(getBuffer("buff.xml"));
-      expect(simdata.isCached).to.be.false;
-      simdata.buffer;
-      expect(simdata.isCached).to.be.false;
-    });
-
-    it("should not cache the buffer if saveBuffer = false", () => {
-      const simdata = SimDataResource.fromXml(getBuffer("buff.xml"), { saveBuffer: false });
-      expect(simdata.isCached).to.be.false;
-      simdata.buffer;
-      expect(simdata.isCached).to.be.false;
-    });
-
-    it("should cache the buffer if saveBuffer = true", () => {
-      const simdata = SimDataResource.fromXml(getBuffer("buff.xml"), { saveBuffer: true });
-      expect(simdata.isCached).to.be.false;
-      simdata.buffer;
-      expect(simdata.isCached).to.be.true;
-    });
   });
 
   describe("static#fromXmlAsync()", () => {
@@ -1003,7 +844,7 @@ describe("SimDataResource", () => {
 
   describe("#isXml()", () => {
     it("should return false", () => {
-      const simdata = SimDataResource.create();
+      const simdata = new SimDataResource();
       expect(simdata.isXml()).to.be.false;
     });
   });
@@ -1032,9 +873,9 @@ describe("SimDataResource", () => {
 
     it("should uncache the buffer", () => {
       const simdata = getSimDataFromBinary("two_instances", true);
-      expect(simdata.isCached).to.be.true;
+      expect(simdata.hasBufferCache).to.be.true;
       simdata.removeInstances(simdata.instance);
-      expect(simdata.isCached).to.be.false;
+      expect(simdata.hasBufferCache).to.be.false;
     });
   });
 
@@ -1062,9 +903,9 @@ describe("SimDataResource", () => {
 
     it("should uncache the owner", () => {
       const simdata = getSimDataFromBinary("mood", true);
-      expect(simdata.isCached).to.be.true;
+      expect(simdata.hasBufferCache).to.be.true;
       simdata.removeSchemas(simdata.schema);
-      expect(simdata.isCached).to.be.false;
+      expect(simdata.hasBufferCache).to.be.false;
     });
   });
 
@@ -1091,8 +932,6 @@ describe("SimDataResource", () => {
     it("should have a 'Schemas' section with all schemas written correctly", () => {
       const simdata = getSimDataFromBinary("mood");
       const doc = simdata.toXmlDocument();
-      console.log(doc.toXml());
-      
       const schemas = doc.child.children.find(node => node.tag === "Schemas");
       expect(schemas.numChildren).to.equal(6);
       expect(schemas.child.tag).to.equal("Schema");
@@ -1102,7 +941,7 @@ describe("SimDataResource", () => {
     });
 
     it("should write cells in alphabetical order by name", () => {
-      const simdata = SimDataResource.create();
+      const simdata = new SimDataResource();
       const schema = new SimDataSchema("Something", 1234, [
         new SimDataSchemaColumn("b", DataType.UInt32),
         new SimDataSchemaColumn("a", DataType.UInt32)
@@ -1122,16 +961,16 @@ describe("SimDataResource", () => {
   describe("#onChange()", () => {
     it("should reset the buffer when saveBuffer = true", () => {
       const simdata = getSimDataFromBinary("buff", true);
-      expect(simdata.isCached).to.be.true;
+      expect(simdata.hasBufferCache).to.be.true;
       simdata.onChange();
-      expect(simdata.isCached).to.be.false;
+      expect(simdata.hasBufferCache).to.be.false;
     });
 
     it("should not have any effect when saveBuffer = false", () => {
       const simdata = getSimDataFromBinary("buff", false);
-      expect(simdata.isCached).to.be.false;
+      expect(simdata.hasBufferCache).to.be.false;
       simdata.onChange();
-      expect(simdata.isCached).to.be.false;
+      expect(simdata.hasBufferCache).to.be.false;
     });
 
     it("should uncache the owner when saveBuffer = true", () => {
@@ -1150,6 +989,106 @@ describe("SimDataResource", () => {
       expect(owner.cached).to.be.true;
       simdata.onChange();
       expect(owner.cached).to.be.false;
+    });
+  });
+
+  describe("#getBuffer()", () => {
+    function testReserialization(filename: string) {
+      const original = SimDataResource.fromXml(getBuffer(filename));
+      original.onChange();
+      const simdata = SimDataResource.from(original.getBuffer());
+      expect(simdata.equals(original)).to.be.true;
+    }
+
+    it("should be the same as the original buffer if saveBuffer = true", () => {
+      const buffer = getBuffer("buff.simdata");
+      const simdata = SimDataResource.from(buffer, { saveBuffer: true });
+      expect(simdata.getBuffer()).to.equal(buffer);
+    });
+
+    it("should not be the same as the original buffer if saveBuffer = false", () => {
+      const buffer = getBuffer("buff.simdata");
+      const simdata = SimDataResource.from(buffer, { saveBuffer: false });
+      expect(simdata.getBuffer()).to.not.equal(buffer);
+    });
+
+    it("should not be the same as the original buffer by default", () => {
+      const buffer = getBuffer("buff.simdata");
+      const simdata = SimDataResource.from(buffer);
+      expect(simdata.getBuffer()).to.not.equal(buffer);
+    });
+
+    it("should throw if the current model cannot be serialized", () => {
+      const simdata = new SimDataResource({
+        instances: [
+          new SimDataInstance("", undefined, undefined)
+        ]
+      });
+
+      expect(() => simdata.getBuffer()).to.throw();
+    });
+
+    it("should reserialize all_data_types.xml correctly", () => {
+      testReserialization("all_data_types.xml");
+    });
+
+    it("should reserialize buff.xml correctly", () => {
+      testReserialization("buff.xml");
+    });
+
+    it("should reserialize mood.xml correctly", () => {
+      testReserialization("mood.xml");
+    });
+
+    it("should reserialize trait.xml correctly", () => {
+      testReserialization("trait.xml");
+    });
+
+    it("should reserialize two_instances.xml correctly", () => {
+      testReserialization("two_instances.xml");
+    });
+
+    it("should reserialize variant_recursion.xml correctly", () => {
+      testReserialization("variant_recursion.xml");
+    });
+
+    it("should reserialize vector_recursion.xml correctly", () => {
+      testReserialization("vector_recursion.xml");
+    });
+
+    it("should reserialize cas_camera.simdata correctly (with columns in right order)", () => {
+      const originalBuffer = getBuffer("cas_camera.simdata");
+      const original = SimDataResource.from(originalBuffer, { saveBuffer: false });
+      const serializedBuffer = original.getBuffer();
+      expect(originalBuffer).to.not.equal(serializedBuffer);
+      const simdata = SimDataResource.from(original.getBuffer(), { saveBuffer: false });
+      expect(simdata.equals(original)).to.be.true;
+    });
+
+    it("should reserialize correctly when intances reference different schema objects", () => {
+      const original = getSimDataFromXml("buff");
+      const originalSchema = original.schema;
+      expect(original.instance.schema).to.equal(originalSchema);
+      expect(original.instance.schema).to.equal(original.schema);
+      original.schema = originalSchema.clone();
+      expect(original.instance.schema).to.equal(originalSchema);
+      expect(original.instance.schema).to.not.equal(original.schema);
+      const simdata = SimDataResource.from(original.getBuffer());
+      expect(simdata.equals(original)).to.be.true;
+    });
+
+    it("should sort all table columns by their name", () => {
+      const unsorted = getSimDataFromXml("unsorted");
+      const sortedBinary = getBuffer("sorted.simdata").toString('base64');
+      expect(unsorted.getBuffer().toString('base64')).to.equal(sortedBinary);
+    });
+
+    it("should write 0x100 with correct padding", () => {
+      const originalBuffer = getBuffer("version_100.simdata");
+      const original = SimDataResource.from(originalBuffer, { saveBuffer: false });
+      const serializedBuffer = original.getBuffer();
+      expect(originalBuffer).to.not.equal(serializedBuffer);
+      expect(originalBuffer.toString("base64")).to.equal(serializedBuffer.toString("base64"));
     });
   });
 

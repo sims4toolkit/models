@@ -29,7 +29,7 @@
         }
       ]
     },
-    "description": "Model for SimData resources. While combined tuning is the same format, it is NOT supported by this model.\n\nSimDatas are mini relational databases, and to simplify working with them (and for consistency with its XML format), this model uses the concept of \"instances\". An instance is an object cell that has a name.",
+    "description": "Model for SimData resources. While combined tuning is the same format, it is NOT supported by this model at this time.\n\nSimDatas are mini relational databases, and to simplify working with them (and for consistency with its XML format), this model uses the concept of \"instances\". An \"instance\" is an object cell that has a name.",
     "sourceCode": "src/lib/resources/simdata/simdata-resource.ts"
   },
   "sections": [
@@ -150,84 +150,32 @@
     },
     {
       "title": "Initialization",
-      "description": "The constructor is not a part of the public API, and may be changed without warning. Avoid using it, favoring the static methods instead.",
       "content": [
         {
           "displayType": "function",
-          "prefix": "static",
-          "name": "create",
+          "name": "constructor",
           "returnType": {
             "name": "SimDataResource"
           },
-          "description": "Creates a new SimDataResource with the given optional parameters.",
+          "description": "Creates a new SimData using the provided options.",
           "arguments": [
             {
               "description": "Optional arguments.",
               "optional": true,
               "name": "options",
               "type": {
-                "name": "object"
-              },
-              "properties": [
-                {
-                  "name": "version",
-                  "optional": true,
-                  "description": "The version of the SimData. 0x101 by default.",
-                  "type": {
-                    "name": "number"
-                  }
-                },
-                {
-                  "name": "unused",
-                  "optional": true,
-                  "description": "The 'unused' UInt32 in the SimData header. This number should correspond to the group number of the pack associated with this SimData, or be 0 if it does not require a pack. Default is 0.",
-                  "type": {
-                    "name": "number"
-                  }
-                },
-                {
-                  "name": "schemas",
-                  "optional": true,
-                  "description": "A list of the schemas in this SimData. Default is empty.",
-                  "type": {
-                    "name": "SimDataSchema[]",
-                    "path": {
-                      "pkg": "models",
-                      "group": "simdata-fragments",
-                      "item": "SimDataSchema"
-                    }
-                  }
-                },
-                {
-                  "name": "instances",
-                  "optional": true,
-                  "description": "A list of the instances in this SimData. Default is empty.",
-                  "type": {
-                    "name": "SimDataInstance[]",
-                    "path": {
-                      "pkg": "models",
-                      "group": "simdata-fragments",
-                      "item": "SimDataInstance"
-                    }
-                  }
-                },
-                {
-                  "name": "saveBuffer",
-                  "optional": true,
-                  "description": "Whether or not buffers created for this resource should be cached. False by default.",
-                  "type": {
-                    "name": "boolean"
-                  }
+                "name": "SimDataResourceCreationOptions",
+                "path": {
+                  "pkg": "models",
+                  "group": "types",
+                  "item": "SimDataResourceCreationOptions"
                 }
-              ]
+              }
             }
           ],
           "examples": [
             {
-              "code": "const emptyData = SimDataResource.create();"
-            },
-            {
-              "code": "const data = SimDataResource.create({\n  schemas: [ ... ],\n  instances: [ ... ]\n});"
+              "code": "// TODO: If you're reading this, it means I forgot to write the example. Please let me know."
             }
           ]
         },
@@ -238,11 +186,11 @@
           "returnType": {
             "name": "SimDataResource"
           },
-          "description": "Reads the given buffer as a SimDataResource and returns it.",
+          "description": "Creates an SimData resource from a buffer containing binary SimData data. This buffer is assumed to be uncompressed; providing a compressed buffer will lead to unexpected behavior.",
           "arguments": [
             {
               "name": "buffer",
-              "description": "Buffer to read as a SimData.",
+              "description": "Uncompressed fuffer to create a SimData resource from.",
               "type": {
                 "name": "Buffer"
               }
@@ -250,13 +198,13 @@
             {
               "name": "options",
               "optional": true,
-              "description": "Optional arguments for reading the buffer.",
+              "description": "Object of optional arguments.",
               "type": {
-                "name": "FileReadingOptions",
+                "name": "WritableModelFromOptions",
                 "path": {
                   "pkg": "models",
                   "group": "types",
-                  "item": "FileReadingOptions"
+                  "item": "WritableModelFromOptions"
                 }
               }
             }
@@ -269,16 +217,16 @@
         },
         {
           "displayType": "function",
-          "prefix": "static",
+          "prefix": "static async",
           "name": "fromAsync",
           "returnType": {
             "name": "Promise<SimDataResource>"
           },
-          "description": "Reads the given buffer as a SimDataResource asynchronously and returns a Promise that resolves with it.",
+          "description": "Asynchronously creates an SimData resource from a buffer containing binary SimData data. This buffer is assumed to be uncompressed; providing a compressed buffer will lead to unexpected behavior.",
           "arguments": [
             {
               "name": "buffer",
-              "description": "Buffer to read as a SimData.",
+              "description": "Uncompressed fuffer to create a SimData resource from.",
               "type": {
                 "name": "Buffer"
               }
@@ -286,13 +234,13 @@
             {
               "name": "options",
               "optional": true,
-              "description": "Optional arguments for reading the buffer.",
+              "description": "Object of optional arguments.",
               "type": {
-                "name": "FileReadingOptions",
+                "name": "WritableModelFromOptions",
                 "path": {
                   "pkg": "models",
                   "group": "types",
-                  "item": "FileReadingOptions"
+                  "item": "WritableModelFromOptions"
                 }
               }
             }
@@ -310,7 +258,7 @@
           "returnType": {
             "name": "SimDataResource"
           },
-          "description": "Creates a SimDataResource from S4S-style XML. Throws if XML could not be parsed as a valid SimData.",
+          "description": "Creates a SimDataResource from S4S-style XML, as a string or Buffer. The data is assumed to be uncompressed; providing a compressed string or buffer will lead to unexpected behavior.",
           "arguments": [
             {
               "name": "xml",
@@ -322,31 +270,31 @@
             {
               "name": "options",
               "optional": true,
-              "description": "Optional arguments for reading the XML.",
+              "description": "Object of optional arguments.",
               "type": {
-                "name": "FileReadingOptions",
+                "name": "WritableModelFromOptions",
                 "path": {
                   "pkg": "models",
                   "group": "types",
-                  "item": "FileReadingOptions"
+                  "item": "WritableModelFromOptions"
                 }
               }
             }
           ],
           "examples": [
             {
-              "code": "const data = SimDataResource.fromXml(xml);"
+              "code": "const data = SimDataResource.fromXml(stringOfSimDataXml);"
             }
           ]
         },
         {
           "displayType": "function",
-          "prefix": "static",
+          "prefix": "static async",
           "name": "fromXmlAsync",
           "returnType": {
             "name": "Promise<SimDataResource>"
           },
-          "description": "Creates a SimDataResource asynchronously from S4S-style XML. Returns a Promise that resolves with the SimDataResource.",
+          "description": "Asynchronously creates a SimDataResource from S4S-style XML, as a string or Buffer. The data is assumed to be uncompressed; providing a compressed string or buffer will lead to unexpected behavior.",
           "arguments": [
             {
               "name": "xml",
@@ -358,20 +306,20 @@
             {
               "name": "options",
               "optional": true,
-              "description": "Optional arguments for reading the XML.",
+              "description": "Object of optional arguments.",
               "type": {
-                "name": "FileReadingOptions",
+                "name": "WritableModelFromOptions",
                 "path": {
                   "pkg": "models",
                   "group": "types",
-                  "item": "FileReadingOptions"
+                  "item": "WritableModelFromOptions"
                 }
               }
             }
           ],
           "examples": [
             {
-              "code": "SimDataResource.fromXmlAsync(xml).then(data => {\n  // do stuff\n});"
+              "code": "SimDataResource.fromXmlAsync(stringOfSimDataXml).then(data => {\n  // do stuff\n});"
             }
           ]
         },
@@ -401,11 +349,11 @@
               "optional": true,
               "description": "Optional arguments for reading the document.",
               "type": {
-                "name": "FileReadingOptions",
+                "name": "WritableModelFromOptions",
                 "path": {
                   "pkg": "models",
                   "group": "types",
-                  "item": "FileReadingOptions"
+                  "item": "WritableModelFromOptions"
                 }
               }
             }
@@ -418,12 +366,12 @@
         },
         {
           "displayType": "function",
-          "prefix": "static",
+          "prefix": "static async",
           "name": "fromXmlDocumentAsync",
           "returnType": {
             "name": "Promise<SimDataResource>"
           },
-          "description": "Creates a SimDataResource asynchronously from an S4S-style XML document. Returns a Promise that resolves with the SimDataResource.",
+          "description": "Asynchronously creates a SimDataResource from an S4S-style XML document.",
           "arguments": [
             {
               "name": "doc",
@@ -440,13 +388,13 @@
             {
               "name": "options",
               "optional": true,
-              "description": "Optional arguments for reading the XML.",
+              "description": "Optional arguments for reading the document.",
               "type": {
-                "name": "FileReadingOptions",
+                "name": "WritableModelFromOptions",
                 "path": {
                   "pkg": "models",
                   "group": "types",
-                  "item": "FileReadingOptions"
+                  "item": "WritableModelFromOptions"
                 }
               }
             }

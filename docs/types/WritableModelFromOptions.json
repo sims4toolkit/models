@@ -1,0 +1,57 @@
+{
+  "$schema": "https://raw.githubusercontent.com/sims4toolkit/misc/main/json-schemas/docs-item-schema.json",
+  "imports": [
+    "import type { WritableModelFromOptions } from \"@s4tk/models/types\"; // TypeScript only"
+  ],
+  "header": {
+    "title": {
+      "prefix": "interface",
+      "name": "WritableModelFromOptions",
+      "extends": [
+        {
+          "name": "WritableModelCreationOptions",
+          "path": {
+            "pkg": "models",
+            "group": "types",
+            "item": "WritableModelCreationOptions"
+          }
+        },
+        {
+          "name": "BinaryFileReadingOptions",
+          "path": {
+            "pkg": "models",
+            "group": "types",
+            "item": "BinaryFileReadingOptions"
+          }
+        }
+      ]
+    },
+    "description": "Optional arguments for creating WritableModels with their `from()` methods.",
+    "sourceCode": "src/lib/base/writable-model.ts"
+  },
+  "sections": [
+    {
+      "title": "Information",
+      "content": [
+        {
+          "displayType": "general",
+          "paragraphs": [
+            "The only properties on this object are those that it inherits."
+          ]
+        }
+      ]
+    }
+  ],
+  "footer": {
+    "seeAlso": [
+      {
+        "name": "WritableModel",
+        "path": {
+          "pkg": "models",
+          "group": "abstracts",
+          "item": "WritableModel"
+        }
+      }
+    ]
+  }
+}

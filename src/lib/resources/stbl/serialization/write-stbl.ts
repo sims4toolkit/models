@@ -4,7 +4,7 @@ import { BinaryEncoder } from "@s4tk/encoding";
 /**
  * Writes STBL content to a buffer.
  * 
- * @param stbl STBL to serialize
+ * @param entries STBL entries to serialize
  */
 export default function writeStbl(entries: KeyStringPair[]): Buffer {
   let totalBytes = 21; // num bytes in header

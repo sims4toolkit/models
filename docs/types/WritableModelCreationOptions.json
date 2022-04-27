@@ -1,0 +1,75 @@
+{
+  "$schema": "https://raw.githubusercontent.com/sims4toolkit/misc/main/json-schemas/docs-item-schema.json",
+  "imports": [
+    "import type { WritableModelCreationOptions } from \"@s4tk/models/types\"; // TypeScript only"
+  ],
+  "header": {
+    "title": {
+      "prefix": "interface",
+      "name": "WritableModelCreationOptions"
+    },
+    "description": "Optional arguments for initializing WritableModels.",
+    "sourceCode": "src/lib/base/writable-model.ts"
+  },
+  "sections": [
+    {
+      "title": "Properties",
+      "content": [
+        {
+          "displayType": "property",
+          "name": "defaultCompressionType",
+          "optional": true,
+          "description": "How this model's buffer should be compressed by default. If not supplied, then CompressionType.Uncompressed is assumed.",
+          "type": {
+            "name": "CompressionType",
+            "path": {
+              "pkg": "compression",
+              "group": "enums",
+              "item": "CompressionType"
+            }
+          }
+        },
+        {
+          "displayType": "property",
+          "name": "initialBufferCache",
+          "optional": true,
+          "description": "The initial buffer to save on this model.",
+          "type": {
+            "name": "CompressedBuffer",
+            "path": {
+              "pkg": "compression",
+              "group": "enums",
+              "item": "CompressedBuffer"
+            }
+          }
+        },
+        {
+          "displayType": "property",
+          "name": "owner",
+          "optional": true,
+          "description": "The model that contains this one. The owner is notified whenever the child model is changed, and will uncache its buffer.",
+          "type": {
+            "name": "ApiModelBase",
+            "path": {
+              "pkg": "models",
+              "group": "abstracts",
+              "item": "ApiModelBase"
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "footer": {
+    "seeAlso": [
+      {
+        "name": "WritableModel",
+        "path": {
+          "pkg": "models",
+          "group": "abstracts",
+          "item": "WritableModel"
+        }
+      }
+    ]
+  }
+}

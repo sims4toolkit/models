@@ -1,11 +1,10 @@
 import fs from "fs";
 import path from "path";
-import { unzipSync } from "zlib";
 import { expect } from "chai";
 import type { ResourceKey } from "../../../dst/lib/packages/types";
 import { Package, StringTableResource, XmlResource } from "../../../dst/models";
 import { EncodingType, TuningResourceType } from "../../../dst/enums";
-import { FileReadingOptions } from "../../../dst/lib/common/options";
+import { PackageFileReadingOptions } from "../../../dst/lib/common/options";
 
 //#region Helpers
 
@@ -20,12 +19,12 @@ function getBuffer(filename: string): Buffer {
   return cachedBuffers[filename];
 }
 
-function getPackage(filename: string, options?: FileReadingOptions): Package {
+function getPackage(filename: string, options?: PackageFileReadingOptions): Package {
   return Package.from(getBuffer(filename), options);
 }
 
 function getTestTuning(): XmlResource {
-  return XmlResource.create({ content: `<I n="something">\n  <T n="value">50</T>\n</I>` });
+  return new XmlResource(`<I n="something">\n  <T n="value">50</T>\n</I>`);
 }
 
 function getTestKey(): ResourceKey {
@@ -37,72 +36,24 @@ function getTestKey(): ResourceKey {
 describe("ResourceEntry", () => {
   //#region Properties
 
-  describe("#buffer", () => {
-    it("should serialize and compress the contained resource", () => {
-      const tuning = getTestTuning();
-      const dbpf = Package.create();
-      const testKey = getTestKey();
-      const entry = dbpf.add(testKey, tuning);
-      const unzipped = unzipSync(entry.buffer).toString();
-      expect(unzipped).to.equal(tuning.content);
-    });
-
-    it("should return the cached buffer if nothing was changed and saveCompressedBuffers = true", () => {
-      const tuning = getTestTuning();
-      const dbpf = Package.create({ saveCompressedBuffers: true });
-      const testKey = getTestKey();
-      const entry = dbpf.add(testKey, tuning);
-      const buffer = entry.buffer;
-      expect(buffer).to.equal(entry.buffer);
-    });
-
-    it("should return a new buffer if nothing was changed and saveCompressedBuffers = false", () => {
-      const tuning = getTestTuning();
-      const dbpf = Package.create({ saveCompressedBuffers: false });
-      const testKey = getTestKey();
-      const entry = dbpf.add(testKey, tuning);
-      const buffer = entry.buffer;
-      expect(buffer).to.not.equal(entry.buffer);
-    });
-
-    it("should return a new buffer if it was changed and saveCompressedBuffers = true", () => {
-      const tuning = getTestTuning();
-      const dbpf = Package.create({ saveCompressedBuffers: true });
-      const testKey = getTestKey();
-      const entry = dbpf.add(testKey, tuning);
-      const buffer = entry.buffer;
-      (entry.value as XmlResource).content = "";
-      expect(buffer).to.not.equal(entry.buffer);
-    });
-  });
-
   describe("#key", () => {
-    it("should not uncache the entry when mutated", () => {
-      const dbpf = getPackage("Trait", { saveCompressedBuffer: true });
-      const entry = dbpf.get(0);
-      expect(entry.isCached).to.be.true;
-      entry.key.group = 0x80000000;
-      expect(entry.isCached).to.be.true;
-    });
-
     it("should not uncache the entry's resource when mutated", () => {
       const dbpf = Package.from(getBuffer("Trait"), {
         saveBuffer: true,
-        saveCompressedBuffer: true
       });
 
       const entry = dbpf.get(0);
-      expect(entry.value.isCached).to.be.true;
+      expect(entry.value.hasBufferCache).to.be.true;
       entry.key.group = 0x80000000;
-      expect(entry.value.isCached).to.be.true;
+      expect(entry.value.hasBufferCache).to.be.true;
     });
   });
 
-  // #isCached tested by other tests
+  // #hasBufferCache tested by other tests
 
   describe("#resource", () => {
     it("should return the value of this entry", () => {
-      const dbpf = Package.create();
+      const dbpf = new Package();
       const tuning = getTestTuning();
       const entry = dbpf.add(getTestKey(), tuning);
       expect(entry.value).to.equal(tuning);
@@ -110,7 +61,7 @@ describe("ResourceEntry", () => {
     });
 
     it("should set the value of this entry", () => {
-      const dbpf = Package.create();
+      const dbpf = new Package();
       const tuning = getTestTuning();
       const entry = dbpf.add(getTestKey(), tuning);
       expect(entry.value).to.equal(tuning);
@@ -119,78 +70,18 @@ describe("ResourceEntry", () => {
       expect(entry.value).to.not.equal(tuning);
       expect(entry.value).to.equal(newTuning);
     });
-
-    it("should uncache the entry when set", () => {
-      const dbpf = getPackage("Trait", { saveCompressedBuffer: true });
-      const entry = dbpf.get(0);
-      expect(entry.isCached).to.be.true;
-      entry.resource = getTestTuning();
-      expect(entry.isCached).to.be.false;
-    });
-  });
-
-  describe("#saveBuffer", () => {
-    it("should be false by default", () => {
-      const dbpf = Package.create();
-      const entry = dbpf.add(getTestKey(), getTestTuning());
-      expect(entry.saveBuffer).to.be.false;
-    });
-
-    it("should delete the buffer if set to false", () => {
-      const dbpf = Package.create({ saveCompressedBuffers: true });
-      const entry = dbpf.add(getTestKey(), getTestTuning());
-      entry.buffer;
-      expect(entry.isCached).to.be.true;
-      entry.saveBuffer = false;
-      expect(entry.isCached).to.be.false;
-    });
-
-    it("should not generate a buffer if set to true", () => {
-      const dbpf = Package.create();
-      const entry = dbpf.add(getTestKey(), getTestTuning());
-      expect(entry.isCached).to.be.false;
-      entry.saveBuffer = true;
-      expect(entry.isCached).to.be.false;
-    });
-
-    it("should cache the buffer after getting it when set to true", () => {
-      const dbpf = Package.create();
-      const entry = dbpf.add(getTestKey(), getTestTuning());
-      expect(entry.isCached).to.be.false;
-      entry.saveBuffer = true;
-      expect(entry.isCached).to.be.false;
-      entry.buffer;
-      expect(entry.isCached).to.be.true;
-    });
-
-    it("should not cache the buffer after getting it when set to false", () => {
-      const dbpf = Package.create();
-      const entry = dbpf.add(getTestKey(), getTestTuning());
-      expect(entry.isCached).to.be.false;
-      entry.buffer;
-      expect(entry.isCached).to.be.false;
-    });
   });
 
   describe("#value", () => {
-    it("should uncache the entry when mutated", () => {
-      const dbpf = getPackage("Trait", { saveCompressedBuffer: true });
-      const entry = dbpf.get(1);
-      expect(entry.isCached).to.be.true;
-      (entry.value as XmlResource).content = "";
-      expect(entry.isCached).to.be.false;
-    });
-
     it("should uncache the entry's resource when mutated", () => {
       const dbpf = Package.from(getBuffer("Trait"), {
         saveBuffer: true,
-        saveCompressedBuffer: true
       });
 
       const entry = dbpf.get(1);
-      expect(entry.value.isCached).to.be.true;
+      expect(entry.value.hasBufferCache).to.be.true;
       (entry.value as XmlResource).content = "";
-      expect(entry.value.isCached).to.be.false;
+      expect(entry.value.hasBufferCache).to.be.false;
     });
   });
 
@@ -236,14 +127,14 @@ describe("ResourceEntry", () => {
 
   describe("#equals()", () => {
     it("should return true when key and value are equal", () => {
-      const dbpf = Package.create();
+      const dbpf = new Package();
       const first = dbpf.add(getTestKey(), getTestTuning());
       const second = dbpf.add(getTestKey(), getTestTuning());
       expect(first.equals(second)).to.be.true;
     });
 
     it("should return false when key is different", () => {
-      const dbpf = Package.create();
+      const dbpf = new Package();
       const first = dbpf.add(getTestKey(), getTestTuning());
       const secondKey = getTestKey();
       secondKey.group++;
@@ -252,14 +143,14 @@ describe("ResourceEntry", () => {
     });
 
     it("should return false when value is different", () => {
-      const dbpf = Package.create();
+      const dbpf = new Package();
       const first = dbpf.add(getTestKey(), getTestTuning());
-      const second = dbpf.add(getTestKey(), XmlResource.create());
+      const second = dbpf.add(getTestKey(), new XmlResource());
       expect(first.equals(second)).to.be.false;
     });
 
     it("should return false when other is undefined", () => {
-      const dbpf = Package.create();
+      const dbpf = new Package();
       const entry = dbpf.add(getTestKey(), getTestTuning());
       expect(entry.equals(undefined)).to.be.false;
     });
@@ -267,7 +158,7 @@ describe("ResourceEntry", () => {
 
   describe("#keyEquals()", () => {
     it("should return true when key is the same object", () => {
-      const dbpf = Package.create();
+      const dbpf = new Package();
 
       const key = {
         type: 123,
@@ -275,18 +166,18 @@ describe("ResourceEntry", () => {
         instance: 789n
       };
 
-      const entry = dbpf.add(key, XmlResource.create());
+      const entry = dbpf.add(key, new XmlResource());
       expect(entry.keyEquals(key)).to.be.true;
     });
 
     it("should return true when key is a different object, but identical", () => {
-      const dbpf = Package.create();
+      const dbpf = new Package();
 
       const entry = dbpf.add({
         type: 123,
         group: 456,
         instance: 789n
-      }, XmlResource.create());
+      }, new XmlResource());
 
       expect(entry.keyEquals({
         type: 123,
@@ -296,13 +187,13 @@ describe("ResourceEntry", () => {
     });
 
     it("should return false when keys have different type", () => {
-      const dbpf = Package.create();
+      const dbpf = new Package();
 
       const entry = dbpf.add({
         type: 123,
         group: 456,
         instance: 789n
-      }, XmlResource.create());
+      }, new XmlResource());
 
       expect(entry.keyEquals({
         type: 0,
@@ -312,13 +203,13 @@ describe("ResourceEntry", () => {
     });
 
     it("should return false when keys have different group", () => {
-      const dbpf = Package.create();
+      const dbpf = new Package();
 
       const entry = dbpf.add({
         type: 123,
         group: 456,
         instance: 789n
-      }, XmlResource.create());
+      }, new XmlResource());
 
       expect(entry.keyEquals({
         type: 123,
@@ -328,13 +219,13 @@ describe("ResourceEntry", () => {
     });
 
     it("should return false when keys have different instance", () => {
-      const dbpf = Package.create();
+      const dbpf = new Package();
 
       const entry = dbpf.add({
         type: 123,
         group: 456,
         instance: 789n
-      }, XmlResource.create());
+      }, new XmlResource());
 
       expect(entry.keyEquals({
         type: 123,
@@ -344,156 +235,123 @@ describe("ResourceEntry", () => {
     });
   });
 
-  describe("#onChange()", () => {
-    it("should reset the compressed buffer", () => {
-      const dbpf = Package.from(getBuffer("Trait"), {
-        saveBuffer: true,
-        saveCompressedBuffer: true
-      });
-
-      const entry = dbpf.get(0);
-      const buffer = entry.buffer;
-      expect(entry.buffer).to.equal(buffer);
-      entry.onChange();
-      expect(entry.buffer).to.not.equal(buffer);
-    });
-
-    it("should not uncache other entries in the dbpf", () => {
-      const dbpf = Package.from(getBuffer("Trait"), {
-        saveBuffer: true,
-        saveCompressedBuffer: true
-      });
-
-      const [ simdata, tuning ] = dbpf.entries;
-      expect(tuning.isCached).to.be.true;
-      expect(tuning.isCached).to.be.true;
-      simdata.onChange();
-      expect(simdata.isCached).to.be.false;
-      expect(tuning.isCached).to.be.true;
-    });
-
-    it("should not uncache the contained resource", () => {
-      const dbpf = Package.from(getBuffer("Trait"), {
-        saveBuffer: true,
-        saveCompressedBuffer: true
-      });
-
-      const [ simdata ] = dbpf.entries;
-      expect(simdata.value.isCached).to.be.true;
-      simdata.onChange();
-      expect(simdata.value.isCached).to.be.true;
-    });
-  });
-
   describe("#validate()", () => {
     it("should not throw when key and resource are valid", () => {
-      const dbpf = Package.create();
+      const dbpf = new Package();
 
-      const entry = dbpf.add({
-        type: 0,
-        group: 0,
-        instance: 0n
-      }, StringTableResource.create({ entries: [
-        { key: 1, value: "hi" }
-      ]}));
+      const entry = dbpf.add(
+        {
+          type: 0,
+          group: 0,
+          instance: 0n
+        },
+        new StringTableResource([{ key: 1, value: "hi" }])
+      );
 
       expect(() => entry.validate()).to.not.throw();
     });
 
     it("should throw if key type is negative", () => {
-      const dbpf = Package.create();
+      const dbpf = new Package();
 
-      const entry = dbpf.add({
-        type: -1,
-        group: 0,
-        instance: 0n
-      }, StringTableResource.create({ entries: [
-        { key: 1, value: "hi" }
-      ]}));
+      const entry = dbpf.add(
+        {
+          type: -1,
+          group: 0,
+          instance: 0n
+        },
+        new StringTableResource([{ key: 1, value: "hi" }])
+      );
 
       expect(() => entry.validate()).to.throw();
     });
 
     it("should throw if key group is negative", () => {
-      const dbpf = Package.create();
+      const dbpf = new Package();
 
-      const entry = dbpf.add({
-        type: 0,
-        group: -1,
-        instance: 0n
-      }, StringTableResource.create({ entries: [
-        { key: 1, value: "hi" }
-      ]}));
+      const entry = dbpf.add(
+        {
+          type: 0,
+          group: -1,
+          instance: 0n
+        },
+        new StringTableResource([{ key: 1, value: "hi" }])
+      );
 
       expect(() => entry.validate()).to.throw();
     });
 
     it("should throw if key instance is negative", () => {
-      const dbpf = Package.create();
+      const dbpf = new Package();
 
-      const entry = dbpf.add({
-        type: 0,
-        group: 0,
-        instance: -1n
-      }, StringTableResource.create({ entries: [
-        { key: 1, value: "hi" }
-      ]}));
+      const entry = dbpf.add(
+        {
+          type: 0,
+          group: 0,
+          instance: -1n
+        },
+        new StringTableResource([{ key: 1, value: "hi" }])
+      );
 
       expect(() => entry.validate()).to.throw();
     });
 
     it("should throw if key type is > 32 bit", () => {
-      const dbpf = Package.create();
+      const dbpf = new Package();
 
-      const entry = dbpf.add({
-        type: 0x800000000,
-        group: 0,
-        instance: 0n
-      }, StringTableResource.create({ entries: [
-        { key: 1, value: "hi" }
-      ]}));
+      const entry = dbpf.add(
+        {
+          type: 0x800000000,
+          group: 0,
+          instance: 0n
+        },
+        new StringTableResource([{ key: 1, value: "hi" }])
+      );
 
       expect(() => entry.validate()).to.throw();
     });
 
     it("should throw if key group is > 32 bit", () => {
-      const dbpf = Package.create();
+      const dbpf = new Package();
 
-      const entry = dbpf.add({
-        type: 0,
-        group: 0x800000000,
-        instance: 0n
-      }, StringTableResource.create({ entries: [
-        { key: 1, value: "hi" }
-      ]}));
+      const entry = dbpf.add(
+        {
+          type: 0,
+          group: 0x800000000,
+          instance: 0n
+        },
+        new StringTableResource([{ key: 1, value: "hi" }])
+      );
 
       expect(() => entry.validate()).to.throw();
     });
 
     it("should throw if key instance is > 64 bit", () => {
-      const dbpf = Package.create();
+      const dbpf = new Package();
 
-      const entry = dbpf.add({
-        type: 0,
-        group: 0,
-        instance: 0x80000000000000000n
-      }, StringTableResource.create({ entries: [
-        { key: 1, value: "hi" }
-      ]}));
+      const entry = dbpf.add(
+        {
+          type: 0,
+          group: 0,
+          instance: 0x80000000000000000n
+        },
+        new StringTableResource([{ key: 1, value: "hi" }])
+      );
 
       expect(() => entry.validate()).to.throw();
     });
 
     it("should throw if contained resource is invalid", () => {
-      const dbpf = Package.create();
+      const dbpf = new Package();
 
-      const entry = dbpf.add({
-        type: 0,
-        group: 0,
-        instance: 0x80000000000000000n
-      }, StringTableResource.create({ entries: [
-        { key: -1, value: "hi" }
-      ]}));
+      const entry = dbpf.add(
+        {
+          type: 0,
+          group: 0,
+          instance: 0x80000000000000000n
+        },
+        new StringTableResource([{ key: 1, value: "hi" }])
+      );
 
       expect(() => entry.validate()).to.throw();
     });

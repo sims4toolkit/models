@@ -1,0 +1,39 @@
+{
+  "$schema": "https://raw.githubusercontent.com/sims4toolkit/misc/main/json-schemas/docs-item-schema.json",
+  "imports": [
+    "import type { BinaryFileReadingOptions } from \"@s4tk/models/types\"; // TypeScript only"
+  ],
+  "header": {
+    "title": {
+      "prefix": "interface",
+      "name": "BinaryFileReadingOptions"
+    },
+    "description": "Object containing options to configure when loading a binary model from a buffer.",
+    "sourceCode": "src/lib/common/options.ts"
+  },
+  "sections": [
+    {
+      "title": "Properties",
+      "content": [
+        {
+          "displayType": "property",
+          "name": "recoveryMode",
+          "optional": true,
+          "description": "If true, non-critical errors will be ignored while reading the file(s), and exceptions will only be thrown when totally unavoidable. If being used on a package, any erred resources will be loaded raw (i.e. just a buffer) instead of causing an exception. False by default.\n\nRecommended when recovering potentially corrupt resources from a package.",
+          "type": {
+            "name": "boolean"
+          }
+        },
+        {
+          "displayType": "property",
+          "name": "saveBuffer",
+          "optional": true,
+          "description": "If true, then the buffer for this resource (or all resources, if used with a package) will be saved on its model. The buffer is cached when the resource is initially loaded, uncached whenever a change is detected, and re-cached the next time it is serialized. False by default.\n\nIt is recommended to save compressed buffers whenever entire packages are going to be written, and it is recommended to save decompressed buffers whenever individual resources are going to be written.",
+          "type": {
+            "name": "boolean"
+          }
+        }
+      ]
+    }
+  ]
+}

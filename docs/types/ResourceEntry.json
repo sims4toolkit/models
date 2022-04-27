@@ -9,11 +9,11 @@
       "name": "ResourceEntry",
       "extends": [
         {
-          "name": "WritableModel",
+          "name": "ApiModelBase",
           "path": {
             "pkg": "models",
             "group": "abstracts",
-            "item": "WritableModel"
+            "item": "ApiModelBase"
           }
         }
       ],
@@ -28,7 +28,7 @@
         }
       ]
     },
-    "description": "An entry in a package file with a key and resource. Though the constructor is technically public, there is absolutely no reason to create a resource entry manually, and doing so is not considered a part of the API, and may change without notice. Entries are created automatically when key/value pairs are added to mapped models.",
+    "description": "An entry for a resource in a package file. This is just a pairing of a key and a resource.",
     "sourceCode": "src/lib/packages/resource-entry.ts"
   },
   "sections": [

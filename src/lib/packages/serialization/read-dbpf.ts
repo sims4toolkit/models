@@ -1,17 +1,11 @@
-import type Resource from "../../resources/resource";
-import type { FileReadingOptions, ResourceFilter } from "../../common/options";
-import type { ResourceKeyPair, ResourceKey } from "../types";
+import { CompressedBuffer, CompressionType, decompressBuffer } from "@s4tk/compression";
 import { BinaryDecoder } from "@s4tk/encoding";
-import { bufferContainsXml, makeList } from "../../common/helpers";
+import type Resource from "../../resources/resource";
+import type { PackageFileReadingOptions, ResourceFilter } from "../../common/options";
+import type { ResourceKeyPair, ResourceKey } from "../types";
+import { makeList } from "../../common/helpers";
 import RawResource from "../../resources/raw/raw-resource";
-import BinaryResourceType from "../../enums/binary-resources";
-import TuningResourceType from "../../enums/tuning-resources";
-import StringTableResource from "../../resources/stbl/stbl-resource";
-import SimDataResource from "../../resources/simdata/simdata-resource";
-import XmlResource from "../../resources/xml/xml-resource";
-import CombinedTuningResource from "../../resources/combined-tuning/combined-tuning-resource";
-import decompressBuffer from "../../compression/decompress";
-import CompressionType from "../../compression/compression-type";
+import ResourceRegistry from "../resource-registry";
 
 /**
  * Reads the given buffer as a DBPF and returns a DTO for it.
@@ -19,7 +13,7 @@ import CompressionType from "../../compression/compression-type";
  * @param buffer Buffer to read as a DBPF
  * @param options Options for reading DBPF
  */
-export default function readDbpf(buffer: Buffer, options: FileReadingOptions = {}): ResourceKeyPair[] {
+export default function readDbpf(buffer: Buffer, options?: PackageFileReadingOptions): ResourceKeyPair[] {
   const decoder = new BinaryDecoder(buffer);
   const header = readDbpfHeader(decoder, options);
   decoder.seek(header.mnIndexRecordPosition || header.mnIndexRecordPositionLow);
@@ -32,7 +26,6 @@ export default function readDbpf(buffer: Buffer, options: FileReadingOptions = {
       key: indexEntry.key,
       value: getResource(indexEntry, compressedBuffer, options)
     };
-    if (options?.saveCompressedBuffer) entry.buffer = compressedBuffer;
     return entry;
   });
 }
@@ -68,13 +61,12 @@ interface IndexEntry {
  * is needed for reading the rest of the DBPF.
  * 
  * @param decoder Decoder to read DBPF header from
- * @param ignoreErrors Whether or not header errors should be ignored
- * @throws If ignoreErrors = false and something is wrong
+ * @param options Object containing options
  */
-function readDbpfHeader(decoder: BinaryDecoder, { ignoreErrors = false }: FileReadingOptions): DbpfHeader {
+function readDbpfHeader(decoder: BinaryDecoder, options?: PackageFileReadingOptions): DbpfHeader {
   const header: Partial<DbpfHeader> = {};
 
-  if (ignoreErrors) {
+  if (options?.recoveryMode) {
     decoder.skip(12); // size of mnFileIdentifier + mnFileVersion
   } else {
     if (decoder.charsUtf8(4) !== "DBPF")
@@ -90,7 +82,7 @@ function readDbpfHeader(decoder: BinaryDecoder, { ignoreErrors = false }: FileRe
   header.mnIndexRecordPositionLow = decoder.uint32();
   decoder.skip(16); // mnIndexRecordSize & unused3 has no affect
 
-  if (ignoreErrors) {
+  if (options?.recoveryMode) {
     decoder.skip(4);
   } else {
     const unused4 = decoder.uint32();
@@ -156,7 +148,7 @@ function readDbpfIndex(decoder: BinaryDecoder, header: DbpfHeader, flags: DbpfFl
       entry.mnSizeDecompressed = decoder.uint32();
       if (isCompressed) entry.mnCompressionType = decoder.uint16();
       decoder.skip(2); // mnCommitted (uint16; 2 bytes)
-      if (entry.mnCompressionType === CompressionType.DeletedRecord) return; // FIXME: make this an option
+      if (entry.mnCompressionType === CompressionType.DeletedRecord) return; // TODO: make this an option
       return entry as IndexEntry;
     }
   }, true); // true to skip nulls/undefineds
@@ -168,56 +160,65 @@ function readDbpfIndex(decoder: BinaryDecoder, header: DbpfHeader, flags: DbpfFl
  * @param entry Index entry header for this resource
  * @param rawBuffer Buffer containing the resource's data
  * @param options Options for serialization
- * @returns Parsed model for the resource
  */
-function getResource(entry: IndexEntry, rawBuffer: Buffer, options?: FileReadingOptions): Resource {
-  if (options?.loadRaw && !options?.decompressRawResources) {
-    return RawResource.from(rawBuffer, {
+function getResource(entry: IndexEntry, rawBuffer: Buffer, options?: PackageFileReadingOptions): Resource {
+  let bufferWrapper: CompressedBuffer;
+  let rawReason: string;
+
+  if (options?.decompressBuffers) {
+    try {
+      bufferWrapper = {
+        buffer: decompressBuffer(rawBuffer, entry.mnCompressionType),
+        compressionType: CompressionType.Uncompressed,
+        sizeDecompressed: entry.mnSizeDecompressed
+      };
+    } catch (e) {
+      if (!(options?.recoveryMode)) throw e;
+      rawReason = `Could not decompress "${entry.mnCompressionType} (${CompressionType[entry.mnCompressionType]})".`;
+    }
+  } else {
+    bufferWrapper = {
+      buffer: rawBuffer,
       compressionType: entry.mnCompressionType,
-      isCompressed: true,
       sizeDecompressed: entry.mnSizeDecompressed
+    };
+  }
+
+  if (options?.loadRaw || rawReason) {
+    return new RawResource(bufferWrapper, {
+      reason: rawReason ?? "All resources loaded raw.",
+      defaultCompressionType: entry.mnCompressionType
     });
   }
 
-  try {
-    var buffer = decompressBuffer(rawBuffer, entry.mnCompressionType, entry.mnSizeDecompressed);
-  } catch (e) {
-    return RawResource.from(rawBuffer, {
-      compressionType: entry.mnCompressionType,
-      isCompressed: true,
-      sizeDecompressed: entry.mnSizeDecompressed,
-      reason: `Unsupported compression: ${entry.mnCompressionType} (${CompressionType[entry.mnCompressionType]})`
-    });
-  }
-
-  const raw = (reason?: string) => RawResource.from(buffer, {
-    compressionType: entry.mnCompressionType,
-    isCompressed: false,
-    reason
-  });
-
-  if (options?.loadRaw) return raw();
-  
   const { type } = entry.key;
 
+  const decompressedBuffer = bufferWrapper.compressionType === CompressionType.Uncompressed
+    ? bufferWrapper.buffer
+    : decompressBuffer(rawBuffer, entry.mnCompressionType);
+
+  const resourceOptions = {
+    defaultCompressionType: entry.mnCompressionType,
+    initialBufferCache: bufferWrapper,
+    recoveryMode: options?.recoveryMode,
+    saveBuffer: options?.saveBuffer
+  };
+
   try {
-    if (type === BinaryResourceType.StringTable) {
-      return StringTableResource.from(buffer, options);
-    } else if (type === BinaryResourceType.SimData) {
-      return SimDataResource.from(buffer, options);
-    } else if (type === BinaryResourceType.CombinedTuning) {
-      return CombinedTuningResource.from(buffer);
-    } else if ((type in TuningResourceType) || bufferContainsXml(buffer)) {
-      return XmlResource.from(buffer, options);
-    } else {
-      return raw(`Unrecognized non-XML type: ${type}`);
-    }
+    const resource = ResourceRegistry.generateResourceFromBuffer(
+      type,
+      decompressedBuffer,
+      resourceOptions
+    );
+
+    return resource ? resource : new RawResource(bufferWrapper, {
+      reason: `Unregistered resource type: ${type}`
+    });
   } catch (e) {
-    if (options?.loadErrorsAsRaw) {
-      return raw("Model is corrupt.");
-    } else {
-      throw e;
-    }
+    if (!(options?.recoveryMode)) throw e;
+    return new RawResource(bufferWrapper, {
+      reason: `Failed to parse resource (Type: ${type})`
+    });
   }
 }
 

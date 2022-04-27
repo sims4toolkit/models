@@ -62,55 +62,48 @@
     },
     {
       "title": "Initialization",
-      "description": "The constructor is not a part of the public API, and may be changed without warning. Avoid using it, favoring the static methods instead.",
       "content": [
         {
           "displayType": "function",
-          "prefix": "static",
-          "name": "create",
+          "name": "constructor",
           "returnType": {
             "name": "StringTableResource"
           },
           "description": "Creates a new StringTableResource instance with the given entries, if any. If no entries are provided, an empty STBL is created.",
           "arguments": [
             {
-              "description": "Optional arguments.",
+              "description": "Entries to initialize the STBL model with",
+              "optional": true,
+              "name": "entries",
+              "type": {
+                "name": "KeyStringPair[]",
+                "path": {
+                  "pkg": "models",
+                  "group": "types",
+                  "item": "KeyStringPair"
+                }
+              }
+            },
+            {
+              "description": "Object of options.",
               "optional": true,
               "name": "options",
               "type": {
-                "name": "object"
-              },
-              "properties": [
-                {
-                  "name": "entries",
-                  "optional": true,
-                  "description": "Optional entries to create STBL with. If no entries are provided, the STBL is empty.",
-                  "type": {
-                    "name": "KeyStringPair",
-                    "path": {
-                      "pkg": "models",
-                      "group": "types",
-                      "item": "KeyStringPair"
-                    }
-                  }
-                },
-                {
-                  "name": "saveBuffer",
-                  "optional": true,
-                  "description": "Whether or not buffers created for this resource should be cached. False by default.",
-                  "type": {
-                    "name": "boolean"
-                  }
+                "name": "WritableModelCreationOptions",
+                "path": {
+                  "pkg": "models",
+                  "group": "types",
+                  "item": "WritableModelCreationOptions"
                 }
-              ]
+              }
             }
           ],
           "examples": [
             {
-              "code": "const emptyStbl = StringTableResource.create();"
+              "code": "const emptyStbl = new StringTableResource();"
             },
             {
-              "code": "const stbl = StringTableResource.create({\n  entries: [\n    {\n      key: 123,\n      value: \"hi\"\n    },\n    {\n      key: 456,\n      value: \"bye\"\n    }\n  ]\n});"
+              "code": "const stbl = StringTableResource.create([\n  {\n    key: 0x12345678,\n    value: \"hi\"\n  },\n  {\n    key: 0x87654321,\n    value: \"bye\"\n  }\n]);"
             }
           ]
         },
@@ -121,11 +114,11 @@
           "returnType": {
             "name": "StringTableResource"
           },
-          "description": "Reads the given buffer as a StringTableResource and returns it.",
+          "description": "Creates a STBL resource from a buffer containing binary data. This buffer is assumed to be uncompressed; providing a compressed buffer will lead to unexpected behavior.",
           "arguments": [
             {
               "name": "buffer",
-              "description": "Buffer to read as a STBL.",
+              "description": "Uncompressed buffer to read as a string table",
               "type": {
                 "name": "Buffer"
               }
@@ -133,13 +126,13 @@
             {
               "name": "options",
               "optional": true,
-              "description": "Optional arguments for reading the buffer.",
+              "description": "Object of options",
               "type": {
-                "name": "FileReadingOptions",
+                "name": "WritableModelFromOptions",
                 "path": {
                   "pkg": "models",
                   "group": "types",
-                  "item": "FileReadingOptions"
+                  "item": "WritableModelFromOptions"
                 }
               }
             }
@@ -152,16 +145,16 @@
         },
         {
           "displayType": "function",
-          "prefix": "static",
+          "prefix": "static async",
           "name": "fromAsync",
           "returnType": {
-            "name": "Promise<StringTableResource>"
+            "name": "StringTableResource"
           },
-          "description": "Reads the given buffer as a StringTableResource asynchronously and returns a Promise that resolves with it.",
+          "description": "Asynchronously creates a STBL resource from a buffer containing binary data. This buffer is assumed to be uncompressed; providing a compressed buffer will lead to unexpected behavior.",
           "arguments": [
             {
               "name": "buffer",
-              "description": "Buffer to read as a STBL.",
+              "description": "Uncompressed buffer to read as a string table",
               "type": {
                 "name": "Buffer"
               }
@@ -169,13 +162,13 @@
             {
               "name": "options",
               "optional": true,
-              "description": "Optional arguments for reading the buffer.",
+              "description": "Object of options",
               "type": {
-                "name": "FileReadingOptions",
+                "name": "WritableModelFromOptions",
                 "path": {
                   "pkg": "models",
                   "group": "types",
-                  "item": "FileReadingOptions"
+                  "item": "WritableModelFromOptions"
                 }
               }
             }

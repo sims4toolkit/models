@@ -25,29 +25,39 @@
         {
           "displayType": "property",
           "prefix": "get",
-          "name": "buffer",
+          "name": "bufferCache",
           "type": {
-            "name": "Buffer"
+            "name": "CompressedBuffer",
+            "path": {
+              "pkg": "compression",
+              "group": "enums",
+              "item": "CompressedBuffer"
+            }
           },
-          "description": "The buffer for this model. If one is cached, it is returned. If there is no cached buffer available, then this model will be serialized on the fly."
-        },
-        {
-          "displayType": "property",
-          "prefix": "get",
-          "name": "isCached",
-          "type": {
-            "name": "boolean"
-          },
-          "description": "Whether this model currently has a cached buffer. True when the buffer is cached, false when it's not."
+          "description": "The current buffer cache, if there is any."
         },
         {
           "displayType": "property",
           "prefix": "get, set",
-          "name": "saveBuffer",
+          "name": "defaultCompressionType",
+          "type": {
+            "name": "CompressionType",
+            "path": {
+              "pkg": "compression",
+              "group": "enums",
+              "item": "CompressionType"
+            }
+          },
+          "description": "How this model's buffer should be compressed by default. This is not necessarily the same as the compression type of the current buffer cache."
+        },
+        {
+          "displayType": "property",
+          "prefix": "get",
+          "name": "hasBufferCache",
           "type": {
             "name": "boolean"
           },
-          "description": "Whether or not the buffer should be cached on this model. If the buffer is currently false and this is set to true, the cache is cleared."
+          "description": "Whether this model currently has a cached buffer. True when the buffer is cached, false when it's not."
         }
       ]
     },
@@ -56,12 +66,113 @@
       "content": [
         {
           "displayType": "function",
+          "name": "getBuffer",
+          "returnType": {
+            "name": "Buffer"
+          },
+          "description": "Returns an uncompressed buffer for this model. If an uncompressed buffer is available in the cache, it will be returned.",
+          "arguments": [
+            {
+              "name": "cache",
+              "optional": true,
+              "type": {
+                "name": "boolean"
+              },
+              "description": "Whether or not the buffer that is returned by this method should be cached. If the buffer is already cached, it will not be deleted if this argument is false. False by default."
+            }
+          ]
+        },
+        {
+          "displayType": "function",
           "prefix": "async",
           "name": "getBufferAsync",
           "returnType": {
             "name": "Promise<Buffer>"
           },
-          "description": "Generates the buffer for this model asynchronously, and returns a Promise that resolves with it. To get the buffer synchronously, just access the 'buffer' property."
+          "description": "Asynchronously returns an uncompressed buffer for this model. If an uncompressed buffer is available in the cache, it will be returned.",
+          "arguments": [
+            {
+              "name": "cache",
+              "optional": true,
+              "type": {
+                "name": "boolean"
+              },
+              "description": "Whether or not the buffer that is returned by this method should be cached. If the buffer is already cached, it will not be deleted if this argument is false. False by default."
+            }
+          ]
+        },
+        {
+          "displayType": "function",
+          "name": "getCompressedBuffer",
+          "returnType": {
+            "name": "CompressedBuffer",
+            "path": {
+              "pkg": "compression",
+              "group": "interfaces",
+              "item": "CompressedBuffer"
+            }
+          },
+          "description": "Returns a wrapper for the compressed buffer for this model. If a buffer in the correct compression format is cached on this model, it will be returned.",
+          "arguments": [
+            {
+              "name": "targetCompressionType",
+              "optional": true,
+              "type": {
+                "name": "CompressionType",
+                "path": {
+                  "pkg": "compression",
+                  "group": "interfaces",
+                  "item": "CompressionType"
+                }
+              },
+              "description": "How the buffer should be compressed. If not given, the default compression type for this model is used."
+            },
+            {
+              "name": "cache",
+              "optional": true,
+              "type": {
+                "name": "boolean"
+              },
+              "description": "Whether or not the buffer that is returned by this method should be cached. If the buffer is already cached, it will not be deleted if this argument is false. False by default."
+            }
+          ]
+        },
+        {
+          "displayType": "function",
+          "prefix": "async",
+          "name": "getCompressedBufferAsync",
+          "returnType": {
+            "name": "Promise<CompressedBuffer>",
+            "path": {
+              "pkg": "compression",
+              "group": "interfaces",
+              "item": "CompressedBuffer"
+            }
+          },
+          "description": "Asynchronously returns a wrapper for the compressed buffer for this model. If a buffer in the correct compression format is cached on this model, it will be returned.",
+          "arguments": [
+            {
+              "name": "targetCompressionType",
+              "optional": true,
+              "type": {
+                "name": "CompressionType",
+                "path": {
+                  "pkg": "compression",
+                  "group": "interfaces",
+                  "item": "CompressionType"
+                }
+              },
+              "description": "How the buffer should be compressed. If not given, the default compression type for this model is used."
+            },
+            {
+              "name": "cache",
+              "optional": true,
+              "type": {
+                "name": "boolean"
+              },
+              "description": "Whether or not the buffer that is returned by this method should be cached. If the buffer is already cached, it will not be deleted if this argument is false. False by default."
+            }
+          ]
         },
         {
           "displayType": "function",

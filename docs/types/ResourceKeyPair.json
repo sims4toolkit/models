@@ -42,16 +42,6 @@
               "item": "Resource"
             }
           }
-        },
-        {
-          "displayType": "property",
-          "prefix": "get",
-          "name": "buffer",
-          "optional": true,
-          "description": "The compressed buffer for the resource, if there is one.",
-          "type": {
-            "name": "Buffer"
-          }
         }
       ]
     }

@@ -1,4 +1,3 @@
-import type { FileReadingOptions } from "../../common/options";
 import { XmlDocumentNode, XmlElementNode, XmlNode } from "@s4tk/xml-dom";
 import { formatAsHexString } from "@s4tk/hashing/formatting";
 import Resource from "../resource";
@@ -8,13 +7,20 @@ import { SimDataDto } from "./types";
 import { SUPPORTED_VERSION } from "./constants";
 import readData from "./serialization/read-data";
 import writeData from "./serialization/write-data";
-import WritableModel from "../../base/writable-model";
+import WritableModel, { WritableModelCreationOptions, WritableModelFromOptions } from "../../base/writable-model";
 import EncodingType from "../../enums/encoding-type";
-import CompressionType from "../../compression/compression-type";
+import { CompressionType } from "@s4tk/compression";
+import ResourceRegistry from "../../packages/resource-registry";
+import BinaryResourceType from "../../enums/binary-resources";
+
+/** Arguments for SimDataResource's constructor. */
+export interface SimDataResourceCreationOptions extends
+  WritableModelCreationOptions,
+  SimDataDto { };
 
 /**
  * Model for SimData resources. While combined tuning is the same format, it is
- * NOT supported by this model. Use CombinedTuningResource instead.
+ * NOT supported by this model at this time.
  * 
  * SimDatas are mini relational databases, and to simplify working with them
  * (and for consistency with its XML format), this model uses the concept of
@@ -22,8 +28,8 @@ import CompressionType from "../../compression/compression-type";
  */
 export default class SimDataResource extends WritableModel implements Resource, SimDataDto {
   readonly encodingType: EncodingType = EncodingType.DATA;
-  readonly compressionType: CompressionType = CompressionType.ZLIB;
-  readonly isCompressed: boolean = false;
+  public version: number;
+  public unused: number;
   private _schemas: SimDataSchema[];
   private _instances: SimDataInstance[];
 
@@ -62,160 +68,140 @@ export default class SimDataResource extends WritableModel implements Resource, 
 
   //#region Initialization
 
-  protected constructor(
-    public version: number,
-    public unused: number,
-    schemas: SimDataSchema[],
-    instances: SimDataInstance[],
-    saveBuffer?: boolean,
-    buffer?: Buffer
-  ) {
-    super(saveBuffer, buffer);
-    this.schemas = schemas;
-    this.instances = instances; 
+  /**
+   * Creates a new SimData using the provided options.
+   * 
+   * @param options Object of options for creating the SimData
+   */
+  constructor(options?: SimDataResourceCreationOptions) {
+    super(options);
+    this.version = options?.version ?? SUPPORTED_VERSION;
+    this.unused = options?.unused ?? 0;
+    this.schemas = options?.schemas ?? [];
+    this.instances = options?.instances ?? [];
     this._watchProps('version', 'unused');
   }
 
-  clone(): SimDataResource {
-    const newSchemas = this.schemas.map(s => s.clone());
-    const instances = this.instances.map(i => i.clone({ newSchemas }));
-    const buffer = this.isCached ? this.buffer : undefined;
-    return new SimDataResource(
-      this.version,
-      this.unused,
-      newSchemas,
-      instances,
-      this.saveBuffer,
-      buffer
-    );
+  /**
+   * Creates an SimData resource from a buffer containing binary SimData data.
+   * This buffer is assumed to be uncompressed; providing a compressed buffer
+   * will lead to unexpected behavior.
+   * 
+   * @param buffer Uncompressed fuffer to create a SimData resource from
+   * @param options Object of optional arguments
+   */
+  static from(buffer: Buffer, options?: WritableModelFromOptions): SimDataResource {
+    const dto: SimDataResourceCreationOptions = readData(buffer, options);
+    dto.defaultCompressionType = options?.defaultCompressionType;
+    dto.owner = options?.owner;
+    if (options?.saveBuffer) dto.initialBufferCache = options.initialBufferCache ?? {
+      buffer,
+      compressionType: CompressionType.Uncompressed,
+      sizeDecompressed: buffer.byteLength
+    };
+    return new SimDataResource(dto);
   }
 
   /**
-   * Creates a new SimDataResource with the given optional parameters.
+   * Asynchronously creates an SimData resource from a buffer containing binary
+   * SimData data. This buffer is assumed to be uncompressed; providing a
+   * compressed buffer will lead to unexpected behavior.
    * 
-   * Arguments
-   * - `version`: The version of the SimData. This should be 0x101; it can be
-   * left out and it will be 0x101 by default.
-   * - `unused`: The "unused" UInt32 in the SimData header. This number should
-   * correspond to the group number of the pack associated with this SimData,
-   * or be 0 if it does not require a pack. Default is 0.
-   * - `schemas`: A list of the schemas in this SimData. Default is empty.
-   * - `instances`: A list of the instances in this SimData. Default is empty.
-   * 
-   * @param arguments Arguments for creating this SimData
+   * @param buffer Uncompressed fuffer to create a SimData resource from
+   * @param options Object of optional arguments
    */
-  static create({
-    version = SUPPORTED_VERSION,
-    unused = 0,
-    schemas = [],
-    instances = [],
-    saveBuffer
-  }: SimDataDto = {}): SimDataResource {
-    return new SimDataResource(version, unused, schemas, instances, saveBuffer);
-  }
-
-  /**
-   * Creates a new SimDataResource from a buffer containing a binary DATA file.
-   * 
-   * @param buffer Buffer to read
-   * @param options Options for reading and cacheing the SimData
-   */
-  static from(buffer: Buffer, options?: FileReadingOptions): SimDataResource {
-    const dto = readData(buffer, options);
-    return new SimDataResource(
-      dto.version,
-      dto.unused,
-      dto.schemas,
-      dto.instances,
-      options?.saveBuffer,
-      buffer
-    );
-  }
-
-  /**
-   * Creates a new SimDataResource asynchronously from a buffer containing a
-   * binary DATA file. Returns a Promise that resolves with the SimDataResource.
-   * 
-   * @param buffer Buffer to read
-   * @param options Options for reading and cacheing the SimData
-   */
-  static async fromAsync(buffer: Buffer, options?: FileReadingOptions): Promise<SimDataResource> {
+  static async fromAsync(buffer: Buffer, options?: WritableModelFromOptions): Promise<SimDataResource> {
     return promisify(() => SimDataResource.from(buffer, options));
   }
 
   /**
-   * Creates a SimDataResource from S4S-style XML.
+   * Creates a SimDataResource from S4S-style XML, as a string or Buffer. The
+   * data is assumed to be uncompressed; providing a compressed string or buffer
+   * will lead to unexpected behavior.
    * 
    * @param xml XML string or buffer to parse as a SimData
-   * @param options Options for reading and cacheing the SimData
-   * @throws If the given XML could not be parsed as a SimData
+   * @param options Object of optional arguments
    */
-  static fromXml(xml: string | Buffer, options?: FileReadingOptions): SimDataResource {
+  static fromXml(xml: string | Buffer, options?: WritableModelFromOptions): SimDataResource {
     return SimDataResource.fromXmlDocument(XmlDocumentNode.from(xml, {
       ignoreComments: true
     }), options);
   }
 
   /**
-   * Creates a SimDataResource asynchronously from S4S-style XML. Returns a
-   * Promise that resolves with the SimDataResource.
+   * Asynchronously creates a SimDataResource from S4S-style XML, as a string or
+   * Buffer. The data is assumed to be uncompressed; providing a compressed
+   * string or buffer will lead to unexpected behavior.
    * 
    * @param xml XML string or buffer to parse as a SimData
-   * @param options Options for reading and cacheing the SimData
+   * @param options Object of optional arguments
    */
-  static async fromXmlAsync(xml: string | Buffer, options?: FileReadingOptions): Promise<SimDataResource> {
+  static async fromXmlAsync(xml: string | Buffer, options?: WritableModelFromOptions): Promise<SimDataResource> {
     return promisify(() => SimDataResource.fromXml(xml, options));
   }
 
   /**
    * Creates a SimDataResource from an S4S-style XML document.
    * 
-   * @param dom XML document from which to parse SimData
-   * @param options Options for reading and cacheing the SimData
-   * @throws If the given XML document could not be parsed as a SimData
+   * @param doc XML document from which to parse SimData
+   * @param options Object of optional arguments
    */
-  static fromXmlDocument(doc: XmlDocumentNode, options?: FileReadingOptions): SimDataResource {
+  static fromXmlDocument(doc: XmlDocumentNode, options?: WritableModelFromOptions): SimDataResource {
     const dom = doc.child;
+    const canThrow = !(options?.recoveryMode);
 
-    if (!dom || dom.tag !== "SimData")
+    if (canThrow && (!dom || dom.tag !== "SimData"))
       throw new Error(`Expected <SimData>, but got <${dom.tag}>`);
 
-    const version = parseInt(dom.attributes.version, 16);
-    if (version < 0x100 || version > 0x101)
-      throw new Error(`Expected version to be 0x100-0x101, got ${version}`);
-    
-    const unused = parseInt(dom.attributes.u, 16);
-    if (Number.isNaN(unused))
+    const args: SimDataResourceCreationOptions = {};
+
+    args.version = parseInt(dom.attributes.version, 16);
+    if (canThrow && (args.version < 0x100 || args.version > SUPPORTED_VERSION))
+      throw new Error(`Received unexpected version number: ${args.version}`);
+
+    args.unused = parseInt(dom.attributes.u, 16);
+    if (canThrow && Number.isNaN(args.unused))
       throw new Error(`Expected unused to be a number, got ${dom.attributes.u}`);
 
     const schemasNode = dom.children.find(node => node.tag === "Schemas");
-    const schemas = schemasNode.children.map(schemaNode => {
+    args.schemas = schemasNode.children.map(schemaNode => {
       return SimDataSchema.fromXmlNode(schemaNode);
     });
 
     const instancesNode = dom.children.find(node => node.tag === "Instances");
-    const instances = instancesNode.children.map(instanceNode => {
-      return SimDataInstance.fromXmlNode(instanceNode, schemas);
+    args.instances = instancesNode.children.map(instanceNode => {
+      return SimDataInstance.fromXmlNode(instanceNode, args.schemas);
     });
 
-    return new SimDataResource(version, unused, schemas, instances, options?.saveBuffer);
+    return new SimDataResource(options ? Object.assign(args, options) : args);
   }
 
   /**
-   * Creates a SimDataResource asynchronously from an S4S-style XML document.
-   * Returns a Promise that resolves with the SimDataResource.
+   * Asynchronously creates a SimDataResource from an S4S-style XML document.
    * 
-   * @param dom XML document from which to parse SimData
-   * @param options Options for reading and cacheing the SimData
-   * @throws If the given XML document could not be parsed as a SimData
+   * @param doc XML document from which to parse SimData
+   * @param options Object of optional arguments
    */
-  static async fromXmlDocumentAsync(doc: XmlDocumentNode, options?: FileReadingOptions): Promise<SimDataResource> {
+  static async fromXmlDocumentAsync(doc: XmlDocumentNode, options?: WritableModelFromOptions): Promise<SimDataResource> {
     return promisify(() => SimDataResource.fromXmlDocument(doc, options));
   }
 
   //#endregion Initialization
 
   //#region Public Methods
+
+  clone(): SimDataResource {
+    const newSchemas = this.schemas.map(s => s.clone());
+    const newInstances = this.instances.map(i => i.clone({ newSchemas }));
+    return new SimDataResource({
+      version: this.version,
+      unused: this.unused,
+      schemas: newSchemas,
+      instances: newInstances,
+      initialBufferCache: this.bufferCache,
+      defaultCompressionType: this.defaultCompressionType,
+    });
+  }
 
   equals(other: SimDataResource): boolean {
     if (!(other instanceof SimDataResource)) return false;
@@ -311,3 +297,8 @@ export default class SimDataResource extends WritableModel implements Resource, 
 
   //#endregion Protected Methods
 }
+
+ResourceRegistry.register(
+  SimDataResource,
+  type => type === BinaryResourceType.SimData
+);

@@ -1,63 +1,210 @@
-import { promisify } from '../common/helpers';
-import ApiModelBase from './api-model';
+import { CompressionType, CompressedBuffer, compressBuffer, decompressBuffer } from "@s4tk/compression";
+import ApiModelBase from "./api-model";
+import { promisify } from "../common/helpers";
+import { BinaryFileReadingOptions } from "../common/options";
+
+/**
+ * Optional arguments for creating WritableModels.
+ */
+export type WritableModelCreationOptions = Partial<{
+  /**
+   * How this model's buffer should be compressed by default. If not supplied,
+   * then `CompressionType.ZLIB` is assumed.
+   */
+  defaultCompressionType: CompressionType;
+
+  /**
+   * The initial buffer to save on this model.
+   */
+  initialBufferCache: CompressedBuffer;
+
+  /**
+   * The model that contains this one. The owner is notified whenever the child
+   * model is changed, and will uncache its buffer.
+   */
+  owner: ApiModelBase;
+}>;
+
+/**
+ * Optional arguments for creating WritableModels with their `from()` methods.
+ */
+export interface WritableModelFromOptions extends
+  WritableModelCreationOptions,
+  BinaryFileReadingOptions { }
 
 /**
  * Base class for models that can be written to disk.
  */
 export default abstract class WritableModel extends ApiModelBase {
-  // NOTE: Buffer is fine for now, but look out for memory/time bottlenecks...
-  // If any come up, it should be replaced with a stream. This would require
-  // significant refactoring of the entire codebase, though.
-  private _buffer?: Buffer;
-  private _saveBuffer: boolean;
+  //#region Properties
 
-  /**
-   * The buffer for this model.
-   */
-  get buffer(): Buffer {
-    if (!this.saveBuffer) return this._serialize();
-    return this._buffer ??= this._serialize();
-  }
+  private _bufferCache?: CompressedBuffer;
+  private _defaultCompressionType: CompressionType;
 
-  /** 
-   * Whether this model currently has a cached buffer.
-   */
-  get isCached(): boolean {
-    // intentionally != so that null is captured as well
-    return this._buffer != undefined;
-  }
-
-  /** Whether or not the buffer should be cached on this model. */
-  get saveBuffer() { return this._saveBuffer; }
-  set saveBuffer(saveBuffer: boolean) {
-    this._saveBuffer = saveBuffer ?? false;
-    if (!this._saveBuffer) delete this._buffer;
-  }
-
-  protected constructor(
-    saveBuffer: boolean = false,
-    buffer?: Buffer,
-    owner?: ApiModelBase,
-  ) {
-    super(owner);
-    this._saveBuffer = saveBuffer;
-    if (saveBuffer) this._buffer = buffer;
+  /** The current buffer cache, if there is any. */
+  get bufferCache(): CompressedBuffer {
+    return this._bufferCache;
   }
 
   /**
-   * Generates the buffer for this model asynchronously, and returns a Promise
-   * that resolves with it. To get the buffer synchronously, just access the
-   * `buffer` property.
+   * How this model's buffer should be compressed by default. This is not
+   * necessarily the same as the compression type of the current buffer cache.
    */
-  async getBufferAsync(): Promise<Buffer> {
-    return promisify(() => this.buffer);
+  get defaultCompressionType(): CompressionType { return this._defaultCompressionType; }
+  set defaultCompressionType(value: CompressionType) {
+    if (this._bufferCache && (this._bufferCache.compressionType !== value)) {
+      this._clearBufferCacheIfSupported();
+    }
+
+    this._defaultCompressionType = value ?? CompressionType.Uncompressed;
+  }
+
+  /** Whether this model currently has a cached buffer. */
+  get hasBufferCache(): boolean {
+    // intentionally != so that null is captured
+    return this._bufferCache != undefined;
+  }
+
+  //#endregion Properties
+
+  //#region Initialization
+
+  protected constructor(options?: WritableModelCreationOptions) {
+    super(options?.owner);
+    this._defaultCompressionType = options?.defaultCompressionType ?? CompressionType.ZLIB;
+    if (options?.initialBufferCache) this._bufferCache = options.initialBufferCache;
+  }
+
+  //#endregion Initialization
+
+  //#region Public Methods
+
+  /**
+   * Returns an uncompressed buffer for this model. If an uncompressed buffer is
+   * available in the cache, it will be returned.
+   * 
+   * @param cache Whether or not the buffer that is returned by this method
+   * should be cached. If the buffer is already cached, it will not be deleted
+   * if this argument is false. False by default.
+   */
+  getBuffer(cache: boolean = false): Buffer {
+    let decompressedBuffer: Buffer;
+
+    if (this._bufferCache) {
+      const { buffer, compressionType } = this._bufferCache;
+
+      if (compressionType === CompressionType.Uncompressed) {
+        return buffer;
+      } else {
+        decompressedBuffer = decompressBuffer(buffer, compressionType);
+      }
+    } else {
+      decompressedBuffer = this._serialize();
+    }
+
+    // at this point, there either is no cache or the cache isn't uncompressed, so overwrite it
+    if (cache) {
+      this._bufferCache = {
+        buffer: decompressedBuffer,
+        sizeDecompressed: decompressedBuffer.byteLength,
+        compressionType: CompressionType.Uncompressed
+      };
+    }
+
+    return decompressedBuffer;
+  }
+
+  /**
+   * Asynchronously returns an uncompressed buffer for this model. If an
+   * uncompressed buffer is available in the cache, it will be returned.
+   * 
+   * @param cache Whether or not the buffer that is returned by this method
+   * should be cached. If the buffer is already cached, it will not be deleted
+   * if this argument is false. False by default.
+   */
+  async getBufferAsync(cache?: boolean): Promise<Buffer> {
+    return promisify(() => this.getBuffer(cache));
+  }
+
+  /**
+   * Returns a wrapper for the compressed buffer for this model. If a buffer in
+   * the correct compression format is cached on this model, it will be
+   * returned.
+   * 
+   * @param targetCompressionType How the buffer should be compressed. If not
+   * given, the default compression type for this model is used.
+   * @param cache Whether or not the buffer that is returned by this method
+   * should be cached. If the buffer is already cached, it will not be deleted
+   * if this argument is false. False by default.
+   */
+  getCompressedBuffer(
+    targetCompressionType: CompressionType = this.defaultCompressionType,
+    cache: boolean = false,
+  ): CompressedBuffer {
+    let decompressedBuffer: Buffer;
+
+    if (this._bufferCache) {
+      const { buffer, compressionType } = this._bufferCache;
+
+      if (compressionType === targetCompressionType) {
+        return this._bufferCache;
+      } else {
+        decompressedBuffer = decompressBuffer(buffer, compressionType);
+      }
+    } else {
+      decompressedBuffer = this._serialize();
+    }
+
+    const wrapper: CompressedBuffer = {
+      buffer: compressBuffer(decompressedBuffer, targetCompressionType),
+      sizeDecompressed: decompressedBuffer.byteLength,
+      compressionType: targetCompressionType
+    };
+
+    if (cache) this._bufferCache = wrapper;
+
+    return wrapper;
+  }
+
+  /**
+   * Generates a wrapper for the compressed buffer for this model
+   * asynchronously, and returns it in a Promise. If a buffer in the correct
+   * compression format is available on this model, it will be returned.
+   * 
+   * @param targetCompressionType How the buffer should be compressed. If not
+   * given, the default compression type for this model is used.
+   * @param cache Whether or not the buffer that is returned by this method
+   * should be cached. If the buffer is already cached, it will not be deleted
+   * if this argument is false. False by default.
+   */
+  async getCompressedBufferAsync(
+    targetCompressionType?: CompressionType,
+    cache?: boolean,
+  ): Promise<CompressedBuffer> {
+    return promisify(() => this.getCompressedBuffer(targetCompressionType, cache));
   }
 
   onChange() {
-    delete this._buffer;
+    this._clearBufferCacheIfSupported();
     super.onChange();
   }
 
-  /** Returns a newly serialized buffer for this model. */
+  //#endregion Public Methods
+
+  //#region Protected Methods
+
+  /**
+   * Clears this model's cache, if it is able to. Subclasses for which the cache
+   * cannot be cleared must override this method and NOT call super.
+   */
+  protected _clearBufferCacheIfSupported() {
+    delete this._bufferCache;
+  }
+
+  /**
+   * Returns a newly serialized, decompressed buffer for this model.
+   */
   protected abstract _serialize(): Buffer;
+
+  //#endregion Protected Methods
 }

@@ -1,0 +1,52 @@
+{
+  "$schema": "https://raw.githubusercontent.com/sims4toolkit/misc/main/json-schemas/docs-item-schema.json",
+  "imports": [
+    "import type { XmlResourceFromOptions } from \"@s4tk/models/types\"; // TypeScript only"
+  ],
+  "header": {
+    "title": {
+      "prefix": "interface",
+      "name": "XmlResourceFromOptions",
+      "extends": [
+        {
+          "name": "WritableModelFromOptions",
+          "path": {
+            "pkg": "models",
+            "group": "types",
+            "item": "WritableModelFromOptions"
+          }
+        }
+      ]
+    },
+    "description": "Arguments for XmlResource `from()` methods.",
+    "sourceCode": "src/lib/resources/xml/xml-resource.ts"
+  },
+  "sections": [
+    {
+      "title": "Properties",
+      "content": [
+        {
+          "displayType": "property",
+          "name": "bufferEncoding",
+          "optional": true,
+          "description": "How the provided buffer is encoded. UTF8 by default.",
+          "type": {
+            "name": "BufferEncoding"
+          }
+        }
+      ]
+    }
+  ],
+  "footer": {
+    "seeAlso": [
+      {
+        "name": "XmlResource",
+        "path": {
+          "pkg": "models",
+          "group": "resources",
+          "item": "XmlResource"
+        }
+      }
+    ]
+  }
+}

@@ -5,6 +5,35 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.0] - 2022/04/26
+### Changed
+- Replace compression code with @s4tk/compression package.
+- Replace cached buffers with CompressedBuffer objects from @s4tk/compression.
+- Split FileReadingOptions into BinaryFileReadingOptions and PackageFileReadingOptions.
+- ResourceEntry no longer extends WritableModel and does not store a buffer.
+- ResourceKeyPair can no longer contain a buffer.
+- WritableModel (and all descending classes, including Packages and Resources)
+  - Replace static create() methods in ALL subclasses with constructors.
+  - Update optional arguments for all static from() methods.
+  - Remove properties: buffer, isCached, saveBuffer.
+  - Add properties: defaultCompressionType, hasBufferCache.
+  - Add methods: getBuffer(), getCompressedBuffer(), getCompressedBufferAsync().
+  - Update number of args for getBufferAsync().
+  - No longer track if each model should cache its buffers; pass a boolean to the new buffer getter methods to determine if it should be saved.
+- Package
+  - Remove options to clone keys and resources on initialization.
+  - No longer prevent buffer cacheing, because I'm not your father.
+  - Remove properties: saveCompressedBuffers, saveDecompressedBuffers.
+- Resource
+  - Remove properties: compressionType, isCompressed, sizeDecompressed.
+- RawResource
+  - Remove properties: plainText.
+  - Add methods: fromAsync().
+### Removed
+- Temporarily remove CombinedTuning model.
+### Added
+- Add create() method to Cell class.
+
 ## [0.2.2] - 2022/02/15
 ### Added
 - Added all remaining SimDataGroup types to enum.
