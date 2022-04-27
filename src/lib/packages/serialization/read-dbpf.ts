@@ -186,7 +186,8 @@ function getResource(entry: IndexEntry, rawBuffer: Buffer, options?: PackageFile
 
   if (options?.loadRaw || rawReason) {
     return new RawResource(bufferWrapper, {
-      reason: rawReason ?? "All resources loaded raw."
+      reason: rawReason ?? "All resources loaded raw.",
+      defaultCompressionType: entry.mnCompressionType
     });
   }
 
@@ -219,40 +220,6 @@ function getResource(entry: IndexEntry, rawBuffer: Buffer, options?: PackageFile
       reason: `Failed to parse resource (Type: ${type})`
     });
   }
-}
-
-/**
- * Returns a raw resource model for the given entry.
- * 
- * @param entry Index entry header for this resource
- * @param buffer Buffer containing the resource's data
- * @param firstReason Reason why this resource is being loaded raw
- * @param options Options for serialization
- */
-function loadRawResource(entry: IndexEntry, buffer: Buffer, firstReason: string, options?: PackageFileReadingOptions): RawResource {
-  let bufferWrapper: CompressedBuffer;
-  let reason: string = firstReason;
-
-  if (options?.decompressBuffers) {
-    try {
-      bufferWrapper = {
-        buffer: decompressBuffer(buffer, entry.mnCompressionType),
-        compressionType: CompressionType.Uncompressed,
-        sizeDecompressed: this.buffer.byteLength
-      };
-    } catch (e) {
-      if (!(options?.recoveryMode)) throw e;
-      reason = reason + ` Could not decompress "${entry.mnCompressionType} (${CompressionType[entry.mnCompressionType]})".`;
-    }
-  }
-
-  bufferWrapper ??= {
-    buffer,
-    compressionType: entry.mnCompressionType,
-    sizeDecompressed: buffer.byteLength
-  };
-
-  return new RawResource(bufferWrapper, { reason });
 }
 
 //#endregion Helpers
