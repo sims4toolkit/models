@@ -327,7 +327,7 @@ describe("SimDataResource", () => {
     });
   });
 
-  describe("static#create()", () => {
+  describe("#constructor", () => {
     it("should use all properties that are given", () => {
       const schema = new SimDataSchema("Shema", 0, []);
       const instance = new SimDataInstance("", schema, {});
