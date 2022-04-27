@@ -5,8 +5,9 @@ import compare from "just-compare";
 import clone from "just-clone";
 import type { ResourceKey } from "../../../dst/lib/packages/types";
 import { Package, RawResource, SimDataResource, StringTableResource, XmlResource } from "../../../dst/models";
-import { BinaryResourceType, EncodingType, TuningResourceType, CompressionType } from "../../../dst/enums";
-import { FileReadingOptions } from "../../../dst/lib/common/options";
+import { BinaryResourceType, EncodingType, TuningResourceType } from "../../../dst/enums";
+import { PackageFileReadingOptions } from "../../../dst/lib/common/options";
+import { CompressionType } from "@s4tk/compression";
 
 //#region Helpers
 
@@ -21,12 +22,12 @@ function getBuffer(filename: string): Buffer {
   return cachedBuffers[filename];
 }
 
-function getPackage(filename: string, options?: FileReadingOptions): Package {
+function getPackage(filename: string, options?: PackageFileReadingOptions): Package {
   return Package.from(getBuffer(filename), options);
 }
 
 function getTestTuning(): XmlResource {
-  return XmlResource.create({ content: `<I n="something">\n  <T n="value">50</T>\n</I>` });
+  return new XmlResource(`<I n="something">\n  <T n="value">50</T>\n</I>`);
 }
 
 function getTestKey(): ResourceKey {
@@ -37,56 +38,6 @@ function getTestKey(): ResourceKey {
 
 describe("Package", () => {
   //#region Properties
-
-  describe("#buffer", () => {
-    it("should serialize a dbpf that is empty", () => {
-      const original = Package.create();
-      const dbpf = Package.from(original.buffer);
-      expect(dbpf.size).to.equal(0);
-    });
-
-    it("should serialize a dbpf that wasn't changed, but was uncached", () => {
-      const buffer = getBuffer("Trait");
-      const original = Package.from(buffer);
-      original.onChange();
-      expect(original.buffer).to.not.equal(buffer);
-      const dbpf = Package.from(original.buffer);
-      expect(dbpf.equals(original)).to.be.true;
-    });
-
-    it("should serialize a dbpf that had entries added", () => {
-      const original = getPackage("Trait");
-      expect(original.size).to.equal(2);
-      const testKey = getTestKey();
-      original.add(testKey, getTestTuning());
-      const dbpf = Package.from(original.buffer);
-      expect(dbpf.size).to.equal(3);
-      expect(dbpf.get(2).keyEquals(testKey)).to.be.true;
-      expect(dbpf.get(2).value.equals(getTestTuning())).to.be.true;
-    });
-
-    it("should serialize a dbpf that had entries removed", () => {
-      const original = getPackage("Trait");
-      expect(original.size).to.equal(2);
-      original.delete(0);
-      const dbpf = Package.from(original.buffer);
-      expect(dbpf.size).to.equal(1);
-      const tuning = dbpf.get(0).value as XmlResource;
-      expect(tuning.encodingType).to.equal(EncodingType.XML);
-      expect(tuning.root.name).to.equal("frankkulak_LB:trait_SimlishNative");
-    });
-
-    it("should serialize a dbpf that had entries mutated", () => {
-      const original = getPackage("Trait");
-      expect(original.size).to.equal(2);
-      original.delete(0);
-      const dbpf = Package.from(original.buffer);
-      expect(dbpf.size).to.equal(1);
-      const tuning = dbpf.get(0).value as XmlResource;
-      expect(tuning.encodingType).to.equal(EncodingType.XML);
-      expect(tuning.root.name).to.equal("frankkulak_LB:trait_SimlishNative");
-    });
-  });
 
   describe("#entries", () => {
     it("should return entries in an array", () => {
@@ -131,93 +82,6 @@ describe("Package", () => {
     });
   });
 
-  // #isCached tested by other tests
-
-  describe("#saveCompressedBuffers", () => {
-    it("should be false by default", () => {
-      const dbpf = Package.from(getBuffer("Trait"));
-      expect(dbpf.saveCompressedBuffers).to.be.false;
-    });
-
-    it("should delete the buffers if set to false", () => {
-      const dbpf = Package.from(getBuffer("Trait"), { saveCompressedBuffer: true });
-      expect(dbpf.get(0).isCached).to.be.true;
-      dbpf.saveCompressedBuffers = false;
-      expect(dbpf.get(0).isCached).to.be.false;
-    });
-
-    it("should not generate the buffers if set to true", () => {
-      const dbpf = Package.from(getBuffer("Trait"));
-      expect(dbpf.get(0).isCached).to.be.false;
-      dbpf.saveCompressedBuffers = true;
-      expect(dbpf.get(0).isCached).to.be.false;
-    });
-
-    it("should cache the buffers after getting it when set to true", () => {
-      const dbpf = Package.from(getBuffer("Trait"));
-      expect(dbpf.get(0).isCached).to.be.false;
-      dbpf.saveCompressedBuffers = true;
-      dbpf.get(0).buffer;
-      expect(dbpf.get(0).isCached).to.be.false;
-    });
-
-    it("should not cache the buffer after getting it when set to false", () => {
-      const dbpf = Package.from(getBuffer("Trait"));
-      expect(dbpf.get(0).isCached).to.be.false;
-      dbpf.get(0).buffer;
-      expect(dbpf.get(0).isCached).to.be.false;
-    });
-  });
-
-  describe("#saveDecompressedBuffers", () => {
-    it("should be false by default", () => {
-      const dbpf = Package.from(getBuffer("Trait"));
-      expect(dbpf.saveDecompressedBuffers).to.be.false;
-    });
-
-    it("should delete the buffers if set to false", () => {
-      const dbpf = Package.from(getBuffer("Trait"), { saveBuffer: true });
-      expect(dbpf.get(0).resource.isCached).to.be.true;
-      dbpf.saveDecompressedBuffers = false;
-      expect(dbpf.get(0).resource.isCached).to.be.false;
-    });
-
-    it("should not generate the buffers if set to true", () => {
-      const dbpf = Package.from(getBuffer("Trait"));
-      expect(dbpf.get(0).resource.isCached).to.be.false;
-      dbpf.saveDecompressedBuffers = true;
-      expect(dbpf.get(0).resource.isCached).to.be.false;
-    });
-
-    it("should cache the buffers after getting it when set to true", () => {
-      const dbpf = Package.from(getBuffer("Trait"));
-      expect(dbpf.get(0).resource.isCached).to.be.false;
-      dbpf.saveDecompressedBuffers = true;
-      dbpf.get(0).resource.buffer;
-      expect(dbpf.get(0).resource.isCached).to.be.false;
-    });
-
-    it("should not cache the buffer after getting it when set to false", () => {
-      const dbpf = Package.from(getBuffer("Trait"));
-      expect(dbpf.get(0).resource.isCached).to.be.false;
-      dbpf.get(0).resource.buffer;
-      expect(dbpf.get(0).resource.isCached).to.be.false;
-    });
-  });
-
-  describe("#saveBuffer", () => {
-    it("should be false", () => {
-      const dbpf = Package.create();
-      expect(dbpf.saveBuffer).to.be.false;
-    });
-
-    it("should not be able to set to true", () => {
-      const dbpf = Package.create();
-      dbpf.saveBuffer = true;
-      expect(dbpf.saveBuffer).to.be.false;
-    });
-  });
-
   describe("#size", () => {
     it("should return 0 when the dbpf is empty", () => {
       const dbpf = getPackage("Empty");
@@ -233,7 +97,7 @@ describe("Package", () => {
       const dbpf = getPackage("CompleteTrait");
       expect(dbpf.size).to.equal(4);
       const testKey = getTestKey();
-      dbpf.add(testKey, XmlResource.create());
+      dbpf.add(testKey, new XmlResource());
       expect(dbpf.size).to.equal(5);
     });
 
@@ -249,16 +113,16 @@ describe("Package", () => {
 
   //#region Initialization
 
-  describe("static#create()", () => {
+  describe("#constructor", () => {
     it("should create an empty dbpf if given list is empty", () => {
-      const dbpf = Package.create();
+      const dbpf = new Package();
       expect(dbpf.size).to.equal(0);
     });
 
     it("should create entries from the ones that are given", () => {
-      const dbpf = Package.create({ entries: [
+      const dbpf = new Package([
         { key: getTestKey(), value: getTestTuning() }
-      ]});
+      ]);
 
       expect(dbpf.size).to.equal(1);
       const entry = dbpf.get(0);
@@ -267,63 +131,12 @@ describe("Package", () => {
     });
 
     it("should assign itself as the owner of the given entries", () => {
-      const dbpf = Package.create({ entries: [
+      const dbpf = new Package([
         { key: getTestKey(), value: getTestTuning() }
-      ]});
+      ]);
 
       const entry = dbpf.get(0);
       expect(entry.owner).to.equal(dbpf);
-    });
-
-    it("should mutate the original keys if cloneKeys not set", () => {
-      const entry = { key: getTestKey(), value: getTestTuning() };
-      const originalType = entry.key.type;
-      const dbpf = Package.create({ entries: [ entry ]});
-      dbpf.get(0).key.type += 1;
-      expect(entry.key.type).to.equal(originalType + 1);
-    });
-
-    it("should mutate the original keys if cloneKeys = false", () => {
-      const entry = { key: getTestKey(), value: getTestTuning() };
-      const originalType = entry.key.type;
-      const dbpf = Package.create({ entries: [ entry ], cloneKeys: false});
-      dbpf.get(0).key.type += 1;
-      expect(entry.key.type).to.equal(originalType + 1);
-    });
-
-    it("should not mutate the original keys if cloneKeys = true", () => {
-      const entry = { key: getTestKey(), value: getTestTuning() };
-      const originalType = entry.key.type;
-      const dbpf = Package.create({ entries: [ entry ], cloneKeys: true});
-      dbpf.get(0).key.type += 1;
-      expect(entry.key.type).to.equal(originalType);
-    });
-
-    it("should mutate the original resources if cloneResources not set", () => {
-      const entry = { key: getTestKey(), value: getTestTuning() };
-      const originalTuningName = entry.value.root.name;
-      const dbpf = Package.create({ entries: [ entry ]});
-      (dbpf.get(0).resource as XmlResource).root.name = "asdf";
-      expect(entry.value.root.name).to.not.equal(originalTuningName);
-      expect(entry.value.root.name).to.equal("asdf");
-    });
-
-    it("should mutate the original resources if cloneResources = false", () => {
-      const entry = { key: getTestKey(), value: getTestTuning() };
-      const originalTuningName = entry.value.root.name;
-      const dbpf = Package.create({ entries: [ entry ], cloneResources: false});
-      (dbpf.get(0).resource as XmlResource).root.name = "asdf";
-      expect(entry.value.root.name).to.not.equal(originalTuningName);
-      expect(entry.value.root.name).to.equal("asdf");
-    });
-
-    it("should not mutate the original resources if cloneResources = true", () => {
-      const entry = { key: getTestKey(), value: getTestTuning() };
-      const originalTuningName = entry.value.root.name;
-      const dbpf = Package.create({ entries: [ entry ], cloneResources: true});
-      (dbpf.get(0).resource as XmlResource).root.name = "asdf";
-      expect(entry.value.root.name).to.equal(originalTuningName);
-      expect(entry.value.root.name).to.not.equal("asdf");
     });
   });
 
@@ -363,44 +176,30 @@ describe("Package", () => {
       it("should not have cached entries by default", () => {
         const dbpf = Package.from(getBuffer("CompleteTrait"));
         dbpf.entries.forEach(entry => {
-          expect(entry.isCached).to.be.false;
-        });
-      });
-
-      it("should have cached entries if saveCompressedBuffer = true", () => {
-        const dbpf = Package.from(getBuffer("CompleteTrait"), { saveCompressedBuffer: true });
-        dbpf.entries.forEach(entry => {
-          expect(entry.isCached).to.be.true;
-        });
-      });
-
-      it("should have cached entries if saveCompressedBuffer = false", () => {
-        const dbpf = Package.from(getBuffer("CompleteTrait"), { saveCompressedBuffer: false });
-        dbpf.entries.forEach(entry => {
-          expect(entry.isCached).to.be.false;
+          expect(entry.resource.hasBufferCache).to.be.false;
         });
       });
 
       it("should have cached resources within its entries if saveBuffer = true", () => {
         const dbpf = Package.from(getBuffer("CompleteTrait"), { saveBuffer: true });
         dbpf.entries.forEach(entry => {
-          expect(entry.value.isCached).to.be.true;
+          expect(entry.value.hasBufferCache).to.be.true;
         });
       });
 
       it("should not have cached resources within its entries if saveBuffer = false", () => {
-        const dbpf =  Package.from(getBuffer("CompleteTrait"), { saveBuffer: false });
+        const dbpf = Package.from(getBuffer("CompleteTrait"), { saveBuffer: false });
         dbpf.entries.forEach(entry => {
           if (entry.resource.encodingType !== EncodingType.Unknown)
-            expect(entry.value.isCached).to.be.false;
+            expect(entry.value.hasBufferCache).to.be.false;
         });
       });
 
       it("should not have cached resources within its entries by default", () => {
-        const dbpf =  Package.from(getBuffer("CompleteTrait"));
+        const dbpf = Package.from(getBuffer("CompleteTrait"));
         dbpf.entries.forEach(entry => {
           if (entry.resource.encodingType !== EncodingType.Unknown)
-            expect(entry.value.isCached).to.be.false;
+            expect(entry.value.hasBufferCache).to.be.false;
         });
       });
 
@@ -492,27 +291,27 @@ describe("Package", () => {
     });
 
     context("dbpf header is invalid", () => {
-      it("should throw if ignoreErrors = false", () => {
-        expect(() => Package.from(getBuffer("CorruptHeader"), { ignoreErrors: false })).to.throw();
+      it("should throw if recoveryMode = false", () => {
+        expect(() => Package.from(getBuffer("CorruptHeader"), { recoveryMode: false })).to.throw();
       });
 
-      it("should not throw if ignoreErrors = true", () => {
-        expect(() => Package.from(getBuffer("CorruptHeader"), { ignoreErrors: true })).to.not.throw();
+      it("should not throw if recoveryMode = true", () => {
+        expect(() => Package.from(getBuffer("CorruptHeader"), { recoveryMode: true })).to.not.throw();
       });
 
-      it("should return a regular DBPF if ignoreErrors = true", () => {
-        const dbpf = Package.from(getBuffer("CorruptHeader"), { ignoreErrors: true });
+      it("should return a regular DBPF if recoveryMode = true", () => {
+        const dbpf = Package.from(getBuffer("CorruptHeader"), { recoveryMode: true });
         expect(dbpf.size).to.equal(2);
       });
     });
 
     context("dbpf content is invalid", () => {
-      it("should throw if ignoreErrors = false", () => {
-        expect(() => Package.from(getBuffer("Corrupt"), { ignoreErrors: false })).to.throw();
+      it("should throw if recoveryMode = false", () => {
+        expect(() => Package.from(getBuffer("Corrupt"), { recoveryMode: false })).to.throw();
       });
 
-      it("should throw even if ignoreErrors = true", () => {
-        expect(() => Package.from(getBuffer("Corrupt"), { ignoreErrors: true })).to.throw();
+      it("should throw even if recoveryMode = true", () => {
+        expect(() => Package.from(getBuffer("Corrupt"), { recoveryMode: true })).to.throw();
       });
     });
 
@@ -536,18 +335,16 @@ describe("Package", () => {
         });
       });
 
-      context("loadErrorsAsRaw", () => {
+      context("recoveryMode", () => {
         function bufferWithCorruptResource(): Buffer {
           const dbpf = getPackage("Trait");
 
-          const stbl = StringTableResource.create({
-            entries: [
-              { key: 1, value: "hi" },
-              { key: 2, value: "bye" }
-            ]
-          });
+          const stbl = new StringTableResource([
+            { key: 1, value: "hi" },
+            { key: 2, value: "bye" }
+          ]);
 
-          const stblBuffer = stbl.buffer;
+          const stblBuffer = stbl.getBuffer();
           stblBuffer.write("haha ur broken now");
 
           dbpf.add({
@@ -556,7 +353,7 @@ describe("Package", () => {
             instance: 12345n
           }, RawResource.from(stblBuffer));
 
-          return dbpf.buffer;
+          return dbpf.getBuffer();
         }
 
         it("should throw if false and a resource is corrupt", () => {
@@ -565,7 +362,7 @@ describe("Package", () => {
 
         it("should load a corrupt resource as raw if true", () => {
           const dbpf = Package.from(bufferWithCorruptResource(), {
-            loadErrorsAsRaw: true
+            recoveryMode: true
           });
 
           expect(dbpf.size).to.equal(3);
@@ -600,7 +397,7 @@ describe("Package", () => {
         });
       });
 
-      context("decompressRawResources", () => {
+      context("decompressBuffers", () => {
         it("should not decompress raw resources using ZLIB by default", () => {
           const dbpf = Package.from(getBuffer("Trait"), {
             loadRaw: true
@@ -608,8 +405,8 @@ describe("Package", () => {
 
           dbpf.entries.forEach(entry => {
             expect(entry.resource.encodingType).to.equal(EncodingType.Unknown);
-            expect(entry.resource.isCompressed).to.be.true;
-            expect(entry.resource.compressionType).to.equal(CompressionType.ZLIB);
+            expect(entry.resource.bufferCache.compressionType).to.equal(CompressionType.ZLIB);
+            expect(entry.resource.defaultCompressionType).to.equal(CompressionType.ZLIB);
           });
         });
 
@@ -620,58 +417,58 @@ describe("Package", () => {
 
           const entry = dbpf.get(0);
           expect(entry.resource.encodingType).to.equal(EncodingType.Unknown);
-          expect(entry.resource.isCompressed).to.be.true;
-          expect(entry.resource.compressionType).to.equal(CompressionType.InternalCompression);
+          expect(entry.resource.bufferCache.compressionType).to.equal(CompressionType.InternalCompression);
+          expect(entry.resource.defaultCompressionType).to.equal(CompressionType.InternalCompression);
         });
 
         it("should not decompress raw resources using ZLIB if set to false", () => {
           const dbpf = Package.from(getBuffer("Trait"), {
             loadRaw: true,
-            decompressRawResources: false
+            decompressBuffers: false
           });
 
           dbpf.entries.forEach(entry => {
             expect(entry.resource.encodingType).to.equal(EncodingType.Unknown);
-            expect(entry.resource.isCompressed).to.be.true;
-            expect(entry.resource.compressionType).to.equal(CompressionType.ZLIB);
+            expect(entry.resource.bufferCache.compressionType).to.equal(CompressionType.ZLIB);
+            expect(entry.resource.defaultCompressionType).to.equal(CompressionType.ZLIB);
           });
         });
 
         it("should not decompress raw resources using Internal Compression if set to false", () => {
           const dbpf = Package.from(getBuffer("InternalCompression"), {
             loadRaw: true,
-            decompressRawResources: false
+            decompressBuffers: false
           });
 
           const entry = dbpf.get(0);
           expect(entry.resource.encodingType).to.equal(EncodingType.Unknown);
-          expect(entry.resource.isCompressed).to.be.true;
-          expect(entry.resource.compressionType).to.equal(CompressionType.InternalCompression);
+          expect(entry.resource.bufferCache.compressionType).to.equal(CompressionType.InternalCompression);
+          expect(entry.resource.defaultCompressionType).to.equal(CompressionType.InternalCompression);
         });
 
         it("should decompress raw resources using ZLIB if set to true", () => {
           const dbpf = Package.from(getBuffer("Trait"), {
             loadRaw: true,
-            decompressRawResources: true
+            decompressBuffers: true
           });
 
           dbpf.entries.forEach(entry => {
             expect(entry.resource.encodingType).to.equal(EncodingType.Unknown);
-            expect(entry.resource.isCompressed).to.be.false;
-            expect(entry.resource.compressionType).to.equal(CompressionType.ZLIB);
+            expect(entry.resource.bufferCache.compressionType).to.equal(CompressionType.Uncompressed);
+            expect(entry.resource.defaultCompressionType).to.equal(CompressionType.ZLIB);
           });
         });
 
         it("should decompress raw resources using Internal Compression if set to true", () => {
           const dbpf = Package.from(getBuffer("InternalCompression"), {
             loadRaw: true,
-            decompressRawResources: true
+            decompressBuffers: true
           });
 
           const entry = dbpf.get(0);
           expect(entry.resource.encodingType).to.equal(EncodingType.Unknown);
-          expect(entry.resource.isCompressed).to.be.false;
-          expect(entry.resource.compressionType).to.equal(CompressionType.InternalCompression);
+          expect(entry.resource.bufferCache.compressionType).to.equal(CompressionType.Uncompressed);
+          expect(entry.resource.defaultCompressionType).to.equal(CompressionType.InternalCompression);
         });
       });
     });
@@ -698,9 +495,9 @@ describe("Package", () => {
 
   describe("#add()", () => {
     it("should add the entry to an empty dbpf", () => {
-      const dbpf = Package.create();
+      const dbpf = new Package();
       expect(dbpf.size).to.equal(0);
-      const resource = XmlResource.create();
+      const resource = new XmlResource();
       const testKey = getTestKey();
       dbpf.add(testKey, resource);
       expect(dbpf.size).to.equal(1);
@@ -711,7 +508,7 @@ describe("Package", () => {
     it("should add the entry to a dbpf with entries", () => {
       const dbpf = getPackage("CompleteTrait");
       expect(dbpf.size).to.equal(4);
-      const resource = XmlResource.create();
+      const resource = new XmlResource();
       const testKey = getTestKey();
       dbpf.add(testKey, resource);
       expect(dbpf.size).to.equal(5);
@@ -720,28 +517,28 @@ describe("Package", () => {
     });
 
     it("should add the key to the key map", () => {
-      const dbpf = Package.create();
+      const dbpf = new Package();
       const testKey = getTestKey();
       expect(dbpf.hasKey(testKey)).to.be.false;
-      dbpf.add(testKey, XmlResource.create());
+      dbpf.add(testKey, new XmlResource());
       expect(dbpf.hasKey(testKey)).to.be.true;
     });
 
     it("should not uncache other entries", () => {
-      const dbpf = getPackage("CompleteTrait", { saveCompressedBuffer: true });
+      const dbpf = getPackage("CompleteTrait");
 
       dbpf.entries.forEach(entry => {
-        expect(entry.isCached).to.be.true;
+        expect(entry.resource.hasBufferCache).to.be.true;
       });
 
       const testKey = getTestKey();
-      dbpf.add(testKey, XmlResource.create());
-      
+      dbpf.add(testKey, new XmlResource());
+
       dbpf.entries.forEach(entry => {
         if (entry.keyEquals(testKey)) {
-          expect(entry.isCached).to.be.false;
+          expect(entry.resource.hasBufferCache).to.be.false;
         } else {
-          expect(entry.isCached).to.be.true;
+          expect(entry.resource.hasBufferCache).to.be.true;
         }
       });
     });
@@ -749,7 +546,7 @@ describe("Package", () => {
 
   describe("#addAll()", () => {
     it("should add the given entries", () => {
-      const dbpf = Package.create();
+      const dbpf = new Package();
 
       expect(dbpf.size).to.equal(0);
 
@@ -760,7 +557,7 @@ describe("Package", () => {
         },
         {
           key: { type: 321, group: 654, instance: 987n },
-          value: StringTableResource.create({ entries: [ { key: 1, value: "hi" } ]})
+          value: new StringTableResource([{ key: 1, value: "hi" }])
         }
       ]);
 
@@ -810,7 +607,7 @@ describe("Package", () => {
       expect(dbpf.size).to.equal(2);
       const clone = dbpf.clone();
       expect(clone.size).to.equal(2);
-      const [ simdata, tuning ] = clone.entries;
+      const [simdata, tuning] = clone.entries;
       expect(simdata.value.encodingType).to.equal(EncodingType.DATA);
       expect(simdata.equals(dbpf.get(0))).to.be.true;
       expect(tuning.value.encodingType).to.equal(EncodingType.XML);
@@ -909,7 +706,7 @@ describe("Package", () => {
   describe("#equals()", () => {
     it("should return true if dbpfs have the same entries", () => {
       const dbpf = getPackage("CompleteTrait");
-      const other = dbpf.clone();      
+      const other = dbpf.clone();
       expect(dbpf.equals(other)).to.be.true;
     });
 
@@ -991,7 +788,7 @@ describe("Package", () => {
     });
 
     it("should return an entry after adding it", () => {
-      const dbpf = Package.create();
+      const dbpf = new Package();
       const key = {
         type: 0xCB5FDDC7,
         group: 0,
@@ -1044,10 +841,10 @@ describe("Package", () => {
     it("should return the first entry with the given key if there are more than one", () => {
       const key = getTestKey();
 
-      const dbpf = Package.create({ entries: [
-        { key, value: XmlResource.create({ content: "a" }) },
-        { key, value: XmlResource.create({ content: "b" }) },
-      ]});
+      const dbpf = new Package([
+        { key, value: new XmlResource("a") },
+        { key, value: new XmlResource("b") },
+      ]);
 
       expect((dbpf.getByKey(key).value as XmlResource).content).to.equal("a");
     });
@@ -1064,10 +861,10 @@ describe("Package", () => {
     it("should return the correct entry if there are more than one entry with this key, and the first was deleted", () => {
       const key = getTestKey();
 
-      const dbpf = Package.create({ entries: [
-        { key, value: XmlResource.create({ content: "a" }) },
-        { key, value: XmlResource.create({ content: "b" }) },
-      ]});
+      const dbpf = new Package([
+        { key, value: new XmlResource("a") },
+        { key, value: new XmlResource("b") },
+      ]);
 
       dbpf.delete(0);
       expect((dbpf.getByKey(key).value as XmlResource).content).to.equal("b");
@@ -1101,10 +898,10 @@ describe("Package", () => {
     it("should return the first ID for the given key if there are more than one", () => {
       const key = getTestKey();
 
-      const dbpf = Package.create({ entries: [
-        { key, value: XmlResource.create({ content: "a" }) },
-        { key, value: XmlResource.create({ content: "b" }) },
-      ]});
+      const dbpf = new Package([
+        { key, value: new XmlResource("a") },
+        { key, value: new XmlResource("b") },
+      ]);
 
       expect(dbpf.getIdForKey(key)).to.equal(0);
     });
@@ -1128,7 +925,7 @@ describe("Package", () => {
     });
 
     it("should return the ID for an entry after adding it", () => {
-      const dbpf = Package.create();
+      const dbpf = new Package();
       const key = {
         type: 0xCB5FDDC7,
         group: 0,
@@ -1225,10 +1022,10 @@ describe("Package", () => {
     it("should return true if there are more than one entry with this key, and the first was deleted", () => {
       const key = getTestKey();
 
-      const dbpf = Package.create({ entries: [
-        { key, value: XmlResource.create({ content: "a" }) },
-        { key, value: XmlResource.create({ content: "b" }) },
-      ]});
+      const dbpf = new Package([
+        { key, value: new XmlResource("a") },
+        { key, value: new XmlResource("b") },
+      ]);
 
       expect(dbpf.hasKey(key)).to.be.true;
       dbpf.deleteByKey(key);
@@ -1269,10 +1066,10 @@ describe("Package", () => {
     });
 
     it("should not uncache the entries", () => {
-      const dbpf = getPackage("Trait", { saveCompressedBuffer: true });
+      const dbpf = getPackage("Trait");
       dbpf.onChange();
-      dbpf.entries.forEach(entry => {
-        expect(entry.isCached).to.be.true;
+      dbpf.entries.forEach(({ resource }) => {
+        expect(resource.hasBufferCache).to.be.true;
       });
     });
 
@@ -1280,14 +1077,14 @@ describe("Package", () => {
       const dbpf = getPackage("Trait", { saveBuffer: true });
       dbpf.onChange();
       dbpf.entries.forEach(entry => {
-        expect(entry.value.isCached).to.be.true;
+        expect(entry.value.hasBufferCache).to.be.true;
       });
     });
   });
 
   describe("#validate()", () => {
     it("should not throw if all entries are valid", () => {
-      const dbpf = Package.create({ entries: [
+      const dbpf = new Package([
         {
           key: {
             type: 123,
@@ -1302,17 +1099,15 @@ describe("Package", () => {
             group: 654,
             instance: 987n
           },
-          value: StringTableResource.create({ entries: [
-            { key: 1, value: "hi" }
-          ]})
+          value: new StringTableResource([{ key: 1, value: "hi" }])
         }
-      ]});
+      ]);
 
       expect(() => dbpf.validate()).to.not.throw();
     });
 
     it("should throw if at least one entry is not valid", () => {
-      const dbpf = Package.create({ entries: [
+      const dbpf = new Package([
         {
           key: {
             type: -1,
@@ -1327,17 +1122,15 @@ describe("Package", () => {
             group: 654,
             instance: 987n
           },
-          value: StringTableResource.create({ entries: [
-            { key: 1, value: "hi" }
-          ]})
+          value: new StringTableResource([{ key: 1, value: "hi" }])
         }
-      ]});
+      ]);
 
       expect(() => dbpf.validate()).to.throw();
     });
 
     it("should throw if there are multiple entries with the same key", () => {
-      const dbpf = Package.create({ entries: [
+      const dbpf = new Package([
         {
           key: {
             type: 123,
@@ -1352,13 +1145,61 @@ describe("Package", () => {
             group: 456,
             instance: 789n
           },
-          value: StringTableResource.create({ entries: [
-            { key: 1, value: "hi" }
-          ]})
+          value: new StringTableResource([{ key: 1, value: "hi" }])
         }
-      ]});
+      ]);
 
       expect(() => dbpf.validate()).to.throw();
+    });
+  });
+
+  describe("#getBuffer()", () => {
+    it("should serialize a dbpf that is empty", () => {
+      const original = new Package();
+      const dbpf = Package.from(original.getBuffer());
+      expect(dbpf.size).to.equal(0);
+    });
+
+    it("should serialize a dbpf that wasn't changed, but was uncached", () => {
+      const buffer = getBuffer("Trait");
+      const original = Package.from(buffer);
+      original.onChange();
+      expect(original.getBuffer()).to.not.equal(buffer);
+      const dbpf = Package.from(original.getBuffer());
+      expect(dbpf.equals(original)).to.be.true;
+    });
+
+    it("should serialize a dbpf that had entries added", () => {
+      const original = getPackage("Trait");
+      expect(original.size).to.equal(2);
+      const testKey = getTestKey();
+      original.add(testKey, getTestTuning());
+      const dbpf = Package.from(original.getBuffer());
+      expect(dbpf.size).to.equal(3);
+      expect(dbpf.get(2).keyEquals(testKey)).to.be.true;
+      expect(dbpf.get(2).value.equals(getTestTuning())).to.be.true;
+    });
+
+    it("should serialize a dbpf that had entries removed", () => {
+      const original = getPackage("Trait");
+      expect(original.size).to.equal(2);
+      original.delete(0);
+      const dbpf = Package.from(original.getBuffer());
+      expect(dbpf.size).to.equal(1);
+      const tuning = dbpf.get(0).value as XmlResource;
+      expect(tuning.encodingType).to.equal(EncodingType.XML);
+      expect(tuning.root.name).to.equal("frankkulak_LB:trait_SimlishNative");
+    });
+
+    it("should serialize a dbpf that had entries mutated", () => {
+      const original = getPackage("Trait");
+      expect(original.size).to.equal(2);
+      original.delete(0);
+      const dbpf = Package.from(original.getBuffer());
+      expect(dbpf.size).to.equal(1);
+      const tuning = dbpf.get(0).value as XmlResource;
+      expect(tuning.encodingType).to.equal(EncodingType.XML);
+      expect(tuning.root.name).to.equal("frankkulak_LB:trait_SimlishNative");
     });
   });
 
