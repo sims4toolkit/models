@@ -38,7 +38,7 @@
             "name": "CompressedBuffer",
             "path": {
               "pkg": "compression",
-              "group": "enums",
+              "group": "interfaces",
               "item": "CompressedBuffer"
             }
           }
