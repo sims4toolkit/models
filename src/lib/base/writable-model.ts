@@ -103,7 +103,6 @@ export default abstract class WritableModel extends ApiModelBase {
     }
 
     // at this point, there either is no cache or the cache isn't uncompressed, so overwrite it
-    // FIXME: does this cause issues with raw resources? what if the resource is internally compressed, the buffer is retrieved and it is decompressed, and suddenly you can no longer write the resource because internal compression cannot be performed?
     if (cache) {
       this._bufferCache = {
         buffer: decompressedBuffer,

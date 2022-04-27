@@ -29,7 +29,7 @@ enum DataType {
 }
 
 /** Data types that are 32-bit (or less) numbers. */
-export type SimDataNumber = 
+export type SimDataNumber =
   DataType.Int8 |
   DataType.UInt8 |
   DataType.Int16 |
@@ -40,7 +40,7 @@ export type SimDataNumber =
   DataType.LocalizationKey;
 
 /** Data types that are 64-bit numbers. */
-export type SimDataBigInt = 
+export type SimDataBigInt =
   DataType.Int64 |
   DataType.UInt64 |
   DataType.TableSetReference;
@@ -197,7 +197,7 @@ namespace DataType {
       case DataType.Int32:
         return value >= -0x800000000 && value <= 0x7FFFFFFF;
       case DataType.LocalizationKey:
-        // fallthrough
+      // fallthrough
       case DataType.UInt32:
         return value >= 0 && value <= 0xFFFFFFFF;
       case DataType.Float:
@@ -215,12 +215,12 @@ namespace DataType {
    */
   export function isBigIntInRange(value: bigint, dataType: SimDataBigInt): boolean {
     if (value == undefined) return false;
-    
+
     switch (dataType) {
       case DataType.Int64:
         return value >= -0x8000000000000000n && value <= 0x7FFFFFFFFFFFFFFFn;
       case DataType.TableSetReference:
-        // fallthrough
+      // fallthrough
       case DataType.UInt64:
         return value >= 0n && value <= 0xFFFFFFFFFFFFFFFFn;
       default:
