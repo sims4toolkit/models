@@ -1,6 +1,5 @@
 import fs from "fs";
 import path from "path";
-import { unzipSync } from "zlib";
 import { expect } from "chai";
 import type { ResourceKey } from "../../../dst/lib/packages/types";
 import { Package, StringTableResource, XmlResource } from "../../../dst/models";
