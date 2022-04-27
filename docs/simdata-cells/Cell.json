@@ -151,6 +151,36 @@
       "content": [
         {
           "displayType": "function",
+          "prefix": "static",
+          "name": "create",
+          "description": "Creates the appropriate cell for the given type and data.",
+          "returnType": {
+            "name": "Cell"
+          },
+          "arguments": [
+            {
+              "name": "dataType",
+              "type": {
+                "name": "DataType",
+                "path": {
+                  "pkg": "models",
+                  "group": "enums",
+                  "item": "DataType"
+                }
+              },
+              "description": "DataType of cell to create."
+            },
+            {
+              "name": "...data",
+              "type": {
+                "name": "any[]"
+              },
+              "description": "Data to use in cell's constructor."
+            }
+          ]
+        },
+        {
+          "displayType": "function",
           "name": "parseXmlNode",
           "prefix": "static",
           "description": "Parses a cell of the given type from the given node, using the list of schemas to read any objects that it may contain.",
