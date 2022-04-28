@@ -10,41 +10,22 @@
       "name": "RawResource",
       "extends": [
         {
-          "name": "WritableModel",
-          "path": {
-            "pkg": "models",
-            "group": "abstracts",
-            "item": "WritableModel"
-          }
-        }
-      ],
-      "implements": [
-        {
-          "name": "Resource",
+          "name": "StaticResource",
           "path": {
             "pkg": "models",
             "group": "types",
-            "item": "Resource"
+            "item": "StaticResource"
           }
         }
       ]
     },
-    "description": "Model for resources that have not been parsed and cannot be modified.",
+    "description": "Model for resources that have not been parsed.",
     "sourceCode": "src/lib/resources/raw/raw-resource.ts"
   },
   "sections": [
     {
       "title": "Properties",
       "content": [
-        {
-          "displayType": "property",
-          "prefix": "get",
-          "name": "buffer",
-          "description": "Shorthand for `this.getBuffer()`, since a raw buffer will never change.",
-          "type": {
-            "name": "Buffer"
-          }
-        },
         {
           "displayType": "property",
           "prefix": "readonly",
@@ -188,27 +169,6 @@
               "code": "RawResource.fromAsync(bufferWrapper, {\n  reason: \"Because I said so.\"\n}).then(raw => {\n  // do stuff\n});"
             }
           ]
-        }
-      ]
-    },
-    {
-      "title": "Methods",
-      "content": [
-        {
-          "displayType": "function",
-          "name": "isXml",
-          "returnType": {
-            "name": "boolean"
-          },
-          "description": "Returns true if this resource's buffer is detected to contain XML code, false otherwise.",
-          "overrides": {
-            "name": "Resource",
-            "path": {
-              "pkg": "models",
-              "group": "types",
-              "item": "Resource"
-            }
-          }
         }
       ]
     }

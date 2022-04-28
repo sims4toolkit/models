@@ -1,0 +1,111 @@
+{
+  "$schema": "https://raw.githubusercontent.com/sims4toolkit/misc/main/json-schemas/docs-item-schema.json",
+  "header": {
+    "title": {
+      "prefix": "abstract class",
+      "name": "StaticResource",
+      "extends": [
+        {
+          "name": "WritableModel",
+          "path": {
+            "pkg": "models",
+            "group": "abstracts",
+            "item": "WritableModel"
+          }
+        }
+      ],
+      "implements": [
+        {
+          "name": "Resource",
+          "path": {
+            "pkg": "models",
+            "group": "types",
+            "item": "Resource"
+          }
+        }
+      ]
+    },
+    "description": " Model for resources that consist of just a buffer and cannot be modified.",
+    "sourceCode": "src/lib/resources/abstracts/static-resource.ts"
+  },
+  "sections": [
+    {
+      "title": "Properties",
+      "content": [
+        {
+          "displayType": "property",
+          "prefix": "get",
+          "name": "buffer",
+          "description": "Shorthand for `this.getBuffer()`, since the buffer will never change.",
+          "type": {
+            "name": "Buffer"
+          }
+        }
+      ]
+    },
+    {
+      "title": "Methods",
+      "content": [
+        {
+          "displayType": "function",
+          "name": "equals",
+          "returnType": {
+            "name": "boolean"
+          },
+          "description": "Returns true if the given model has a decompressed buffer with the same bytes as this one, false otherwise.",
+          "overrides": {
+            "name": "Resource",
+            "path": {
+              "pkg": "models",
+              "group": "types",
+              "item": "Resource"
+            }
+          },
+          "arguments": [
+            {
+              "name": "other",
+              "description": "Model to compare to this one.",
+              "type": {
+                "name": "WritableModel",
+                "path": {
+                  "pkg": "models",
+                  "group": "abstracts",
+                  "item": "WritableModel"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "displayType": "function",
+          "name": "isXml",
+          "returnType": {
+            "name": "boolean"
+          },
+          "description": "Returns true if this resource's buffer is detected to contain XML code, false otherwise.",
+          "overrides": {
+            "name": "Resource",
+            "path": {
+              "pkg": "models",
+              "group": "types",
+              "item": "Resource"
+            }
+          }
+        },
+        {
+          "displayType": "function",
+          "name": "onChange",
+          "description": "Does nothing. The buffer cannot be uncached, because the buffer is the only thing that defines this model.",
+          "overrides": {
+            "name": "WritableModel",
+            "path": {
+              "pkg": "models",
+              "group": "abstracts",
+              "item": "WritableModel"
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,8 +1,8 @@
 import { CompressedBuffer, CompressionType } from '@s4tk/compression';
-import type Resource from '../resource';
-import WritableModel, { WritableModelCreationOptions } from '../../base/writable-model';
+import { WritableModelCreationOptions } from '../../base/writable-model';
+import { promisify } from '../../common/helpers';
 import EncodingType from '../../enums/encoding-type';
-import { bufferContainsXml, promisify } from '../../common/helpers';
+import StaticResource from '../abstracts/static-resource';
 
 /**  Optional arguments for initializing RawResources. */
 export interface RawResourceCreationOptions extends
@@ -15,13 +15,11 @@ export interface RawResourceCreationOptions extends
 /**
  * Model for resources that have not been parsed and cannot be modified.
  */
-export default class RawResource extends WritableModel implements Resource {
+export default class RawResource extends StaticResource {
   readonly encodingType: EncodingType = EncodingType.Unknown;
+
   /** Why this resource was loaded raw. */
   readonly reason?: string;
-
-  /** Shorthand for `this.getBuffer()`, since a raw buffer will never change. */
-  get buffer(): Buffer { return this.getBuffer(); }
 
   //#region Initialization
 
@@ -75,29 +73,5 @@ export default class RawResource extends WritableModel implements Resource {
     });
   }
 
-  equals(other: RawResource): boolean {
-    return Boolean(other?.buffer) && (this.buffer.compare(other.buffer) === 0);
-  }
-
-  isXml(): boolean {
-    return bufferContainsXml(this.buffer);
-  }
-
-  onChange() {
-    // intentionally blank
-  }
-
   //#endregion Public Methods
-
-  //#region Protected Methods
-
-  protected _clearBufferCacheIfSupported(): void {
-    // intentionally blank
-  }
-
-  protected _serialize(): Buffer {
-    throw new Error("Cannot serialize a raw resource. If you're reading this error, the cached buffer in a raw resource somehow got deleted, which should be impossible. Please report this error ASAP: https://github.com/sims4toolkit/models/issues");
-  }
-
-  //#endregion Protected Methods
 }
