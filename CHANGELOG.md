@@ -8,6 +8,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ### Changed
 - RawResource now inherits from StaticResource.
+### Added
+- Add `BinaryResourceType.DdsImage`.
+- Add `EncodingType.DDS`.
 
 ## [0.3.0] - 2022/04/26
 ### Changed
