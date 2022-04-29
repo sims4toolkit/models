@@ -24,16 +24,20 @@
               "value": "\"Unknown\""
             },
             {
-              "name": "XML",
-              "value": "\"XML\""
-            },
-            {
               "name": "DATA",
               "value": "\"DATA\""
             },
             {
+              "name": "DDS",
+              "value": "\"DDS\""
+            },
+            {
               "name": "STBL",
               "value": "\"STBL\""
+            },
+            {
+              "name": "XML",
+              "value": "\"XML\""
             }
           ]
         }
