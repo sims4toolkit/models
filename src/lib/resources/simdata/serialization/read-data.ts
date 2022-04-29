@@ -206,12 +206,12 @@ export default function readData(buffer: Buffer, options?: BinaryFileReadingOpti
     const childType = tableInfo.mnDataType;
 
     // objs are different, because vectors point directly to their data
-    const childGenFn: () => cells.Cell = childType === DataType.Object ?
-      (() => {
+    const childGenFn: () => cells.Cell = childType === DataType.Object
+      ? (() => {
         const childTableInfo = getTableInfo(mTable, decoder.tell());
         return () => readObjectCell(childTableInfo);
-      })() :
-      () => readCell(childType);
+      })()
+      : () => readCell(childType);
 
     return new cells.VectorCell(makeList(count, childGenFn));
   }
