@@ -25,7 +25,6 @@
   "sections": [
     {
       "title": "Initialization",
-      "description": "The constructor is not a part of the public API, and may be changed without warning. Avoid using it, favoring the static methods instead.",
       "content": [
         {
           "displayType": "function",
