@@ -128,17 +128,21 @@ function readData(buffer: Buffer, options?: BinaryFileReadingOptions): BinaryDat
     });
   }
 
-  function readNameOfStructure(named: NamedBinaryStructure): string {
-    if (named.mnNameOffset === RELOFFSET_NULL) return "Unnamed";
-    return readString(named.startof_mnNameOffset + named.mnNameOffset);
+  function addName<T extends NamedBinaryStructure>(named: Partial<T>): T {
+    // IMPORTANT: Do NOT change the "undefined" value to anything truthy, as it
+    // is checked when determining which tables should be instances.
+    const name = named.mnNameOffset === RELOFFSET_NULL
+      ? undefined
+      : readString(named.startof_mnNameOffset + named.mnNameOffset);
+    named.name = name;
+    return named as T;
   }
 
   // Information about each data table.
   function structTableInfo(): BinaryTableInfo {
-    return {
+    return addName<BinaryTableInfo>({
       startof_mnNameOffset: decoder.tell(),
       mnNameOffset: decoder.int32(),
-      name: readNameOfStructure(this),
       mnNameHash: decoder.uint32(),
       startof_mnSchemaOffset: decoder.tell(),
       mnSchemaOffset: decoder.int32(),
@@ -147,31 +151,29 @@ function readData(buffer: Buffer, options?: BinaryFileReadingOptions): BinaryDat
       startof_mnRowOffset: decoder.tell(),
       mnRowOffset: decoder.int32(),
       mnRowCount: decoder.uint32()
-    };
+    });
   }
 
   // Information about each column in a schema.
   function structSchemaColumn(): BinarySchemaColumn {
-    return {
+    return addName<BinarySchemaColumn>({
       startof_mnNameOffset: decoder.tell(),
       mnNameOffset: decoder.int32(),
-      name: readNameOfStructure(this),
       mnNameHash: decoder.uint32(),
       mnDataType: decoder.uint16(),
       mnFlags: decoder.uint16(),
       mnOffset: decoder.uint32(),
       mnSchemaOffset: decoder.int32()
-    };
+    });
   }
 
   // Information about each schema.
   let schemaEndPos: number; // int64
   let lastColumnEndPos: number; // int64
   function structSchema(): BinarySchema {
-    const schema: BinarySchema = {
+    const schema = addName<BinarySchema>({
       startof_mnNameOffset: decoder.tell(),
       mnNameOffset: decoder.int32(),
-      name: readNameOfStructure(this),
       mnNameHash: decoder.uint32(),
       mnSchemaHash: decoder.uint32(),
       mnSchemaSize: decoder.uint32(),
@@ -179,15 +181,15 @@ function readData(buffer: Buffer, options?: BinaryFileReadingOptions): BinaryDat
       mnColumnOffset: decoder.int32(),
       mnNumColumns: decoder.uint32(),
       mColumn: []
-    };
+    });
 
     // Load the schema columns inside the schema.
     schemaEndPos = decoder.tell();
 
     decoder.seek(schema.startof_mnColumnOffset + schema.mnColumnOffset);
-    for (j = 0; j < schema.mnNumColumns; ++j) {
+    for (j = 0; j < schema.mnNumColumns; ++j)
       schema.mColumn.push(structSchemaColumn());
-    }
+    schema.mColumn.sort((a, b) => a.mnOffset - b.mnOffset);
 
     // Remember the end of the final column.
     lastColumnEndPos = decoder.tell();

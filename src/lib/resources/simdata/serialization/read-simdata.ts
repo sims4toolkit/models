@@ -5,7 +5,7 @@ import { makeList } from "../../../common/helpers";
 import { SimDataSchema, SimDataSchemaColumn, SimDataInstance } from "../fragments";
 import * as cells from "../cells";
 import DataType, { SimDataRecursiveType } from "../../../enums/data-type";
-import type { DataResourceDto } from "../../abstracts/data-resource";
+import type { BinaryDataResourceDto, BinarySchema, BinaryTableInfo } from "../../abstracts/data-resource";
 
 //#region Constants
 
@@ -13,187 +13,40 @@ const RELOFFSET_NULL = -0x80000000;
 
 //#endregion Constants
 
-//#region Interfaces
-
-interface HasNameOffset {
-  startof_mnNameOffset: number; // not in BT
-  mnNameOffset: number; // int32
-  mnNameHash: number; // uint32
-  name?: string; // not in BT
-}
-
-interface BinaryTableInfo extends HasNameOffset {
-  startof_mnSchemaOffset: number; // not in BT
-  mnSchemaOffset: number; // int32
-  mnDataType: number; // uint32
-  mnRowSize: number; // uint32
-  startof_mnRowOffset: number; // not in BT
-  mnRowOffset: number; // int32
-  mnRowCount: number; // uint32
-}
-
-interface BinarySchemaColumn extends HasNameOffset {
-  mnDataType: number; // uint16
-  mnFlags: number; // uint16
-  mnOffset: number; // uint32
-  mnSchemaOffset: number; // int32
-}
-
-interface BinarySchema extends HasNameOffset {
-  mnSchemaHash: number; // uint32
-  mnSchemaSize: number; // uint32
-  startof_mnColumnOffset: number; // not in BT
-  mnColumnOffset: number; // int32
-  mnNumColumns: number; // uint32
-  mColumn: BinarySchemaColumn[];
-}
-
-//#endregion Interfaces
-
-//#region General Helpers
-
 /**
- * Gets the name of the given object from the given decoder.
+ * Converts a binary DATA model into one using instances.
  * 
- * @param decoder Decoder to get name from
- * @param named Object to get name for
+ * @param binaryModel Model containing data from the binary DATA file
+ * @param buffer Original buffer containing data
+ * @param options Options for reading the buffer
  */
-function getName(decoder: BinaryDecoder, named: HasNameOffset): string {
-  if (named.mnNameOffset === RELOFFSET_NULL) return undefined;
-  decoder.seek(named.startof_mnNameOffset + named.mnNameOffset);
-  return decoder.string();
-}
-
-/**
- * Finds and returns the binary schema at the given offset.
- * 
- * @param mSchema All binary schemas
- * @param offset Offset of schema to find
- */
-function getBinarySchema(mSchema: BinarySchema[], offset: number): BinarySchema {
-  const index = mSchema.findIndex(schema => offset === schema.startof_mnNameOffset);
-  if (index >= 0) return mSchema[index];
-  console.warn(`Unknown schema offset ${offset}`);
-  return undefined;
-}
-
-/**
- * Finds and returns the binary table info at the given offset.
- * 
- * @param mTable All binary table
- * @param position Position of table to find
- */
-function getTableInfo(mTable: BinaryTableInfo[], position: number): BinaryTableInfo {
-  if (position === RELOFFSET_NULL) return undefined;
-
-  const tableInfo = mTable.find(tableInfo => {
-    const start = tableInfo.startof_mnRowOffset + tableInfo.mnRowOffset;
-    const end = start + (tableInfo.mnRowSize * tableInfo.mnRowCount) - 1;
-    return position >= start && position <= end;
-  });
-
-  if (tableInfo === undefined)
-    throw new Error(`Position ${position} is not located in a TableData.`);
-
-  return tableInfo;
-}
-
-//#endregion General Helpers
-
-//#region Struct Helpers
-
-/**
- * Reads and returns a BinaryTableInfo from the given decoder.
- * 
- * @param decoder Decoder to read table info from
- */
-function readTableInfo(decoder: BinaryDecoder): BinaryTableInfo {
-  const ti: BinaryTableInfo = {
-    startof_mnNameOffset: decoder.tell(),
-    mnNameOffset: decoder.int32(),
-    mnNameHash: decoder.uint32(),
-    startof_mnSchemaOffset: decoder.tell(),
-    mnSchemaOffset: decoder.int32(),
-    mnDataType: decoder.uint32(),
-    mnRowSize: decoder.uint32(),
-    startof_mnRowOffset: decoder.tell(),
-    mnRowOffset: decoder.int32(),
-    mnRowCount: decoder.uint32(),
-  };
-
-  ti.name = decoder.savePos<string>(() => getName(decoder, ti));
-  return ti;
-}
-
-/**
- * Reads and returns a BinarySchemaColumn from the given decoder.
- * 
- * @param decoder Decoder to read column from
- */
-function readSchemaColumn(decoder: BinaryDecoder): BinarySchemaColumn {
-  const sc: BinarySchemaColumn = {
-    startof_mnNameOffset: decoder.tell(),
-    mnNameOffset: decoder.int32(),
-    mnNameHash: decoder.uint32(),
-    mnDataType: decoder.uint16(),
-    mnFlags: decoder.uint16(),
-    mnOffset: decoder.uint32(),
-    mnSchemaOffset: decoder.int32()
-  };
-
-  sc.name = decoder.savePos<string>(() => getName(decoder, sc));
-  return sc;
-}
-
-/**
- * Reads and returns a BinarySchema from the given decoder.
- * 
- * @param decoder Decoder to read schema from
- */
-function readSchema(decoder: BinaryDecoder): BinarySchema {
-  const startof_mnNameOffset = decoder.tell();
-  const mnNameOffset = decoder.int32();
-  const mnNameHash = decoder.uint32();
-  const mnSchemaHash = decoder.uint32();
-  const mnSchemaSize = decoder.uint32();
-  const startof_mnColumnOffset = decoder.tell();
-  const mnColumnOffset = decoder.int32();
-  const mnNumColumns = decoder.uint32();
-
-  let schema: BinarySchema;
-  decoder.savePos(() => {
-    decoder.seek(startof_mnColumnOffset + mnColumnOffset);
-    const mColumn = makeList<BinarySchemaColumn>(mnNumColumns, () => readSchemaColumn(decoder));
-    mColumn.sort((a, b) => a.mnOffset - b.mnOffset);
-    schema = {
-      startof_mnNameOffset,
-      mnNameOffset,
-      mnNameHash,
-      mnSchemaHash,
-      mnSchemaSize,
-      startof_mnColumnOffset,
-      mnColumnOffset,
-      mnNumColumns,
-      mColumn
-    };
-
-    schema.name = getName(decoder, schema);
-  });
-
-  return schema;
-}
-
-//#endregion Struct Helpers
-
-/**
- * Reads a binary DATA file in a buffer as a SimData.
- * 
- * @param buffer Buffer to read
- * @param options Options for reading
- */
-export default function readSimData(binaryModel: DataResourceDto, buffer: Buffer, options?: BinaryFileReadingOptions): SimDataDto {
+export default function readSimData(binaryModel: BinaryDataResourceDto, buffer: Buffer, options?: BinaryFileReadingOptions): SimDataDto {
   const decoder = new BinaryDecoder(buffer);
-  const throwErrors = options === undefined || !options.recoveryMode;
+
+  //#region General Helpers
+
+  function getBinarySchema(offset: number): BinarySchema {
+    const index = binaryModel.mSchema.findIndex(schema => offset === schema.startof_mnNameOffset);
+    if (index >= 0) return binaryModel.mSchema[index];
+    return undefined;
+  }
+
+  function getBinaryTableInfo(position: number): BinaryTableInfo {
+    if (position === RELOFFSET_NULL) return undefined;
+
+    const tableInfo = binaryModel.mTable.find(tableInfo => {
+      const start = tableInfo.startof_mnRowOffset + tableInfo.mnRowOffset;
+      const end = start + (tableInfo.mnRowSize * tableInfo.mnRowCount) - 1;
+      return position >= start && position <= end;
+    });
+
+    if (tableInfo === undefined)
+      throw new Error(`Position ${position} is not located in a TableData.`);
+
+    return tableInfo;
+  }
+
+  //#endregion General Helpers
 
   //#region Cell Helpers
 
@@ -202,7 +55,7 @@ export default function readSimData(binaryModel: DataResourceDto, buffer: Buffer
 
     // objs are different, because variants point directly to their data
     const childCell: cells.Cell = (dataType === DataType.Object) ?
-      readObjectCell(getTableInfo(mTable, decoder.tell())) :
+      readObjectCell(getBinaryTableInfo(decoder.tell())) :
       readCell(dataType);
 
     return new cells.VariantCell(typeHash, childCell);
@@ -214,7 +67,7 @@ export default function readSimData(binaryModel: DataResourceDto, buffer: Buffer
     // objs are different, because vectors point directly to their data
     const childGenFn: () => cells.Cell = childType === DataType.Object
       ? (() => {
-        const childTableInfo = getTableInfo(mTable, decoder.tell());
+        const childTableInfo = getBinaryTableInfo(decoder.tell());
         return () => readObjectCell(childTableInfo);
       })()
       : () => readCell(childType);
@@ -223,7 +76,7 @@ export default function readSimData(binaryModel: DataResourceDto, buffer: Buffer
   }
 
   function readObjectCell(tableInfo: BinaryTableInfo): cells.ObjectCell {
-    const binarySchema = getBinarySchema(mSchema, tableInfo.startof_mnSchemaOffset + tableInfo.mnSchemaOffset);
+    const binarySchema = getBinarySchema(tableInfo.startof_mnSchemaOffset + tableInfo.mnSchemaOffset);
     const schema = schemas.find(schema => schema.hash === binarySchema.mnSchemaHash);
 
     const row: ObjectCellRow = {};
@@ -245,7 +98,7 @@ export default function readSimData(binaryModel: DataResourceDto, buffer: Buffer
     const startPos = decoder.tell();
     const dataOffset = decoder.int32();
     const dataPos = dataOffset === RELOFFSET_NULL ? dataOffset : startPos + dataOffset;
-    const tableInfo = getTableInfo(mTable, dataPos);
+    const tableInfo = getBinaryTableInfo(dataPos);
 
     switch (dataType) {
       case DataType.Object:
@@ -316,27 +169,7 @@ export default function readSimData(binaryModel: DataResourceDto, buffer: Buffer
 
   //#region Main Content
 
-  // Header and binary info
-  const mnFileIdentifier = decoder.charsUtf8(4);
-  if (throwErrors && mnFileIdentifier !== "DATA")
-    throw new Error("Not a SimData file (must begin with \"DATA\").");
-  const mnVersion = decoder.uint32();
-  if (throwErrors && mnVersion < 0x100 || mnVersion > 0x101)
-    throw new Error("Unknown version (must be 0x100 or 0x101).");
-  const nTableHeaderPos = decoder.tell();
-  const mnTableHeaderOffset = decoder.int32();
-  const mnNumTables = decoder.int32();
-  const nSchemaPos = decoder.tell(); // BT has int64 here
-  const mnSchemaOffset = decoder.int32();
-  const mnNumSchemas = decoder.int32();
-  const mUnused = mnVersion >= 0x101 ? decoder.uint32() : undefined;
-  decoder.seek(nTableHeaderPos + mnTableHeaderOffset);
-  const mTable = makeList<BinaryTableInfo>(mnNumTables, () => readTableInfo(decoder));
-  decoder.seek(nSchemaPos + mnSchemaOffset);
-  const mSchema = makeList<BinarySchema>(mnNumSchemas, () => readSchema(decoder));
-
-  // Converting schemas
-  const schemas: SimDataSchema[] = mSchema.map(binarySchema => {
+  const schemas: SimDataSchema[] = binaryModel.mSchema.map(binarySchema => {
     return new SimDataSchema(
       binarySchema.name,
       binarySchema.mnSchemaHash,
@@ -349,10 +182,9 @@ export default function readSimData(binaryModel: DataResourceDto, buffer: Buffer
       }));
   });
 
-  // Parsing instances
   const instances: SimDataInstance[] = [];
-  mTable.forEach(tableInfo => {
-    if (tableInfo.name !== undefined) {
+  binaryModel.mTable.forEach(tableInfo => {
+    if (tableInfo.name) {
       decoder.seek(tableInfo.startof_mnRowOffset + tableInfo.mnRowOffset);
 
       instances.push(SimDataInstance.fromObjectCell(
@@ -365,8 +197,8 @@ export default function readSimData(binaryModel: DataResourceDto, buffer: Buffer
   //#endregion Main Content
 
   return {
-    version: mnVersion,
-    unused: mUnused,
+    version: binaryModel.mnVersion,
+    unused: binaryModel.mUnused,
     schemas,
     instances
   };
