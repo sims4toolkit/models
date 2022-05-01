@@ -45,33 +45,32 @@ export default abstract class DataResource extends WritableModel implements Reso
 interface Named {
   startof_mnNameOffset: number;
   mnNameOffset: number;
+  mnNameHash: number;
 }
 
 interface TableInfo extends Named {
-  mnNameHash: number;
-  startof_mnSchemaOffset: number;
-  mnSchemaOffset: number;
-  mnDataType: number;
-  mnRowSize: number;
-  mnRowOffset: number;
-  mnRowCount: number;
+  startof_mnSchemaOffset: number; // not in BT
+  mnSchemaOffset: number; // int32
+  mnDataType: number; // uint32
+  mnRowSize: number; // uint32
+  startof_mnRowOffset: number; // not in BT
+  mnRowOffset: number; // int32
+  mnRowCount: number; // uint32
 }
 
 interface SchemaColumn extends Named {
-  mnNameHash: number;
-  mnDataType: number;
-  mnFlags: number;
-  mnOffset: number;
-  mnSchemaOffset: number;
+  mnDataType: number; // uint16
+  mnFlags: number; // uint16
+  mnOffset: number; // uint32
+  mnSchemaOffset: number; // int32
 }
 
 interface Schema extends Named {
-  mnNameHash: number;
-  mnSchemaHash: number;
-  mnSchemaSize: number;
-  startof_mnColumnOffset: number;
-  mnColumnOffset: number;
-  mnNumColumns: number;
+  mnSchemaHash: number; // uint32
+  mnSchemaSize: number; // uint32
+  startof_mnColumnOffset: number; // not in BT
+  mnColumnOffset: number; // int32
+  mnNumColumns: number; // uint32
   mColumn: SchemaColumn[];
 }
 
@@ -89,8 +88,8 @@ interface TableData {
 }
 
 export interface DataResourceDto {
-  mnVersion: number;
-  mUnused: number;
+  mnVersion: number; // uint32
+  mUnused: number; // uint32
   mSchema: Schema[];
   mTable: TableInfo[];
   mTableData: TableData[];
@@ -138,6 +137,7 @@ function readData(buffer: Buffer, options?: BinaryFileReadingOptions): DataResou
       mnSchemaOffset: decoder.int32(),
       mnDataType: decoder.uint32(),
       mnRowSize: decoder.uint32(),
+      startof_mnRowOffset: decoder.tell(),
       mnRowOffset: decoder.int32(),
       mnRowCount: decoder.uint32()
     }
