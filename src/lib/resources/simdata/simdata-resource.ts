@@ -1,11 +1,12 @@
 import { XmlDocumentNode, XmlElementNode, XmlNode } from "@s4tk/xml-dom";
 import { formatAsHexString } from "@s4tk/hashing/formatting";
+import DataResource from "../abstracts/data-resource";
 import Resource from "../resource";
 import { arraysAreEqual, promisify, removeFromArray } from "../../common/helpers";
 import { SimDataInstance, SimDataSchema } from "./fragments";
 import { SimDataDto } from "./types";
-import readData from "./serialization/read-data";
-import writeData from "./serialization/write-data";
+import readData from "./serialization/read-simdata";
+import writeData from "./serialization/write-simdata";
 import WritableModel, { WritableModelCreationOptions, WritableModelFromOptions } from "../../base/writable-model";
 import EncodingType from "../../enums/encoding-type";
 import { CompressionType } from "@s4tk/compression";
@@ -74,7 +75,7 @@ export default class SimDataResource extends WritableModel implements Resource, 
    */
   constructor(options?: SimDataResourceCreationOptions) {
     super(options);
-    this.version = options?.version ?? SUPPORTED_VERSION;
+    this.version = options?.version ?? DataResource.LATEST_VERSION;
     this.unused = options?.unused ?? 0;
     this.schemas = options?.schemas ?? [];
     this.instances = options?.instances ?? [];
@@ -155,7 +156,7 @@ export default class SimDataResource extends WritableModel implements Resource, 
     const args: SimDataResourceCreationOptions = {};
 
     args.version = parseInt(dom.attributes.version, 16);
-    if (canThrow && (args.version < 0x100 || args.version > SUPPORTED_VERSION))
+    if (canThrow && (args.version < 0x100 || args.version > DataResource.LATEST_VERSION))
       throw new Error(`Received unexpected version number: ${args.version}`);
 
     args.unused = parseInt(dom.attributes.u, 16);
