@@ -7,12 +7,6 @@ import * as cells from "../cells";
 import DataType, { SimDataRecursiveType } from "../../../enums/data-type";
 import type { BinaryDataResourceDto, BinarySchema, BinaryTableInfo } from "../../abstracts/data-resource";
 
-//#region Constants
-
-const RELOFFSET_NULL = -0x80000000;
-
-//#endregion Constants
-
 /**
  * Converts a binary DATA model into one using instances.
  * 
@@ -21,6 +15,8 @@ const RELOFFSET_NULL = -0x80000000;
  * @param options Options for reading the buffer
  */
 export default function readSimData(binaryModel: BinaryDataResourceDto, buffer: Buffer, options?: BinaryFileReadingOptions): SimDataDto {
+  const RELOFFSET_NULL = -0x80000000;
+
   const decoder = new BinaryDecoder(buffer);
 
   //#region General Helpers
