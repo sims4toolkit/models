@@ -5,7 +5,7 @@ import { arraysAreEqual, promisify, removeFromArray } from "../../common/helpers
 import { SimDataInstance, SimDataSchema } from "./fragments";
 import { SimDataDto } from "./types";
 import readData from "./serialization/read-simdata";
-import writeData from "./serialization/write-simdata";
+import writeSimData from "./serialization/write-simdata";
 import { WritableModelCreationOptions, WritableModelFromOptions } from "../../base/writable-model";
 import { CompressionType } from "@s4tk/compression";
 import ResourceRegistry from "../../packages/resource-registry";
@@ -285,7 +285,7 @@ export default class SimDataResource extends DataResource implements SimDataDto 
   //#region Protected Methods
 
   protected _serialize(): Buffer {
-    return writeData(this);
+    return writeSimData(this);
   }
 
   //#endregion Protected Methods

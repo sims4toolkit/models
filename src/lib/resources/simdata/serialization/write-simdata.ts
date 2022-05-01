@@ -119,7 +119,7 @@ function isStringType(cell: cells.Cell): boolean {
  * 
  * @param model SimData model to write
  */
-export default function writeData(model: SimDataDto): Buffer {
+export default function writeSimData(model: SimDataDto): Buffer {
   if ((model.version < 0x100) || (model.version > 0x101)) {
     const hexVersion = formatAsHexString(model.version, 0, true);
     throw new Error(`S4TK cannot write SimData version ${hexVersion}, only 0x100-0x101 are supported.`);
