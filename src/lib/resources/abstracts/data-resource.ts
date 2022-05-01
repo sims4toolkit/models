@@ -43,9 +43,10 @@ export default abstract class DataResource extends WritableModel implements Reso
 //#region Interfaces
 
 export interface NamedBinaryStructure {
-  startof_mnNameOffset: number;
-  mnNameOffset: number;
-  mnNameHash: number;
+  startof_mnNameOffset: number; // not in BT
+  mnNameOffset: number; // uint32
+  mnNameHash: number; // uint32
+  name: string; // not in BT
 }
 
 export interface BinaryTableInfo extends NamedBinaryStructure {
@@ -127,11 +128,17 @@ function readData(buffer: Buffer, options?: BinaryFileReadingOptions): BinaryDat
     });
   }
 
+  function readNameOfStructure(named: NamedBinaryStructure): string {
+    if (named.mnNameOffset === RELOFFSET_NULL) return "Unnamed";
+    return readString(named.startof_mnNameOffset + named.mnNameOffset);
+  }
+
   // Information about each data table.
   function structTableInfo(): BinaryTableInfo {
     return {
       startof_mnNameOffset: decoder.tell(),
       mnNameOffset: decoder.int32(),
+      name: readNameOfStructure(this),
       mnNameHash: decoder.uint32(),
       startof_mnSchemaOffset: decoder.tell(),
       mnSchemaOffset: decoder.int32(),
@@ -140,7 +147,7 @@ function readData(buffer: Buffer, options?: BinaryFileReadingOptions): BinaryDat
       startof_mnRowOffset: decoder.tell(),
       mnRowOffset: decoder.int32(),
       mnRowCount: decoder.uint32()
-    }
+    };
   }
 
   // Information about each column in a schema.
@@ -148,12 +155,13 @@ function readData(buffer: Buffer, options?: BinaryFileReadingOptions): BinaryDat
     return {
       startof_mnNameOffset: decoder.tell(),
       mnNameOffset: decoder.int32(),
+      name: readNameOfStructure(this),
       mnNameHash: decoder.uint32(),
       mnDataType: decoder.uint16(),
       mnFlags: decoder.uint16(),
       mnOffset: decoder.uint32(),
       mnSchemaOffset: decoder.int32()
-    }
+    };
   }
 
   // Information about each schema.
@@ -163,6 +171,7 @@ function readData(buffer: Buffer, options?: BinaryFileReadingOptions): BinaryDat
     const schema: BinarySchema = {
       startof_mnNameOffset: decoder.tell(),
       mnNameOffset: decoder.int32(),
+      name: readNameOfStructure(this),
       mnNameHash: decoder.uint32(),
       mnSchemaHash: decoder.uint32(),
       mnSchemaSize: decoder.uint32(),
@@ -187,16 +196,11 @@ function readData(buffer: Buffer, options?: BinaryFileReadingOptions): BinaryDat
     return schema;
   }
 
-  function readNamed(named: NamedBinaryStructure): string {
-    if (named.mnNameOffset === RELOFFSET_NULL) return "Unnamed";
-    return readString(named.startof_mnNameOffset + named.mnNameOffset);
-  }
-
   function structVector2() {
     return {
       x: decoder.float(),
       y: decoder.float()
-    }
+    };
   }
 
   function structVector3() {
@@ -204,7 +208,7 @@ function readData(buffer: Buffer, options?: BinaryFileReadingOptions): BinaryDat
       x: decoder.float(),
       y: decoder.float(),
       z: decoder.float()
-    }
+    };
   }
 
   function structVector4() {
@@ -213,26 +217,26 @@ function readData(buffer: Buffer, options?: BinaryFileReadingOptions): BinaryDat
       y: decoder.float(),
       z: decoder.float(),
       w: decoder.float()
-    }
+    };
   }
 
   function structString() {
     return {
       mDataOffset: decoder.uint32()
-    }
+    };
   }
 
   function structHashedString() {
     return {
       mDataOffset: decoder.uint32(),
       mHash: decoder.uint32()
-    }
+    };
   }
 
   function structLocKey() {
     return {
       mKey: decoder.uint32()
-    }
+    };
   }
 
   function structResourceKey() {
@@ -240,33 +244,33 @@ function readData(buffer: Buffer, options?: BinaryFileReadingOptions): BinaryDat
       mInstance: decoder.uint64(),
       mType: decoder.uint32(),
       mGroup: decoder.uint32()
-    }
+    };
   }
 
   function structObjectRef() {
     return {
       mDataOffset: decoder.uint32()
-    }
+    };
   }
 
   function structTableSetRef() {
     return {
       mValue: decoder.uint64()
-    }
+    };
   }
 
   function structVector() {
     return {
       mDataOffset: decoder.uint32(),
       mCount: decoder.uint32()
-    }
+    };
   }
 
   function structVariant() {
     return {
       mDataOffset: decoder.int32(),
       mTypeHash: decoder.uint32()
-    }
+    };
   }
 
   // Read a single data field with the given type code.
@@ -405,7 +409,7 @@ function readData(buffer: Buffer, options?: BinaryFileReadingOptions): BinaryDat
             // order (columns are sorted by name hash).
             const row: BinaryRow = {};
             for (k = 0; k < mSchema[schemaIndex].mnNumColumns; ++k) {
-              schemaColumnName = readNamed(mSchema[schemaIndex].mColumn[k]);
+              schemaColumnName = mSchema[schemaIndex].mColumn[k].name;
               decoder.seek(rowStart + mSchema[schemaIndex].mColumn[k].mnOffset);
               row[schemaColumnName] = readDataType(mSchema[schemaIndex].mColumn[k].mnDataType);
               columnAlignment = DataType.getAlignment(mTable[i].mnDataType);
