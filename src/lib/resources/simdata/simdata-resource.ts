@@ -1,14 +1,12 @@
 import { XmlDocumentNode, XmlElementNode, XmlNode } from "@s4tk/xml-dom";
 import { formatAsHexString } from "@s4tk/hashing/formatting";
 import DataResource from "../abstracts/data-resource";
-import Resource from "../resource";
 import { arraysAreEqual, promisify, removeFromArray } from "../../common/helpers";
 import { SimDataInstance, SimDataSchema } from "./fragments";
 import { SimDataDto } from "./types";
 import readData from "./serialization/read-simdata";
 import writeData from "./serialization/write-simdata";
-import WritableModel, { WritableModelCreationOptions, WritableModelFromOptions } from "../../base/writable-model";
-import EncodingType from "../../enums/encoding-type";
+import { WritableModelCreationOptions, WritableModelFromOptions } from "../../base/writable-model";
 import { CompressionType } from "@s4tk/compression";
 import ResourceRegistry from "../../packages/resource-registry";
 import BinaryResourceType from "../../enums/binary-resources";
@@ -26,8 +24,7 @@ export interface SimDataResourceCreationOptions extends
  * (and for consistency with its XML format), this model uses the concept of
  * "instances". An "instance" is an object cell that has a name.
  */
-export default class SimDataResource extends WritableModel implements Resource, SimDataDto {
-  readonly encodingType: EncodingType = EncodingType.DATA;
+export default class SimDataResource extends DataResource implements SimDataDto {
   public version: number;
   public unused: number;
   private _schemas: SimDataSchema[];
@@ -281,10 +278,6 @@ export default class SimDataResource extends WritableModel implements Resource, 
     }));
 
     return doc;
-  }
-
-  isXml(): boolean {
-    return false;
   }
 
   //#endregion Public Methods
