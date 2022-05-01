@@ -35,20 +35,20 @@ export default abstract class DataResource extends WritableModel implements Reso
    * @param buffer Buffer to read as DATA file
    * @param options Options to configure
    */
-  protected static _readDataBuffer(buffer: Buffer, options?: BinaryFileReadingOptions): DataResourceDto {
+  protected static _readBinaryData(buffer: Buffer, options?: BinaryFileReadingOptions): BinaryDataResourceDto {
     return readData(buffer, options);
   }
 }
 
 //#region Interfaces
 
-interface Named {
+export interface NamedBinaryStructure {
   startof_mnNameOffset: number;
   mnNameOffset: number;
   mnNameHash: number;
 }
 
-interface TableInfo extends Named {
+export interface BinaryTableInfo extends NamedBinaryStructure {
   startof_mnSchemaOffset: number; // not in BT
   mnSchemaOffset: number; // int32
   mnDataType: number; // uint32
@@ -58,42 +58,42 @@ interface TableInfo extends Named {
   mnRowCount: number; // uint32
 }
 
-interface SchemaColumn extends Named {
+export interface BinarySchemaColumn extends NamedBinaryStructure {
   mnDataType: number; // uint16
   mnFlags: number; // uint16
   mnOffset: number; // uint32
   mnSchemaOffset: number; // int32
 }
 
-interface Schema extends Named {
+export interface BinarySchema extends NamedBinaryStructure {
   mnSchemaHash: number; // uint32
   mnSchemaSize: number; // uint32
   startof_mnColumnOffset: number; // not in BT
   mnColumnOffset: number; // int32
   mnNumColumns: number; // uint32
-  mColumn: SchemaColumn[];
+  mColumn: BinarySchemaColumn[];
 }
 
-interface StringTable {
+export interface BinaryStringTable {
   mStringEntry: string[];
 }
 
-interface Row {
+export interface BinaryRow {
   [key: string]: any;
 }
 
-interface TableData {
+export interface BinaryTableData {
   mValue?: any[];
-  mRow?: Row[];
+  mRow?: BinaryRow[];
 }
 
-export interface DataResourceDto {
+export interface BinaryDataResourceDto {
   mnVersion: number; // uint32
   mUnused: number; // uint32
-  mSchema: Schema[];
-  mTable: TableInfo[];
-  mTableData: TableData[];
-  mStringTable: StringTable;
+  mSchema: BinarySchema[];
+  mTable: BinaryTableInfo[];
+  mTableData: BinaryTableData[];
+  mStringTable: BinaryStringTable;
 }
 
 //#endregion Interfaces
@@ -105,7 +105,7 @@ export interface DataResourceDto {
  * 
  * @param buffer Buffer to read as a DATA file
  */
-function readData(buffer: Buffer, options?: BinaryFileReadingOptions): DataResourceDto {
+function readData(buffer: Buffer, options?: BinaryFileReadingOptions): BinaryDataResourceDto {
   const RELOFFSET_NULL = -0x80000000;
 
   const decoder = new BinaryDecoder(buffer);
@@ -128,7 +128,7 @@ function readData(buffer: Buffer, options?: BinaryFileReadingOptions): DataResou
   }
 
   // Information about each data table.
-  function structTableInfo(): TableInfo {
+  function structTableInfo(): BinaryTableInfo {
     return {
       startof_mnNameOffset: decoder.tell(),
       mnNameOffset: decoder.int32(),
@@ -144,7 +144,7 @@ function readData(buffer: Buffer, options?: BinaryFileReadingOptions): DataResou
   }
 
   // Information about each column in a schema.
-  function structSchemaColumn(): SchemaColumn {
+  function structSchemaColumn(): BinarySchemaColumn {
     return {
       startof_mnNameOffset: decoder.tell(),
       mnNameOffset: decoder.int32(),
@@ -159,8 +159,8 @@ function readData(buffer: Buffer, options?: BinaryFileReadingOptions): DataResou
   // Information about each schema.
   let schemaEndPos: number; // int64
   let lastColumnEndPos: number; // int64
-  function structSchema(): Schema {
-    const schema: Schema = {
+  function structSchema(): BinarySchema {
+    const schema: BinarySchema = {
       startof_mnNameOffset: decoder.tell(),
       mnNameOffset: decoder.int32(),
       mnNameHash: decoder.uint32(),
@@ -187,7 +187,7 @@ function readData(buffer: Buffer, options?: BinaryFileReadingOptions): DataResou
     return schema;
   }
 
-  function readNamed(named: Named): string {
+  function readNamed(named: NamedBinaryStructure): string {
     if (named.mnNameOffset === RELOFFSET_NULL) return "Unnamed";
     return readString(named.startof_mnNameOffset + named.mnNameOffset);
   }
@@ -340,7 +340,7 @@ function readData(buffer: Buffer, options?: BinaryFileReadingOptions): DataResou
   // and reading them is complex, we cannot use the
   // array syntax (even with <optimize=false>).
   decoder.seek(nSchemaPos + mnSchemaOffset);
-  let mSchema: Schema[] = [];
+  let mSchema: BinarySchema[] = [];
   for (i = 0; i < mnNumSchemas; ++i) {
     mSchema.push(structSchema());
   }
@@ -361,7 +361,7 @@ function readData(buffer: Buffer, options?: BinaryFileReadingOptions): DataResou
 
   // Read the string table, which consists of NULL separated
   // UTF-8 encoded strings, and comprises the rest of the file.
-  function structStringTable(): StringTable {
+  function structStringTable(): BinaryStringTable {
     const mStringEntry: string[] = [];
     while (!decoder.isEOF()) {
       mStringEntry.push(decoder.string());
@@ -378,19 +378,19 @@ function readData(buffer: Buffer, options?: BinaryFileReadingOptions): DataResou
   let alignment: number, columnAlignment: number;
   let rowStart: number;
   let schemaColumnName: string;
-  const mTableData: TableData[] = [];
+  const mTableData: BinaryTableData[] = [];
   for (i = 0; i < mnNumTables; ++i) {
     seekToAlignment(15);
     seekToAlignment(mTable[i].mnRowSize - 1);
 
-    const tableData: TableData = {};
+    const tableData: BinaryTableData = {};
     if (mTable[i].mnSchemaOffset === RELOFFSET_NULL) {
       tableData.mValue = [];
     } else {
       tableData.mRow = [];
     }
 
-    function structTableData(): TableData {
+    function structTableData(): BinaryTableData {
       alignment = 1;
       for (j = 0; j < mTable[i].mnRowCount; ++j) {
         // Some tables have no schema; these support only one
@@ -400,10 +400,10 @@ function readData(buffer: Buffer, options?: BinaryFileReadingOptions): DataResou
           alignment = DataType.getAlignment(mTable[i].mnDataType);
         } else {
           schemaIndex = getSchemaIndex(mTable[i].startof_mnSchemaOffset + mTable[i].mnSchemaOffset);
-          function structRow(): Row {
+          function structRow(): BinaryRow {
             // Read each column.  The order of column data does not match the column
             // order (columns are sorted by name hash).
-            const row: Row = {};
+            const row: BinaryRow = {};
             for (k = 0; k < mSchema[schemaIndex].mnNumColumns; ++k) {
               schemaColumnName = readNamed(mSchema[schemaIndex].mColumn[k]);
               decoder.seek(rowStart + mSchema[schemaIndex].mColumn[k].mnOffset);
