@@ -88,7 +88,7 @@ export default class SimDataResource extends DataResource implements SimDataDto 
    * @param options Object of optional arguments
    */
   static from(buffer: Buffer, options?: WritableModelFromOptions): SimDataResource {
-    const binaryModel = DataResource._readDataBuffer(buffer, options);
+    const binaryModel = DataResource._readBinaryDataModel(buffer, options);
     const dto: SimDataResourceCreationOptions = readSimData(binaryModel, buffer, options);
     dto.defaultCompressionType = options?.defaultCompressionType;
     dto.owner = options?.owner;

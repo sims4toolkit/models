@@ -35,7 +35,7 @@ export default abstract class DataResource extends WritableModel implements Reso
    * @param buffer Buffer to read as DATA file
    * @param options Options to configure
    */
-  protected static _readBinaryData(buffer: Buffer, options?: BinaryFileReadingOptions): BinaryDataResourceDto {
+  protected static _readBinaryDataModel(buffer: Buffer, options?: BinaryFileReadingOptions): BinaryDataResourceDto {
     return readData(buffer, options);
   }
 }
