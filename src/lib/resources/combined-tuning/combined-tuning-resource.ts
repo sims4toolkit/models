@@ -1,16 +1,13 @@
-import WritableModel, { WritableModelFromOptions } from "../../base/writable-model";
+import { WritableModelCreationOptions, WritableModelFromOptions } from "../../base/writable-model";
 import { promisify } from "../../common/helpers";
 import BinaryResourceType from "../../enums/binary-resources";
-import EncodingType from "../../enums/encoding-type";
 import ResourceRegistry from "../../packages/resource-registry";
-import Resource from "../resource";
+import DataResource from "../abstracts/data-resource";
 
 /**
  * TODO:
  */
-export default class CombinedTuningResource extends WritableModel implements Resource {
-  readonly encodingType: EncodingType = EncodingType.DATA;
-
+export default class CombinedTuningResource extends DataResource {
   //#region Properties
 
   // TODO:
@@ -19,7 +16,15 @@ export default class CombinedTuningResource extends WritableModel implements Res
 
   //#region Initialization
 
-  // TODO: constructor
+  /**
+   * TODO:
+   * 
+   * @param options TODO:
+   */
+  constructor(options?: WritableModelCreationOptions) {
+    super(options);
+    // TODO:
+  }
 
   /**
    * TODO:
@@ -47,15 +52,11 @@ export default class CombinedTuningResource extends WritableModel implements Res
   //#region Public Methods
 
   clone(): CombinedTuningResource {
-    throw new Error("Cloning combined tuning is not currently supported.");
+    throw new Error("Cloning CombinedTuningResource is not supported.");
   }
 
   equals(other: any): boolean {
-    throw new Error("Comparing combined tuning is not currently supported.");
-  }
-
-  isXml(): boolean {
-    return false;
+    throw new Error("Comparing CombinedTuningResource is not supported.");
   }
 
   //#endregion Public Methods
@@ -63,7 +64,7 @@ export default class CombinedTuningResource extends WritableModel implements Res
   //#region Protected Methods
 
   protected _serialize(): Buffer {
-    throw new Error("Serializing combined tuning is not currently supported.");
+    throw new Error("Serializing CombinedTuningResource is not supported.");
   }
 
   //#endregion Protected Methods
