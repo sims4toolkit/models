@@ -4,7 +4,7 @@ import DataResource from "../abstracts/data-resource";
 import { arraysAreEqual, promisify, removeFromArray } from "../../common/helpers";
 import { SimDataInstance, SimDataSchema } from "./fragments";
 import { SimDataDto } from "./types";
-import readData from "./serialization/read-simdata";
+import readSimData from "./serialization/read-simdata";
 import writeSimData from "./serialization/write-simdata";
 import { WritableModelCreationOptions, WritableModelFromOptions } from "../../base/writable-model";
 import { CompressionType } from "@s4tk/compression";
@@ -88,7 +88,8 @@ export default class SimDataResource extends DataResource implements SimDataDto 
    * @param options Object of optional arguments
    */
   static from(buffer: Buffer, options?: WritableModelFromOptions): SimDataResource {
-    const dto: SimDataResourceCreationOptions = readData(buffer, options);
+    const binaryModel = DataResource._readDataBuffer(buffer, options);
+    const dto: SimDataResourceCreationOptions = readSimData(binaryModel, buffer, options);
     dto.defaultCompressionType = options?.defaultCompressionType;
     dto.owner = options?.owner;
     if (options?.saveBuffer) dto.initialBufferCache = options.initialBufferCache ?? {

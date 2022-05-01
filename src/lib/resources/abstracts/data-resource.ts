@@ -35,7 +35,7 @@ export default abstract class DataResource extends WritableModel implements Reso
    * @param buffer Buffer to read as DATA file
    * @param options Options to configure
    */
-  protected _readDataBuffer(buffer: Buffer, options?: BinaryFileReadingOptions): DataResourceDto {
+  protected static _readDataBuffer(buffer: Buffer, options?: BinaryFileReadingOptions): DataResourceDto {
     return readData(buffer, options);
   }
 }
@@ -88,7 +88,7 @@ interface TableData {
   mRow?: Row[];
 }
 
-interface DataResourceDto {
+export interface DataResourceDto {
   mnVersion: number;
   mUnused: number;
   mSchema: Schema[];
@@ -299,21 +299,15 @@ function readData(buffer: Buffer, options?: BinaryFileReadingOptions): DataResou
     }
   }
 
+  const throwErrors = !(options?.recoveryMode);
+
   // Header
-  // There are a few unused or deprecated fields in the header. Most of these
-  // should be set to 0 unless marked otherwise.
   const mnFileIdentifier = decoder.charsUtf8(4);
-
-  if (mnFileIdentifier != "DATA") {
-    throw new Error(`Not a simdata file!`);
-  }
-
-  // Base game version is 0x101
+  if (throwErrors && mnFileIdentifier !== "DATA")
+    throw new Error("Not a SimData file (must begin with \"DATA\").");
   const mnVersion = decoder.uint32();
-  if (mnVersion < 0x100 || mnVersion > 0x101) {
-    // Base Game shipped with version 0x100
-    throw new Error(`Unknown version ${mnVersion}`);
-  }
+  if (throwErrors && mnVersion < 0x100 || mnVersion > 0x101)
+    throw new Error("Unknown version (must be 0x100 or 0x101).");
 
   // Offset of table header data
   const nTableHeaderPos = decoder.tell();
@@ -329,7 +323,7 @@ function readData(buffer: Buffer, options?: BinaryFileReadingOptions): DataResou
   // Number of schemas
   const mnNumSchemas = decoder.int32();
 
-  // Not used, set to 0xFFFFFFFF
+  // Not used, should either be 0, 0xFFFFFFFF, or match pack number
   const mUnused = mnVersion >= 0x101 ? decoder.uint32() : undefined;
 
   // Skip to the beginning of the table header block

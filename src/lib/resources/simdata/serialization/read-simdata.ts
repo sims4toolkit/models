@@ -5,6 +5,7 @@ import { makeList } from "../../../common/helpers";
 import { SimDataSchema, SimDataSchemaColumn, SimDataInstance } from "../fragments";
 import * as cells from "../cells";
 import DataType, { SimDataRecursiveType } from "../../../enums/data-type";
+import type { DataResourceDto } from "../../abstracts/data-resource";
 
 //#region Constants
 
@@ -190,7 +191,7 @@ function readSchema(decoder: BinaryDecoder): BinarySchema {
  * @param buffer Buffer to read
  * @param options Options for reading
  */
-export default function readData(buffer: Buffer, options?: BinaryFileReadingOptions): SimDataDto {
+export default function readSimData(binaryModel: DataResourceDto, buffer: Buffer, options?: BinaryFileReadingOptions): SimDataDto {
   const decoder = new BinaryDecoder(buffer);
   const throwErrors = options === undefined || !options.recoveryMode;
 
