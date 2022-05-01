@@ -4,8 +4,13 @@ import type { ObjectCellRow, SimDataDto } from "../types";
 import { makeList } from "../../../common/helpers";
 import { SimDataSchema, SimDataSchemaColumn, SimDataInstance } from "../fragments";
 import * as cells from "../cells";
-import { RELOFFSET_NULL } from "../constants";
 import DataType, { SimDataRecursiveType } from "../../../enums/data-type";
+
+//#region Constants
+
+const RELOFFSET_NULL = -0x80000000;
+
+//#endregion Constants
 
 //#region Interfaces
 

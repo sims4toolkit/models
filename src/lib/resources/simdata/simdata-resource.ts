@@ -4,7 +4,6 @@ import Resource from "../resource";
 import { arraysAreEqual, promisify, removeFromArray } from "../../common/helpers";
 import { SimDataInstance, SimDataSchema } from "./fragments";
 import { SimDataDto } from "./types";
-import { SUPPORTED_VERSION } from "./constants";
 import readData from "./serialization/read-data";
 import writeData from "./serialization/write-data";
 import WritableModel, { WritableModelCreationOptions, WritableModelFromOptions } from "../../base/writable-model";
