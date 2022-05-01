@@ -4,13 +4,13 @@
   https://forums.thesims.com/en_US/discussion/826671/binary-tuning-sim-data-resource-0x545ac67a-and-0x62e94d38
 */
 
-import WritableModel from "../../base/writable-model";
-import EncodingType from "../../enums/encoding-type";
-import Resource from "../resource";
 import { BinaryDecoder } from "@s4tk/encoding";
-import { makeList } from "../../common/helpers";
-import { BinaryFileReadingOptions } from "../../common/options";
+import WritableModel from "../../base/writable-model";
+import Resource from "../resource";
+import EncodingType from "../../enums/encoding-type";
 import DataType from "../../enums/data-type";
+import { BinaryFileReadingOptions } from "../../common/options";
+import { makeList } from "../../common/helpers";
 
 /**
  * A base for all resource models that follow the DATA binary template.
