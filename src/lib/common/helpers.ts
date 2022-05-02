@@ -61,7 +61,18 @@ export function arraysAreEqual(arr1: Equalable[], arr2: any[]): boolean {
  * @returns True if this buffer contains XML, false otherwise
  */
 export function bufferContainsXml(buffer: Buffer): boolean {
-  return buffer.length >= 5 && buffer.slice(0, 5).toString('utf-8') === '<?xml';
+  return buffer.length >= 5 && buffer.toString("utf-8", 0, 5) === "<?xml";
+}
+
+/**
+ * Checks the given buffer and returns whether or not it begins with four bytes
+ * that spell "DATA" in UTF-8.
+ * 
+ * @param buffer Buffer to check contents of
+ * @returns True if this buffer begins with "DATA" in binary, false otherwise
+ */
+export function bufferContainsDATA(buffer: Buffer): boolean {
+  return buffer.length >= 4 && buffer.toString("utf-8", 0, 4) === "DATA";
 }
 
 /**
@@ -74,7 +85,7 @@ export function promisify<T>(fn: () => T): Promise<T> {
     try {
       const result = fn();
       resolve(result);
-    } catch(e) {
+    } catch (e) {
       reject(e);
     }
   });

@@ -69,3 +69,14 @@ export interface PackageFileReadingOptions extends
      */
     resourceFilter: ResourceFilter;
   }> { };
+
+
+/**
+ * TODO:
+ */
+export interface XmlExtractionOptions extends Partial<{
+  // TODO: comments and maps
+  restoreComments: boolean;
+  filter: () => boolean; // FIXME: filter what?
+  limit: number;
+}> { };
