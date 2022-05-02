@@ -3,14 +3,14 @@ import type { XmlExtractionOptions } from "../../../common/options";
 import XmlResource from "../../xml/xml-resource";
 
 /**
- * TODO:
+ * Extracts tuning from a CombinedTuning XML DOM.
  * 
- * @param dom TODO:
- * @param options TODO:
+ * @param dom CombinedTuning DOM to extract tuning from
+ * @param options Options to configure
  */
 export default function extractTuningFromCombinedXml(
   dom: XmlDocumentNode,
-  options?: XmlExtractionOptions
+  options?: XmlExtractionOptions // TODO: actually use these
 ): XmlResource[] {
   const root = dom.child;
   if (root.tag !== "combined")
@@ -35,7 +35,7 @@ export default function extractTuningFromCombinedXml(
           ref.name = child.name;
         }
 
-        node.children[i] = ref; // FIXME: is this safe?
+        node.children[i] = ref;
       } else {
         resolveNode(child);
       }
