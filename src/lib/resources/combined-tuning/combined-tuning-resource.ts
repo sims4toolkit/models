@@ -7,7 +7,7 @@ import ResourceRegistry from "../../packages/resource-registry";
 import DataResource from "../abstracts/data-resource";
 import XmlResource from "../xml/xml-resource";
 import extractTuningFromCombinedBinary from "./serialization/extract-from-binary";
-import extractTuningFromCombinedXml from "./serialization/extract-from-xml";
+import extractTuningFromCombinedXml from "./serialization/extract-tuning";
 
 /**
  * TODO:
