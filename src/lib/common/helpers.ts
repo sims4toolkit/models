@@ -90,3 +90,22 @@ export function promisify<T>(fn: () => T): Promise<T> {
     }
   });
 }
+
+/**
+ * Returns a subarray of the given array that contains of all values between the
+ * given start index and the first value that is mapped to something falsey.
+ * 
+ * @param arr Source array
+ * @param startIndex (Optional) Index to start at, 0 by default
+ * @param fn (Optional) Mapper function, identity by default
+ */
+export function readUntilFalsey<T>(
+  arr: T[],
+  startIndex: number = 0,
+  fn: ((t: T) => boolean) = (t: T) => Boolean(t)
+): T[] {
+  let i: number;
+  for (i = startIndex; i < arr.length; i++)
+    if (!fn(arr[i])) break;
+  return arr.slice(startIndex, i);
+}
