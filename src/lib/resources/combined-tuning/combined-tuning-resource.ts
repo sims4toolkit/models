@@ -60,14 +60,6 @@ export default class CombinedTuningResource extends DataResource {
 
   //#region Public Methods
 
-  clone(): CombinedTuningResource {
-    throw new Error("Cloning CombinedTuningResource is not supported.");
-  }
-
-  equals(other: any): boolean {
-    throw new Error("Comparing CombinedTuningResource is not supported.");
-  }
-
   /**
    * Extracts all tunings in this model as their own XML files.
    */
@@ -82,15 +74,25 @@ export default class CombinedTuningResource extends DataResource {
     return promisify(() => this.extractTuning());
   }
 
+  // TODO: index tuning
+
   //#endregion Public Methods
 
-  //#region Protected Methods
+  //#region Unsupported Methods
+
+  clone(): CombinedTuningResource {
+    throw new Error("Cloning CombinedTuningResource is not supported.");
+  }
+
+  equals(other: any): boolean {
+    throw new Error("Comparing CombinedTuningResource is not supported.");
+  }
 
   protected _serialize(): Buffer {
     throw new Error("Serializing CombinedTuningResource is not supported.");
   }
 
-  //#endregion Protected Methods
+  //#endregion Unsupported Methods
 }
 
 ResourceRegistry.register(

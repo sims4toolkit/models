@@ -12,5 +12,7 @@ export default function extractTuningFromCombinedXml(
   dom: XmlDocumentNode,
   options?: XmlExtractionOptions
 ): XmlResource[] {
+  // FIXME: actually use options
+
   // TODO:
 }
