@@ -62,6 +62,8 @@ export default class CombinedTuningResource extends DataResource {
 
   /**
    * Extracts all tunings in this model as their own XML files.
+   * 
+   * WARNING: This method has side effects and will alter this model's DOM.
    */
   extractTuning(options?: XmlExtractionOptions): XmlResource[] {
     return extractTuningFromCombinedXml(this.dom, options);
@@ -69,6 +71,8 @@ export default class CombinedTuningResource extends DataResource {
 
   /**
    * Asynchronously extracts all tunings in this model as their own XML files.
+   * 
+   * WARNING: This method has side effects and will alter this model's DOM.
    */
   async extractTuningAsync(): Promise<XmlResource[]> {
     return promisify(() => this.extractTuning());
