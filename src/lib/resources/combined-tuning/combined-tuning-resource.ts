@@ -6,23 +6,27 @@ import BinaryResourceType from "../../enums/binary-resources";
 import ResourceRegistry from "../../packages/resource-registry";
 import DataResource from "../abstracts/data-resource";
 import XmlResource from "../xml/xml-resource";
-import convertBinaryTuningToXml from "./serialization/binary-to-xml";
-import extractTuningFromCombinedXml from "./serialization/extract-tunings";
+import extractTuningFromCombinedBinary from "./serialization/extract-from-binary";
+import extractTuningFromCombinedXml from "./serialization/extract-from-xml";
 
 /**
  * TODO:
  */
 export default class CombinedTuningResource extends DataResource {
-  //#region Initialization
-
   /**
    * TODO:
    * 
    * @param options TODO:
    */
-  constructor(public readonly dom: XmlDocumentNode, options?: WritableModelCreationOptions) {
+  constructor(
+    public readonly resources?: XmlResource[],
+    options?: WritableModelCreationOptions
+  ) {
     super(options);
+    // FIXME: how should this model store data?
   }
+
+  //#region Static Methods
 
   /**
    * Creates a CombinedTuningResource from a buffer containing either binary
@@ -32,15 +36,12 @@ export default class CombinedTuningResource extends DataResource {
    * @param buffer Buffer to read as combined tuning
    * @param options Object of options to configure
    */
-  static from(buffer: Buffer, options?: WritableModelFromOptions): CombinedTuningResource {
-    if (bufferContainsDATA(buffer)) {
-      const binaryModel = DataResource._readBinaryDataModel(buffer, options);
-      var dom = convertBinaryTuningToXml(binaryModel, buffer, options);
-    } else {
-      var dom = XmlDocumentNode.from(buffer);
-    }
-
-    return new CombinedTuningResource(dom);
+  static from(
+    buffer: Buffer,
+    options?: WritableModelFromOptions
+  ): CombinedTuningResource {
+    const resources = this.extractTuning(buffer);
+    return new CombinedTuningResource(resources);
   }
 
   /**
@@ -52,35 +53,52 @@ export default class CombinedTuningResource extends DataResource {
    * @param buffer Buffer to read as combined tuning
    * @param options Object of options to configure
    */
-  static async fromAsync(buffer: Buffer, options?: WritableModelFromOptions): Promise<CombinedTuningResource> {
+  static async fromAsync(
+    buffer: Buffer,
+    options?: WritableModelFromOptions
+  ): Promise<CombinedTuningResource> {
     return promisify(() => this.from(buffer, options));
   }
 
-  //#endregion Initialization
-
-  //#region Public Methods
-
   /**
-   * Extracts all tunings in this model as their own XML files.
+   * Extracts all tunings from a buffer containing either binary DATA or
+   * combined tuning XML. This buffer is assumed to be uncompressed;
+   * providing a compressed buffer will lead to unexpected behavior.
    * 
-   * WARNING: This method has side effects and will alter this model's DOM.
+   * @param buffer Buffer to extract tuning from
+   * @param options Object of options
    */
-  extractTuning(options?: XmlExtractionOptions): XmlResource[] {
-    return extractTuningFromCombinedXml(this.dom, options);
+  static extractTuning(
+    buffer: Buffer,
+    options?: XmlExtractionOptions
+  ): XmlResource[] {
+    if (bufferContainsDATA(buffer)) {
+      const binaryModel = DataResource._readBinaryDataModel(buffer); // TODO: options?
+      return extractTuningFromCombinedBinary(binaryModel, buffer, options);
+    } else {
+      const dom = XmlDocumentNode.from(buffer);
+      return extractTuningFromCombinedXml(dom, options);
+    }
   }
 
   /**
-   * Asynchronously extracts all tunings in this model as their own XML files.
+   * Asynchronously extracts all tunings from a buffer containing either binary
+   * DATA or combined tuning XML. This buffer is assumed to be uncompressed;
+   * providing a compressed buffer will lead to unexpected behavior.
    * 
-   * WARNING: This method has side effects and will alter this model's DOM.
+   * @param buffer Buffer to extract tuning from
+   * @param options Object of options
    */
-  async extractTuningAsync(): Promise<XmlResource[]> {
-    return promisify(() => this.extractTuning());
+  static async extractTuningAsync(
+    buffer: Buffer,
+    options?: XmlExtractionOptions
+  ): Promise<XmlResource[]> {
+    return promisify(() => this.extractTuning(buffer, options));
   }
 
   // TODO: index tuning
 
-  //#endregion Public Methods
+  //#endregion Static Methods
 
   //#region Unsupported Methods
 
