@@ -6,7 +6,7 @@ import BinaryResourceType from "../../enums/binary-resources";
 import ResourceRegistry from "../../packages/resource-registry";
 import DataResource from "../abstracts/data-resource";
 import XmlResource from "../xml/xml-resource";
-import extractTuningFromCombinedBinary from "./serialization/extract-from-binary";
+import convertCombinedBinaryToXml from "./serialization/binary-to-xml";
 import extractTuningFromCombinedXml from "./serialization/extract-tuning";
 
 /**
@@ -19,11 +19,10 @@ export default class CombinedTuningResource extends DataResource {
    * @param options TODO:
    */
   constructor(
-    public readonly resources?: XmlResource[],
+    public readonly dom: XmlDocumentNode,
     options?: WritableModelCreationOptions
   ) {
     super(options);
-    // FIXME: how should this model store data?
   }
 
   //#region Static Methods
@@ -40,8 +39,14 @@ export default class CombinedTuningResource extends DataResource {
     buffer: Buffer,
     options?: WritableModelFromOptions
   ): CombinedTuningResource {
-    const resources = this.extractTuning(buffer);
-    return new CombinedTuningResource(resources);
+    if (bufferContainsDATA(buffer)) {
+      const binaryModel = DataResource._readBinaryDataModel(buffer, options);
+      var dom = convertCombinedBinaryToXml(binaryModel, buffer);
+    } else {
+      var dom = XmlDocumentNode.from(buffer);
+    }
+
+    return new CombinedTuningResource(dom);
   }
 
   /**
@@ -73,12 +78,13 @@ export default class CombinedTuningResource extends DataResource {
     options?: XmlExtractionOptions
   ): XmlResource[] {
     if (bufferContainsDATA(buffer)) {
-      const binaryModel = DataResource._readBinaryDataModel(buffer); // TODO: options?
-      return extractTuningFromCombinedBinary(binaryModel, buffer, options);
+      const binaryModel = DataResource._readBinaryDataModel(buffer);
+      var dom = convertCombinedBinaryToXml(binaryModel, buffer);
     } else {
-      const dom = XmlDocumentNode.from(buffer);
-      return extractTuningFromCombinedXml(dom, options);
+      var dom = XmlDocumentNode.from(buffer);
     }
+
+    return extractTuningFromCombinedXml(dom, options);
   }
 
   /**
