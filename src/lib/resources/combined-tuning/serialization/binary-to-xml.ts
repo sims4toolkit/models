@@ -84,8 +84,50 @@ export default function convertCombinedBinaryToXml(
     string_table   // ?
   } = metaDataTable.mRow[0];
 
+  // maps table indices to their starting index
+  const tableDataOffsets: number[] = [];
+  binaryModel.mTable.forEach(table => {
+    const position = table.startof_mnRowOffset + table.mnRowOffset;
+    const padding = -position & 15;
+    tableDataOffsets.push(position + padding);
+  });
+
   // maps indices from table 1 into actual XML nodes
   const xmlNodes: Map<number, XmlNode> = new Map();
+
+  function getTableIndexFromPosition(position: number): number {
+    for (let i = 0; i < binaryModel.mTable.length; i++) {
+      const tableStart = tableDataOffsets[i];
+      if (tableStart <= position) {
+        const { mnRowCount, mnRowSize } = binaryModel.mTable[i];
+        const tableEnd = tableStart + (mnRowCount * mnRowSize);
+        if (position < tableEnd) return i;
+      }
+    }
+
+    throw new Error(`Unable to identify table from position: ${position}`);
+  }
+
+  function getRowFromIndicies(tableIndex: number, rowIndex: number): any {
+    const tableInfo = binaryModel.mTable[tableIndex];
+    const tableData = binaryModel.mTableData[tableIndex];
+    if (tableInfo.mnSchemaOffset === RELOFFSET_NULL) {
+      return tableData.mValue[rowIndex];
+    } else {
+      return tableData.mRow[rowIndex];
+    }
+  }
+
+  function getRowFromPosition(position: number): any {
+    const tableIndex = getTableIndexFromPosition(position);
+    const tableInfo = binaryModel.mTable[tableIndex];
+    const rowIndex = (position - (tableInfo.startof_mnRowOffset + tableInfo.mnRowOffset)) / tableInfo.mnRowSize;
+    return getRowFromIndicies(tableIndex, rowIndex);
+  }
+
+  function toSignedInt32(uint32: number): number {
+    // TODO:
+  }
 
   function unpackNodeAndChildren(packedNode: PackedXmlNode, position: number): XmlNode {
     // TODO:
@@ -94,50 +136,6 @@ export default function convertCombinedBinaryToXml(
   function unpackChildren() {
 
   }
-
-  function resolveAttributes(packedAttrs: PackedXmlAttributes): { [key: string]: string; } {
-    const attrs: { [key: string]: string; } = {};
-
-    const {
-      startof_mnRowOffset,
-      mnRowOffset,
-      mnRowSize
-    } = binaryModel.mTable[5];
-
-    const nameOffset = stringRefsTable.mValue[packedAttrs.name];
-    // fIXME: might need to seek to alignment
-    const namePosition = startof_mnRowOffset + mnRowOffset + (mnRowSize * nameOffset);
-
-    const valueOffset = stringRefsTable.mValue[packedAttrs.name];
-    const valuePosition = startof_mnRowOffset + mnRowOffset + (mnRowSize * valueOffset);
-
-
-    return attrs;
-  }
-
-  // function getChildrenNodes(childOffset: number): XmlNode[] {
-  //   return readUntilFalsey<DataOffsetObject>(
-  //     nodeRefsTable.mValue,
-  //     childOffset,
-  //     child => child.mDataOffset !== RELOFFSET_NULL
-  //   ).map(child => {
-  //     // TODO:
-  //   });
-  // }
-
-  nodeObjectsTable.mRow.forEach((node: PackedXmlNode) => {
-    // text is a uint32, so see if they cancel out
-    if ((node.text + RELOFFSET_NULL) !== 0) {
-      // TODO:
-    }
-
-    // mDataOffset is signed, so it can equal RELOFFSET_NULL
-    if (node.attrs.mDataOffset !== RELOFFSET_NULL) {
-      // TODO:
-    }
-
-
-  });
 
   return;
 }
