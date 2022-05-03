@@ -14,7 +14,7 @@ export default function extractTuningFromCombinedXml(
 ): XmlResource[] {
   const root = dom.child;
   if (root.tag !== "combined")
-    throw new Error(`Exected root node to have tag <combined>, but got ${root.tag}`);
+    throw new Error(`Expected root node to have tag <combined>, but got ${root.tag}`);
 
   // index nodes
   const nodeIndex = new Map<string, XmlNode>();
