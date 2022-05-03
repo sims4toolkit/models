@@ -1,4 +1,5 @@
-import { XmlDocumentNode, XmlNode } from "@s4tk/xml-dom";
+import { BinaryEncoder, BinaryDecoder } from "@s4tk/encoding";
+import { XmlDocumentNode, XmlElementNode, XmlNode, XmlValueNode } from "@s4tk/xml-dom";
 import { readUntilFalsey } from "../../../common/helpers";
 import { XmlExtractionOptions } from "../../../common/options";
 import { BinaryDataResourceDto } from "../../abstracts/data-resource";
@@ -65,6 +66,7 @@ export default function convertCombinedBinaryToXml(
   binaryModel: BinaryDataResourceDto,
   buffer: Buffer,
 ): XmlDocumentNode {
+  const decoder = new BinaryDecoder(buffer);
   const RELOFFSET_NULL = -0x80000000; // sometimes it'll be positive
 
   const [
@@ -118,23 +120,84 @@ export default function convertCombinedBinaryToXml(
     }
   }
 
-  function getRowFromPosition(position: number): any {
+  function getTableAndRowIndicesFromPosition(position: number): any {
     const tableIndex = getTableIndexFromPosition(position);
     const tableInfo = binaryModel.mTable[tableIndex];
     const rowIndex = (position - (tableInfo.startof_mnRowOffset + tableInfo.mnRowOffset)) / tableInfo.mnRowSize;
+    return [tableInfo, rowIndex];
+  }
+
+  function getRowFromPosition(position: number): any {
+    const [tableIndex, rowIndex] = getTableAndRowIndicesFromPosition(position);
     return getRowFromIndicies(tableIndex, rowIndex);
   }
 
+  // fun fact: code below this line was written on an airplane
+
+  // FIXME: Very verbose and involved for no reason, just do the bit math
+  const intConverterBuffer = Buffer.alloc(4);
+  const intConverterEncoder = new BinaryEncoder(intConverterBuffer);
+  const intConverterDecoder = new BinaryDecoder(intConverterBuffer);
   function toSignedInt32(uint32: number): number {
-    // TODO:
+    intConverterEncoder.seek(0);
+    intConverterEncoder.uint32(uint32);
+    intConverterDecoder.seek(0);
+    return intConverterDecoder.int32();
   }
 
-  function unpackNodeAndChildren(packedNode: PackedXmlNode, position: number): XmlNode {
-    // TODO:
+  function getText(stringRefPosition: number): string {
+    // FIXME: readUntilFalsey?
+    const stringRef: DataOffsetObject = getRowFromPosition(stringRefPosition);
+    const stringStart = stringRefPosition + stringRef.mDataOffset;
+    decoder.seek(stringStart);
+    return decoder.string();
   }
 
-  function unpackChildren() {
+  function unpackNodeAndChildren(position: number): XmlNode {
+    const [tableIndex, rowIndex] = getTableAndRowIndicesFromPosition(position);
+    const row: PackedXmlNode = getRowFromIndicies(tableIndex, rowIndex);
 
+    let tag: string;
+    const textOffset = toSignedInt32(row.text);
+    if (textOffset !== RELOFFSET_NULL)
+      tag = getText(position + textOffset);
+
+    const childIndex = row.children.mDataOffset;
+
+    let attributes: { [key: string]: string; };
+    let attrsPosition = row.attrs.mDataOffset;
+    if (attrsPosition !== RELOFFSET_NULL) {
+      attributes = {};
+      const startOfTable = tableDataOffsets[tableIndex];
+      const rowOffset = (rowIndex * binaryModel.mTable[tableIndex].mnRowSize);
+      attrsPosition += startOfTable + rowOffset + 4; // 4 for text value, uint32
+      const [, firstAttrIndex] = getTableAndRowIndicesFromPosition(attrsPosition);
+      readUntilFalsey<DataOffsetObject>(
+        attributeRefsTable.mValue,
+        firstAttrIndex,
+        value => value.mDataOffset !== RELOFFSET_NULL
+      ).forEach(({ mDataOffset }) => {
+        // TODO: get actual attribute data and add to attributes obj
+      });
+    }
+
+    if ((childIndex === RELOFFSET_NULL) && !attributes) {
+      if (rowIndex < first_element.mDataOffset) { // FIXME: < or <= ?
+        return new XmlValueNode(tag);
+      } else {
+        return new XmlElementNode({ tag });
+      }
+    } else {
+      return new XmlElementNode({
+        tag,
+        children: unpackChildren(childIndex),
+        attributes
+      });
+    }
+  }
+
+  function unpackChildren(childIndex: number): XmlNode[] {
+    // TODO:
   }
 
   return;
