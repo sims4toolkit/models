@@ -1,9 +1,7 @@
-import { BinaryEncoder, BinaryDecoder } from "@s4tk/encoding";
+import { BinaryDecoder } from "@s4tk/encoding";
 import { XmlDocumentNode, XmlElementNode, XmlNode, XmlValueNode } from "@s4tk/xml-dom";
 import { readUntilFalsey } from "../../../common/helpers";
-import { XmlExtractionOptions } from "../../../common/options";
 import { BinaryDataResourceDto } from "../../abstracts/data-resource";
-import XmlResource from "../../xml/xml-resource";
 
 //#region Types & Interfaces
 
@@ -32,8 +30,6 @@ type CombinedTuningTables = [
     mValue: string[];
   }
 ];
-
-type TableRowIndices = [number, number];
 
 interface DataOffsetObject {
   /** Index from which relative offset is defined. */
