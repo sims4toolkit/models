@@ -104,8 +104,6 @@ export default class CombinedTuningResource extends DataResource {
     return promisify(() => this.extractTuning(buffer, options));
   }
 
-  // TODO: index tuning
-
   //#endregion Static Methods
 
   //#region Unsupported Methods
