@@ -5,86 +5,138 @@ import { XmlExtractionOptions } from "../../../common/options";
 import { BinaryDataResourceDto } from "../../abstracts/data-resource";
 import XmlResource from "../../xml/xml-resource";
 
-/*
-' SCUMBUMBO'S NOTES FROM XML EXTRACTOR:
-'
-' Table 0 stores the basic info for the packed xml document
-' Table 1 stores a list of nodes
-'    - nodes prior to the the first_element are text
-'    - the remaining nodes are xml tags
-'    - mValue(0) = offset into child nodes (table 3)
-'    - mValue(1) = row number to get text (via table 5)
-'    - mValue(2) = offset into attribute nodes (table 4)
-' Table 2 stores a list of row numbers storing attribute value,name pairs (via table 5)
-' Table 3 stores a list of child nodes
-'    - these are offsets back into table 1
-'    - a RELOFFSET_NULL offset indicates the end of this node's children
-' Table 4 stores a list of attributes
-'    - these are offsets into table 2
-'    - a RELOFFSET_NULL offset indicates the end of this node's attributes
-' Table 5 stores a list of offsets pointing to the actual string data (table 6)
-' Table 6 stores a list of null terminated strings
-'
-' Offsets are not calculated from a fixed position, but are offsets
-' from the current file position.
-*/
+//#region Types & Interfaces
 
-//#region Interfaces
+const RELOFFSET_NULL = -0x80000000;
+
+type CombinedTuningTables = [
+  { // 0 - meta data
+    mRow: PackedXmlDocument[];
+  },
+  { // 1 - nodes
+    mRow: PackedXmlNode[];
+  },
+  { // 2 - attrs
+    mRow: PackedXmlAttributes[];
+  },
+  { // 3 - node refs
+    mValue: DataOffsetObject[];
+  },
+  { // 4 - attr refs
+    mValue: DataOffsetObject[];
+  },
+  { // 5 - string refs
+    mValue: DataOffsetObject[];
+  },
+  { // 6 - characters
+    mValue: string[];
+  }
+];
+
+type TableRowIndices = [number, number];
 
 interface DataOffsetObject {
+  /** Index from which relative offset is defined. */
+  startof_mDataOffset: number; // uint32
+
+  /** Relative offset to data. */
   mDataOffset: number; // int32
 }
 
-interface PackedXmlNode {
-  /** Reference to text for node. Relative offset into table 5. */
-  text: number; // uint32, but parse as int32
+interface PackedXmlDocument {
+  /** Offset to first node that is an element. All nodes before it are text. */
+  first_element: DataOffsetObject;
 
-  /** Reference for attrs of node. Relative offset into table 4. */
+  /** Offset to element node that is at the top of the tree. */
+  top_element: DataOffsetObject;
+
+  /** Number of element nodes. */
+  element_count: DataOffsetObject;
+
+  /** Offset to string table. */
+  string_table: {
+    startof_mDataOffset: number;
+    mDataOffset: number;
+    mCount: number;
+  };
+}
+
+interface PackedXmlNode {
+  /** Index of string in table 5. */
+  text: number; // uint32
+
+  /** Offset to first attr pair in table 4. */
   attrs: DataOffsetObject;
 
-  /** Reference for children of node. Fixed index in table 3. */
+  /** Offset to first child node in table 3. */
   children: DataOffsetObject;
 }
 
 interface PackedXmlAttributes {
-  /** Reference to string for attr value. Fixed index in table 5.  */
+  /** Index of string in table 5.  */
   value: number; // uint32
 
-  /** Reference to string for attr name. Fixed index in table 5.  */
+  /** Index of string in table 5.  */
   name: number; // uint32
 }
 
-//#endregion Interfaces
+//#endregion Types & Interfaces
+
+//#region Helpers
 
 /**
- * TODO:
+ * Returns true if the given ref is null.
  * 
- * @param binaryModel TODO:
- * @param buffer TODO:
+ * @param ref Object to check if null
+ */
+function isNull(ref: DataOffsetObject): boolean {
+  return ref.mDataOffset === RELOFFSET_NULL;
+}
+
+/**
+ * Returns an absolute position from a relative offset object. If the offset
+ * if RELOFFSET_NULL, then RELOFFSET_NULL is returned.
+ * 
+ * @param ref Object to get position of
+ */
+function getPosition(ref: DataOffsetObject): number {
+  if (isNull(ref)) return RELOFFSET_NULL;
+  return ref.mDataOffset + ref.startof_mDataOffset;
+}
+
+//#endregion Helpers
+
+/**
+ * Converts a binary DATA model into combined tuning XML.
+ * 
+ * @param binaryModel Parsed binary model
+ * @param buffer Original buffer containing the binary data
  */
 export default function convertCombinedBinaryToXml(
   binaryModel: BinaryDataResourceDto,
   buffer: Buffer,
 ): XmlDocumentNode {
+  //#region Variables
+
   const decoder = new BinaryDecoder(buffer);
-  const RELOFFSET_NULL = -0x80000000; // sometimes it'll be positive
 
   const [
-    metaDataTable,         // 0 - meta data
-    nodeObjectsTable,      // 1 - actual node objects
-    attributeObjectsTable, // 2 - actual attributes data
-    nodeRefsTable,         // 3 - offsets to node objects (for listing)
-    attributeRefsTable,    // 4 - offsets to attribute objects (for listing)
-    stringRefsTable,       // 5 - offsets to null-terminated strings (for listing)
-    stringObjectsTable     // 6 - actual null-terminated strings
-  ] = binaryModel.mTableData;
+    metaTable,
+    nodeTable,
+    attrTable,
+    nodeRefsTable,
+    attrRefsTable,
+    stringRefsTable,
+    // intentionally excluding string table
+  ] = binaryModel.mTableData as CombinedTuningTables;
 
   const {
-    first_element, // index in table 1 (nodeObjectsTable)
-    top_element,   // ?
-    element_count, // ?
-    string_table   // ?
-  } = metaDataTable.mRow[0];
+    first_element,
+    top_element,
+    // intentionally excluding element_count & string_table
+  } = metaTable.mRow[0];
+
+  const firstElementPosition = getPosition(first_element);
 
   // maps table indices to their starting index
   const tableDataOffsets: number[] = [];
@@ -94,111 +146,79 @@ export default function convertCombinedBinaryToXml(
     tableDataOffsets.push(position + padding);
   });
 
-  // maps indices from table 1 into actual XML nodes
-  const xmlNodes: Map<number, XmlNode> = new Map();
+  //#endregion Variables
 
-  function getTableIndexFromPosition(position: number): number {
-    for (let i = 0; i < binaryModel.mTable.length; i++) {
-      const tableStart = tableDataOffsets[i];
-      if (tableStart <= position) {
-        const { mnRowCount, mnRowSize } = binaryModel.mTable[i];
-        const tableEnd = tableStart + (mnRowCount * mnRowSize);
-        if (position < tableEnd) return i;
-      }
-    }
+  //#region Functions
 
-    throw new Error(`Unable to identify table from position: ${position}`);
-  }
-
-  function getRowFromIndicies(tableIndex: number, rowIndex: number): any {
+  function rowIndexAt(position: number, tableIndex: number) {
+    const tableStart = tableDataOffsets[tableIndex];
     const tableInfo = binaryModel.mTable[tableIndex];
-    const tableData = binaryModel.mTableData[tableIndex];
-    if (tableInfo.mnSchemaOffset === RELOFFSET_NULL) {
-      return tableData.mValue[rowIndex];
-    } else {
-      return tableData.mRow[rowIndex];
-    }
+    return (position - tableStart) / tableInfo.mnRowSize;
   }
 
-  function getTableAndRowIndicesFromPosition(position: number): any {
-    const tableIndex = getTableIndexFromPosition(position);
-    const tableInfo = binaryModel.mTable[tableIndex];
-    const rowIndex = (position - (tableInfo.startof_mnRowOffset + tableInfo.mnRowOffset)) / tableInfo.mnRowSize;
-    return [tableInfo, rowIndex];
+  function getText(textRow: number): string {
+    const textRef = stringRefsTable.mValue[textRow];
+    return decoder.savePos<string>(() => {
+      decoder.seek(getPosition(textRef));
+      return decoder.string();
+    });
   }
 
-  function getRowFromPosition(position: number): any {
-    const [tableIndex, rowIndex] = getTableAndRowIndicesFromPosition(position);
-    return getRowFromIndicies(tableIndex, rowIndex);
+  function getAttributes(firstAttrPosition: number): { [key: string]: string; } {
+    const result: { [key: string]: string; } = {};
+
+    readUntilFalsey(
+      attrRefsTable.mValue,
+      rowIndexAt(firstAttrPosition, 4),
+      ref => !isNull(ref)
+    ).forEach(attrData => {
+      const attrPosition = getPosition(attrData);
+      const rowIndex = rowIndexAt(attrPosition, 2);
+      const { name, value } = attrTable.mRow[rowIndex];
+      result[getText(name)] = getText(value);
+    });
+
+    return result;
   }
 
-  // fun fact: code below this line was written on an airplane
-
-  // FIXME: Very verbose and involved for no reason, just do the bit math
-  const intConverterBuffer = Buffer.alloc(4);
-  const intConverterEncoder = new BinaryEncoder(intConverterBuffer);
-  const intConverterDecoder = new BinaryDecoder(intConverterBuffer);
-  function toSignedInt32(uint32: number): number {
-    intConverterEncoder.seek(0);
-    intConverterEncoder.uint32(uint32);
-    intConverterDecoder.seek(0);
-    return intConverterDecoder.int32();
+  function readChildren(firstChildPosition: number): XmlNode[] {
+    return readUntilFalsey(
+      nodeRefsTable.mValue,
+      rowIndexAt(firstChildPosition, 3),
+      ref => !isNull(ref)
+    ).map(childData => {
+      const childPosition = getPosition(childData);
+      return readNodeAndChildren(childPosition);
+    });
   }
 
-  function getText(stringRefPosition: number): string {
-    // FIXME: readUntilFalsey?
-    const stringRef: DataOffsetObject = getRowFromPosition(stringRefPosition);
-    const stringStart = stringRefPosition + stringRef.mDataOffset;
-    decoder.seek(stringStart);
-    return decoder.string();
-  }
+  function readNodeAndChildren(position: number): XmlNode {
+    let nodeData = nodeTable.mRow[rowIndexAt(position, 1)];
+    let text = getText(nodeData.text);
 
-  function unpackNodeAndChildren(position: number): XmlNode {
-    const [tableIndex, rowIndex] = getTableAndRowIndicesFromPosition(position);
-    const row: PackedXmlNode = getRowFromIndicies(tableIndex, rowIndex);
-
-    let tag: string;
-    const textOffset = toSignedInt32(row.text);
-    if (textOffset !== RELOFFSET_NULL)
-      tag = getText(position + textOffset);
-
-    const childIndex = row.children.mDataOffset;
-
-    let attributes: { [key: string]: string; };
-    let attrsPosition = row.attrs.mDataOffset;
-    if (attrsPosition !== RELOFFSET_NULL) {
-      attributes = {};
-      const startOfTable = tableDataOffsets[tableIndex];
-      const rowOffset = (rowIndex * binaryModel.mTable[tableIndex].mnRowSize);
-      attrsPosition += startOfTable + rowOffset + 4; // 4 for text value, uint32
-      const [, firstAttrIndex] = getTableAndRowIndicesFromPosition(attrsPosition);
-      readUntilFalsey<DataOffsetObject>(
-        attributeRefsTable.mValue,
-        firstAttrIndex,
-        value => value.mDataOffset !== RELOFFSET_NULL
-      ).forEach(({ mDataOffset }) => {
-        // TODO: get actual attribute data and add to attributes obj
-      });
+    if (isNull(nodeData.attrs) && isNull(nodeData.children)) {
+      return position < firstElementPosition
+        ? new XmlValueNode(text)
+        : new XmlElementNode({ tag: text });
     }
 
-    if ((childIndex === RELOFFSET_NULL) && !attributes) {
-      if (rowIndex < first_element.mDataOffset) { // FIXME: < or <= ?
-        return new XmlValueNode(tag);
-      } else {
-        return new XmlElementNode({ tag });
-      }
-    } else {
-      return new XmlElementNode({
-        tag,
-        children: unpackChildren(childIndex),
-        attributes
-      });
-    }
+    const nodeArguments: {
+      tag: string;
+      attributes?: { [key: string]: string; };
+      children?: XmlNode[];
+    } = { tag: text };
+
+    if (!isNull(nodeData.attrs))
+      nodeArguments.attributes = getAttributes(getPosition(nodeData.attrs));
+
+    if (!isNull(nodeData.attrs))
+      nodeArguments.children = readChildren(getPosition(nodeData.children));
+
+    return new XmlElementNode(nodeArguments);
   }
 
-  function unpackChildren(childIndex: number): XmlNode[] {
-    // TODO:
-  }
+  //#endregion Functions
 
-  return;
+  const root = readNodeAndChildren(getPosition(top_element));
+  return new XmlDocumentNode(root);
 }

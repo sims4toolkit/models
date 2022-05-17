@@ -224,13 +224,15 @@ function readData(buffer: Buffer, options?: BinaryFileReadingOptions): BinaryDat
 
   function structString() {
     return {
-      mDataOffset: decoder.uint32()
+      startof_mDataOffset: decoder.tell(),
+      mDataOffset: decoder.int32() // unsigned in BT
     };
   }
 
   function structHashedString() {
     return {
-      mDataOffset: decoder.uint32(),
+      startof_mDataOffset: decoder.tell(),
+      mDataOffset: decoder.int32(), // unsigned in BT
       mHash: decoder.uint32()
     };
   }
@@ -251,7 +253,8 @@ function readData(buffer: Buffer, options?: BinaryFileReadingOptions): BinaryDat
 
   function structObjectRef() {
     return {
-      mDataOffset: decoder.uint32()
+      startof_mDataOffset: decoder.tell(),
+      mDataOffset: decoder.int32() // unsigned in BT
     };
   }
 
@@ -263,13 +266,15 @@ function readData(buffer: Buffer, options?: BinaryFileReadingOptions): BinaryDat
 
   function structVector() {
     return {
-      mDataOffset: decoder.uint32(),
+      startof_mDataOffset: decoder.tell(),
+      mDataOffset: decoder.int32(), // unsigned in BT
       mCount: decoder.uint32()
     };
   }
 
   function structVariant() {
     return {
+      startof_mDataOffset: decoder.tell(),
       mDataOffset: decoder.int32(),
       mTypeHash: decoder.uint32()
     };
@@ -387,7 +392,7 @@ function readData(buffer: Buffer, options?: BinaryFileReadingOptions): BinaryDat
   const mTableData: BinaryTableData[] = [];
   for (i = 0; i < mnNumTables; ++i) {
     seekToAlignment(15);
-    seekToAlignment(mTable[i].mnRowSize - 1);
+    // seekToAlignment(mTable[i].mnRowSize - 1); // HACK: breaks combined tuning
 
     const tableData: BinaryTableData = {};
     if (mTable[i].mnSchemaOffset === RELOFFSET_NULL) {
