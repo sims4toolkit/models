@@ -10,13 +10,14 @@ import convertCombinedBinaryToXml from "./serialization/binary-to-xml";
 import extractTuningFromCombinedXml from "./serialization/extract-tuning";
 
 /**
- * TODO:
+ * Read-only model for combined tuning resources.
  */
 export default class CombinedTuningResource extends DataResource {
   /**
-   * TODO:
+   * Creates a new CombinedTuningResource from the given XML DOM.
    * 
-   * @param options TODO:
+   * @param dom DOM to use for this Combined Tuning resource
+   * @param options Object of options
    */
   constructor(
     public readonly dom: XmlDocumentNode,
@@ -39,14 +40,14 @@ export default class CombinedTuningResource extends DataResource {
     buffer: Buffer,
     options?: WritableModelFromOptions
   ): CombinedTuningResource {
-    if (bufferContainsDATA(buffer)) {
-      const binaryModel = DataResource._readBinaryDataModel(buffer, options);
-      var dom = convertCombinedBinaryToXml(binaryModel, buffer);
-    } else {
-      var dom = XmlDocumentNode.from(buffer);
-    }
-
-    return new CombinedTuningResource(dom);
+    return new CombinedTuningResource(
+      bufferContainsDATA(buffer)
+        ? convertCombinedBinaryToXml(
+          DataResource._readBinaryDataModel(buffer, options),
+          buffer
+        )
+        : XmlDocumentNode.from(buffer)
+    );
   }
 
   /**
@@ -77,14 +78,15 @@ export default class CombinedTuningResource extends DataResource {
     buffer: Buffer,
     options?: XmlExtractionOptions
   ): XmlResource[] {
-    if (bufferContainsDATA(buffer)) {
-      const binaryModel = DataResource._readBinaryDataModel(buffer);
-      var dom = convertCombinedBinaryToXml(binaryModel, buffer);
-    } else {
-      var dom = XmlDocumentNode.from(buffer);
-    }
-
-    return extractTuningFromCombinedXml(dom, options);
+    return extractTuningFromCombinedXml(
+      bufferContainsDATA(buffer)
+        ? convertCombinedBinaryToXml(
+          DataResource._readBinaryDataModel(buffer),
+          buffer
+        )
+        : XmlDocumentNode.from(buffer),
+      options
+    );
   }
 
   /**

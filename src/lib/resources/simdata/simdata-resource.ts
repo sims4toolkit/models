@@ -17,8 +17,8 @@ export interface SimDataResourceCreationOptions extends
   SimDataDto { };
 
 /**
- * Model for SimData resources. While combined tuning is the same format, it is
- * NOT supported by this model at this time.
+ * Model for SimData resources. While combined tuning is the same binary format,
+ * it is not supported by this model (use CombinedTuningResource instead).
  * 
  * SimDatas are mini relational databases, and to simplify working with them
  * (and for consistency with its XML format), this model uses the concept of
