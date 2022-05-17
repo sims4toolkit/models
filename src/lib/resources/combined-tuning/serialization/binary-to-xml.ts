@@ -211,7 +211,7 @@ export default function convertCombinedBinaryToXml(
     if (!isNull(nodeData.attrs))
       nodeArguments.attributes = getAttributes(getPosition(nodeData.attrs));
 
-    if (!isNull(nodeData.attrs))
+    if (!isNull(nodeData.children))
       nodeArguments.children = readChildren(getPosition(nodeData.children));
 
     return new XmlElementNode(nodeArguments);
