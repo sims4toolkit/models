@@ -10,7 +10,7 @@ import XmlResource from "../../xml/xml-resource";
  */
 export default function extractTuningFromCombinedXml(
   dom: XmlDocumentNode,
-  options?: XmlExtractionOptions // TODO: actually use these
+  options?: XmlExtractionOptions
 ): XmlResource[] {
   const root = dom.child;
   if (root.tag !== "combined")
@@ -51,9 +51,16 @@ export default function extractTuningFromCombinedXml(
   const extractedTuning: XmlResource[] = [];
   root.children.filter(child => child.tag === "R").forEach(resTypeNode => {
     const resType = resTypeNode.name;
-    if (!resType) throw new Error(`Expected <R> node to have an "n" attribute.`);
-    const resources = resTypeNode.children.map(node =>
+    if (!resType)
+      throw new Error(`Expected <R> node to have an "n" attribute.`);
+
+    const docRoots = options?.filter
+      ? resTypeNode.children.filter(options.filter)
+      : resTypeNode.children;
+
+    const resources = docRoots.map(node =>
       new XmlResource(new XmlDocumentNode(resolveNode(node))));
+
     extractedTuning.push(...resources);
   });
 

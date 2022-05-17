@@ -1,6 +1,7 @@
 import { BinaryDecoder } from "@s4tk/encoding";
 import { XmlDocumentNode, XmlElementNode, XmlNode, XmlValueNode } from "@s4tk/xml-dom";
 import { readUntilFalsey } from "../../../common/helpers";
+import { XmlExtractionOptions } from "../../../common/options";
 import { BinaryDataResourceDto } from "../../abstracts/data-resource";
 
 //#region Types & Interfaces
@@ -111,6 +112,7 @@ function getPosition(ref: DataOffsetObject): number {
 export default function convertCombinedBinaryToXml(
   binaryModel: BinaryDataResourceDto,
   buffer: Buffer,
+  options?: XmlExtractionOptions
 ): XmlDocumentNode {
   //#region Variables
 
@@ -193,9 +195,14 @@ export default function convertCombinedBinaryToXml(
     let text = getText(nodeData.text);
 
     if (isNull(nodeData.attrs) && isNull(nodeData.children)) {
-      return position < firstElementPosition
-        ? new XmlValueNode(text)
-        : new XmlElementNode({ tag: text });
+      if (position >= firstElementPosition)
+        return new XmlElementNode({ tag: text });
+
+      if (options?.commentMap?.has(text))
+        // FIXME: use an actual comment node
+        text += `<!--${options.commentMap.get(text)}-->`;
+
+      return new XmlValueNode(text);
     }
 
     const nodeArguments: {

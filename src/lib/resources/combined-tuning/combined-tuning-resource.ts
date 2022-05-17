@@ -82,7 +82,8 @@ export default class CombinedTuningResource extends DataResource {
       bufferContainsDATA(buffer)
         ? convertCombinedBinaryToXml(
           DataResource._readBinaryDataModel(buffer),
-          buffer
+          buffer,
+          options
         )
         : XmlDocumentNode.from(buffer),
       options
