@@ -11,6 +11,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add `XmlExtractionOptions` for use with CombinedTuningResource.
 - Add `BinaryResourceType.DdsImage`.
 - Add `EncodingType.DDS`.
+- Add `all()` and `getInstanceBase()` functions to StringTableLocale enum.
+- Add generics to Package.extractResources for better intellisense when using filters.
 ### Changed
 - RawResource now inherits from StaticResource.
 - SimDataResource now inherits from DataResource.

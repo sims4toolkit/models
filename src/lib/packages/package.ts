@@ -50,8 +50,8 @@ export default class Package extends MappedModel<ResourceKey, Resource, Resource
    * @param buffer Buffer to extract resources from
    * @param options Options for reading and cacheing the resources
    */
-  static extractResources(buffer: Buffer, options?: PackageFileReadingOptions): ResourceKeyPair[] {
-    return readDbpf(buffer, options);
+  static extractResources<T extends Resource = Resource>(buffer: Buffer, options?: PackageFileReadingOptions): ResourceKeyPair<T>[] {
+    return readDbpf(buffer, options) as ResourceKeyPair<T>[];
   }
 
   /**
@@ -61,8 +61,8 @@ export default class Package extends MappedModel<ResourceKey, Resource, Resource
    * @param buffer Buffer to extract resources from
    * @param options Options for reading and cacheing the resources
    */
-  static async extractResourcesAsync(buffer: Buffer, options?: PackageFileReadingOptions): Promise<ResourceKeyPair[]> {
-    return promisify(() => Package.extractResources(buffer, options));
+  static async extractResourcesAsync<T extends Resource = Resource>(buffer: Buffer, options?: PackageFileReadingOptions): Promise<ResourceKeyPair<T>[]> {
+    return promisify(() => Package.extractResources<T>(buffer, options));
   }
 
   //#endregion Initialization

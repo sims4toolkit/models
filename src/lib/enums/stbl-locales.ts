@@ -24,13 +24,21 @@ enum StringTableLocale {
 
 namespace StringTableLocale {
   /**
+   * Returns an array of all string table locales.
+   */
+  export function all(): StringTableLocale[] {
+    return Object.values(StringTableLocale)
+      .filter(value => typeof value === "number") as StringTableLocale[];
+  }
+
+  /**
    * Sets the high byte on the instance to the value for the given locale.
    * 
    * @param locale Locale to set on instance
    * @param instance Instance to set locale for
    */
   export function setHighByte(locale: StringTableLocale, instance: bigint): bigint {
-   return (instance & 0x00FFFFFFFFFFFFFFn) | BigInt(locale) << 56n;
+    return StringTableLocale.getInstanceBase(instance) | BigInt(locale) << 56n;
   }
 
   /**
@@ -40,6 +48,15 @@ namespace StringTableLocale {
    */
   export function getLocale(instance: bigint): StringTableLocale {
     return Number(instance >> 56n);
+  }
+
+  /**
+   * Removes the locale code from the given instance and returns the result.
+   * 
+   * @param instance Instance to get base from
+   */
+  export function getInstanceBase(instance: bigint): bigint {
+    return instance & 0xFFFFFFFFFFFFFFn;
   }
 }
 
