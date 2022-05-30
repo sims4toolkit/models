@@ -19,6 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - RawResource now inherits from StaticResource.
 - SimDataResource now inherits from DataResource.
+- All MappedModelEntry objects now keep track of their own ID.
 
 ## [0.3.0] - 2022/04/26
 ### Changed

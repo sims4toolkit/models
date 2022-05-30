@@ -15,6 +15,7 @@ export default class ResourceEntry<ResourceType extends Resource = Resource>
   extends ApiModelBase implements MappedModelEntry<ResourceKey, ResourceType> {
 
   public owner?: Package<ResourceType>;
+  readonly id: number;
   private _key: ResourceKey;
   private _resource: ResourceType;
 

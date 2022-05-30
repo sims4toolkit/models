@@ -100,30 +100,25 @@ export default class StringTableResource extends PrimitiveMappedModel<string, St
     return arraysAreEqual(this.entries, other?.entries);
   }
 
+  isXml(): boolean {
+    return false;
+  }
+
   /**
    * Returns a list of entries for this STBL for writing to a JSON.
    * 
    * @param useId Whether or not to add a unique ID to each entry
    */
-  getJsonEntries(useId = false): {
+  toJsonObject(useId = false): {
     key: string;
     value: string;
     id?: number;
   }[] {
-    return this.entries.map((entry, id) => {
-      const result: any = {
-        key: formatStringKey(entry.key),
-        value: entry.value,
-      };
-
+    return this.entries.map(({ id, key, value }) => {
+      const result: any = { key, value };
       if (useId) result.id = id;
-
       return result
     });
-  }
-
-  isXml(): boolean {
-    return false;
   }
 
   //#endregion Public Methods
