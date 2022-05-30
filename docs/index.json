@@ -68,8 +68,8 @@
         "DataResource",
         "MappedModel",
         "MappedModelEntry",
-        "WritableModel",
-        "StaticResource"
+        "StaticResource",
+        "WritableModel"
       ]
     },
     {
