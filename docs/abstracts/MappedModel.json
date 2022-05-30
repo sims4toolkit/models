@@ -326,5 +326,25 @@
         }
       ]
     }
-  ]
+  ],
+  "footer": {
+    "seeAlso": [
+      {
+        "name": "Package",
+        "path": {
+          "pkg": "models",
+          "group": "packages",
+          "item": "Package"
+        }
+      },
+      {
+        "name": "StringTableResource",
+        "path": {
+          "pkg": "models",
+          "group": "resources",
+          "item": "StringTableResource"
+        }
+      }
+    ]
+  }
 }
