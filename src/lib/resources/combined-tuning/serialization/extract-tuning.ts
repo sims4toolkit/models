@@ -42,6 +42,7 @@ export default function extractTuningFromCombinedXml(
         }
       });
     } else if (options?.commentMap?.has(node.value as string)) {
+      // FIXME: this should use an actual comment node rather than change value
       node.value = node.value + "<!--" + options.commentMap.get(node.value as string) + "-->";
     }
 
