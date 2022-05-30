@@ -18,6 +18,7 @@
     {
       "name": "resources",
       "items": [
+        "CombinedTuningResource",
         "RawResource",
         "SimDataResource",
         "StringTableResource",
@@ -94,6 +95,7 @@
         "StringEntry",
         "WritableModelCreationOptions",
         "WritableModelFromOptions",
+        "XmlExtractionOptions",
         "XmlResourceFromOptions"
       ]
     }
