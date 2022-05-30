@@ -26,20 +26,24 @@ export default function extractTuningFromCombinedXml(
   });
 
   function resolveNode(node: XmlNode): XmlNode {
-    node.children?.forEach((child, i) => {
-      if (child.tag === "r") {
-        let ref = nodeIndex.get(child.attributes.x);
+    if (node.hasChildren) {
+      node.children.forEach((child, i) => {
+        if (child.tag === "r") {
+          let ref = nodeIndex.get(child.attributes.x);
 
-        if (child.name) {
-          ref = ref.clone();
-          ref.name = child.name;
+          if (child.name) {
+            ref = ref.clone();
+            ref.name = child.name;
+          }
+
+          node.children[i] = ref;
+        } else {
+          resolveNode(child);
         }
-
-        node.children[i] = ref;
-      } else {
-        resolveNode(child);
-      }
-    });
+      });
+    } else if (options?.commentMap?.has(node.value as string)) {
+      node.value = node.value + "<!--" + options.commentMap.get(node.value as string) + "-->";
+    }
 
     return node;
   }

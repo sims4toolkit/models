@@ -198,9 +198,7 @@ export default function convertCombinedBinaryToXml(
       if (position >= firstElementPosition)
         return new XmlElementNode({ tag: text });
 
-      if (options?.commentMap?.has(text))
-        // FIXME: use an actual comment node
-        text += `<!--${options.commentMap.get(text)}-->`;
+      // comment mapping is done in extract-tuning.ts
 
       return new XmlValueNode(text);
     }
