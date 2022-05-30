@@ -19,7 +19,7 @@
         }
       ]
     },
-    "description": "Read-only model for combined tuning resources. Note that much of the functionality expected of a Resource is not implemented on this model. It should only be used for extract tuning from the game, writing this model is not supported.",
+    "description": "Read-only model for combined tuning resources.\n\nNote that resource keys are NOT specified in combined tuning - you must infer the type from the R node's n attribute, and the group will match that of the CombinedTuning that contains the resource.\n\nAlso note that much of the functionality expected of a Resource is not implemented on this model. It should only be used for extract tuning from the game, writing this model is not supported.",
     "sourceCode": "src/lib/resources/combined-tuning/combined-tuning-resource.ts"
   },
   "sections": [

@@ -10,7 +10,10 @@ import convertCombinedBinaryToXml from "./serialization/binary-to-xml";
 import extractTuningFromCombinedXml from "./serialization/extract-tuning";
 
 /**
- * Read-only model for combined tuning resources.
+ * Read-only model for combined tuning resources. Note that resource keys are
+ * NOT specified in combined tuning - you must infer the type from the `R`
+ * node's `n` attribute, and the group will match that of the CombinedTuning
+ * that contains the resource.
  */
 export default class CombinedTuningResource extends DataResource {
   /**
