@@ -37,6 +37,15 @@
         },
         {
           "displayType": "property",
+          "prefix": "readonly",
+          "name": "id",
+          "description": "Unique identifier for this entry within its model.",
+          "type": {
+            "name": "number"
+          }
+        },
+        {
+          "displayType": "property",
           "prefix": "get, set",
           "name": "key",
           "description": "The key for this entry.",
