@@ -53,13 +53,49 @@ describe("CombinedTuningResource", () => {
     context("binary buffer", () => {
       const getCb = () => CombinedTuningResource.from(binaryBuffer);
 
-      // TODO:
+      it("should extract the right number of resources", () => {
+        // TODO:
+      });
+
+      it("should extract the resources correctly", () => {
+        // TODO:
+      });
+
+      it("should restore string comments if provided a map", () => {
+        // TODO:
+      });
+
+      it("should restore tuning ID comments if provided a map", () => {
+        // TODO:
+      });
+
+      it("should filter which resources are read if given a filter fn", () => {
+        // TODO:
+      });
     });
 
     context("xml buffer", () => {
       const getCb = () => CombinedTuningResource.from(xmlBuffer);
 
-      // TODO:
+      it("should extract the right number of resources", () => {
+        // TODO:
+      });
+
+      it("should extract the resources correctly", () => {
+        // TODO:
+      });
+
+      it("should restore string comments if provided a map", () => {
+        // TODO:
+      });
+
+      it("should restore tuning ID comments if provided a map", () => {
+        // TODO:
+      });
+
+      it("should filter which resources are read if given a filter fn", () => {
+        // TODO:
+      });
     });
   });
 
