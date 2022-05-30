@@ -286,6 +286,17 @@ export abstract class MappedModel<Key, Value, Entry extends MappedModelEntry<Key
   }
 
   /**
+   * Replaces the entries in this model with the given list. Note that new IDs
+   * will be generated for every entry.
+   * 
+   * @param entries New entries to use
+   */
+  replaceEntries(entries: Entry[]) {
+    this.clear();
+    this.addAll(entries);
+  }
+
+  /**
    * Resets the `entries` property of this model, so that a new array will be
    * created the next time it is used.
    */

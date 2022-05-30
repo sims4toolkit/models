@@ -13,6 +13,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add `EncodingType.DDS`.
 - Add `all()` and `getInstanceBase()` functions to StringTableLocale enum.
 - Add generics to `Package` and `ResourceEntry` to ease typing.
+- Add `getJsonEntries()` method to StringTableResource.
+- Add `replaceEntries()` method to MappedModel.
+- TODO: Add `sort()` and `moveEntry()` methods to MappedModel.
 ### Changed
 - RawResource now inherits from StaticResource.
 - SimDataResource now inherits from DataResource.
