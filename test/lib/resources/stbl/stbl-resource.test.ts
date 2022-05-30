@@ -193,6 +193,16 @@ describe("StringTableResource", () => {
       const stbl = new StringTableResource();
       expect(stbl.hasBufferCache).to.be.false;
     });
+
+    it("should assign IDs to the entries that are created", () => {
+      const stbl = new StringTableResource([
+        { key: 123, value: "First" },
+        { key: 456, value: "Second" }
+      ]);
+
+      expect(stbl.entries[0].id).to.equal(0);
+      expect(stbl.entries[1].id).to.equal(1);
+    });
   });
 
   describe("static#from()", () => {
@@ -391,6 +401,12 @@ describe("StringTableResource", () => {
       expect(entries).to.equal(stbl.entries);
       stbl.add(123, "hi");
       expect(entries).to.not.equal(stbl.entries);
+    });
+
+    it("should assign an ID to the entry that is created", () => {
+      const stbl = new StringTableResource();
+      stbl.add(0x12345678, "test");
+      expect(stbl.entries[0].id).to.equal(0);
     });
   });
 
@@ -951,6 +967,94 @@ describe("StringTableResource", () => {
       const stbl = StringTableResource.from(original.getBuffer());
       expect(stbl).to.not.equal(original);
       expect(stbl.equals(original)).to.be.true;
+    });
+  });
+
+  describe("#toJsonObject()", () => {
+    it("should use hex keys by default", () => {
+      const stbl = getStbl("Normal");
+      const json = stbl.toJsonObject();
+      expect(json[0].key).to.be.a("string").that.equals("0x7E08629A");
+    });
+
+    it("should use number keys if specified", () => {
+      const stbl = getStbl("Normal");
+      const json = stbl.toJsonObject(false);
+      expect(json[0].key).to.be.a("number").that.equals(0x7E08629A);
+    });
+
+    it("should exclude IDs by default", () => {
+      const stbl = getStbl("Normal");
+      const json = stbl.toJsonObject();
+      expect(json[0].id).to.be.undefined;
+    });
+
+    it("should include IDs if specified", () => {
+      const stbl = getStbl("Normal");
+      const json = stbl.toJsonObject(null, true);
+      expect(json[0].id).to.be.a("number").that.equals(0);
+    });
+
+    it("should include all entries", () => {
+      const stbl = getStbl("Normal");
+      const json = stbl.toJsonObject(null, true);
+      expect(json).to.be.an("Array").with.lengthOf(3);
+      expect(json[0].value).to.equal("This is a string.");
+      expect(json[1].value).to.equal("This is another string!");
+      expect(json[2].value).to.equal("And this, this is a third.");
+    });
+
+    it("should not produce an array that mutates the model", () => {
+      const stbl = getStbl("Normal");
+      const json = stbl.toJsonObject(null, true);
+      json.push({
+        id: 3,
+        key: 0x12345678,
+        value: "test string"
+      });
+      expect(stbl.size).to.equal(3);
+      expect(stbl.get(3)).to.be.undefined;
+    });
+
+    it("should not produce entries that mutate the model", () => {
+      const stbl = getStbl("Normal");
+      const json = stbl.toJsonObject(null, true);
+      json[0].value = "Changed string.";
+      expect(stbl.entries[0].value).to.equal("This is a string.");
+    });
+  });
+
+  describe("#replaceEntries()", () => {
+    it("should regenerate the entries' IDs", () => {
+      const stbl = getStbl("Normal");
+      stbl.delete(1);
+      expect(stbl.get(2)).to.not.be.undefined;
+      stbl.replaceEntries(stbl.entries);
+      expect(stbl.get(2)).to.be.undefined;
+    });
+
+    it("should replace the existing entries", () => {
+      const stbl = getStbl("Normal");
+
+      stbl.replaceEntries([
+        {
+          key: 0x12345678,
+          value: "first"
+        }
+      ]);
+
+      expect(stbl.size).to.equal(1);
+      expect(stbl.get(0).key).to.equal(0x12345678);
+      expect(stbl.get(0).value).to.equal("first");
+    });
+
+    it("should disable mutation from the previous entries", () => {
+      const stbl = getStbl("Normal");
+      const previousFirst = stbl.get(0);
+      expect(previousFirst.key).to.equal(0x7E08629A);
+      stbl.replaceEntries(stbl.entries);
+      previousFirst.key = 0x12345678;
+      expect(stbl.get(0).key).to.equal(0x7E08629A);
     });
   });
 

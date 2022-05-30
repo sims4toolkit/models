@@ -3,9 +3,10 @@
  */
 enum EncodingType {
   Unknown = "Unknown",
-  XML = "XML",
   DATA = "DATA",
+  DDS = "DDS", // DST is a subtype of DDS
   STBL = "STBL",
+  XML = "XML",
 }
 
 // `export default enum` not supported by TS

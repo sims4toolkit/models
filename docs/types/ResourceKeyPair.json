@@ -6,7 +6,22 @@
   "header": {
     "title": {
       "prefix": "interface",
-      "name": "ResourceKeyPair"
+      "name": "ResourceKeyPair",
+      "generics": [
+        {
+          "name": "ResourceType",
+          "extends": [
+            {
+              "name": "Resource",
+              "path": {
+                "pkg": "models",
+                "group": "types",
+                "item": "Resource"
+              }
+            }
+          ]
+        }
+      ]
     },
     "description": "Pairing of a resource key and the resource it belongs to.",
     "sourceCode": "src/lib/packages/types.ts"
@@ -35,7 +50,7 @@
           "name": "value",
           "description": "The resource.",
           "type": {
-            "name": "Resource",
+            "name": "ResourceType",
             "path": {
               "pkg": "models",
               "group": "types",

@@ -160,7 +160,8 @@ namespace DataType {
     switch (dataType) {
       case DataType.Character:
         throw new Error(`Character values cannot be represented in S4S XML. If you are reading this error, please let me know about it ASAP (https://github.com/sims4toolkit/models/issues).`);
-      case DataType.Float: return "Single";
+      case DataType.Float:
+        return "Single";
       default:
         return DataType[dataType];
     }

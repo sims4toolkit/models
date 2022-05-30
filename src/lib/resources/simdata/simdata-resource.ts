@@ -1,14 +1,12 @@
 import { XmlDocumentNode, XmlElementNode, XmlNode } from "@s4tk/xml-dom";
 import { formatAsHexString } from "@s4tk/hashing/formatting";
-import Resource from "../resource";
+import DataResource from "../abstracts/data-resource";
 import { arraysAreEqual, promisify, removeFromArray } from "../../common/helpers";
 import { SimDataInstance, SimDataSchema } from "./fragments";
 import { SimDataDto } from "./types";
-import { SUPPORTED_VERSION } from "./constants";
-import readData from "./serialization/read-data";
-import writeData from "./serialization/write-data";
-import WritableModel, { WritableModelCreationOptions, WritableModelFromOptions } from "../../base/writable-model";
-import EncodingType from "../../enums/encoding-type";
+import readSimData from "./serialization/read-simdata";
+import writeSimData from "./serialization/write-simdata";
+import { WritableModelCreationOptions, WritableModelFromOptions } from "../../base/writable-model";
 import { CompressionType } from "@s4tk/compression";
 import ResourceRegistry from "../../packages/resource-registry";
 import BinaryResourceType from "../../enums/binary-resources";
@@ -19,15 +17,14 @@ export interface SimDataResourceCreationOptions extends
   SimDataDto { };
 
 /**
- * Model for SimData resources. While combined tuning is the same format, it is
- * NOT supported by this model at this time.
+ * Model for SimData resources. While combined tuning is the same binary format,
+ * it is not supported by this model (use CombinedTuningResource instead).
  * 
  * SimDatas are mini relational databases, and to simplify working with them
  * (and for consistency with its XML format), this model uses the concept of
  * "instances". An "instance" is an object cell that has a name.
  */
-export default class SimDataResource extends WritableModel implements Resource, SimDataDto {
-  readonly encodingType: EncodingType = EncodingType.DATA;
+export default class SimDataResource extends DataResource implements SimDataDto {
   public version: number;
   public unused: number;
   private _schemas: SimDataSchema[];
@@ -75,7 +72,7 @@ export default class SimDataResource extends WritableModel implements Resource, 
    */
   constructor(options?: SimDataResourceCreationOptions) {
     super(options);
-    this.version = options?.version ?? SUPPORTED_VERSION;
+    this.version = options?.version ?? DataResource.LATEST_VERSION;
     this.unused = options?.unused ?? 0;
     this.schemas = options?.schemas ?? [];
     this.instances = options?.instances ?? [];
@@ -91,7 +88,8 @@ export default class SimDataResource extends WritableModel implements Resource, 
    * @param options Object of optional arguments
    */
   static from(buffer: Buffer, options?: WritableModelFromOptions): SimDataResource {
-    const dto: SimDataResourceCreationOptions = readData(buffer, options);
+    const binaryModel = DataResource._readBinaryDataModel(buffer, options);
+    const dto: SimDataResourceCreationOptions = readSimData(binaryModel, buffer, options);
     dto.defaultCompressionType = options?.defaultCompressionType;
     dto.owner = options?.owner;
     if (options?.saveBuffer) dto.initialBufferCache = options.initialBufferCache ?? {
@@ -156,7 +154,7 @@ export default class SimDataResource extends WritableModel implements Resource, 
     const args: SimDataResourceCreationOptions = {};
 
     args.version = parseInt(dom.attributes.version, 16);
-    if (canThrow && (args.version < 0x100 || args.version > SUPPORTED_VERSION))
+    if (canThrow && (args.version < 0x100 || args.version > DataResource.LATEST_VERSION))
       throw new Error(`Received unexpected version number: ${args.version}`);
 
     args.unused = parseInt(dom.attributes.u, 16);
@@ -283,16 +281,12 @@ export default class SimDataResource extends WritableModel implements Resource, 
     return doc;
   }
 
-  isXml(): boolean {
-    return false;
-  }
-
   //#endregion Public Methods
 
   //#region Protected Methods
 
   protected _serialize(): Buffer {
-    return writeData(this);
+    return writeSimData(this);
   }
 
   //#endregion Protected Methods

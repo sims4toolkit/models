@@ -1,3 +1,5 @@
+import type { XmlNode } from "@s4tk/xml-dom";
+
 /**
  * Function that can be used to filter entries in a DBPF by their type, group,
  * and/or instance ID.
@@ -69,3 +71,15 @@ export interface PackageFileReadingOptions extends
      */
     resourceFilter: ResourceFilter;
   }> { };
+
+
+/**
+ * Options to configure when extracting from combined tuning.
+ */
+export interface XmlExtractionOptions extends Partial<{
+  /** Mappings of text node content to comments they should include. */
+  commentMap: Map<string, string>;
+
+  /** Function to determine which tunings are extracted. */
+  filter: (node: XmlNode) => boolean;
+}> { };

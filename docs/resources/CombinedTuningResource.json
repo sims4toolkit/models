@@ -1,0 +1,253 @@
+{
+  "$schema": "https://raw.githubusercontent.com/sims4toolkit/misc/main/json-schemas/docs-item-schema.json",
+  "imports": [
+    "import { CombinedTuningResource } from \"@s4tk/models\"; // ESM",
+    "const { CombinedTuningResource } = require(\"@s4tk/models\"); // CJS"
+  ],
+  "header": {
+    "title": {
+      "prefix": "class",
+      "name": "CombinedTuningResource",
+      "extends": [
+        {
+          "name": "DataResource",
+          "path": {
+            "pkg": "models",
+            "group": "abstracts",
+            "item": "DataResource"
+          }
+        }
+      ]
+    },
+    "description": "Read-only model for combined tuning resources.\n\nNote that resource keys are NOT specified in combined tuning - you must infer the type from the R node's n attribute, and the group will match that of the CombinedTuning that contains the resource.\n\nAlso note that much of the functionality expected of a Resource is not implemented on this model. It should only be used for extract tuning from the game, writing this model is not supported.",
+    "sourceCode": "src/lib/resources/combined-tuning/combined-tuning-resource.ts"
+  },
+  "sections": [
+    {
+      "title": "Properties",
+      "content": [
+        {
+          "displayType": "property",
+          "prefix": "readonly",
+          "name": "dom",
+          "description": "DOM for this resource's XML format.",
+          "type": {
+            "name": "XmlDocumentNode",
+            "path": {
+              "pkg": "xml-dom",
+              "group": "classes",
+              "item": "XmlDocumentNode"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "title": "Initialization",
+      "content": [
+        {
+          "displayType": "function",
+          "name": "constructor",
+          "returnType": {
+            "name": "CombinedTuningResource"
+          },
+          "description": "Creates a new CombinedTuningResource.",
+          "arguments": [
+            {
+              "description": "DOM to use.",
+              "name": "dom",
+              "type": {
+                "name": "XmlDocumentNode",
+                "path": {
+                  "pkg": "xml-dom",
+                  "group": "classes",
+                  "item": "XmlDocumentNode"
+                }
+              }
+            },
+            {
+              "description": "Optional arguments.",
+              "optional": true,
+              "name": "options",
+              "type": {
+                "name": "WritableModelCreationOptions",
+                "path": {
+                  "pkg": "models",
+                  "group": "types",
+                  "item": "WritableModelCreationOptions"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "displayType": "function",
+          "prefix": "static",
+          "name": "from",
+          "returnType": {
+            "name": "CombinedTuningResource"
+          },
+          "description": "Creates a CombinedTuningResource from a buffer containing either binary DATA or combined tuning XML. This buffer is assumed to be uncompressed; providing a compressed buffer will lead to unexpected behavior.",
+          "arguments": [
+            {
+              "name": "buffer",
+              "description": "Buffer to read as combined tuning.",
+              "type": {
+                "name": "Buffer"
+              }
+            },
+            {
+              "name": "options",
+              "optional": true,
+              "description": "Object of optional arguments.",
+              "type": {
+                "name": "WritableModelFromOptions",
+                "path": {
+                  "pkg": "models",
+                  "group": "types",
+                  "item": "WritableModelFromOptions"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "displayType": "function",
+          "prefix": "static async",
+          "name": "fromAsync",
+          "returnType": {
+            "name": "Promise<CombinedTuningResource>"
+          },
+          "description": "Asynchronously creates a CombinedTuningResource from a buffer containing either binary DATA or combined tuning XML. This buffer is assumed to be uncompressed; providing a compressed buffer will lead to unexpected behavior.",
+          "arguments": [
+            {
+              "name": "buffer",
+              "description": "Buffer to read as combined tuning.",
+              "type": {
+                "name": "Buffer"
+              }
+            },
+            {
+              "name": "options",
+              "optional": true,
+              "description": "Object of optional arguments.",
+              "type": {
+                "name": "WritableModelFromOptions",
+                "path": {
+                  "pkg": "models",
+                  "group": "types",
+                  "item": "WritableModelFromOptions"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Other Static Methods",
+      "content": [
+        {
+          "displayType": "function",
+          "prefix": "static",
+          "name": "extractTuning",
+          "returnType": {
+            "name": "XmlResource[]",
+            "path": {
+              "pkg": "models",
+              "group": "resources",
+              "item": "XmlResource"
+            }
+          },
+          "description": "Extracts all tunings from a buffer containing either binary DATA or combined tuning XML. This buffer is assumed to be uncompressed; providing a compressed buffer will lead to unexpected behavior.",
+          "arguments": [
+            {
+              "name": "buffer",
+              "description": "Buffer to extract tuning from.",
+              "type": {
+                "name": "Buffer"
+              }
+            },
+            {
+              "name": "options",
+              "optional": true,
+              "description": "Object of optional arguments.",
+              "type": {
+                "name": "XmlExtractionOptions",
+                "path": {
+                  "pkg": "models",
+                  "group": "types",
+                  "item": "XmlExtractionOptions"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "displayType": "function",
+          "prefix": "static async",
+          "name": "extractTuningAsync",
+          "description": "Asynchronously extracts all tunings from a buffer containing either binary DATA or combined tuning XML. This buffer is assumed to be uncompressed; providing a compressed buffer will lead to unexpected behavior.",
+          "returnType": {
+            "name": "Promise<XmlResource[]>",
+            "path": {
+              "pkg": "models",
+              "group": "resources",
+              "item": "XmlResource"
+            }
+          },
+          "arguments": [
+            {
+              "name": "buffer",
+              "description": "Buffer to extract tuning from.",
+              "type": {
+                "name": "Buffer"
+              }
+            },
+            {
+              "name": "options",
+              "optional": true,
+              "description": "Object of optional arguments.",
+              "type": {
+                "name": "XmlExtractionOptions",
+                "path": {
+                  "pkg": "models",
+                  "group": "types",
+                  "item": "XmlExtractionOptions"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "footer": {
+    "seeAlso": [
+      {
+        "name": "DataResource",
+        "path": {
+          "pkg": "models",
+          "group": "abstracts",
+          "item": "DataResource"
+        }
+      },
+      {
+        "name": "SimDataResource",
+        "path": {
+          "pkg": "models",
+          "group": "resources",
+          "item": "SimDataResource"
+        }
+      },
+      {
+        "name": "XmlResource",
+        "path": {
+          "pkg": "models",
+          "group": "resources",
+          "item": "XmlResource"
+        }
+      }
+    ]
+  }
+}

@@ -56,4 +56,26 @@ describe("StringTableLocale", () => {
       expect(locale).to.equal(StringTableLocale.Spanish);
     });
   });
+
+  describe("#all()", () => {
+    it("should return all locales as their number values", () => {
+      const allLocales = StringTableLocale.all();
+      expect(allLocales).to.be.an("Array").with.lengthOf(18);
+      expect(allLocales[0]).to.be.a("number");
+    });
+  });
+
+  describe("#getInstanceBase()", () => {
+    it("should remove the locale high byte", () => {
+      const instance = 0x1322A82C94D66CD3n;
+      const instanceBase = StringTableLocale.getInstanceBase(instance)
+      expect(instanceBase).to.equal(0x22A82C94D66CD3n);
+    });
+
+    it("should return the given value if already <= 14 digits", () => {
+      const instance = 0x22A82C94D66CD3n;
+      const instanceBase = StringTableLocale.getInstanceBase(instance)
+      expect(instanceBase).to.equal(0x22A82C94D66CD3n);
+    });
+  });
 });

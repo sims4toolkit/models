@@ -186,22 +186,6 @@
       "content": [
         {
           "displayType": "function",
-          "name": "isXml",
-          "returnType": {
-            "name": "boolean"
-          },
-          "description": "Always returns false.",
-          "overrides": {
-            "name": "Resource",
-            "path": {
-              "pkg": "models",
-              "group": "types",
-              "item": "Resource"
-            }
-          }
-        },
-        {
-          "displayType": "function",
           "name": "addAndHash",
           "returnType": {
             "name": "StringEntry",
@@ -235,6 +219,48 @@
             },
             {
               "code": "// To ensure that strings are not duplicated, consider using the following:\nstbl.getByValue(stringToAdd) ?? stbl.addAndHash(stringToAdd);"
+            }
+          ]
+        },
+        {
+          "displayType": "function",
+          "name": "isXml",
+          "returnType": {
+            "name": "boolean"
+          },
+          "description": "Always returns false.",
+          "overrides": {
+            "name": "Resource",
+            "path": {
+              "pkg": "models",
+              "group": "types",
+              "item": "Resource"
+            }
+          }
+        },
+        {
+          "displayType": "function",
+          "name": "toJsonObject",
+          "returnType": {
+            "name": "object[]"
+          },
+          "description": "Returns a list of entry objects. Each object has a key and a value, the key is either a string or number depending on the first argument. Each object may also have a numerical id, depending on the second argument.",
+          "arguments": [
+            {
+              "name": "useHexKey",
+              "type": {
+                "name": "boolean"
+              },
+              "optional": true,
+              "description": "Whether or not the key should be written as a hex string. True by default."
+            },
+            {
+              "name": "useId",
+              "type": {
+                "name": "boolean"
+              },
+              "optional": true,
+              "description": "Whether or not this entry's unique ID should be added to each object. False by default."
             }
           ]
         }

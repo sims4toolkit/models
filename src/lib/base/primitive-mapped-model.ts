@@ -17,6 +17,7 @@ export abstract class PrimitiveMappedModel<Value, Entry extends PrimitiveEntry<V
  */
 export abstract class PrimitiveEntry<Value> extends ApiModelBase implements MappedModelEntry<number, Value> {
   public owner?: PrimitiveMappedModel<Value, PrimitiveEntry<Value>>;
+  readonly id: number;
   private _key: number;
 
   get key(): number { return this._key; }

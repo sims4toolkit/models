@@ -5,6 +5,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.4.0] - 2022/05/30
+### Added
+- Re-add CombinedTuningResource model, this time with an implementation.
+- Add `XmlExtractionOptions` for use with CombinedTuningResource.
+- Add `BinaryResourceType.DdsImage`.
+- Add `EncodingType.DDS`.
+- Add `all()` and `getInstanceBase()` functions to StringTableLocale enum.
+- Add generics to `Package` and `ResourceEntry` to ease typing.
+- Add `toJsonObject()` method to StringTableResource.
+- Add `replaceEntries()` method to MappedModel.
+### Changed
+- RawResource now inherits from StaticResource.
+- SimDataResource now inherits from DataResource.
+- All MappedModelEntry objects now keep track of their own ID.
+
 ## [0.3.0] - 2022/04/26
 ### Changed
 - Replace compression code with @s4tk/compression package.

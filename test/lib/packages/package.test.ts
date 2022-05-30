@@ -138,6 +138,16 @@ describe("Package", () => {
       const entry = dbpf.get(0);
       expect(entry.owner).to.equal(dbpf);
     });
+
+    it("should assign IDs to the entries that are created", () => {
+      const dbpf = new Package([
+        { key: getTestKey(), value: getTestTuning() },
+        { key: getTestKey(), value: getTestTuning() }
+      ]);
+
+      expect(dbpf.entries[0].id).to.equal(0);
+      expect(dbpf.entries[1].id).to.equal(1);
+    });
   });
 
   describe("static#extractResources()", () => {
@@ -542,6 +552,12 @@ describe("Package", () => {
           expect(entry.resource.hasBufferCache).to.be.true;
         }
       });
+    });
+
+    it("should assign an ID to the entry that is created", () => {
+      const pkg = new Package();
+      pkg.add(getTestKey(), getTestTuning());
+      expect(pkg.entries[0].id).to.equal(0);
     });
   });
 
@@ -1201,6 +1217,35 @@ describe("Package", () => {
       const tuning = dbpf.get(0).value as XmlResource;
       expect(tuning.encodingType).to.equal(EncodingType.XML);
       expect(tuning.root.name).to.equal("frankkulak_LB:trait_SimlishNative");
+    });
+  });
+
+  describe("#replaceEntries()", () => {
+    it("should regenerate the entries' IDs", () => {
+      const pkg = getPackage("Trait");
+      pkg.delete(0);
+      expect(pkg.get(1)).to.not.be.undefined;
+      pkg.replaceEntries(pkg.entries);
+      expect(pkg.get(1)).to.be.undefined;
+    });
+
+    it("should replace the existing entries", () => {
+      const pkg = getPackage("Trait");
+
+      pkg.replaceEntries([
+        {
+          key: {
+            type: TuningResourceType.Trait,
+            group: 0,
+            instance: 12345n
+          },
+          value: getTestTuning()
+        }
+      ]);
+
+      expect(pkg.size).to.equal(1);
+      expect(pkg.get(0).key.instance).to.equal(12345n);
+      expect(pkg.get(0).value.encodingType).to.equal(EncodingType.XML);
     });
   });
 
