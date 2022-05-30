@@ -1,7 +1,7 @@
 import * as fs from "fs";
 import * as path from "path";
 import { expect } from "chai";
-import { CombinedTuningResource } from "../../../../dst/models";
+import { CombinedTuningResource, XmlResource } from "../../../../dst/models";
 import { EncodingType } from "../../../../dst/enums";
 
 const binaryBuffer = fs.readFileSync(
@@ -16,6 +16,23 @@ const xmlBuffer = fs.readFileSync(
     "../../../data/combined-tuning/xml/SP23_CombinedTuning.xml"
   )
 );
+
+function getExtractedXmlBuffer(name: string): Buffer {
+  return fs.readFileSync(
+    path.resolve(
+      __dirname,
+      "../../../data/combined-tuning/extracted", name + ".xml"
+    )
+  );
+}
+
+function testExtractedXml(resource: XmlResource, name: string, id: string) {
+  expect(resource.root.name).to.equal(name);
+  expect(resource.root.id).to.equal(id);
+  expect(resource.dom.toXml()).to.equal(
+    getExtractedXmlBuffer(name).toString()
+  );
+}
 
 describe("CombinedTuningResource", () => {
   //#region Properties
@@ -51,14 +68,21 @@ describe("CombinedTuningResource", () => {
 
   describe("static#extractTuning()", () => {
     context("binary buffer", () => {
-      const getCb = () => CombinedTuningResource.from(binaryBuffer);
-
-      it("should extract the right number of resources", () => {
-        // TODO:
-      });
+      const getResources = () => CombinedTuningResource.extractTuning(binaryBuffer);
 
       it("should extract the resources correctly", () => {
-        // TODO:
+        const resources = getResources();
+        expect(resources).to.be.an("Array").with.lengthOf(4);
+        const [xml0, xml1, xml2, xml3] = resources;
+
+        resources.forEach(resource => {
+          expect(resource.encodingType).to.equal(EncodingType.XML);
+        });
+
+        testExtractedXml(xml0, "object_sitSofa3x1_SP23ISLwood", "268929");
+        testExtractedXml(xml1, "object_sitLiving_SP23ISLwood", "268930");
+        testExtractedXml(xml2, "object_Fountain_SP23", "268920");
+        testExtractedXml(xml3, "object_lightFloor_SP23ISLlantern", "268934");
       });
 
       it("should restore string comments if provided a map", () => {
@@ -75,27 +99,9 @@ describe("CombinedTuningResource", () => {
     });
 
     context("xml buffer", () => {
-      const getCb = () => CombinedTuningResource.from(xmlBuffer);
+      const getResources = () => CombinedTuningResource.extractTuning(xmlBuffer);
 
-      it("should extract the right number of resources", () => {
-        // TODO:
-      });
-
-      it("should extract the resources correctly", () => {
-        // TODO:
-      });
-
-      it("should restore string comments if provided a map", () => {
-        // TODO:
-      });
-
-      it("should restore tuning ID comments if provided a map", () => {
-        // TODO:
-      });
-
-      it("should filter which resources are read if given a filter fn", () => {
-        // TODO:
-      });
+      // TODO:
     });
   });
 

@@ -1,0 +1,601 @@
+<?xml version="1.0" encoding="utf-8"?>
+<I c="GameObject" i="object" m="objects.game_object" n="object_sitSofa3x1_SP23ISLwood" s="268929">
+  <V n="_anim_overrides" t="enabled">
+    <U n="enabled">
+      <L n="params">
+        <U>
+          <T n="name">surfaceObject</T>
+          <V n="value" t="string">
+            <T n="string">sitTemplate</T>
+          </V>
+        </U>
+        <U>
+          <T n="name">objectName</T>
+          <V n="value" t="string">
+            <T n="string">sofa</T>
+          </V>
+        </U>
+      </L>
+    </U>
+  </V>
+  <U n="_components">
+    <V t="enabled" n="focus">
+      <U n="enabled">
+        <V n="_focus_score" t="globally">
+          <U n="globally">
+            <E n="base">NONE</E>
+          </U>
+        </V>
+      </U>
+    </V>
+    <V t="enabled" n="line_of_sight"/>
+    <V n="portal" t="enabled">
+      <U n="enabled">
+        <L n="_portal_data">
+          <T>163905</T>
+          <T>176559</T>
+        </L>
+      </U>
+    </V>
+    <V t="enabled" n="retail_component">
+      <V n="enabled" t="reference">
+        <T n="reference">110393</T>
+      </V>
+    </V>
+    <V t="enabled" n="state">
+      <U n="enabled">
+        <L n="state_triggers">
+          <U>
+            <L n="at_states">
+              <T>77532</T>
+            </L>
+            <V n="set_states" t="Set_state_list">
+              <L n="Set_state_list">
+                <T>39737</T>
+              </L>
+            </V>
+          </U>
+        </L>
+        <L n="states">
+          <U>
+            <V n="default_value" t="reference">
+              <T n="reference">104260</T>
+            </V>
+          </U>
+          <U>
+            <L n="client_states">
+              <U>
+                <T n="key">163407</T>
+              </U>
+              <U>
+                <T n="key">163408</T>
+              </U>
+            </L>
+            <V n="default_value" t="reference">
+              <T n="reference">163408</T>
+            </V>
+          </U>
+          <U>
+            <L n="client_states">
+              <U>
+                <T n="key">131794</T>
+              </U>
+              <U>
+                <T n="key">131795</T>
+              </U>
+            </L>
+            <V n="default_value" t="reference">
+              <T n="reference">131795</T>
+            </V>
+          </U>
+          <U>
+            <L n="client_states">
+              <U>
+                <T n="key">137056</T>
+              </U>
+              <U>
+                <T n="key">137057</T>
+              </U>
+            </L>
+            <V n="default_value" t="reference">
+              <T n="reference">137057</T>
+            </V>
+          </U>
+          <U>
+            <L n="client_states">
+              <U>
+                <T n="key">39611</T>
+              </U>
+              <U>
+                <T n="key">39736</T>
+              </U>
+              <U>
+                <T n="key">39737</T>
+              </U>
+              <U>
+                <T n="key">77532</T>
+              </U>
+            </L>
+            <V n="default_value" t="reference">
+              <T n="reference">39737</T>
+            </V>
+          </U>
+          <U>
+            <L n="client_states">
+              <U>
+                <T n="key">35956</T>
+              </U>
+              <U>
+                <T n="key">35957</T>
+              </U>
+            </L>
+            <V n="default_value" t="reference">
+              <T n="reference">35957</T>
+            </V>
+          </U>
+        </L>
+      </U>
+    </V>
+    <V t="enabled" n="tooltip_component"/>
+  </U>
+  <U n="_components_native">
+    <V n="Slot" t="disabled"/>
+  </U>
+  <L n="_part_data_map">
+    <U>
+      <T n="key">Nap_0</T>
+      <U n="value">
+        <L n="adjacent_parts">
+          <T>Sit_0</T>
+        </L>
+        <V t="enabled" n="is_mirrored"/>
+        <L n="overlapping_parts">
+          <T>Sit_0</T>
+          <T>Sit_1</T>
+          <T>Nap_10</T>
+          <T>Nap_12</T>
+          <T>Nap_2</T>
+          <T>Pet_Large_3</T>
+          <T>Pet_Large_4</T>
+          <T>Pet_Small_5</T>
+          <T>Pet_Small_6</T>
+          <T>Pet_Small_7</T>
+          <T>Pet_Child_9</T>
+          <T>Pet_Child_10</T>
+          <T>Pet_Child_11</T>
+        </L>
+        <T n="part_definition">28881</T>
+      </U>
+    </U>
+    <U>
+      <T n="key">Nap_10</T>
+      <U n="value">
+        <L n="adjacent_parts">
+          <T>Sit_1</T>
+        </L>
+        <V t="enabled" n="is_mirrored">
+          <T n="enabled">True</T>
+        </V>
+        <L n="overlapping_parts">
+          <T>Sit_0</T>
+          <T>Sit_1</T>
+          <T>Nap_0</T>
+          <T>Nap_12</T>
+          <T>Nap_2</T>
+          <T>Pet_Large_3</T>
+          <T>Pet_Large_4</T>
+          <T>Pet_Small_5</T>
+          <T>Pet_Small_6</T>
+          <T>Pet_Small_7</T>
+          <T>Pet_Child_9</T>
+          <T>Pet_Child_10</T>
+          <T>Pet_Child_11</T>
+        </L>
+        <T n="part_definition">28881</T>
+        <V t="enabled" n="subroot_index">
+          <T n="enabled">1</T>
+        </V>
+      </U>
+    </U>
+    <U>
+      <T n="key">Nap_12</T>
+      <U n="value">
+        <L n="adjacent_parts">
+          <T>Sit_1</T>
+        </L>
+        <V t="enabled" n="is_mirrored"/>
+        <L n="overlapping_parts">
+          <T>Sit_1</T>
+          <T>Sit_2</T>
+          <T>Nap_10</T>
+          <T>Nap_2</T>
+          <T>Pet_Large_3</T>
+          <T>Pet_Large_4</T>
+          <T>Pet_Small_6</T>
+          <T>Pet_Small_7</T>
+          <T>Pet_Small_8</T>
+          <T>Pet_Child_10</T>
+          <T>Pet_Child_11</T>
+          <T>Pet_Child_12</T>
+          <T>Nap_0</T>
+        </L>
+        <T n="part_definition">28881</T>
+        <V t="enabled" n="subroot_index">
+          <T n="enabled">1</T>
+        </V>
+      </U>
+    </U>
+    <U>
+      <T n="key">Nap_2</T>
+      <U n="value">
+        <L n="adjacent_parts">
+          <T>Sit_2</T>
+        </L>
+        <V t="enabled" n="is_mirrored">
+          <T n="enabled">True</T>
+        </V>
+        <L n="overlapping_parts">
+          <T>Sit_1</T>
+          <T>Sit_2</T>
+          <T>Nap_12</T>
+          <T>Nap_10</T>
+          <T>Pet_Large_3</T>
+          <T>Pet_Large_4</T>
+          <T>Pet_Small_6</T>
+          <T>Pet_Small_7</T>
+          <T>Pet_Small_8</T>
+          <T>Pet_Child_10</T>
+          <T>Pet_Child_11</T>
+          <T>Pet_Child_12</T>
+          <T>Nap_0</T>
+        </L>
+        <T n="part_definition">28881</T>
+        <V t="enabled" n="subroot_index">
+          <T n="enabled">2</T>
+        </V>
+      </U>
+    </U>
+    <U>
+      <T n="key">Pet_Large_3</T>
+      <U n="value">
+        <L n="adjacent_parts">
+          <T>Sit_2</T>
+        </L>
+        <V t="enabled" n="is_mirrored">
+          <T n="enabled">True</T>
+        </V>
+        <L n="overlapping_parts">
+          <T>Nap_0</T>
+          <T>Nap_10</T>
+          <T>Nap_12</T>
+          <T>Nap_2</T>
+          <T>Sit_0</T>
+          <T>Sit_1</T>
+          <T>Pet_Small_5</T>
+          <T>Pet_Small_6</T>
+          <T>Pet_Small_7</T>
+          <T>Pet_Child_9</T>
+          <T>Pet_Child_10</T>
+          <T>Pet_Child_11</T>
+          <T>Pet_Large_4</T>
+        </L>
+        <T n="part_definition">174584</T>
+        <V n="subroot_index" t="enabled">
+          <T n="enabled">3</T>
+        </V>
+      </U>
+    </U>
+    <U>
+      <T n="key">Pet_Large_4</T>
+      <U n="value">
+        <L n="adjacent_parts">
+          <T>Sit_0</T>
+        </L>
+        <V n="is_mirrored" t="enabled">
+          <T n="enabled">False</T>
+        </V>
+        <L n="overlapping_parts">
+          <T>Sit_1</T>
+          <T>Sit_2</T>
+          <T>Nap_0</T>
+          <T>Nap_10</T>
+          <T>Nap_12</T>
+          <T>Nap_2</T>
+          <T>Pet_Small_6</T>
+          <T>Pet_Small_7</T>
+          <T>Pet_Small_8</T>
+          <T>Pet_Child_10</T>
+          <T>Pet_Child_11</T>
+          <T>Pet_Child_12</T>
+          <T>Pet_Large_3</T>
+        </L>
+        <T n="part_definition">174584</T>
+        <V n="subroot_index" t="enabled">
+          <T n="enabled">4</T>
+        </V>
+      </U>
+    </U>
+    <U>
+      <T n="key">Pet_Small_5</T>
+      <U n="value">
+        <L n="adjacent_parts">
+          <T>Sit_1</T>
+          <T>Pet_Small_6</T>
+          <T>Pet_Small_7</T>
+        </L>
+        <V t="enabled" n="is_mirrored">
+          <T n="enabled">True</T>
+        </V>
+        <L n="overlapping_parts">
+          <T>Nap_10</T>
+          <T>Nap_0</T>
+          <T>Sit_0</T>
+          <T>Pet_Child_9</T>
+          <T>Pet_Large_3</T>
+        </L>
+        <T n="part_definition">174585</T>
+        <V n="subroot_index" t="enabled">
+          <T n="enabled">5</T>
+        </V>
+      </U>
+    </U>
+    <U>
+      <T n="key">Pet_Small_6</T>
+      <U n="value">
+        <L n="adjacent_parts">
+          <T>Pet_Small_5</T>
+          <T>Pet_Small_7</T>
+          <T>Sit_2</T>
+          <T>Pet_Small_8</T>
+        </L>
+        <V t="enabled" n="is_mirrored">
+          <T n="enabled">True</T>
+        </V>
+        <L n="overlapping_parts">
+          <T>Sit_1</T>
+          <T>Pet_Large_4</T>
+          <T>Pet_Large_3</T>
+          <T>Pet_Child_10</T>
+          <T>Nap_0</T>
+          <T>Nap_10</T>
+          <T>Nap_12</T>
+          <T>Nap_2</T>
+          <T>Pet_Child_11</T>
+          <T>Pet_Small_7</T>
+        </L>
+        <T n="part_definition">174585</T>
+        <V n="subroot_index" t="enabled">
+          <T n="enabled">6</T>
+        </V>
+      </U>
+    </U>
+    <U>
+      <T n="key">Pet_Small_7</T>
+      <U n="value">
+        <L n="adjacent_parts">
+          <T>Pet_Small_6</T>
+          <T>Pet_Small_8</T>
+          <T>Sit_0</T>
+          <T>Pet_Small_5</T>
+        </L>
+        <L n="overlapping_parts">
+          <T>Sit_1</T>
+          <T>Pet_Large_4</T>
+          <T>Pet_Large_3</T>
+          <T>Pet_Child_11</T>
+          <T>Nap_0</T>
+          <T>Nap_10</T>
+          <T>Nap_12</T>
+          <T>Nap_2</T>
+          <T>Pet_Child_10</T>
+          <T>Pet_Small_6</T>
+        </L>
+        <T n="part_definition">174585</T>
+        <V n="subroot_index" t="enabled">
+          <T n="enabled">7</T>
+        </V>
+      </U>
+    </U>
+    <U>
+      <T n="key">Pet_Small_8</T>
+      <U n="value">
+        <L n="adjacent_parts">
+          <T>Sit_1</T>
+          <T>Pet_Small_7</T>
+          <T>Pet_Small_6</T>
+        </L>
+        <L n="overlapping_parts">
+          <T>Nap_12</T>
+          <T>Nap_2</T>
+          <T>Sit_2</T>
+          <T>Pet_Child_12</T>
+          <T>Pet_Large_4</T>
+        </L>
+        <T n="part_definition">174585</T>
+        <V n="subroot_index" t="enabled">
+          <T n="enabled">8</T>
+        </V>
+      </U>
+    </U>
+    <U>
+      <T n="key">Sit_0</T>
+      <U n="value">
+        <L n="adjacent_parts">
+          <T>Nap_0</T>
+          <T>Sit_1</T>
+          <T>Pet_Small_7</T>
+          <T>Pet_Child_10</T>
+          <T>Pet_Large_4</T>
+        </L>
+        <L n="overlapping_parts">
+          <T>Nap_0</T>
+          <T>Nap_10</T>
+          <T>Pet_Large_3</T>
+          <T>Pet_Small_5</T>
+          <T>Pet_Child_9</T>
+        </L>
+        <T n="part_definition">14798</T>
+      </U>
+    </U>
+    <U>
+      <T n="key">Sit_1</T>
+      <U n="value">
+        <L n="adjacent_parts">
+          <T>Sit_0</T>
+          <T>Sit_2</T>
+          <T>Nap_10</T>
+          <T>Nap_12</T>
+          <T>Pet_Small_5</T>
+          <T>Pet_Small_8</T>
+          <T>Pet_Child_9</T>
+          <T>Pet_Child_12</T>
+        </L>
+        <L n="overlapping_parts">
+          <T>Nap_0</T>
+          <T>Nap_10</T>
+          <T>Nap_12</T>
+          <T>Nap_2</T>
+          <T>Pet_Large_3</T>
+          <T>Pet_Large_4</T>
+          <T>Pet_Small_6</T>
+          <T>Pet_Small_7</T>
+          <T>Pet_Child_10</T>
+          <T>Pet_Child_11</T>
+        </L>
+        <T n="part_definition">14798</T>
+        <V t="enabled" n="subroot_index">
+          <T n="enabled">1</T>
+        </V>
+      </U>
+    </U>
+    <U>
+      <T n="key">Sit_2</T>
+      <U n="value">
+        <L n="adjacent_parts">
+          <T>Sit_1</T>
+          <T>Nap_2</T>
+          <T>Pet_Small_6</T>
+          <T>Pet_Child_11</T>
+          <T>Pet_Large_3</T>
+        </L>
+        <L n="overlapping_parts">
+          <T>Nap_12</T>
+          <T>Nap_2</T>
+          <T>Pet_Large_4</T>
+          <T>Pet_Small_8</T>
+          <T>Pet_Child_12</T>
+        </L>
+        <T n="part_definition">14798</T>
+        <V t="enabled" n="subroot_index">
+          <T n="enabled">2</T>
+        </V>
+      </U>
+    </U>
+  </L>
+  <L n="_super_affordances">
+    <T>13328</T>
+    <T>13326</T>
+    <T>103888</T>
+    <T>13441</T>
+    <T>14305</T>
+    <T>28880</T>
+    <T>228809</T>
+    <T>239948</T>
+    <T>239937</T>
+    <T>239802</T>
+    <T>239944</T>
+    <T>244857</T>
+    <T>239801</T>
+    <T>240784</T>
+    <T>239529</T>
+    <T>239797</T>
+    <T>240542</T>
+    <T>240538</T>
+    <T>244901</T>
+    <T>240543</T>
+    <T>240541</T>
+    <T>240539</T>
+    <T>240540</T>
+    <T>240544</T>
+    <T>240545</T>
+    <T>243771</T>
+    <T>245830</T>
+    <T>266571</T>
+    <T>111810</T>
+    <T>115176</T>
+    <T>134949</T>
+    <T>13983</T>
+    <T>135080</T>
+    <T>149459</T>
+    <T>158785</T>
+    <T>163417</T>
+    <T>163419</T>
+    <T>163450</T>
+    <T>164335</T>
+    <T>164337</T>
+    <T>164336</T>
+    <T>120562</T>
+    <T>129130</T>
+    <T>174206</T>
+    <T>131566</T>
+    <T>149414</T>
+    <T>158069</T>
+    <T>158070</T>
+    <T>162032</T>
+    <T>162029</T>
+    <T>174207</T>
+    <T>120569</T>
+    <T>168882</T>
+    <T>168883</T>
+    <T>106859</T>
+    <T>31564</T>
+    <T>74457</T>
+  </L>
+  <U n="aop_forward_data">
+    <T n="should_search_forwarded_sim_aop">True</T>
+  </U>
+  <L n="autonomy_modifiers">
+    <U>
+      <L n="stat_use_multiplier">
+        <U>
+          <T n="key">24998</T>
+          <U n="value">
+            <E n="apply_direction">BOTH</E>
+            <T n="multiplier">1E-05</T>
+          </U>
+        </U>
+        <U>
+          <T n="key">25002</T>
+          <U n="value">
+            <E n="apply_direction">INCREASE</E>
+            <T n="multiplier">1.62</T>
+          </U>
+        </U>
+      </L>
+      <V t="apply_on_interaction_to_participant" n="subject">
+        <V n="apply_on_interaction_to_participant" t="enabled">
+          <L n="enabled">
+            <E>Actor</E>
+          </L>
+        </V>
+      </V>
+    </U>
+  </L>
+  <E n="posture_transition_target_tag">SEATING_SOFA</E>
+  <U n="recycling_data">
+    <L n="recycling_loot">
+      <T>235786</T>
+    </L>
+    <L n="recycling_values">
+      <U>
+        <E n="Bucks Type">RecycleBitsBucks</E>
+        <T n="Value">0.5</T>
+      </U>
+      <U>
+        <E n="Bucks Type">RecyclePiecesBucks</E>
+        <T n="Value">0.5</T>
+      </U>
+    </L>
+  </U>
+  <V t="enabled" n="social_clustering"/>
+</I>
