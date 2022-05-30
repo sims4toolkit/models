@@ -72,10 +72,10 @@ describe("CombinedTuningResource", () => {
 
   describe("static#extractTuning()", () => {
     context("binary buffer", () => {
-      const getResources = () => CombinedTuningResource.extractTuning(binaryBuffer);
+      const getBuffer = () => binaryBuffer;
 
       it("should extract the resources correctly", () => {
-        const resources = getResources();
+        const resources = CombinedTuningResource.extractTuning(getBuffer());
         expect(resources).to.be.an("Array").with.lengthOf(4);
         const [xml0, xml1, xml2, xml3] = resources;
 
@@ -89,16 +89,29 @@ describe("CombinedTuningResource", () => {
         testExtractedXml(xml3, "object_lightFloor_SP23ISLlantern", "268934");
       });
 
-      it("should restore string comments if provided a map", () => {
-        // TODO:
-      });
+      it("should restore comments if provided a map", () => {
+        const resources = CombinedTuningResource.extractTuning(getBuffer(), {
+          commentMap: new Map([
+            ["13328", "debug_Reset"]
+          ])
+        });
 
-      it("should restore tuning ID comments if provided a map", () => {
-        // TODO:
+        const first = resources[0];
+        const debugResetNode = first.root.findChild("_super_affordances").child;
+        // NOTE: this should change in the future...
+        // it should be an actual comment node
+        expect(debugResetNode.innerValue).to.equal("13328<!--debug_Reset-->");
       });
 
       it("should filter which resources are read if given a filter fn", () => {
-        // TODO:
+        const resources = CombinedTuningResource.extractTuning(getBuffer(), {
+          filter(node) {
+            return node.name === "object_Fountain_SP23"
+          }
+        });
+
+        expect(resources).to.have.lengthOf(1);
+        testExtractedXml(resources[0], "object_Fountain_SP23", "268920");
       });
     });
 
