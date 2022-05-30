@@ -54,11 +54,11 @@
           },
           "description": "Returns true if the given model has a decompressed buffer with the same bytes as this one, false otherwise.",
           "overrides": {
-            "name": "Resource",
+            "name": "WritableModel",
             "path": {
               "pkg": "models",
-              "group": "types",
-              "item": "Resource"
+              "group": "abstracts",
+              "item": "WritableModel"
             }
           },
           "arguments": [
