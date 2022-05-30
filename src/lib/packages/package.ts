@@ -21,8 +21,10 @@ export default class Package<ResourceType extends Resource = Resource>
    * 
    * @param entries Entries to initialize Package with
    */
-  constructor(entries?: ResourceKeyPair<ResourceType>[]) {
-    super(entries); // never cache package buffer, it's pointless
+  constructor(entries?: ResourceKeyPair<Resource>[]) {
+    // intentionally using Resource in arguments so that ResourceType isn't
+    // automatically inferred from the first element
+    super(entries as ResourceKeyPair<ResourceType>[]);
   }
 
   /**
