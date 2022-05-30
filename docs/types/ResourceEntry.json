@@ -7,6 +7,21 @@
     "title": {
       "prefix": "class",
       "name": "ResourceEntry",
+      "generics": [
+        {
+          "name": "ResourceType",
+          "extends": [
+            {
+              "name": "Resource",
+              "path": {
+                "pkg": "models",
+                "group": "types",
+                "item": "Resource"
+              }
+            }
+          ]
+        }
+      ],
       "extends": [
         {
           "name": "ApiModelBase",
@@ -19,7 +34,7 @@
       ],
       "implements": [
         {
-          "name": "MappedModelEntry<ResourceKey, Resource>",
+          "name": "MappedModelEntry<ResourceKey, ResourceType>",
           "path": {
             "pkg": "models",
             "group": "abstracts",
@@ -41,7 +56,7 @@
           "name": "resource",
           "description": "Alias for the 'value' property (from MappedModelEntry), which contains the resource.",
           "type": {
-            "name": "Resource",
+            "name": "ResourceType",
             "path": {
               "pkg": "models",
               "group": "types",

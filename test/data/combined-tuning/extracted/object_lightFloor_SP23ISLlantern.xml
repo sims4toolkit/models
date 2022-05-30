@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="utf-8"?>
+<I c="GameObject" i="object" m="objects.game_object" n="object_lightFloor_SP23ISLlantern" s="268934">
+  <U n="_components">
+    <V t="enabled" n="focus">
+      <U n="enabled">
+        <V n="_focus_score" t="globally">
+          <U n="globally">
+            <E n="base">NONE</E>
+          </U>
+        </V>
+      </U>
+    </V>
+    <V n="lighting" t="enabled">
+      <U n="enabled">
+        <L n="component_interactions">
+          <T>120287</T>
+          <T>120288</T>
+          <T>120313</T>
+          <T>241033</T>
+          <T>120317</T>
+          <T>254205</T>
+          <T>254203</T>
+          <T>120302</T>
+          <T>120303</T>
+          <T>214715</T>
+        </L>
+        <V n="light_states" t="enabled">
+          <U n="enabled">
+            <T n="off_state_value">239789</T>
+            <T n="on_state_value">239788</T>
+          </U>
+        </V>
+        <V n="visual_effect" t="enabled">
+          <U n="enabled">
+            <T n="effect_name">sp23_light_floor_lantern</T>
+          </U>
+        </V>
+      </U>
+    </V>
+    <V n="retail_component" t="enabled">
+      <V n="enabled" t="reference">
+        <T n="reference">115301</T>
+      </V>
+    </V>
+    <V n="state" t="enabled">
+      <U n="enabled">
+        <L n="state_triggers">
+          <U>
+            <L n="at_states">
+              <T>77532</T>
+            </L>
+            <V n="set_states" t="Set_state_list">
+              <L n="Set_state_list">
+                <T>39737</T>
+              </L>
+            </V>
+          </U>
+        </L>
+        <L n="states">
+          <U>
+            <L n="client_states">
+              <U>
+                <T n="key">131794</T>
+              </U>
+              <U>
+                <T n="key">131795</T>
+              </U>
+            </L>
+            <V n="default_value" t="reference">
+              <T n="reference">131795</T>
+            </V>
+          </U>
+          <U>
+            <L n="client_states">
+              <U>
+                <T n="key">254199</T>
+              </U>
+              <U>
+                <T n="key">254200</T>
+              </U>
+            </L>
+            <V n="default_value" t="reference">
+              <T n="reference">254200</T>
+            </V>
+            <T n="reset_on_load_if_time_passes">True</T>
+            <T n="reset_to_default">True</T>
+          </U>
+          <U>
+            <L n="client_states">
+              <U>
+                <T n="key">137056</T>
+              </U>
+              <U>
+                <T n="key">137057</T>
+              </U>
+            </L>
+            <V n="default_value" t="reference">
+              <T n="reference">137057</T>
+            </V>
+          </U>
+          <U>
+            <L n="client_states">
+              <U>
+                <T n="key">39611</T>
+              </U>
+              <U>
+                <T n="key">39736</T>
+              </U>
+              <U>
+                <T n="key">39737</T>
+              </U>
+              <U>
+                <T n="key">77532</T>
+              </U>
+            </L>
+            <V n="default_value" t="reference">
+              <T n="reference">39737</T>
+            </V>
+          </U>
+          <U>
+            <L n="client_states">
+              <U>
+                <T n="key">35956</T>
+              </U>
+              <U>
+                <T n="key">35957</T>
+              </U>
+            </L>
+            <V n="default_value" t="reference">
+              <T n="reference">35957</T>
+            </V>
+          </U>
+          <U>
+            <L n="client_states">
+              <U>
+                <T n="key">239788</T>
+                <U n="value">
+                  <V n="autonomy_modifiers" t="leave_unchanged"/>
+                </U>
+              </U>
+              <U>
+                <T n="key">239789</T>
+                <U n="value">
+                  <V n="autonomy_modifiers" t="apply_new_value"/>
+                </U>
+              </U>
+            </L>
+            <V n="default_value" t="reference">
+              <T n="reference">239789</T>
+            </V>
+          </U>
+        </L>
+        <V n="timed_state_triggers" t="enabled">
+          <L n="enabled">
+            <U>
+              <T n="key">254199</T>
+              <U n="value">
+                <L n="ops">
+                  <U>
+                    <L n="states_to_trigger">
+                      <T>254200</T>
+                    </L>
+                    <T n="trigger_time">10</T>
+                  </U>
+                </L>
+              </U>
+            </U>
+          </L>
+        </V>
+      </U>
+    </V>
+  </U>
+  <L n="_super_affordances">
+    <T>13328</T>
+    <T>13326</T>
+    <T>103888</T>
+    <T>196759</T>
+    <T>106859</T>
+    <T>74457</T>
+  </L>
+  <U n="recycling_data">
+    <L n="recycling_values">
+      <U>
+        <E n="Bucks Type">RecycleBitsBucks</E>
+        <T n="Value">0.75</T>
+      </U>
+      <U>
+        <E n="Bucks Type">RecyclePiecesBucks</E>
+        <T n="Value">0.25</T>
+      </U>
+    </L>
+  </U>
+</I>

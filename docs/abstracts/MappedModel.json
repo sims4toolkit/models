@@ -302,6 +302,20 @@
         },
         {
           "displayType": "function",
+          "name": "replaceEntries",
+          "arguments": [
+            {
+              "name": "entries",
+              "type": {
+                "name": "{ key: Key; value: Value; }[]"
+              },
+              "description": "New entries to use."
+            }
+          ],
+          "description": "Replaces the entries in this model with the given list. Note that new IDs will be generated for every entry."
+        },
+        {
+          "displayType": "function",
           "name": "resetEntries",
           "description": "Resets the 'entries' property of this model, so that a new array will be created the next time it is used."
         },
@@ -312,5 +326,25 @@
         }
       ]
     }
-  ]
+  ],
+  "footer": {
+    "seeAlso": [
+      {
+        "name": "Package",
+        "path": {
+          "pkg": "models",
+          "group": "packages",
+          "item": "Package"
+        }
+      },
+      {
+        "name": "StringTableResource",
+        "path": {
+          "pkg": "models",
+          "group": "resources",
+          "item": "StringTableResource"
+        }
+      }
+    ]
+  }
 }

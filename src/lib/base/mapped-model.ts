@@ -71,6 +71,8 @@ export abstract class MappedModel<Key, Value, Entry extends MappedModelEntry<Key
       // this should never be thrown in prod, it's for development
       throw new Error(`Duplicated ID in mapped model: ${id}`);
     const entry = this._makeEntry(key, value);
+    //@ts-expect-error ID is readonly, it can only be set by this class
+    entry.id = id;
     this._entryMap.set(id, entry);
     const keyId = this._getKeyIdentifier(key);
     if (!this._keyMap.has(keyId)) this._keyMap.set(keyId, id);
@@ -286,6 +288,17 @@ export abstract class MappedModel<Key, Value, Entry extends MappedModelEntry<Key
   }
 
   /**
+   * Replaces the entries in this model with the given list. Note that new IDs
+   * will be generated for every entry.
+   * 
+   * @param entries New entries to use
+   */
+  replaceEntries(entries: { key: Key; value: Value; }[]) {
+    this.clear();
+    this.addAll(entries);
+  }
+
+  /**
    * Resets the `entries` property of this model, so that a new array will be
    * created the next time it is used.
    */
@@ -328,7 +341,10 @@ export abstract class MappedModel<Key, Value, Entry extends MappedModelEntry<Key
    */
   protected _initializeEntries(entries?: { key: Key; value: Value; }[]) {
     entries?.forEach((entry, id) => {
-      this._entryMap.set(id, this._makeEntry(entry.key, entry.value, entry));
+      const entryObj = this._makeEntry(entry.key, entry.value, entry);
+      //@ts-expect-error ID is readonly, it can only be set by this class
+      entryObj.id = id;
+      this._entryMap.set(id, entryObj);
       const keyId = this._getKeyIdentifier(entry.key);
       if (!this._keyMap.has(keyId)) this._keyMap.set(keyId, id);
     });
@@ -354,6 +370,9 @@ export abstract class MappedModel<Key, Value, Entry extends MappedModelEntry<Key
  */
 export interface MappedModelEntry<Key, Value> {
   owner?: MappedModel<Key, Value, MappedModelEntry<Key, Value>>;
+
+  /** The unique ID for this entry. Cannot be changed. */
+  readonly id: number;
 
   /** The key for this entry. */
   key: Key;

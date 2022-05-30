@@ -1,0 +1,953 @@
+<?xml version="1.0" encoding="utf-8"?>
+<combined>
+  <g s="merged">
+    <U x="44000003">
+      <T n="name">surfaceObject</T>
+      <V n="value" t="string">
+        <T n="string">sitTemplate</T>
+      </V>
+    </U>
+    <T x="44000004">objectName</T>
+    <V t="enabled" x="44000015">
+      <U n="enabled">
+        <V n="_focus_score" t="globally">
+          <U n="globally">
+            <E n="base">NONE</E>
+          </U>
+        </V>
+      </U>
+    </V>
+    <V t="enabled" x="44000016"/>
+    <V t="enabled" x="44000024">
+      <V n="enabled" t="reference">
+        <T n="reference">110393</T>
+      </V>
+    </V>
+    <T x="44000025">77532</T>
+    <T x="44000027">39737</T>
+    <L x="44000031">
+      <U>
+        <L n="at_states">
+          <r x="44000025"/>
+        </L>
+        <V n="set_states" t="Set_state_list">
+          <L n="Set_state_list">
+            <r x="44000027"/>
+          </L>
+        </V>
+      </U>
+    </L>
+    <T x="44000037">163408</T>
+    <T x="44000044">131795</T>
+    <U x="44000048">
+      <L n="client_states">
+        <U>
+          <T n="key">131794</T>
+        </U>
+        <U>
+          <r n="key" x="44000044"/>
+        </U>
+      </L>
+      <V n="default_value" t="reference">
+        <r n="reference" x="44000044"/>
+      </V>
+    </U>
+    <T x="44000051">137057</T>
+    <U x="44000055">
+      <L n="client_states">
+        <U>
+          <T n="key">137056</T>
+        </U>
+        <U>
+          <r n="key" x="44000051"/>
+        </U>
+      </L>
+      <V n="default_value" t="reference">
+        <r n="reference" x="44000051"/>
+      </V>
+    </U>
+    <U x="44000064">
+      <L n="client_states">
+        <U>
+          <T n="key">39611</T>
+        </U>
+        <U>
+          <T n="key">39736</T>
+        </U>
+        <U>
+          <r n="key" x="44000027"/>
+        </U>
+        <U>
+          <r n="key" x="44000025"/>
+        </U>
+      </L>
+      <V n="default_value" t="reference">
+        <r n="reference" x="44000027"/>
+      </V>
+    </U>
+    <T x="44000067">35957</T>
+    <U x="44000071">
+      <L n="client_states">
+        <U>
+          <T n="key">35956</T>
+        </U>
+        <U>
+          <r n="key" x="44000067"/>
+        </U>
+      </L>
+      <V n="default_value" t="reference">
+        <r n="reference" x="44000067"/>
+      </V>
+    </U>
+    <V t="enabled" x="44000074">
+      <U n="enabled">
+        <r n="state_triggers" x="44000031"/>
+        <L n="states">
+          <U>
+            <V n="default_value" t="reference">
+              <T n="reference">104260</T>
+            </V>
+          </U>
+          <U>
+            <L n="client_states">
+              <U>
+                <T n="key">163407</T>
+              </U>
+              <U>
+                <r n="key" x="44000037"/>
+              </U>
+            </L>
+            <V n="default_value" t="reference">
+              <r n="reference" x="44000037"/>
+            </V>
+          </U>
+          <r x="44000048"/>
+          <r x="44000055"/>
+          <r x="44000064"/>
+          <r x="44000071"/>
+        </L>
+      </U>
+    </V>
+    <T x="44000078">Nap_0</T>
+    <T x="44000079">Sit_0</T>
+    <L x="44000080">
+      <r x="44000079"/>
+    </L>
+    <T x="44000081">Sit_1</T>
+    <T x="44000082">Nap_10</T>
+    <T x="44000083">Nap_12</T>
+    <T x="44000084">Nap_2</T>
+    <T x="44000085">Pet_Large_3</T>
+    <T x="44000086">Pet_Large_4</T>
+    <T x="44000087">Pet_Small_5</T>
+    <T x="44000088">Pet_Small_6</T>
+    <T x="44000089">Pet_Small_7</T>
+    <T x="44000090">Pet_Child_9</T>
+    <T x="44000091">Pet_Child_10</T>
+    <T x="44000092">Pet_Child_11</T>
+    <T x="44000094">28881</T>
+    <L x="44000097">
+      <r x="44000081"/>
+    </L>
+    <T x="44000098">True</T>
+    <V t="enabled" x="44000099">
+      <r n="enabled" x="44000098"/>
+    </V>
+    <V t="enabled" x="44000102">
+      <T n="enabled">1</T>
+    </V>
+    <T x="44000105">Sit_2</T>
+    <T x="44000106">Pet_Small_8</T>
+    <T x="44000107">Pet_Child_12</T>
+    <L x="44000111">
+      <r x="44000105"/>
+    </L>
+    <V t="enabled" x="44000114">
+      <T n="enabled">2</T>
+    </V>
+    <T x="44000118">174584</T>
+    <T x="44000132">174585</T>
+    <T x="44000157">14798</T>
+    <T x="44000169">13328</T>
+    <T x="44000170">13326</T>
+    <T x="44000171">103888</T>
+    <T x="44000175">228809</T>
+    <T x="44000176">239948</T>
+    <T x="44000177">239937</T>
+    <T x="44000178">239802</T>
+    <T x="44000179">239944</T>
+    <T x="44000180">244857</T>
+    <T x="44000181">239801</T>
+    <T x="44000182">240784</T>
+    <T x="44000183">239529</T>
+    <T x="44000184">239797</T>
+    <T x="44000185">240542</T>
+    <T x="44000186">240538</T>
+    <T x="44000187">244901</T>
+    <T x="44000188">240543</T>
+    <T x="44000189">240541</T>
+    <T x="44000190">240539</T>
+    <T x="44000191">240540</T>
+    <T x="44000192">240544</T>
+    <T x="44000193">240545</T>
+    <T x="44000194">243771</T>
+    <T x="44000195">245830</T>
+    <T x="44000196">266571</T>
+    <T x="44000197">111810</T>
+    <T x="44000198">115176</T>
+    <T x="44000199">134949</T>
+    <T x="44000200">13983</T>
+    <T x="44000201">135080</T>
+    <T x="44000202">149459</T>
+    <T x="44000204">163417</T>
+    <T x="44000205">163419</T>
+    <T x="44000206">163450</T>
+    <T x="44000210">120562</T>
+    <T x="44000223">106859</T>
+    <T x="44000224">31564</T>
+    <T x="44000225">74457</T>
+    <U x="44000232">
+      <T n="key">24998</T>
+      <U n="value">
+        <E n="apply_direction">BOTH</E>
+        <T n="multiplier">1E-05</T>
+      </U>
+    </U>
+    <T x="44000233">25002</T>
+    <E x="44000234">INCREASE</E>
+    <V t="apply_on_interaction_to_participant" x="44000242">
+      <V n="apply_on_interaction_to_participant" t="enabled">
+        <L n="enabled">
+          <E>Actor</E>
+        </L>
+      </V>
+    </V>
+    <E x="44000248">RecycleBitsBucks</E>
+    <T x="44000249">0.5</T>
+    <E x="44000251">RecyclePiecesBucks</E>
+    <L x="44000253">
+      <U>
+        <r n="Bucks Type" x="44000248"/>
+        <r n="Value" x="44000249"/>
+      </U>
+      <U>
+        <r n="Bucks Type" x="44000251"/>
+        <r n="Value" x="44000249"/>
+      </U>
+    </L>
+    <T x="44000289">76242</T>
+    <U x="44000313">
+      <L n="recycling_values">
+        <U>
+          <r n="Bucks Type" x="44000248"/>
+          <T n="Value">0.75</T>
+        </U>
+        <U>
+          <r n="Bucks Type" x="44000251"/>
+          <T n="Value">0.25</T>
+        </U>
+      </L>
+    </U>
+    <T x="44000326">239789</T>
+    <T x="44000327">239788</T>
+    <T x="44000338">254199</T>
+    <T x="44000340">254200</T>
+  </g>
+  <R n="object">
+    <I c="GameObject" i="object" m="objects.game_object" n="object_sitSofa3x1_SP23ISLwood" s="268929">
+      <V n="_anim_overrides" t="enabled">
+        <U n="enabled">
+          <L n="params">
+            <r x="44000003"/>
+            <U>
+              <r n="name" x="44000004"/>
+              <V n="value" t="string">
+                <T n="string">sofa</T>
+              </V>
+            </U>
+          </L>
+        </U>
+      </V>
+      <U n="_components">
+        <r n="focus" x="44000015"/>
+        <r n="line_of_sight" x="44000016"/>
+        <V n="portal" t="enabled">
+          <U n="enabled">
+            <L n="_portal_data">
+              <T>163905</T>
+              <T>176559</T>
+            </L>
+          </U>
+        </V>
+        <r n="retail_component" x="44000024"/>
+        <r n="state" x="44000074"/>
+        <r n="tooltip_component" x="44000016"/>
+      </U>
+      <U n="_components_native">
+        <V n="Slot" t="disabled"/>
+      </U>
+      <L n="_part_data_map">
+        <U>
+          <r n="key" x="44000078"/>
+          <U n="value">
+            <r n="adjacent_parts" x="44000080"/>
+            <r n="is_mirrored" x="44000016"/>
+            <L n="overlapping_parts">
+              <r x="44000079"/>
+              <r x="44000081"/>
+              <r x="44000082"/>
+              <r x="44000083"/>
+              <r x="44000084"/>
+              <r x="44000085"/>
+              <r x="44000086"/>
+              <r x="44000087"/>
+              <r x="44000088"/>
+              <r x="44000089"/>
+              <r x="44000090"/>
+              <r x="44000091"/>
+              <r x="44000092"/>
+            </L>
+            <r n="part_definition" x="44000094"/>
+          </U>
+        </U>
+        <U>
+          <r n="key" x="44000082"/>
+          <U n="value">
+            <r n="adjacent_parts" x="44000097"/>
+            <r n="is_mirrored" x="44000099"/>
+            <L n="overlapping_parts">
+              <r x="44000079"/>
+              <r x="44000081"/>
+              <r x="44000078"/>
+              <r x="44000083"/>
+              <r x="44000084"/>
+              <r x="44000085"/>
+              <r x="44000086"/>
+              <r x="44000087"/>
+              <r x="44000088"/>
+              <r x="44000089"/>
+              <r x="44000090"/>
+              <r x="44000091"/>
+              <r x="44000092"/>
+            </L>
+            <r n="part_definition" x="44000094"/>
+            <r n="subroot_index" x="44000102"/>
+          </U>
+        </U>
+        <U>
+          <r n="key" x="44000083"/>
+          <U n="value">
+            <r n="adjacent_parts" x="44000097"/>
+            <r n="is_mirrored" x="44000016"/>
+            <L n="overlapping_parts">
+              <r x="44000081"/>
+              <r x="44000105"/>
+              <r x="44000082"/>
+              <r x="44000084"/>
+              <r x="44000085"/>
+              <r x="44000086"/>
+              <r x="44000088"/>
+              <r x="44000089"/>
+              <r x="44000106"/>
+              <r x="44000091"/>
+              <r x="44000092"/>
+              <r x="44000107"/>
+              <r x="44000078"/>
+            </L>
+            <r n="part_definition" x="44000094"/>
+            <r n="subroot_index" x="44000102"/>
+          </U>
+        </U>
+        <U>
+          <r n="key" x="44000084"/>
+          <U n="value">
+            <r n="adjacent_parts" x="44000111"/>
+            <r n="is_mirrored" x="44000099"/>
+            <L n="overlapping_parts">
+              <r x="44000081"/>
+              <r x="44000105"/>
+              <r x="44000083"/>
+              <r x="44000082"/>
+              <r x="44000085"/>
+              <r x="44000086"/>
+              <r x="44000088"/>
+              <r x="44000089"/>
+              <r x="44000106"/>
+              <r x="44000091"/>
+              <r x="44000092"/>
+              <r x="44000107"/>
+              <r x="44000078"/>
+            </L>
+            <r n="part_definition" x="44000094"/>
+            <r n="subroot_index" x="44000114"/>
+          </U>
+        </U>
+        <U>
+          <r n="key" x="44000085"/>
+          <U n="value">
+            <r n="adjacent_parts" x="44000111"/>
+            <r n="is_mirrored" x="44000099"/>
+            <L n="overlapping_parts">
+              <r x="44000078"/>
+              <r x="44000082"/>
+              <r x="44000083"/>
+              <r x="44000084"/>
+              <r x="44000079"/>
+              <r x="44000081"/>
+              <r x="44000087"/>
+              <r x="44000088"/>
+              <r x="44000089"/>
+              <r x="44000090"/>
+              <r x="44000091"/>
+              <r x="44000092"/>
+              <r x="44000086"/>
+            </L>
+            <r n="part_definition" x="44000118"/>
+            <V n="subroot_index" t="enabled">
+              <T n="enabled">3</T>
+            </V>
+          </U>
+        </U>
+        <U>
+          <r n="key" x="44000086"/>
+          <U n="value">
+            <r n="adjacent_parts" x="44000080"/>
+            <V n="is_mirrored" t="enabled">
+              <T n="enabled">False</T>
+            </V>
+            <L n="overlapping_parts">
+              <r x="44000081"/>
+              <r x="44000105"/>
+              <r x="44000078"/>
+              <r x="44000082"/>
+              <r x="44000083"/>
+              <r x="44000084"/>
+              <r x="44000088"/>
+              <r x="44000089"/>
+              <r x="44000106"/>
+              <r x="44000091"/>
+              <r x="44000092"/>
+              <r x="44000107"/>
+              <r x="44000085"/>
+            </L>
+            <r n="part_definition" x="44000118"/>
+            <V n="subroot_index" t="enabled">
+              <T n="enabled">4</T>
+            </V>
+          </U>
+        </U>
+        <U>
+          <r n="key" x="44000087"/>
+          <U n="value">
+            <L n="adjacent_parts">
+              <r x="44000081"/>
+              <r x="44000088"/>
+              <r x="44000089"/>
+            </L>
+            <r n="is_mirrored" x="44000099"/>
+            <L n="overlapping_parts">
+              <r x="44000082"/>
+              <r x="44000078"/>
+              <r x="44000079"/>
+              <r x="44000090"/>
+              <r x="44000085"/>
+            </L>
+            <r n="part_definition" x="44000132"/>
+            <V n="subroot_index" t="enabled">
+              <T n="enabled">5</T>
+            </V>
+          </U>
+        </U>
+        <U>
+          <r n="key" x="44000088"/>
+          <U n="value">
+            <L n="adjacent_parts">
+              <r x="44000087"/>
+              <r x="44000089"/>
+              <r x="44000105"/>
+              <r x="44000106"/>
+            </L>
+            <r n="is_mirrored" x="44000099"/>
+            <L n="overlapping_parts">
+              <r x="44000081"/>
+              <r x="44000086"/>
+              <r x="44000085"/>
+              <r x="44000091"/>
+              <r x="44000078"/>
+              <r x="44000082"/>
+              <r x="44000083"/>
+              <r x="44000084"/>
+              <r x="44000092"/>
+              <r x="44000089"/>
+            </L>
+            <r n="part_definition" x="44000132"/>
+            <V n="subroot_index" t="enabled">
+              <T n="enabled">6</T>
+            </V>
+          </U>
+        </U>
+        <U>
+          <r n="key" x="44000089"/>
+          <U n="value">
+            <L n="adjacent_parts">
+              <r x="44000088"/>
+              <r x="44000106"/>
+              <r x="44000079"/>
+              <r x="44000087"/>
+            </L>
+            <L n="overlapping_parts">
+              <r x="44000081"/>
+              <r x="44000086"/>
+              <r x="44000085"/>
+              <r x="44000092"/>
+              <r x="44000078"/>
+              <r x="44000082"/>
+              <r x="44000083"/>
+              <r x="44000084"/>
+              <r x="44000091"/>
+              <r x="44000088"/>
+            </L>
+            <r n="part_definition" x="44000132"/>
+            <V n="subroot_index" t="enabled">
+              <T n="enabled">7</T>
+            </V>
+          </U>
+        </U>
+        <U>
+          <r n="key" x="44000106"/>
+          <U n="value">
+            <L n="adjacent_parts">
+              <r x="44000081"/>
+              <r x="44000089"/>
+              <r x="44000088"/>
+            </L>
+            <L n="overlapping_parts">
+              <r x="44000083"/>
+              <r x="44000084"/>
+              <r x="44000105"/>
+              <r x="44000107"/>
+              <r x="44000086"/>
+            </L>
+            <r n="part_definition" x="44000132"/>
+            <V n="subroot_index" t="enabled">
+              <T n="enabled">8</T>
+            </V>
+          </U>
+        </U>
+        <U>
+          <r n="key" x="44000079"/>
+          <U n="value">
+            <L n="adjacent_parts">
+              <r x="44000078"/>
+              <r x="44000081"/>
+              <r x="44000089"/>
+              <r x="44000091"/>
+              <r x="44000086"/>
+            </L>
+            <L n="overlapping_parts">
+              <r x="44000078"/>
+              <r x="44000082"/>
+              <r x="44000085"/>
+              <r x="44000087"/>
+              <r x="44000090"/>
+            </L>
+            <r n="part_definition" x="44000157"/>
+          </U>
+        </U>
+        <U>
+          <r n="key" x="44000081"/>
+          <U n="value">
+            <L n="adjacent_parts">
+              <r x="44000079"/>
+              <r x="44000105"/>
+              <r x="44000082"/>
+              <r x="44000083"/>
+              <r x="44000087"/>
+              <r x="44000106"/>
+              <r x="44000090"/>
+              <r x="44000107"/>
+            </L>
+            <L n="overlapping_parts">
+              <r x="44000078"/>
+              <r x="44000082"/>
+              <r x="44000083"/>
+              <r x="44000084"/>
+              <r x="44000085"/>
+              <r x="44000086"/>
+              <r x="44000088"/>
+              <r x="44000089"/>
+              <r x="44000091"/>
+              <r x="44000092"/>
+            </L>
+            <r n="part_definition" x="44000157"/>
+            <r n="subroot_index" x="44000102"/>
+          </U>
+        </U>
+        <U>
+          <r n="key" x="44000105"/>
+          <U n="value">
+            <L n="adjacent_parts">
+              <r x="44000081"/>
+              <r x="44000084"/>
+              <r x="44000088"/>
+              <r x="44000092"/>
+              <r x="44000085"/>
+            </L>
+            <L n="overlapping_parts">
+              <r x="44000083"/>
+              <r x="44000084"/>
+              <r x="44000086"/>
+              <r x="44000106"/>
+              <r x="44000107"/>
+            </L>
+            <r n="part_definition" x="44000157"/>
+            <r n="subroot_index" x="44000114"/>
+          </U>
+        </U>
+      </L>
+      <L n="_super_affordances">
+        <r x="44000169"/>
+        <r x="44000170"/>
+        <r x="44000171"/>
+        <T>13441</T>
+        <T>14305</T>
+        <T>28880</T>
+        <r x="44000175"/>
+        <r x="44000176"/>
+        <r x="44000177"/>
+        <r x="44000178"/>
+        <r x="44000179"/>
+        <r x="44000180"/>
+        <r x="44000181"/>
+        <r x="44000182"/>
+        <r x="44000183"/>
+        <r x="44000184"/>
+        <r x="44000185"/>
+        <r x="44000186"/>
+        <r x="44000187"/>
+        <r x="44000188"/>
+        <r x="44000189"/>
+        <r x="44000190"/>
+        <r x="44000191"/>
+        <r x="44000192"/>
+        <r x="44000193"/>
+        <r x="44000194"/>
+        <r x="44000195"/>
+        <r x="44000196"/>
+        <r x="44000197"/>
+        <r x="44000198"/>
+        <r x="44000199"/>
+        <r x="44000200"/>
+        <r x="44000201"/>
+        <r x="44000202"/>
+        <T>158785</T>
+        <r x="44000204"/>
+        <r x="44000205"/>
+        <r x="44000206"/>
+        <T>164335</T>
+        <T>164337</T>
+        <T>164336</T>
+        <r x="44000210"/>
+        <T>129130</T>
+        <T>174206</T>
+        <T>131566</T>
+        <T>149414</T>
+        <T>158069</T>
+        <T>158070</T>
+        <T>162032</T>
+        <T>162029</T>
+        <T>174207</T>
+        <T>120569</T>
+        <T>168882</T>
+        <T>168883</T>
+        <r x="44000223"/>
+        <r x="44000224"/>
+        <r x="44000225"/>
+      </L>
+      <U n="aop_forward_data">
+        <r n="should_search_forwarded_sim_aop" x="44000098"/>
+      </U>
+      <L n="autonomy_modifiers">
+        <U>
+          <L n="stat_use_multiplier">
+            <r x="44000232"/>
+            <U>
+              <r n="key" x="44000233"/>
+              <U n="value">
+                <r n="apply_direction" x="44000234"/>
+                <T n="multiplier">1.62</T>
+              </U>
+            </U>
+          </L>
+          <r n="subject" x="44000242"/>
+        </U>
+      </L>
+      <E n="posture_transition_target_tag">SEATING_SOFA</E>
+      <U n="recycling_data">
+        <L n="recycling_loot">
+          <T>235786</T>
+        </L>
+        <r n="recycling_values" x="44000253"/>
+      </U>
+      <r n="social_clustering" x="44000016"/>
+    </I>
+    <I c="GameObject" i="object" m="objects.game_object" n="object_sitLiving_SP23ISLwood" s="268930">
+      <V n="_anim_overrides" t="enabled">
+        <U n="enabled">
+          <L n="params">
+            <r x="44000003"/>
+            <U>
+              <r n="name" x="44000004"/>
+              <V n="value" t="string">
+                <T n="string">chairLiving</T>
+              </V>
+            </U>
+          </L>
+        </U>
+      </V>
+      <U n="_components">
+        <r n="focus" x="44000015"/>
+        <r n="line_of_sight" x="44000016"/>
+        <V n="portal" t="enabled">
+          <U n="enabled">
+            <L n="_portal_data">
+              <T>154677</T>
+            </L>
+          </U>
+        </V>
+        <V n="retail_component" t="enabled">
+          <V n="enabled" t="reference">
+            <T n="reference">115890</T>
+          </V>
+        </V>
+        <r n="state" x="44000074"/>
+        <r n="tooltip_component" x="44000016"/>
+      </U>
+      <L n="_super_affordances">
+        <r x="44000169"/>
+        <r x="44000170"/>
+        <r x="44000171"/>
+        <T>13136</T>
+        <T>135737</T>
+        <r x="44000175"/>
+        <r x="44000176"/>
+        <r x="44000177"/>
+        <r x="44000178"/>
+        <r x="44000179"/>
+        <r x="44000180"/>
+        <r x="44000181"/>
+        <r x="44000182"/>
+        <r x="44000183"/>
+        <r x="44000184"/>
+        <r x="44000185"/>
+        <r x="44000186"/>
+        <r x="44000187"/>
+        <r x="44000188"/>
+        <r x="44000189"/>
+        <r x="44000190"/>
+        <r x="44000191"/>
+        <r x="44000192"/>
+        <r x="44000193"/>
+        <r x="44000194"/>
+        <r x="44000195"/>
+        <r x="44000196"/>
+        <r x="44000197"/>
+        <r x="44000198"/>
+        <r x="44000199"/>
+        <r x="44000200"/>
+        <r x="44000201"/>
+        <r x="44000202"/>
+        <r x="44000204"/>
+        <r x="44000205"/>
+        <r x="44000206"/>
+        <r x="44000210"/>
+        <T>157639</T>
+        <T>143959</T>
+        <r x="44000223"/>
+        <r x="44000224"/>
+        <r x="44000225"/>
+      </L>
+      <L n="autonomy_modifiers">
+        <U>
+          <L n="stat_use_multiplier">
+            <r x="44000232"/>
+            <U>
+              <r n="key" x="44000233"/>
+              <U n="value">
+                <r n="apply_direction" x="44000234"/>
+                <T n="multiplier">1.59</T>
+              </U>
+            </U>
+          </L>
+          <r n="subject" x="44000242"/>
+        </U>
+      </L>
+      <E n="posture_transition_target_tag">SEATING_LIVING</E>
+      <U n="recycling_data">
+        <r n="recycling_values" x="44000253"/>
+      </U>
+      <r n="social_clustering" x="44000016"/>
+    </I>
+    <I c="GameObject" i="object" m="objects.game_object" n="object_Fountain_SP23" s="268920">
+      <U n="_components">
+        <V n="focus" t="enabled">
+          <U n="enabled">
+            <V n="_focus_score" t="globally">
+              <U n="globally">
+                <E n="base">LOW</E>
+              </U>
+            </V>
+          </U>
+        </V>
+        <r n="retail_component" x="44000024"/>
+        <V n="state" t="enabled">
+          <U n="enabled">
+            <L n="states">
+              <U>
+                <L n="client_states">
+                  <U>
+                    <r n="key" x="44000289"/>
+                    <U n="value">
+                      <V n="vfx_state" t="apply_new_value">
+                        <V n="apply_new_value" t="start_vfx">
+                          <V n="start_vfx" t="single_effect">
+                            <U n="single_effect">
+                              <T n="effect_name">sp23_fountain_star</T>
+                            </U>
+                          </V>
+                        </V>
+                      </V>
+                    </U>
+                  </U>
+                  <U>
+                    <T n="key">76360</T>
+                  </U>
+                </L>
+                <V n="default_value" t="reference">
+                  <r n="reference" x="44000289"/>
+                </V>
+                <r n="reset_to_default" x="44000098"/>
+              </U>
+            </L>
+          </U>
+        </V>
+      </U>
+      <L n="_super_affordances">
+        <r x="44000169"/>
+        <r x="44000170"/>
+        <r x="44000171"/>
+        <r x="44000223"/>
+        <T>131805</T>
+      </L>
+      <r n="recycling_data" x="44000313"/>
+    </I>
+    <I c="GameObject" i="object" m="objects.game_object" n="object_lightFloor_SP23ISLlantern" s="268934">
+      <U n="_components">
+        <r n="focus" x="44000015"/>
+        <V n="lighting" t="enabled">
+          <U n="enabled">
+            <L n="component_interactions">
+              <T>120287</T>
+              <T>120288</T>
+              <T>120313</T>
+              <T>241033</T>
+              <T>120317</T>
+              <T>254205</T>
+              <T>254203</T>
+              <T>120302</T>
+              <T>120303</T>
+              <T>214715</T>
+            </L>
+            <V n="light_states" t="enabled">
+              <U n="enabled">
+                <r n="off_state_value" x="44000326"/>
+                <r n="on_state_value" x="44000327"/>
+              </U>
+            </V>
+            <V n="visual_effect" t="enabled">
+              <U n="enabled">
+                <T n="effect_name">sp23_light_floor_lantern</T>
+              </U>
+            </V>
+          </U>
+        </V>
+        <V n="retail_component" t="enabled">
+          <V n="enabled" t="reference">
+            <T n="reference">115301</T>
+          </V>
+        </V>
+        <V n="state" t="enabled">
+          <U n="enabled">
+            <r n="state_triggers" x="44000031"/>
+            <L n="states">
+              <r x="44000048"/>
+              <U>
+                <L n="client_states">
+                  <U>
+                    <r n="key" x="44000338"/>
+                  </U>
+                  <U>
+                    <r n="key" x="44000340"/>
+                  </U>
+                </L>
+                <V n="default_value" t="reference">
+                  <r n="reference" x="44000340"/>
+                </V>
+                <r n="reset_on_load_if_time_passes" x="44000098"/>
+                <r n="reset_to_default" x="44000098"/>
+              </U>
+              <r x="44000055"/>
+              <r x="44000064"/>
+              <r x="44000071"/>
+              <U>
+                <L n="client_states">
+                  <U>
+                    <r n="key" x="44000327"/>
+                    <U n="value">
+                      <V n="autonomy_modifiers" t="leave_unchanged"/>
+                    </U>
+                  </U>
+                  <U>
+                    <r n="key" x="44000326"/>
+                    <U n="value">
+                      <V n="autonomy_modifiers" t="apply_new_value"/>
+                    </U>
+                  </U>
+                </L>
+                <V n="default_value" t="reference">
+                  <r n="reference" x="44000326"/>
+                </V>
+              </U>
+            </L>
+            <V n="timed_state_triggers" t="enabled">
+              <L n="enabled">
+                <U>
+                  <r n="key" x="44000338"/>
+                  <U n="value">
+                    <L n="ops">
+                      <U>
+                        <L n="states_to_trigger">
+                          <r x="44000340"/>
+                        </L>
+                        <T n="trigger_time">10</T>
+                      </U>
+                    </L>
+                  </U>
+                </U>
+              </L>
+            </V>
+          </U>
+        </V>
+      </U>
+      <L n="_super_affordances">
+        <r x="44000169"/>
+        <r x="44000170"/>
+        <r x="44000171"/>
+        <T>196759</T>
+        <r x="44000223"/>
+        <r x="44000225"/>
+      </L>
+      <r n="recycling_data" x="44000313"/>
+    </I>
+  </R>
+</combined>

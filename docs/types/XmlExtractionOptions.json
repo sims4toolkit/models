@@ -1,0 +1,56 @@
+{
+  "$schema": "https://raw.githubusercontent.com/sims4toolkit/misc/main/json-schemas/docs-item-schema.json",
+  "imports": [
+    "import type { XmlExtractionOptions } from \"@s4tk/models/types\"; // TypeScript only"
+  ],
+  "header": {
+    "title": {
+      "prefix": "interface",
+      "name": "XmlExtractionOptions"
+    },
+    "description": "Options to configure when extracting from combined tuning.",
+    "sourceCode": "src/lib/common/options.ts"
+  },
+  "sections": [
+    {
+      "title": "Properties",
+      "content": [
+        {
+          "displayType": "property",
+          "name": "commentMap",
+          "optional": true,
+          "description": "Mappings of text node content to comments they should include.",
+          "type": {
+            "name": "Map<string, string>"
+          }
+        },
+        {
+          "displayType": "property",
+          "name": "filter",
+          "optional": true,
+          "description": "Function to determine which tunings are extracted.",
+          "type": {
+            "name": "(node: XmlNode) => boolean",
+            "path": {
+              "pkg": "xml-dom",
+              "group": "interfaces",
+              "item": "XmlNode"
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "footer": {
+    "seeAlso": [
+      {
+        "name": "CombinedTuningResource",
+        "path": {
+          "pkg": "models",
+          "group": "resources",
+          "item": "CombinedTuningResource"
+        }
+      }
+    ]
+  }
+}

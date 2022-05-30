@@ -61,7 +61,18 @@ export function arraysAreEqual(arr1: Equalable[], arr2: any[]): boolean {
  * @returns True if this buffer contains XML, false otherwise
  */
 export function bufferContainsXml(buffer: Buffer): boolean {
-  return buffer.length >= 5 && buffer.slice(0, 5).toString('utf-8') === '<?xml';
+  return buffer.length >= 5 && buffer.toString("utf-8", 0, 5) === "<?xml";
+}
+
+/**
+ * Checks the given buffer and returns whether or not it begins with four bytes
+ * that spell "DATA" in UTF-8.
+ * 
+ * @param buffer Buffer to check contents of
+ * @returns True if this buffer begins with "DATA" in binary, false otherwise
+ */
+export function bufferContainsDATA(buffer: Buffer): boolean {
+  return buffer.length >= 4 && buffer.toString("utf-8", 0, 4) === "DATA";
 }
 
 /**
@@ -74,8 +85,27 @@ export function promisify<T>(fn: () => T): Promise<T> {
     try {
       const result = fn();
       resolve(result);
-    } catch(e) {
+    } catch (e) {
       reject(e);
     }
   });
+}
+
+/**
+ * Returns a subarray of the given array that contains of all values between the
+ * given start index and the first value that is mapped to something falsey.
+ * 
+ * @param arr Source array
+ * @param startIndex (Optional) Index to start at, 0 by default
+ * @param fn (Optional) Mapper function, identity by default
+ */
+export function readUntilFalsey<T>(
+  arr: T[],
+  startIndex: number = 0,
+  fn: ((t: T) => boolean) = (t: T) => Boolean(t)
+): T[] {
+  let i: number;
+  for (i = startIndex; i < arr.length; i++)
+    if (!fn(arr[i])) break;
+  return arr.slice(startIndex, i);
 }

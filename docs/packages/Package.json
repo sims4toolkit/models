@@ -8,9 +8,24 @@
     "title": {
       "prefix": "class",
       "name": "Package",
+      "generics": [
+        {
+          "name": "ResourceType",
+          "extends": [
+            {
+              "name": "Resource",
+              "path": {
+                "pkg": "models",
+                "group": "types",
+                "item": "Resource"
+              }
+            }
+          ]
+        }
+      ],
       "extends": [
         {
-          "name": "MappedModel<ResourceKey, Resource, ResourceEntry>",
+          "name": "MappedModel<ResourceKey, Resource, ResourceEntry<ResourceType>>",
           "path": {
             "pkg": "models",
             "group": "abstracts",
@@ -39,7 +54,7 @@
               "optional": true,
               "description": "Entries to initialize the package with.",
               "type": {
-                "name": "ResourceKeyPair[]",
+                "name": "ResourceKeyPair<ResourceType>[]",
                 "path": {
                   "pkg": "models",
                   "group": "types",
@@ -58,8 +73,23 @@
           "displayType": "function",
           "prefix": "static",
           "name": "from",
+          "generics": [
+            {
+              "name": "T",
+              "extends": [
+                {
+                  "name": "Resource",
+                  "path": {
+                    "pkg": "models",
+                    "group": "types",
+                    "item": "Resource"
+                  }
+                }
+              ]
+            }
+          ],
           "returnType": {
-            "name": "Package"
+            "name": "Package<T>"
           },
           "description": "Reads the given buffer as a Package.",
           "arguments": [
@@ -94,8 +124,23 @@
           "displayType": "function",
           "prefix": "static async",
           "name": "fromAsync",
+          "generics": [
+            {
+              "name": "T",
+              "extends": [
+                {
+                  "name": "Resource",
+                  "path": {
+                    "pkg": "models",
+                    "group": "types",
+                    "item": "Resource"
+                  }
+                }
+              ]
+            }
+          ],
           "returnType": {
-            "name": "Promise<Package>"
+            "name": "Promise<Package<T>>"
           },
           "description": "Asynchronously reads the given buffer as a Package.",
           "arguments": [
@@ -135,8 +180,28 @@
           "displayType": "function",
           "prefix": "static",
           "name": "extractResources",
+          "generics": [
+            {
+              "name": "T",
+              "extends": [
+                {
+                  "name": "Resource",
+                  "path": {
+                    "pkg": "models",
+                    "group": "types",
+                    "item": "Resource"
+                  }
+                }
+              ]
+            }
+          ],
           "returnType": {
-            "name": "ResourceKeyPair[]"
+            "name": "ResourceKeyPair<T>[]",
+            "path": {
+              "pkg": "models",
+              "group": "types",
+              "item": "ResourceKeyPair"
+            }
           },
           "description": "Reads the given buffer as a Package, but just returns its entries rather than a full Package object.",
           "arguments": [
@@ -171,8 +236,28 @@
           "displayType": "function",
           "prefix": "static async",
           "name": "extractResourcesAsync",
+          "generics": [
+            {
+              "name": "T",
+              "extends": [
+                {
+                  "name": "Resource",
+                  "path": {
+                    "pkg": "models",
+                    "group": "types",
+                    "item": "Resource"
+                  }
+                }
+              ]
+            }
+          ],
           "returnType": {
-            "name": "Promise<ResourceKeyPair[]>"
+            "name": "Promise<ResourceKeyPair<T>[]>",
+            "path": {
+              "pkg": "models",
+              "group": "types",
+              "item": "ResourceKeyPair"
+            }
           },
           "description": "Asynchronously reads the given buffer as a Package, but just returns its entries rather than a full Package object.",
           "arguments": [

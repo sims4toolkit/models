@@ -2,9 +2,17 @@ import { BinaryEncoder } from "@s4tk/encoding";
 import { formatAsHexString } from "@s4tk/hashing/formatting";
 import { fnv32 } from "@s4tk/hashing";
 import { SimDataDto, CellEncodingOptions } from "../types";
-import { HEADER_SIZE, TABLE_HEADER_OFFSET, RELOFFSET_NULL, NO_NAME_HASH } from "../constants";
 import * as cells from "../cells";
 import DataType from "../../../enums/data-type";
+
+//#region Constants
+
+const RELOFFSET_NULL = -0x80000000;
+const NO_NAME_HASH = 0x811C9DC5; // equal to fnv32('')
+const HEADER_SIZE = 28; // does not include bytes for padding
+const TABLE_HEADER_OFFSET = 24;
+
+//#endregion Constants
 
 //#region Interfaces
 
@@ -111,12 +119,12 @@ function isStringType(cell: cells.Cell): boolean {
  * 
  * @param model SimData model to write
  */
-export default function writeData(model: SimDataDto): Buffer {
+export default function writeSimData(model: SimDataDto): Buffer {
   if ((model.version < 0x100) || (model.version > 0x101)) {
     const hexVersion = formatAsHexString(model.version, 0, true);
     throw new Error(`S4TK cannot write SimData version ${hexVersion}, only 0x100-0x101 are supported.`);
   }
-  
+
   //#region Mappings & Getters
 
   /** Maps name strings to their 32-bit hashes. */
@@ -179,7 +187,7 @@ export default function writeData(model: SimDataDto): Buffer {
       column.offset = size;
       size += DataType.getBytes(column.dataType);
     });
-    
+
     let largestPadding = 0;
     columns.forEach(column => {
       const padding = getPaddingForAlignment(size, DataType.getAlignment(column.dataType) - 1);
@@ -189,7 +197,7 @@ export default function writeData(model: SimDataDto): Buffer {
 
     columns.forEach(column => hashName(column)); // needed for when there is 1
     columns.sort((a, b) => hashName(a) - hashName(b));
-    
+
     hashName(schema); // hash after columns to match s4s
 
     const serialSchema = {
@@ -235,7 +243,7 @@ export default function writeData(model: SimDataDto): Buffer {
 
   function addPrimitiveCell(cell: cells.Cell): TableRef {
     const table = getRawTable(cell.dataType);
-        
+
     const ref: TableRef = {
       dataType: cell.dataType,
       index: table.row.length
@@ -273,14 +281,14 @@ export default function writeData(model: SimDataDto): Buffer {
       let firstChildRef: TableRef;
       cell.children.forEach(child => {
         const table = getRawTable(child.dataType);
-        
+
         const ref: TableRef = {
           dataType: child.dataType,
           index: table.row.length
         };
-  
+
         table.row.push({ cell: child, ref: addCell(child) });
-  
+
         if (!firstChildRef) firstChildRef = ref;
       });
       return firstChildRef;
@@ -305,7 +313,7 @@ export default function writeData(model: SimDataDto): Buffer {
     if (cell.childType === DataType.Vector || cell.childType === DataType.Variant) {
       const { child } = cell;
       const table = getRawTable(child.dataType);
-      
+
       const ref: TableRef = {
         dataType: child.dataType,
         index: table.row.length
@@ -365,14 +373,14 @@ export default function writeData(model: SimDataDto): Buffer {
     const buffer = Buffer.alloc(strings.reduce((prev, string) => {
       return prev + Buffer.byteLength(string, 'utf-8') + 1;
     }, 0));
-  
+
     let offset = 0;
     strings.forEach(string => {
       buffer.write(string, offset, 'utf-8');
       stringTableOffsets[string] = offset;
       offset += Buffer.byteLength(string, 'utf-8') + 1;
     });
-  
+
     return buffer;
   })();
 
@@ -396,7 +404,7 @@ export default function writeData(model: SimDataDto): Buffer {
         throw new Error(`Name '${name}' never had its offset recorded.`);
       return value;
     }
-    
+
     let filledColumns = 0;
     serialSchemas.forEach(schema => {
       encoder.int32(nameOffset(schema.name));
@@ -435,7 +443,7 @@ export default function writeData(model: SimDataDto): Buffer {
   function getSchemaIndex(table: ObjectTable) {
     return serialSchemas.findIndex(schema => schema.hash === table.schema.hash);
   }
-  
+
   objectTables.sort((first, second) => {
     return getSchemaIndex(first) - getSchemaIndex(second);
   });
@@ -454,10 +462,10 @@ export default function writeData(model: SimDataDto): Buffer {
     const hasCharTable = stringsToAddToCharTable.length > 0;
     const numTables = Object.keys(rawTables).length + Object.keys(objectTables).length + (hasCharTable ? 1 : 0);
     totalSize += numTables * 28;
-    
+
     /** Maps schema hash to position of object table. */
     const objectTablePositions: { [key: number]: number; } = {};
-    objectTables.forEach(table => { 
+    objectTables.forEach(table => {
       totalSize += getPaddingForAlignment(totalSize, 15);
       totalSize += getPaddingForAlignment(totalSize, table.schema.size - 1);
       objectTablePositions[table.schema.hash] = totalSize;

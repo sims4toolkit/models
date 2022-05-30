@@ -11,6 +11,7 @@ import StringEntry from "./string-entry";
 import { WritableModelCreationOptions, WritableModelFromOptions } from "../../base/writable-model";
 import ResourceRegistry from "../../packages/resource-registry";
 import BinaryResourceType from "../../enums/binary-resources";
+import { formatStringKey } from "@s4tk/hashing/formatting";
 
 /**
  * Model for string table (STBL) resources.
@@ -101,6 +102,31 @@ export default class StringTableResource extends PrimitiveMappedModel<string, St
 
   isXml(): boolean {
     return false;
+  }
+
+  /**
+   * Returns a list of entries for this STBL for writing to a JSON.
+   * 
+   * @param useHexKey Whether or not the key should be written as a hex string,
+   * true by default
+   * @param useId Whether or not to add a unique ID to each entry, false by
+   * default
+   */
+  toJsonObject(useHexKey = true, useId = false): {
+    key: string | number;
+    value: string;
+    id?: number;
+  }[] {
+    return this.entries.map(({ id, key, value }) => {
+      const result: any = {
+        key: useHexKey ? formatStringKey(key) : key,
+        value
+      };
+
+      if (useId) result.id = id;
+
+      return result
+    });
   }
 
   //#endregion Public Methods

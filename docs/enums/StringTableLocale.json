@@ -102,6 +102,38 @@
         {
           "displayType": "function",
           "prefix": "static",
+          "name": "all",
+          "description": "Returns an array of all locales in the enum.",
+          "returnType": {
+            "name": "StringTableLocale[]"
+          }
+        },
+        {
+          "displayType": "function",
+          "prefix": "static",
+          "name": "getInstanceBase",
+          "description": "Removes the locale code from the given instance and returns the result.",
+          "returnType": {
+            "name": "bigint"
+          },
+          "arguments": [
+            {
+              "name": "instance",
+              "description": "Instance to get base from.",
+              "type": {
+                "name": "bigint"
+              }
+            }
+          ],
+          "examples": [
+            {
+              "code": "const instanceBase = StringTableLocale.getInstanceBase(0x4522A82C94D66CD3n);\n// instanceBase === 0x22A82C94D66CD3n"
+            }
+          ]
+        },
+        {
+          "displayType": "function",
+          "prefix": "static",
           "name": "getLocale",
           "description": "Determines and returns the locale for the given instance ID.",
           "returnType": {
