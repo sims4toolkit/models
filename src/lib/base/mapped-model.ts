@@ -293,7 +293,7 @@ export abstract class MappedModel<Key, Value, Entry extends MappedModelEntry<Key
    * 
    * @param entries New entries to use
    */
-  replaceEntries(entries: Entry[]) {
+  replaceEntries(entries: { key: Key; value: Value; }[]) {
     this.clear();
     this.addAll(entries);
   }

@@ -1008,5 +1008,39 @@ describe("StringTableResource", () => {
     });
   });
 
+  describe("#replaceEntries()", () => {
+    it("should regenerate the entries' IDs", () => {
+      const stbl = getStbl("Normal");
+      stbl.delete(1);
+      expect(stbl.get(2)).to.not.be.undefined;
+      stbl.replaceEntries(stbl.entries);
+      expect(stbl.get(2)).to.be.undefined;
+    });
+
+    it("should replace the existing entries", () => {
+      const stbl = getStbl("Normal");
+
+      stbl.replaceEntries([
+        {
+          key: 0x12345678,
+          value: "first"
+        }
+      ]);
+
+      expect(stbl.size).to.equal(1);
+      expect(stbl.get(0).key).to.equal(0x12345678);
+      expect(stbl.get(0).value).to.equal("first");
+    });
+
+    it("should disable mutation from the previous entries", () => {
+      const stbl = getStbl("Normal");
+      const previousFirst = stbl.get(0);
+      expect(previousFirst.key).to.equal(0x7E08629A);
+      stbl.replaceEntries(stbl.entries);
+      previousFirst.key = 0x12345678;
+      expect(stbl.get(0).key).to.equal(0x7E08629A);
+    });
+  });
+
   //#endregion Methods
 });

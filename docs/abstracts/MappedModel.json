@@ -307,7 +307,7 @@
             {
               "name": "entries",
               "type": {
-                "name": "Entry[]"
+                "name": "{ key: Key; value: Value; }[]"
               },
               "description": "New entries to use."
             }
