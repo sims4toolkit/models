@@ -13,7 +13,7 @@
           "name": "StaticResource",
           "path": {
             "pkg": "models",
-            "group": "types",
+            "group": "abstracts",
             "item": "StaticResource"
           }
         }
