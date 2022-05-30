@@ -138,6 +138,16 @@ describe("Package", () => {
       const entry = dbpf.get(0);
       expect(entry.owner).to.equal(dbpf);
     });
+
+    it("should assign IDs to the entries that are created", () => {
+      const dbpf = new Package([
+        { key: getTestKey(), value: getTestTuning() },
+        { key: getTestKey(), value: getTestTuning() }
+      ]);
+
+      expect(dbpf.entries[0].id).to.equal(0);
+      expect(dbpf.entries[1].id).to.equal(1);
+    });
   });
 
   describe("static#extractResources()", () => {
@@ -542,6 +552,12 @@ describe("Package", () => {
           expect(entry.resource.hasBufferCache).to.be.true;
         }
       });
+    });
+
+    it("should assign an ID to the entry that is created", () => {
+      const pkg = new Package();
+      pkg.add(getTestKey(), getTestTuning());
+      expect(pkg.entries[0].id).to.equal(0);
     });
   });
 
