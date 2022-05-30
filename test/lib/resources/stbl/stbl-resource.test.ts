@@ -954,5 +954,59 @@ describe("StringTableResource", () => {
     });
   });
 
+  describe("#toJsonObject()", () => {
+    it("should use hex keys by default", () => {
+      const stbl = getStbl("Normal");
+      const json = stbl.toJsonObject();
+      expect(json[0].key).to.be.a("string").that.equals("0x7E08629A");
+    });
+
+    it("should use number keys if specified", () => {
+      const stbl = getStbl("Normal");
+      const json = stbl.toJsonObject(false);
+      expect(json[0].key).to.be.a("number").that.equals(0x7E08629A);
+    });
+
+    it("should exclude IDs by default", () => {
+      const stbl = getStbl("Normal");
+      const json = stbl.toJsonObject();
+      expect(json[0].id).to.be.undefined;
+    });
+
+    it("should include IDs if specified", () => {
+      const stbl = getStbl("Normal");
+      const json = stbl.toJsonObject(null, true);
+      expect(json[0].id).to.be.a("number").that.equals(0);
+    });
+
+    it("should include all entries", () => {
+      const stbl = getStbl("Normal");
+      const json = stbl.toJsonObject(null, true);
+      expect(json).to.be.an("Array").with.lengthOf(3);
+      expect(json[0].value).to.equal("This is a string.");
+      expect(json[1].value).to.equal("This is another string!");
+      expect(json[2].value).to.equal("And this, this is a third.");
+    });
+
+    it("should not produce an array that mutates the model", () => {
+      const stbl = getStbl("Normal");
+      const json = stbl.toJsonObject(null, true);
+      json.push({
+        id: 3,
+        key: 0x12345678,
+        value: "test string"
+      });
+      expect(stbl.size).to.equal(3);
+      expect(stbl.get(3)).to.be.undefined;
+    });
+
+    it("should not produce entries that mutate the model", () => {
+      const stbl = getStbl("Normal");
+      const json = stbl.toJsonObject(null, true);
+      json[0].value = "Changed string.";
+      expect(stbl.entries[0].value).to.equal("This is a string.");
+    });
+  });
+
   //#endregion Methods
 });
