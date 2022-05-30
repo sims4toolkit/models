@@ -193,6 +193,16 @@ describe("StringTableResource", () => {
       const stbl = new StringTableResource();
       expect(stbl.hasBufferCache).to.be.false;
     });
+
+    it("should assign IDs to the entries that are created", () => {
+      const stbl = new StringTableResource([
+        { key: 123, value: "First" },
+        { key: 456, value: "Second" }
+      ]);
+
+      expect(stbl.entries[0].id).to.equal(0);
+      expect(stbl.entries[1].id).to.equal(1);
+    });
   });
 
   describe("static#from()", () => {
@@ -391,6 +401,12 @@ describe("StringTableResource", () => {
       expect(entries).to.equal(stbl.entries);
       stbl.add(123, "hi");
       expect(entries).to.not.equal(stbl.entries);
+    });
+
+    it("should assign an ID to the entry that is created", () => {
+      const stbl = new StringTableResource();
+      stbl.add(0x12345678, "test");
+      expect(stbl.entries[0].id).to.equal(0);
     });
   });
 
