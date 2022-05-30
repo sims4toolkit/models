@@ -1204,5 +1204,34 @@ describe("Package", () => {
     });
   });
 
+  describe("#replaceEntries()", () => {
+    it("should regenerate the entries' IDs", () => {
+      const pkg = getPackage("Trait");
+      pkg.delete(0);
+      expect(pkg.get(1)).to.not.be.undefined;
+      pkg.replaceEntries(pkg.entries);
+      expect(pkg.get(1)).to.be.undefined;
+    });
+
+    it("should replace the existing entries", () => {
+      const pkg = getPackage("Trait");
+
+      pkg.replaceEntries([
+        {
+          key: {
+            type: TuningResourceType.Trait,
+            group: 0,
+            instance: 12345n
+          },
+          value: getTestTuning()
+        }
+      ]);
+
+      expect(pkg.size).to.equal(1);
+      expect(pkg.get(0).key.instance).to.equal(12345n);
+      expect(pkg.get(0).value.encodingType).to.equal(EncodingType.XML);
+    });
+  });
+
   //#endregion Public Methods
 });
