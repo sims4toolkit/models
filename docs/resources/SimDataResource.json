@@ -10,26 +10,26 @@
       "name": "SimDataResource",
       "extends": [
         {
-          "name": "WritableModel",
+          "name": "DataResource",
           "path": {
             "pkg": "models",
             "group": "abstracts",
-            "item": "WritableModel"
+            "item": "DataResource"
           }
         }
       ],
       "implements": [
         {
-          "name": "Resource",
+          "name": "SimDataDto",
           "path": {
             "pkg": "models",
             "group": "types",
-            "item": "Resource"
+            "item": "SimDataDto"
           }
         }
       ]
     },
-    "description": "Model for SimData resources. While combined tuning is the same format, it is NOT supported by this model at this time.\n\nSimDatas are mini relational databases, and to simplify working with them (and for consistency with its XML format), this model uses the concept of \"instances\". An \"instance\" is an object cell that has a name.",
+    "description": "Model for SimData resources. While combined tuning is the same binary format, it is not supported by this model (use CombinedTuningResource instead).\n\nSimDatas are mini relational databases, and to simplify working with them (and for consistency with its XML format), this model uses the concept of \"instances\". An \"instance\" is an object cell that has a name.",
     "sourceCode": "src/lib/resources/simdata/simdata-resource.ts"
   },
   "sections": [
@@ -38,47 +38,11 @@
       "content": [
         {
           "displayType": "property",
-          "prefix": "readonly",
-          "name": "encodingType",
-          "description": "Always 'EncodingType.DATA'.",
-          "type": {
-            "name": "EncodingType",
-            "path": {
-              "pkg": "models",
-              "group": "enums",
-              "item": "EncodingType"
-            }
-          },
-          "overrides": {
-            "name": "Resource",
-            "path": {
-              "pkg": "models",
-              "group": "types",
-              "item": "Resource"
-            }
-          }
-        },
-        {
-          "displayType": "property",
           "prefix": "get, set",
           "name": "instance",
           "description": "Alias for 'instances[0]'.",
           "type": {
             "name": "SimDataInstance",
-            "path": {
-              "pkg": "models",
-              "group": "simdata-fragments",
-              "item": "SimDataInstance"
-            }
-          }
-        },
-        {
-          "displayType": "property",
-          "prefix": "get",
-          "name": "instances",
-          "description": "An array that contains the instances for this SimData. Mutating this array and its children is safe in terms of cacheing.",
-          "type": {
-            "name": "SimDataInstance[]",
             "path": {
               "pkg": "models",
               "group": "simdata-fragments",
@@ -112,38 +76,6 @@
               "group": "simdata-fragments",
               "item": "SimDataSchema"
             }
-          }
-        },
-        {
-          "displayType": "property",
-          "prefix": "get",
-          "name": "schemas",
-          "description": "An array that contains the schemas for this SimData. Mutating this array and its children is safe in terms of cacheing.",
-          "type": {
-            "name": "SimDataSchema[]",
-            "path": {
-              "pkg": "models",
-              "group": "simdata-fragments",
-              "item": "SimDataSchema"
-            }
-          }
-        },
-        {
-          "displayType": "property",
-          "prefix": "get, set",
-          "name": "unused",
-          "description": "A number in the SimData header that is not used, but is usually set to the group number for a pack.",
-          "type": {
-            "name": "number"
-          }
-        },
-        {
-          "displayType": "property",
-          "prefix": "get, set",
-          "name": "version",
-          "description": "The version of this SimData. This can either be 0x100 or 0x101, but should be 0x101.",
-          "type": {
-            "name": "number"
           }
         }
       ]
@@ -412,22 +344,6 @@
       "content": [
         {
           "displayType": "function",
-          "name": "isXml",
-          "returnType": {
-            "name": "boolean"
-          },
-          "description": "Always returns false.",
-          "overrides": {
-            "name": "Resource",
-            "path": {
-              "pkg": "models",
-              "group": "types",
-              "item": "Resource"
-            }
-          }
-        },
-        {
-          "displayType": "function",
           "name": "removeInstances",
           "description": "Removes instances from this SimData by reference equality, so the passed in instances must be the exact objects to remove.",
           "arguments": [
@@ -489,5 +405,33 @@
         }
       ]
     }
-  ]
+  ],
+  "footer": {
+    "seeAlso": [
+      {
+        "name": "DataResource",
+        "path": {
+          "pkg": "models",
+          "group": "abstracts",
+          "item": "DataResource"
+        }
+      },
+      {
+        "name": "SimDataDto",
+        "path": {
+          "pkg": "models",
+          "group": "types",
+          "item": "SimDataDto"
+        }
+      },
+      {
+        "name": "CombinedTuningResource",
+        "path": {
+          "pkg": "models",
+          "group": "resources",
+          "item": "CombinedTuningResource"
+        }
+      }
+    ]
+  }
 }
