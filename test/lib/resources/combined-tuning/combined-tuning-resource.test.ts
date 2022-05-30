@@ -4,6 +4,8 @@ import { expect } from "chai";
 import { CombinedTuningResource, XmlResource } from "../../../../dst/models";
 import { EncodingType } from "../../../../dst/enums";
 
+//#region Helpers
+
 const binaryBuffer = fs.readFileSync(
   path.resolve(
     __dirname,
@@ -33,6 +35,8 @@ function testExtractedXml(resource: XmlResource, name: string, id: string) {
     getExtractedXmlBuffer(name).toString()
   );
 }
+
+//#endregion Helpers
 
 describe("CombinedTuningResource", () => {
   //#region Properties
