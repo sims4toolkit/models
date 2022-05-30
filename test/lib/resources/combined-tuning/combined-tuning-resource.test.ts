@@ -29,25 +29,43 @@ describe("CombinedTuningResource", () => {
 
   //#endregion Properties
 
-  //#region Initialization
-
-  // pointless to test constructor
-
-  // TODO: from
-
-  // TODO: fromAsync
-
-  //#endregion Initialization
-
   //#region Static Methods
 
-  // TODO: extractTuning
+  describe("static#from()", () => {
+    context("binary buffer", () => {
+      it("should create a DOM equal to the XML version", () => {
+        const cb = CombinedTuningResource.from(binaryBuffer);
+        const domString = cb.dom.toXml();
+        expect(domString).to.equal(xmlBuffer.toString());
+      });
+    });
 
-  // TODO: extractTuningAsync
+    context("xml buffer", () => {
+      it("should create a DOM equal to the XML version", () => {
+        const cb = CombinedTuningResource.from(xmlBuffer);
+        const domString = cb.dom.toXml();
+        expect(domString).to.equal(xmlBuffer.toString());
+      });
+    });
+  });
 
-  //#endregion Methods
+  describe("static#extractTuning()", () => {
+    context("binary buffer", () => {
+      const getCb = () => CombinedTuningResource.from(binaryBuffer);
 
-  //#region Static Methods
+      // TODO:
+    });
+
+    context("xml buffer", () => {
+      const getCb = () => CombinedTuningResource.from(xmlBuffer);
+
+      // TODO:
+    });
+  });
+
+  //#endregion Static Methods
+
+  //#region Methods
 
   describe("#isxml()", () => {
     it("should be false", () => {
