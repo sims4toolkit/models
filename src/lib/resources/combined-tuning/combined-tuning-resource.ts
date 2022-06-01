@@ -110,6 +110,32 @@ export default class CombinedTuningResource extends DataResource {
 
   //#endregion Static Methods
 
+  //#region Public Methods
+
+  /**
+   * Extracts all tunings from the DOM in this CombinedTuningResource. Note that
+   * the result of this method is not cached, so you should avoid calling it
+   * more than once.
+   * 
+   * @param options Object of options
+   */
+  toTuning(options?: XmlExtractionOptions): XmlResource[] {
+    return extractTuningFromCombinedXml(this.dom, options);
+  }
+
+  /**
+   * Asynchronously extracts all tunings from the DOM in this
+   * CombinedTuningResource. Note that the result of this method is not cached,
+   * so you should avoid calling it more than once.
+   * 
+   * @param options Object of options
+   */
+  async toTuningAsync(options?: XmlExtractionOptions): Promise<XmlResource[]> {
+    return promisify(() => this.toTuning(options));
+  }
+
+  //#endregion Public Methods
+
   //#region Unsupported Methods
 
   clone(): CombinedTuningResource {

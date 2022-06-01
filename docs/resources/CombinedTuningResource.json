@@ -220,6 +220,68 @@
           ]
         }
       ]
+    },
+    {
+      "title": "Methods",
+      "content": [
+        {
+          "displayType": "function",
+          "name": "toTuning",
+          "returnType": {
+            "name": "XmlResource[]",
+            "path": {
+              "pkg": "models",
+              "group": "resources",
+              "item": "XmlResource"
+            }
+          },
+          "description": "Extracts all tunings from the DOM in this CombinedTuningResource. Note that the result of this method is not cached, so you should avoid calling it more than once.",
+          "arguments": [
+            {
+              "name": "options",
+              "optional": true,
+              "description": "Object of optional arguments.",
+              "type": {
+                "name": "XmlExtractionOptions",
+                "path": {
+                  "pkg": "models",
+                  "group": "types",
+                  "item": "XmlExtractionOptions"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "displayType": "function",
+          "prefix": "async",
+          "name": "toTuningAsync",
+          "returnType": {
+            "name": "Promise<XmlResource[]>",
+            "path": {
+              "pkg": "models",
+              "group": "resources",
+              "item": "XmlResource"
+            }
+          },
+          "description": "Asynchronously extracts all tunings from the DOM in this CombinedTuningResource. Note that the result of this method is not cached, so you should avoid calling it more than once.",
+          "arguments": [
+            {
+              "name": "options",
+              "optional": true,
+              "description": "Object of optional arguments.",
+              "type": {
+                "name": "XmlExtractionOptions",
+                "path": {
+                  "pkg": "models",
+                  "group": "types",
+                  "item": "XmlExtractionOptions"
+                }
+              }
+            }
+          ]
+        }
+      ]
     }
   ],
   "footer": {
