@@ -3,7 +3,7 @@ import type { ResourceKey, ResourceKeyPair } from "./types";
 import type { PackageFileReadingOptions } from "../common/options";
 import { MappedModel } from "../base/mapped-model";
 import { arraysAreEqual, promisify } from "../common/helpers";
-import readDbpf from "./serialization/read-dbpf";
+import readDbpf, { streamDbpf } from "./serialization/read-dbpf";
 import writeDbpf from "./serialization/write-dbpf";
 import ResourceEntry from "./resource-entry";
 
@@ -79,6 +79,25 @@ export default class Package<ResourceType extends Resource = Resource>
     options?: PackageFileReadingOptions
   ): Promise<ResourceKeyPair<T>[]> {
     return promisify(() => Package.extractResources<T>(buffer, options));
+  }
+
+  /**
+   * Asynchronously streams individual resources from package file.
+   * 
+   * @param filepath Complete path to file to stream resources from
+   */
+  static async streamResourcesAsync<T extends Resource = Resource>(
+    filepath: string,
+    options?: PackageFileReadingOptions
+  ): Promise<ResourceKeyPair<T>[]> {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const resources = await streamDbpf(filepath, options);
+        resolve(resources as ResourceKeyPair<T>[]);
+      } catch (err) {
+        reject(err);
+      }
+    });
   }
 
   //#endregion Initialization

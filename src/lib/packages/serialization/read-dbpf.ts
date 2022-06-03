@@ -1,3 +1,4 @@
+import fs from "fs";
 import { CompressedBuffer, CompressionType, decompressBuffer } from "@s4tk/compression";
 import { BinaryDecoder } from "@s4tk/encoding";
 import type Resource from "../../resources/resource";
@@ -6,6 +7,7 @@ import type { ResourceKeyPair, ResourceKey } from "../types";
 import { makeList } from "../../common/helpers";
 import RawResource from "../../resources/raw/raw-resource";
 import ResourceRegistry from "../resource-registry";
+import { DbpfFlags, DbpfHeader, IndexEntry } from "./types";
 
 /**
  * Reads the given buffer as a DBPF and returns a DTO for it.
@@ -30,29 +32,36 @@ export default function readDbpf(buffer: Buffer, options?: PackageFileReadingOpt
   });
 }
 
-//#region Types & Interfaces
+/**
+ * Streams resources from a file containing DBPF data.
+ * 
+ * @param filepath Compelte path of file to stream as a DBPF
+ * @param options Options for reading DBPF
+ */
+export async function streamDbpf(filepath: string, options?: PackageFileReadingOptions): Promise<ResourceKeyPair[]> {
+  return new Promise(async (resolve, reject) => {
+    const header = readDbpfHeader(await streamDecoder(filepath, 0, 96));
+    const flagsPos = Number(header.mnIndexRecordPosition || header.mnIndexRecordPositionLow);
+    const flagsDecoder = await streamDecoder(filepath, flagsPos, 16);
+    const flags = readDbpfFlags(flagsDecoder);
+    const indexPos = flagsPos + flagsDecoder.tell();
+    const indexLength = header.mnIndexRecordEntryCount * 32; // 32 is max size, it's ok if larger
+    const indexDecoder = await streamDecoder(filepath, indexPos, indexLength);
+    const index = readDbpfIndex(indexDecoder, header, flags, options?.resourceFilter);
 
-interface DbpfHeader {
-  mnIndexRecordEntryCount: number;
-  mnIndexRecordPositionLow: number;
-  mnIndexRecordPosition: bigint;
+    const records: ResourceKeyPair[] = [];
+    for (let i = 0; i < index.length; i++) {
+      const indexEntry = index[i];
+      const compressedBuffer = await streamBuffer(filepath, indexEntry.mnPosition, indexEntry.mnSize);
+      records.push({
+        key: indexEntry.key,
+        value: getResource(indexEntry, compressedBuffer, options)
+      });
+    }
+
+    resolve(records);
+  });
 }
-
-interface DbpfFlags {
-  constantTypeId?: number;
-  constantGroupId?: number;
-  constantInstanceIdEx?: number;
-}
-
-interface IndexEntry {
-  key: ResourceKey;
-  mnPosition: number;
-  mnSize: number;
-  mnCompressionType?: number;
-  mnSizeDecompressed: number;
-}
-
-//#endregion Types & Interfaces
 
 //#region Helpers
 
@@ -220,6 +229,41 @@ function getResource(entry: IndexEntry, rawBuffer: Buffer, options?: PackageFile
       reason: `Failed to parse resource (Type: ${type})`
     });
   }
+}
+
+/**
+ * Reads a specified number of bytes into a buffer from the given filepath.
+ * 
+ * @param filepath Path to file to stream buffer from
+ * @param pos Start position of buffer to stream
+ * @param size Size of buffer to stream
+ */
+async function streamBuffer(filepath: string, pos: number, size: number): Promise<Buffer> {
+  return new Promise((resolve) => {
+    const stream = fs.createReadStream(filepath, {
+      start: pos,
+      highWaterMark: size
+    });
+
+    stream.once("data", (chunk) => {
+      resolve(chunk as Buffer);
+    });
+  });
+}
+
+/**
+ * Reads a specified number of bytes into a buffer from the given filepath and
+ * creates a decoder for it.
+ * 
+ * @param filepath Path to file to stream buffer from
+ * @param pos Start position of buffer to stream
+ * @param size Size of buffer to stream
+ */
+async function streamDecoder(filepath: string, pos: number, size: number): Promise<BinaryDecoder> {
+  return new Promise((resolve) => {
+    streamBuffer(filepath, pos, size)
+      .then(buffer => resolve(new BinaryDecoder(buffer)));
+  });
 }
 
 //#endregion Helpers
