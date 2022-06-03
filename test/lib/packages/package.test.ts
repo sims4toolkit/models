@@ -246,7 +246,7 @@ describe("Package", () => {
         const dbpf = getPackage("CompleteTrait");
         const entry = dbpf.get(1);
         const key = entry.key;
-        const simdata = entry.value as SimDataResource;
+        const simdata = entry.value as unknown as SimDataResource;
         expect(compare(key, {
           type: 0x545AC67A,
           group: 0x005FDD0C,
@@ -299,6 +299,46 @@ describe("Package", () => {
         expect(dbpf.size).to.equal(1);
         expect(dbpf.get(0).resource.encodingType).to.equal(EncodingType.STBL);
       });
+
+      it("should not exceed a limit of 1 when there is a resource filter", () => {
+        const dbpf = Package.from(getBuffer("CompleteTrait"), {
+          limit: 1,
+          resourceFilter(type) {
+            return type === BinaryResourceType.SimData
+              || type === BinaryResourceType.StringTable;
+          }
+        });
+
+        expect(dbpf.size).to.equal(1);
+      });
+
+      it("should not exceed a limit of 2 when there is a resource filter", () => {
+        const dbpf = Package.from(getBuffer("CompleteTrait"), {
+          limit: 2,
+          resourceFilter(type) {
+            return type === BinaryResourceType.SimData
+              || type === BinaryResourceType.StringTable;
+          }
+        });
+
+        expect(dbpf.size).to.equal(2);
+      });
+
+      it("should not exceed a limit of 1 when there is not a resource filter", () => {
+        const dbpf = Package.from(getBuffer("CompleteTrait"), {
+          limit: 1
+        });
+
+        expect(dbpf.size).to.equal(1);
+      });
+
+      it("should not exceed a limit of 1 when there is not a resource filter", () => {
+        const dbpf = Package.from(getBuffer("CompleteTrait"), {
+          limit: 2
+        });
+
+        expect(dbpf.size).to.equal(2);
+      });
     });
 
     context("dbpf header is invalid", () => {
@@ -341,7 +381,7 @@ describe("Package", () => {
           });
 
           expect(dbpf.size).to.equal(2);
-          expect((dbpf.get(0).resource as SimDataResource).schema.name).to.equal("Trait");
+          expect((dbpf.get(0).resource as unknown as SimDataResource).schema.name).to.equal("Trait");
           expect((dbpf.get(1).resource as XmlResource).root.attributes.i).to.equal("trait");
         });
       });

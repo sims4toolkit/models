@@ -45,6 +45,15 @@
         },
         {
           "displayType": "property",
+          "name": "limit",
+          "optional": true,
+          "description": "If provided, then this is the maximum number of resources that can be loaded into the package.\n\nRecommended in conjunction with resourceFilter when searching for a specific file, so that it can short-circuit when the file is found. This is especially useful for extracting combined tuning, where there will only ever be one per package.",
+          "type": {
+            "name": "number"
+          }
+        },
+        {
+          "displayType": "property",
           "name": "resourceFilter",
           "optional": true,
           "description": "If provided, then the only resources that will be loaded are those whose keys return true from this function. If not provided, then all resources are loaded.\n\nRecommended when extracting a certain type of resource from a package, such as all string tables and nothing else.",

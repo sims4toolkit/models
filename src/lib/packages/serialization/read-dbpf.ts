@@ -18,7 +18,7 @@ export default function readDbpf(buffer: Buffer, options?: PackageFileReadingOpt
   const header = readDbpfHeader(decoder, options);
   decoder.seek(header.mnIndexRecordPosition || header.mnIndexRecordPositionLow);
   const flags = readDbpfFlags(decoder);
-  const index = readDbpfIndex(decoder, header, flags, options?.resourceFilter);
+  const index = readDbpfIndex(decoder, header, flags, options);
   return index.map(indexEntry => {
     decoder.seek(indexEntry.mnPosition);
     const compressedBuffer = decoder.slice(indexEntry.mnSize);
@@ -122,36 +122,49 @@ function readDbpfFlags(decoder: BinaryDecoder): DbpfFlags {
  * @param decoder Decoder to read DBPF index from
  * @param header Header of DBPF that is being read
  * @param flags Flags of DBPF that is being read
- * @param filter Optional function to filter out resources by type/group/inst
+ * @param options Optional arguments
  */
-function readDbpfIndex(decoder: BinaryDecoder, header: DbpfHeader, flags: DbpfFlags, filter?: ResourceFilter): IndexEntry[] {
-  return makeList<IndexEntry>(header.mnIndexRecordEntryCount, () => {
-    const key: Partial<ResourceKey> = {};
-    key.type = flags.constantTypeId ?? decoder.uint32();
-    key.group = flags.constantGroupId ?? decoder.uint32();
-    const mInstanceEx = flags.constantInstanceIdEx ?? decoder.uint32();
-    const mInstance = decoder.uint32();
-    key.instance = (BigInt(mInstanceEx) << 32n) + BigInt(mInstance);
+function readDbpfIndex(
+  decoder: BinaryDecoder,
+  header: DbpfHeader,
+  flags: DbpfFlags,
+  options?: PackageFileReadingOptions
+): IndexEntry[] {
+  return makeList<IndexEntry>(
+    header.mnIndexRecordEntryCount,
+    () => {
+      const key: Partial<ResourceKey> = {};
+      key.type = flags.constantTypeId ?? decoder.uint32();
+      key.group = flags.constantGroupId ?? decoder.uint32();
+      const mInstanceEx = flags.constantInstanceIdEx ?? decoder.uint32();
+      const mInstance = decoder.uint32();
+      key.instance = (BigInt(mInstanceEx) << 32n) + BigInt(mInstance);
 
-    if (filter && !filter(key.type, key.group, key.instance)) {
-      decoder.skip(4);
-      const sizeAndCompression = decoder.uint32();
-      const isCompressed = (sizeAndCompression >>> 31) === 1;
-      decoder.skip(isCompressed ? 8 : 6); // +2 for mnCompressionType
-      return;
-    } else {
-      const entry: Partial<IndexEntry> = { key: key as ResourceKey };
-      entry.mnPosition = decoder.uint32();
-      const sizeAndCompression = decoder.uint32();
-      entry.mnSize = sizeAndCompression & 0x7FFFFFFF; // 31 bits
-      const isCompressed = (sizeAndCompression >>> 31) === 1; // mbExtendedCompressionType; 1 bit
-      entry.mnSizeDecompressed = decoder.uint32();
-      if (isCompressed) entry.mnCompressionType = decoder.uint16();
-      decoder.skip(2); // mnCommitted (uint16; 2 bytes)
-      if (entry.mnCompressionType === CompressionType.DeletedRecord) return; // TODO: make this an option
-      return entry as IndexEntry;
-    }
-  }, true); // true to skip nulls/undefineds
+      if (
+        options?.resourceFilter
+        && !options?.resourceFilter(key.type, key.group, key.instance)
+      ) {
+        decoder.skip(4);
+        const sizeAndCompression = decoder.uint32();
+        const isCompressed = (sizeAndCompression >>> 31) === 1;
+        decoder.skip(isCompressed ? 8 : 6); // +2 for mnCompressionType
+        return;
+      } else {
+        const entry: Partial<IndexEntry> = { key: key as ResourceKey };
+        entry.mnPosition = decoder.uint32();
+        const sizeAndCompression = decoder.uint32();
+        entry.mnSize = sizeAndCompression & 0x7FFFFFFF; // 31 bits
+        const isCompressed = (sizeAndCompression >>> 31) === 1; // mbExtendedCompressionType; 1 bit
+        entry.mnSizeDecompressed = decoder.uint32();
+        if (isCompressed) entry.mnCompressionType = decoder.uint16();
+        decoder.skip(2); // mnCommitted (uint16; 2 bytes)
+        if (entry.mnCompressionType === CompressionType.DeletedRecord) return;
+        return entry as IndexEntry;
+      }
+    },
+    true, // true to skip nulls/undefineds
+    options?.limit
+  );
 }
 
 /**

@@ -62,6 +62,17 @@ export interface PackageFileReadingOptions extends
     loadRaw: boolean;
 
     /**
+     * If provided, then this is the maximum number of resources that can be
+     * loaded into the package.
+     * 
+     * Recommended in conjunction with `resourceFilter` when searching for a
+     * specific file, so that it can short-circuit when the file is found. This
+     * is especially useful for extracting combined tuning, where there will
+     * only ever be one per package.
+     */
+    limit: number;
+
+    /**
      * If provided, then the only resources that will be loaded are those whose
      * keys return true from this function. If not provided, then all resources
      * are loaded.
