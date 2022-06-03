@@ -112,3 +112,13 @@ export function readUntilFalsey<T>(
     if (!fn(arr[i])) break;
   return arr.slice(startIndex, i);
 }
+
+/**
+ * Returns an array containing all of the numerical values of an enum.
+ * 
+ * @param enumObj Enum to get values of
+ */
+export function getAllEnumValues<T extends number>(enumObj: object): T[] {
+  return Object.values(enumObj)
+    .filter(value => typeof value === "number") as T[];
+}

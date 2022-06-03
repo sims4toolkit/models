@@ -1,3 +1,5 @@
+import { getAllEnumValues } from "../common/helpers";
+
 /**
  * High bytes to set for specific locales for String Table instances.
  */
@@ -27,8 +29,7 @@ namespace StringTableLocale {
    * Returns an array of all string table locales.
    */
   export function all(): StringTableLocale[] {
-    return Object.values(StringTableLocale)
-      .filter(value => typeof value === "number") as StringTableLocale[];
+    return getAllEnumValues(StringTableLocale);
   }
 
   /**
