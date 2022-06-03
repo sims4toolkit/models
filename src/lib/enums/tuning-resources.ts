@@ -1,3 +1,5 @@
+import { getAllEnumValues } from "../common/helpers";
+
 /**
  * Types for tuning resources (i.e. any XML resource that is loaded as tuning).
  */
@@ -100,6 +102,15 @@ enum TuningResourceType {
   WeatherForecast = 0x497F3271,
   ZoneDirector = 0xF958A092,
   ZoneModifier = 0x3C1D8799,
+}
+
+namespace TuningResourceType {
+  /**
+   * Returns an array of all tuning resource types.
+   */
+  export function all(): TuningResourceType[] {
+    return getAllEnumValues(TuningResourceType);
+  }
 }
 
 // `export default enum` not supported by TS
