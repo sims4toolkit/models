@@ -334,6 +334,15 @@
         {
           "displayType": "function",
           "prefix": "static",
+          "name": "all",
+          "description": "Returns an array of all groups in the enum.",
+          "returnType": {
+            "name": "SimDataGroup[]"
+          }
+        },
+        {
+          "displayType": "function",
+          "prefix": "static",
           "name": "getForTuning",
           "description": "Returns the SimDataGroup to use for the given tuning type. The given value does not have to be from the enum, it can also be the plain number. Note that not all tuning types have an assiciated SimDataGroup (for example, streets use the Tuning type, but the Street group).",
           "returnType": {
