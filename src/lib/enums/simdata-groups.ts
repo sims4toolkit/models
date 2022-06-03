@@ -1,3 +1,4 @@
+import { getAllEnumValues } from "../common/helpers";
 import TuningResourceType from "./tuning-resources";
 
 /**
@@ -83,6 +84,13 @@ enum SimDataGroup {
 }
 
 namespace SimDataGroup {
+  /**
+   * Returns an array of all SimData groups.
+   */
+  export function all(): SimDataGroup[] {
+    return getAllEnumValues(SimDataGroup);
+  }
+
   /**
    * Returns the SimDataGroup to use for the given tuning type. The given value
    * does not have to be from the enum, it can also be the plain number.
