@@ -115,7 +115,8 @@ namespace TuningResourceType {
   /**
    * Returns the TuningResourceType value for tunings with the given type 
    * attribute. This attribute is either the `n` in R nodes in combined
-   * tuning, or the `i` in regular tuning instances.
+   * tuning, or the `i` in regular tuning instances. If there is no type for
+   * the given attribute, `Tuning` is assumed.
    * 
    * @param attr Attribute to parse as a tuning type
    */
@@ -224,7 +225,8 @@ namespace TuningResourceType {
   }
 
   /**
-   * Returns the `i` attribute to use for a tuning file of the given type.
+   * Returns the `i` attribute to use for a tuning file of the given type. If
+   * there is no attribute for the given type, result is null.
    * 
    * @param type Tuning type to get attribute for
    */
@@ -328,7 +330,7 @@ namespace TuningResourceType {
       case TuningResourceType.WeatherForecast: return "weather_forecast";
       case TuningResourceType.ZoneDirector: return "zone_director";
       case TuningResourceType.ZoneModifier: return "zone_modifier";
-      default: throw new Error(`TuningResourceType.${TuningResourceType[type]} does not have an attribute.`)
+      default: return null;
     }
   }
 }
