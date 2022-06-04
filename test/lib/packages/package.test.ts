@@ -659,7 +659,22 @@ describe("Package", () => {
 
     context("pointing to multiple resources", () => {
       it("should extract the correct resources", () => {
-        // TODO:
+        const resources = Package.fetchResources<SimDataResource>(filepath, [
+          {
+            indexStart: 0x2C4D,
+            recordStart: 0x27E5,
+            recordSize: 0x237
+          },
+          {
+            indexStart: 0x2C6D,
+            recordStart: 0x2A1C,
+            recordSize: 0x197
+          }
+        ]);
+
+        expect(resources).to.be.an("Array").with.lengthOf(2);
+        expect(resources[0].value.encodingType).to.equal(EncodingType.DATA);
+        expect(resources[1].value.encodingType).to.equal(EncodingType.XML);
       });
     });
   });
