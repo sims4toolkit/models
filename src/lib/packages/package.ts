@@ -125,7 +125,7 @@ export default class Package<ResourceType extends Resource = Resource>
   /**
    * Fetches specific resources from the file at the given location. This method
    * is incredibly fast, but requires an index to be used, which takes time to
-   * build up.
+   * build up. Note that the filter and limit options will be ignored.
    * 
    * WARNING: This method requires a C++ library that was compiled to machine
    * code. It has only been tested on macOS, and will likely cause issues on
@@ -147,7 +147,8 @@ export default class Package<ResourceType extends Resource = Resource>
   /**
    * Asynchronously fetches specific resources from the file at the given
    * location. This method is incredibly fast, but requires an index to be used, 
-   * which takes time to build up.
+   * which takes time to build up. Note that the filter and limit options will
+   * be ignored.
    * 
    * WARNING: This method requires a C++ library that was compiled to machine
    * code. It has only been tested on macOS, and will likely cause issues on

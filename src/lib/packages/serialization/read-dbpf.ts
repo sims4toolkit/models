@@ -88,7 +88,7 @@ export function streamDbpf(
 
 /**
  * Streams specific resources from the file at given positions using a MMAP.
- * Note that the limit option will be ignored.
+ * Note that the filter and limit options will be ignored.
  * 
  * @param filepath Path of file to read as a DBPF
  * @param positions Specific positions of resources to fetch
