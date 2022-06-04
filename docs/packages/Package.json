@@ -287,6 +287,108 @@
               "code": "Package.extractResourcesAsync(buffer, {\n  resourceFilter(type, group, inst) {\n    return type === BinaryResourceType.StringTable;\n  }\n}).then(stringTables => {\n  // do stuff\n});"
             }
           ]
+        },
+        {
+          "displayType": "function",
+          "prefix": "static",
+          "name": "streamResources",
+          "generics": [
+            {
+              "name": "T",
+              "extends": [
+                {
+                  "name": "Resource",
+                  "path": {
+                    "pkg": "models",
+                    "group": "types",
+                    "item": "Resource"
+                  }
+                }
+              ]
+            }
+          ],
+          "returnType": {
+            "name": "ResourceKeyPair<T>[]",
+            "path": {
+              "pkg": "models",
+              "group": "types",
+              "item": "ResourceKeyPair"
+            }
+          },
+          "description": "Streams resources from the file at the given location. This method is much, much more space and time efficient than extractResources() when using a resource filter and/or a limit. But, if reading an entire package, it will likely perform the same or even slower.\n\nWARNING: This method requires a C++ library that was compiled to machine code. It has only been tested on macOS, and will likely cause issues on other operating systems.",
+          "arguments": [
+            {
+              "name": "filepath",
+              "type": {
+                "name": "string"
+              },
+              "description": "Absolute path to file to read as a Package."
+            },
+            {
+              "name": "options",
+              "optional": true,
+              "description": "Options for reading the resources.",
+              "type": {
+                "name": "PackageFileReadingOptions",
+                "path": {
+                  "pkg": "models",
+                  "group": "types",
+                  "item": "PackageFileReadingOptions"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "displayType": "function",
+          "prefix": "static async",
+          "name": "streamResourcesAsync",
+          "generics": [
+            {
+              "name": "T",
+              "extends": [
+                {
+                  "name": "Resource",
+                  "path": {
+                    "pkg": "models",
+                    "group": "types",
+                    "item": "Resource"
+                  }
+                }
+              ]
+            }
+          ],
+          "returnType": {
+            "name": "Promise<ResourceKeyPair<T>[]>",
+            "path": {
+              "pkg": "models",
+              "group": "types",
+              "item": "ResourceKeyPair"
+            }
+          },
+          "description": "Asynchronously streams resources from the file at the given location. This method is much, much more space and time efficient than extractResources() when using a resource filter and/or a limit. But, if reading an entire package, it will likely perform the same or even slower.\n\nWARNING: This method requires a C++ library that was compiled to machine code. It has only been tested on macOS, and will likely cause issues on other operating systems.",
+          "arguments": [
+            {
+              "name": "filepath",
+              "type": {
+                "name": "string"
+              },
+              "description": "Absolute path to file to read as a Package."
+            },
+            {
+              "name": "options",
+              "optional": true,
+              "description": "Options for reading the resources.",
+              "type": {
+                "name": "PackageFileReadingOptions",
+                "path": {
+                  "pkg": "models",
+                  "group": "types",
+                  "item": "PackageFileReadingOptions"
+                }
+              }
+            }
+          ]
         }
       ]
     }
