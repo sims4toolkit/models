@@ -1,11 +1,14 @@
 import { CompressedBuffer, CompressionType, decompressBuffer } from "@s4tk/compression";
 import { BinaryDecoder } from "@s4tk/encoding";
 import type Resource from "../../resources/resource";
-import type { PackageFileReadingOptions, ResourceFilter } from "../../common/options";
+import type { PackageFileReadingOptions } from "../../common/options";
 import type { ResourceKeyPair, ResourceKey } from "../types";
 import { makeList } from "../../common/helpers";
 import RawResource from "../../resources/raw/raw-resource";
 import ResourceRegistry from "../resource-registry";
+
+//@ts-expect-error Using non-JS code
+import BufferFromFile from "../../../ffi/bufferfromfile.node";
 
 /**
  * Reads the given buffer as a DBPF and returns a DTO for it.
@@ -28,6 +31,39 @@ export default function readDbpf(buffer: Buffer, options?: PackageFileReadingOpt
     };
     return entry;
   });
+}
+
+/**
+ * TODO:
+ * 
+ * @param filepath TODO:
+ * @param options TODO:
+ */
+export function streamDbpf(filepath: string, options?: PackageFileReadingOptions): ResourceKeyPair[] {
+  const mmap = BufferFromFile.buffer(filepath);
+  const header = readDbpfHeader(mmapDecoder(mmap, 0, 96));
+  const flagsPos = Number(header.mnIndexRecordPosition || header.mnIndexRecordPositionLow);
+  const flagsDecoder = mmapDecoder(mmap, flagsPos, 16);
+  const flags = readDbpfFlags(flagsDecoder);
+  const indexPos = flagsPos + flagsDecoder.tell();
+  const indexLength = header.mnIndexRecordEntryCount * 32; // 32 is max size
+  const indexDecoder = mmapDecoder(mmap, indexPos, indexLength);
+  // FIXME: entire index does not need to be loaded, create another fn
+  const index = readDbpfIndex(indexDecoder, header, flags, options);
+
+  const records: ResourceKeyPair[] = [];
+  for (let i = 0; i < index.length; i++) {
+    const indexEntry = index[i];
+    // FIXME: is this efficient?
+    const compressedBuffer = mmap.slice(indexEntry.mnPosition, indexEntry.mnPosition + indexEntry.mnSize);
+
+    records.push({
+      key: indexEntry.key,
+      value: getResource(indexEntry, compressedBuffer, options)
+    });
+  }
+
+  return;
 }
 
 //#region Types & Interfaces
@@ -233,6 +269,17 @@ function getResource(entry: IndexEntry, rawBuffer: Buffer, options?: PackageFile
       reason: `Failed to parse resource (Type: ${type})`
     });
   }
+}
+
+/**
+ * Creates a decoder for a slice of the given mmap buffer.
+ * 
+ * @param mmap Mmap buffer to get a decoder for
+ * @param start Start index of slice to create decoder for
+ * @param length Length of slice to create decoder for
+ */
+function mmapDecoder(mmap: any, start: number, length: number): BinaryDecoder {
+  return new BinaryDecoder(Buffer.from(mmap.slice(start, start + length)));
 }
 
 //#endregion Helpers
