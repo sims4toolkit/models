@@ -389,6 +389,132 @@
               }
             }
           ]
+        },
+        {
+          "displayType": "function",
+          "prefix": "static",
+          "name": "fetchResources",
+          "generics": [
+            {
+              "name": "T",
+              "extends": [
+                {
+                  "name": "Resource",
+                  "path": {
+                    "pkg": "models",
+                    "group": "types",
+                    "item": "Resource"
+                  }
+                }
+              ]
+            }
+          ],
+          "returnType": {
+            "name": "ResourceKeyPair<T>[]",
+            "path": {
+              "pkg": "models",
+              "group": "types",
+              "item": "ResourceKeyPair"
+            }
+          },
+          "description": "Fetches specific resources from the file at the given location. This method is incredibly fast, but requires an index to be used, which takes time to build up.\n\nWARNING: This method requires a C++ library that was compiled to machine code. It has only been tested on macOS, and will likely cause issues on other operating systems.",
+          "arguments": [
+            {
+              "name": "filepath",
+              "type": {
+                "name": "string"
+              },
+              "description": "Absolute path to file to read as a Package."
+            },
+            {
+              "name": "positions",
+              "description": "Array containing objects that contain exact byte locations of the resources to fetch",
+              "type": {
+                "name": "ResourcePosition[]",
+                "path": {
+                  "pkg": "models",
+                  "group": "types",
+                  "item": "ResourcePosition"
+                }
+              }
+            },
+            {
+              "name": "options",
+              "optional": true,
+              "description": "Options for reading the resources.",
+              "type": {
+                "name": "PackageFileReadingOptions",
+                "path": {
+                  "pkg": "models",
+                  "group": "types",
+                  "item": "PackageFileReadingOptions"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "displayType": "function",
+          "prefix": "static async",
+          "name": "fetchResourcesAsync",
+          "generics": [
+            {
+              "name": "T",
+              "extends": [
+                {
+                  "name": "Resource",
+                  "path": {
+                    "pkg": "models",
+                    "group": "types",
+                    "item": "Resource"
+                  }
+                }
+              ]
+            }
+          ],
+          "returnType": {
+            "name": "Promise<ResourceKeyPair<T>[]>",
+            "path": {
+              "pkg": "models",
+              "group": "types",
+              "item": "ResourceKeyPair"
+            }
+          },
+          "description": "Asynchronously fetches specific resources from the file at the given location. This method is incredibly fast, but requires an index to be used, which takes time to build up.\n\nWARNING: This method requires a C++ library that was compiled to machine code. It has only been tested on macOS, and will likely cause issues on other operating systems.",
+          "arguments": [
+            {
+              "name": "filepath",
+              "type": {
+                "name": "string"
+              },
+              "description": "Absolute path to file to read as a Package."
+            },
+            {
+              "name": "positions",
+              "description": "Array containing objects that contain exact byte locations of the resources to fetch",
+              "type": {
+                "name": "ResourcePosition[]",
+                "path": {
+                  "pkg": "models",
+                  "group": "types",
+                  "item": "ResourcePosition"
+                }
+              }
+            },
+            {
+              "name": "options",
+              "optional": true,
+              "description": "Options for reading the resources.",
+              "type": {
+                "name": "PackageFileReadingOptions",
+                "path": {
+                  "pkg": "models",
+                  "group": "types",
+                  "item": "PackageFileReadingOptions"
+                }
+              }
+            }
+          ]
         }
       ]
     }
