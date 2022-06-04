@@ -1,9 +1,9 @@
 import type Resource from "../resources/resource";
-import type { ResourceKey, ResourceKeyPair } from "./types";
+import type { ResourceKey, ResourceKeyPair, ResourcePosition } from "./types";
 import type { PackageFileReadingOptions } from "../common/options";
 import { MappedModel } from "../base/mapped-model";
 import { arraysAreEqual, promisify } from "../common/helpers";
-import readDbpf, { streamDbpf } from "./serialization/read-dbpf";
+import { fetchResources, readDbpf, streamDbpf } from "./serialization/read-dbpf";
 import writeDbpf from "./serialization/write-dbpf";
 import ResourceEntry from "./resource-entry";
 
@@ -120,6 +120,50 @@ export default class Package<ResourceType extends Resource = Resource>
     options?: PackageFileReadingOptions
   ): Promise<ResourceKeyPair<T>[]> {
     return promisify(() => Package.streamResources(filepath, options));
+  }
+
+  /**
+   * Fetches specific resources from the file at the given location. This method
+   * is incredibly fast, but requires an index to be used, which takes time to
+   * build up.
+   * 
+   * WARNING: This method requires a C++ library that was compiled to machine
+   * code. It has only been tested on macOS, and will likely cause issues on
+   * other operating systems.
+   * 
+   * @param filepath Absolute path to file to read as a package
+   * @param positions Array containing objects that contain exact byte locations
+   * of the resources to fetch
+   * @param options Options for reading the resources
+   */
+  static fetchResources<T extends Resource = Resource>(
+    filepath: string,
+    positions: ResourcePosition[],
+    options?: PackageFileReadingOptions
+  ): ResourceKeyPair<T>[] {
+    return fetchResources(filepath, positions, options) as ResourceKeyPair<T>[];
+  }
+
+  /**
+   * Fetches specific resources from the file at the given location. This method
+   * is incredibly fast, but requires an index to be used, which takes time to
+   * build up.
+   * 
+   * WARNING: This method requires a C++ library that was compiled to machine
+   * code. It has only been tested on macOS, and will likely cause issues on
+   * other operating systems.
+   * 
+   * @param filepath Absolute path to file to read as a package
+   * @param positions Array containing objects that contain exact byte locations
+   * of the resources to fetch
+   * @param options Options for reading the resources
+   */
+  static async fetchResourcesAsync<T extends Resource = Resource>(
+    filepath: string,
+    positions: ResourcePosition[],
+    options?: PackageFileReadingOptions
+  ): Promise<ResourceKeyPair<T>[]> {
+    return promisify(() => Package.fetchResources(filepath, positions, options));
   }
 
   //#endregion Initialization

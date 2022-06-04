@@ -1,8 +1,8 @@
 import { CompressedBuffer, CompressionType, decompressBuffer } from "@s4tk/compression";
 import { BinaryDecoder } from "@s4tk/encoding";
 import type Resource from "../../resources/resource";
-import type { PackageFileReadingOptions, ResourceFilter } from "../../common/options";
-import type { ResourceKeyPair, ResourceKey } from "../types";
+import type { PackageFileReadingOptions } from "../../common/options";
+import type { ResourceKeyPair, ResourceKey, ResourcePosition } from "../types";
 import { makeList } from "../../common/helpers";
 import RawResource from "../../resources/raw/raw-resource";
 import ResourceRegistry from "../resource-registry";
@@ -21,7 +21,10 @@ try {
  * @param buffer Buffer to read as a DBPF
  * @param options Options for reading DBPF
  */
-export default function readDbpf(buffer: Buffer, options?: PackageFileReadingOptions): ResourceKeyPair[] {
+export function readDbpf(
+  buffer: Buffer,
+  options?: PackageFileReadingOptions
+): ResourceKeyPair[] {
   const decoder = new BinaryDecoder(buffer);
   const header = readDbpfHeader(decoder, options);
   decoder.seek(header.mnIndexRecordPosition || header.mnIndexRecordPositionLow);
@@ -44,7 +47,10 @@ export default function readDbpf(buffer: Buffer, options?: PackageFileReadingOpt
  * @param filepath Path of file to read as a DBPF
  * @param options Optional arguments
  */
-export function streamDbpf(filepath: string, options?: PackageFileReadingOptions): ResourceKeyPair[] {
+export function streamDbpf(
+  filepath: string,
+  options?: PackageFileReadingOptions
+): ResourceKeyPair[] {
   if (!BufferFromFile)
     throw new Error("MMAPs not supported on your OS. Use regular Buffers.");
 
@@ -61,10 +67,10 @@ export function streamDbpf(filepath: string, options?: PackageFileReadingOptions
     for (let i = 0; i < index.length; i++) {
       const indexEntry = index[i];
 
-      const compressedBuffer = mmap.slice(
+      const compressedBuffer = Buffer.from(mmap.slice(
         indexEntry.mnPosition,
         indexEntry.mnPosition + indexEntry.mnSize
-      );
+      ));
 
       records.push({
         key: indexEntry.key,
@@ -74,6 +80,54 @@ export function streamDbpf(filepath: string, options?: PackageFileReadingOptions
 
     BufferFromFile.unmap(mmap);
     return records;
+  } catch (e) {
+    BufferFromFile.unmap(mmap);
+    throw e;
+  }
+}
+
+/**
+ * Streams specific resources from the file at given positions using a MMAP.
+ * Note that the limit option will be ignored.
+ * 
+ * @param filepath Path of file to read as a DBPF
+ * @param positions Specific positions of resources to fetch
+ * @param options Optional arguments
+ */
+export function fetchResources(
+  filepath: string,
+  positions: ResourcePosition[],
+  options?: PackageFileReadingOptions
+): ResourceKeyPair[] {
+  if (!BufferFromFile)
+    throw new Error("MMAPs not supported on your OS. Use regular Buffers.");
+
+  const mmap = BufferFromFile.buffer(filepath);
+
+  try {
+    const header = readDbpfHeader(mmapDecoder(mmap, 0, 96));
+    const flagsPos = Number(header.mnIndexRecordPosition || header.mnIndexRecordPositionLow);
+    const flags = readDbpfFlags(mmapDecoder(mmap, flagsPos, 16));
+
+    const resources: ResourceKeyPair[] = [];
+    for (let i = 0; i < positions.length; i++) {
+      const pos = positions[i];
+      const indexDecoder = mmapDecoder(mmap, pos.indexStart, 32); // 32 is max
+      const indexEntry = readIndexEntry(indexDecoder, flags, options);
+
+      const compressedBuffer = Buffer.from(mmap.slice(
+        pos.recordStart,
+        pos.recordStart + pos.recordSize
+      ));
+
+      resources.push({
+        key: indexEntry.key,
+        value: getResource(indexEntry, compressedBuffer, options)
+      });
+    }
+
+    BufferFromFile.unmap(mmap);
+    return resources;
   } catch (e) {
     BufferFromFile.unmap(mmap);
     throw e;
@@ -194,6 +248,22 @@ function streamDbpfIndex(
 }
 
 /**
+ * Reads a resource key at the current position in the given decoder.
+ * 
+ * @param decoder Decoder to read key from
+ * @param flags Flags of DBPF that is being read
+ */
+function readResourceKey(decoder: BinaryDecoder, flags: DbpfFlags): ResourceKey {
+  const key: Partial<ResourceKey> = {};
+  key.type = flags.constantTypeId ?? decoder.uint32();
+  key.group = flags.constantGroupId ?? decoder.uint32();
+  const mInstanceEx = flags.constantInstanceIdEx ?? decoder.uint32();
+  const mInstance = decoder.uint32();
+  key.instance = (BigInt(mInstanceEx) << 32n) + BigInt(mInstance);
+  return key as ResourceKey;
+}
+
+/**
  * Reads a single index entry at the current position in the given decoder.
  * 
  * @param decoder Decoder to read index entry from
@@ -205,12 +275,7 @@ function readIndexEntry(
   flags: DbpfFlags,
   options?: PackageFileReadingOptions
 ): IndexEntry {
-  const key: Partial<ResourceKey> = {};
-  key.type = flags.constantTypeId ?? decoder.uint32();
-  key.group = flags.constantGroupId ?? decoder.uint32();
-  const mInstanceEx = flags.constantInstanceIdEx ?? decoder.uint32();
-  const mInstance = decoder.uint32();
-  key.instance = (BigInt(mInstanceEx) << 32n) + BigInt(mInstance);
+  const key = readResourceKey(decoder, flags);
 
   if (
     options?.resourceFilter

@@ -16,3 +16,12 @@ export interface ResourceKey {
   group: number;
   instance: bigint;
 }
+
+/**
+ * The exact bytes within a DBPF where a resource can be found.
+ */
+export interface ResourcePosition {
+  indexStart: number;
+  recordStart: number;
+  recordSize: number;
+}

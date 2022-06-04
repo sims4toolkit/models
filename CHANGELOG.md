@@ -11,7 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add `all()` to TuningResourceType, SimDataGroup, and BinaryResourceType.
 - Add `parseAttr()` and `getAttr()` to TuningResourceType.
 - Add `TuningResourceType.Street`.
-- Add `Package.streamResources()` and `Package.streamResourcesAsync()`.
+- Add `Package.streamResources()` and `Package.fetchResources()`.
 
 ## [0.4.1] - 2022/06/01
 ### Added

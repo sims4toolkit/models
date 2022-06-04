@@ -540,6 +540,22 @@ describe("Package", () => {
     });
   });
 
+  describe("static#streamResources()", () => {
+    // TODO:
+  });
+
+  describe("static#streamResourcesAsync()", () => {
+    // TODO:
+  });
+
+  describe("static#fetchResources()", () => {
+    // TODO:
+  });
+
+  describe("static#fetchResourcesAsync()", () => {
+    // TODO:
+  });
+
   //#endregion Initialization
 
   //#region Public Methods
