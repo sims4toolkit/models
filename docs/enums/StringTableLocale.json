@@ -157,6 +157,24 @@
         {
           "displayType": "function",
           "prefix": "static",
+          "name": "getLocaleCode",
+          "description": "Returns the 5-letter code that is appended to string table packages that are shipped with the game. Returns undefined if locale is not recognized.",
+          "returnType": {
+            "name": "StringTableLocale"
+          },
+          "arguments": [
+            {
+              "name": "locale",
+              "description": "Locale to get code for.",
+              "type": {
+                "name": "StringTableLocale"
+              }
+            }
+          ]
+        },
+        {
+          "displayType": "function",
+          "prefix": "static",
           "name": "setHighByte",
           "description": "Sets the high byte on the instance to the value for the given locale.",
           "returnType": {
