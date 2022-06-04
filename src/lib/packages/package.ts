@@ -3,7 +3,7 @@ import type { ResourceKey, ResourceKeyPair, ResourcePosition } from "./types";
 import type { PackageFileReadingOptions } from "../common/options";
 import { MappedModel } from "../base/mapped-model";
 import { arraysAreEqual, promisify } from "../common/helpers";
-import { fetchResources, readDbpf, streamDbpf } from "./serialization/read-dbpf";
+import { fetchResources, getResourcePositions, readDbpf, streamDbpf } from "./serialization/read-dbpf";
 import writeDbpf from "./serialization/write-dbpf";
 import ResourceEntry from "./resource-entry";
 
@@ -165,6 +165,42 @@ export default class Package<ResourceType extends Resource = Resource>
     options?: PackageFileReadingOptions
   ): Promise<ResourceKeyPair<T>[]> {
     return promisify(() => Package.fetchResources(filepath, positions, options));
+  }
+
+  /**
+   * Returns an array of objects that can be used to quickly fetch specific
+   * resources with `fetchResources()`.
+   * 
+   * WARNING: This method requires a C++ library that was compiled to machine
+   * code. It has only been tested on macOS, and will likely cause issues on
+   * other operating systems.
+   * 
+   * @param filepath Absolute path to file to read as a package
+   * @param options Options for reading the resources
+   */
+  static indexResources(
+    filepath: string,
+    options?: PackageFileReadingOptions
+  ): ResourcePosition[] {
+    return getResourcePositions(filepath, options);
+  }
+
+  /**
+   * Asynchronously returns an array of objects that can be used to quickly
+   * fetch specific resources with `fetchResources()`.
+   * 
+   * WARNING: This method requires a C++ library that was compiled to machine
+   * code. It has only been tested on macOS, and will likely cause issues on
+   * other operating systems.
+   * 
+   * @param filepath Absolute path to file to read as a package
+   * @param options Options for reading the resources
+   */
+  static async indexResourcesAsync(
+    filepath: string,
+    options?: PackageFileReadingOptions
+  ): Promise<ResourcePosition[]> {
+    return promisify(() => Package.indexResources(filepath, options));
   }
 
   //#endregion Initialization

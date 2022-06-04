@@ -515,6 +515,78 @@
               }
             }
           ]
+        },
+        {
+          "displayType": "function",
+          "prefix": "static",
+          "name": "indexResources",
+          "returnType": {
+            "name": "ResourcePosition[]",
+            "path": {
+              "pkg": "models",
+              "group": "types",
+              "item": "ResourcePosition"
+            }
+          },
+          "description": "Returns an array of objects that can be used to quickly fetch specific resources with fetchResources().\n\nWARNING: This method requires a C++ library that was compiled to machine code. It has only been tested on macOS, and will likely cause issues on other operating systems.",
+          "arguments": [
+            {
+              "name": "filepath",
+              "type": {
+                "name": "string"
+              },
+              "description": "Absolute path to file to read as a Package."
+            },
+            {
+              "name": "options",
+              "optional": true,
+              "description": "Options for reading the resources.",
+              "type": {
+                "name": "PackageFileReadingOptions",
+                "path": {
+                  "pkg": "models",
+                  "group": "types",
+                  "item": "PackageFileReadingOptions"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "displayType": "function",
+          "prefix": "static async",
+          "name": "indexResourcesAsync",
+          "returnType": {
+            "name": "Promise<ResourcePosition[]>",
+            "path": {
+              "pkg": "models",
+              "group": "types",
+              "item": "ResourcePosition"
+            }
+          },
+          "description": "Asynchronously returns an array of objects that can be used to quickly fetch specific resources with fetchResources().\n\nWARNING: This method requires a C++ library that was compiled to machine code. It has only been tested on macOS, and will likely cause issues on other operating systems.",
+          "arguments": [
+            {
+              "name": "filepath",
+              "type": {
+                "name": "string"
+              },
+              "description": "Absolute path to file to read as a Package."
+            },
+            {
+              "name": "options",
+              "optional": true,
+              "description": "Options for reading the resources.",
+              "type": {
+                "name": "PackageFileReadingOptions",
+                "path": {
+                  "pkg": "models",
+                  "group": "types",
+                  "item": "PackageFileReadingOptions"
+                }
+              }
+            }
+          ]
         }
       ]
     }

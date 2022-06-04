@@ -135,6 +135,49 @@ export function fetchResources(
   }
 }
 
+/**
+ * Reads the index of a DBPF and returns a list of positions to resources.
+ * 
+ * @param filepath Path of file to read as a DBPF
+ * @param options Optional arguments
+ */
+export function getResourcePositions(
+  filepath: string,
+  options?: PackageFileReadingOptions
+): ResourcePosition[] {
+  if (!BufferFromFile)
+    throw new Error("MMAPs not supported on your OS. Use regular Buffers.");
+
+  const mmap = BufferFromFile.buffer(filepath);
+
+  try {
+    const header = readDbpfHeader(mmapDecoder(mmap, 0, 96));
+    const flagsPos = Number(header.mnIndexRecordPosition || header.mnIndexRecordPositionLow);
+    const flagsDecoder = mmapDecoder(mmap, flagsPos, 16);
+    const flags = readDbpfFlags(flagsDecoder);
+
+    const positions: ResourcePosition[] = [];
+    let indexBytesRead = flagsPos + flagsDecoder.tell();
+    for (let i = 0; i < header.mnIndexRecordEntryCount; i++) {
+      const decoder = mmapDecoder(mmap, indexBytesRead, 32); // 32 is max
+      const indexEntry = readIndexEntry(decoder, flags, options);
+      if (indexEntry) positions.push({
+        indexStart: indexBytesRead,
+        recordStart: indexEntry.mnPosition,
+        recordSize: indexEntry.mnSize,
+      });
+      indexBytesRead += decoder.tell();
+      if (options?.limit && positions.length >= options.limit) break;
+    }
+
+    BufferFromFile.unmap(mmap);
+    return positions;
+  } catch (e) {
+    BufferFromFile.unmap(mmap);
+    throw e;
+  }
+}
+
 //#region Helpers
 
 /**
