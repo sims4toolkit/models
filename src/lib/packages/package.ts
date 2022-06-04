@@ -81,12 +81,45 @@ export default class Package<ResourceType extends Resource = Resource>
     return promisify(() => Package.extractResources<T>(buffer, options));
   }
 
-  // TODO:
+  /**
+   * Streams resources from the file at the given location. This method is much,
+   * much more space and time efficient than extractResources() when using a
+   * resource filter and/or a limit. But, if reading an entire package, it will
+   * likely perform the same or even slower.
+   * 
+   * WARNING: This method requires a C++ library that was compiled to machine
+   * code. It has only been tested on macOS, and will likely cause issues on
+   * other operating systems.
+   * 
+   * @param filepath Absolute path to file to read as a package
+   * @param options Options for reading the resources
+   */
   static streamResources<T extends Resource = Resource>(
     filepath: string,
     options?: PackageFileReadingOptions
   ): ResourceKeyPair<T>[] {
     return streamDbpf(filepath, options) as ResourceKeyPair<T>[];
+  }
+
+  /**
+   * Asynchronously streams resources from the file at the given location. This
+   * method is much, much more space and time efficient than
+   * extractResourcesAsync() when using a resource filter and/or a limit. But,
+   * if reading an entire package, it will likely perform the same or even
+   * slower.
+   * 
+   * WARNING: This method requires a C++ library that was compiled to machine
+   * code. It has only been tested on macOS, and will likely cause issues on
+   * other operating systems.
+   * 
+   * @param filepath Absolute path to file to read as a package
+   * @param options Options for reading the resources
+   */
+  static async streamResourcesAsync<T extends Resource = Resource>(
+    filepath: string,
+    options?: PackageFileReadingOptions
+  ): Promise<ResourceKeyPair<T>[]> {
+    return promisify(() => Package.streamResources(filepath, options));
   }
 
   //#endregion Initialization

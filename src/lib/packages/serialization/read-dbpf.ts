@@ -7,8 +7,12 @@ import { makeList } from "../../common/helpers";
 import RawResource from "../../resources/raw/raw-resource";
 import ResourceRegistry from "../resource-registry";
 
-//@ts-expect-error Using non-JS code
-import BufferFromFile from "../../../ffi/bufferfromfile.node";
+try {
+  var BufferFromFile = require("../../../ffi/bufferfromfile.node");
+} catch (e) {
+  var BufferFromFile;
+  console.warn("MMAPs not supported on your OS.", e);
+}
 
 /**
  * Reads the given buffer as a DBPF and returns a DTO for it.
@@ -34,36 +38,49 @@ export default function readDbpf(buffer: Buffer, options?: PackageFileReadingOpt
 }
 
 /**
- * TODO:
+ * Streams resources from the file at the given location using a MMAP buffer.
  * 
- * @param filepath TODO:
- * @param options TODO:
+ * @param filepath Path of file to read as a DBPF
+ * @param options Optional arguments
  */
 export function streamDbpf(filepath: string, options?: PackageFileReadingOptions): ResourceKeyPair[] {
+  if (!BufferFromFile)
+    throw new Error("MMAPs not supported on your OS. Use regular Buffers.");
+
   const mmap = BufferFromFile.buffer(filepath);
-  const header = readDbpfHeader(mmapDecoder(mmap, 0, 96));
-  const flagsPos = Number(header.mnIndexRecordPosition || header.mnIndexRecordPositionLow);
-  const flagsDecoder = mmapDecoder(mmap, flagsPos, 16);
-  const flags = readDbpfFlags(flagsDecoder);
-  const indexPos = flagsPos + flagsDecoder.tell();
-  const indexLength = header.mnIndexRecordEntryCount * 32; // 32 is max size
-  const indexDecoder = mmapDecoder(mmap, indexPos, indexLength);
-  // FIXME: entire index does not need to be loaded, create another fn
-  const index = readDbpfIndex(indexDecoder, header, flags, options);
 
-  const records: ResourceKeyPair[] = [];
-  for (let i = 0; i < index.length; i++) {
-    const indexEntry = index[i];
-    // FIXME: is this efficient?
-    const compressedBuffer = mmap.slice(indexEntry.mnPosition, indexEntry.mnPosition + indexEntry.mnSize);
+  try {
+    const header = readDbpfHeader(mmapDecoder(mmap, 0, 96));
+    const flagsPos = Number(header.mnIndexRecordPosition || header.mnIndexRecordPositionLow);
+    const flagsDecoder = mmapDecoder(mmap, flagsPos, 16);
+    const flags = readDbpfFlags(flagsDecoder);
+    const indexPos = flagsPos + flagsDecoder.tell();
+    const indexLength = header.mnIndexRecordEntryCount * 32; // 32 is max size
+    const indexDecoder = mmapDecoder(mmap, indexPos, indexLength);
+    // FIXME: entire index does not need to be loaded, create another fn
+    const index = readDbpfIndex(indexDecoder, header, flags, options);
 
-    records.push({
-      key: indexEntry.key,
-      value: getResource(indexEntry, compressedBuffer, options)
-    });
+    const records: ResourceKeyPair[] = [];
+    for (let i = 0; i < index.length; i++) {
+      const indexEntry = index[i];
+      // FIXME: is this efficient?
+      const compressedBuffer = mmap.slice(
+        indexEntry.mnPosition,
+        indexEntry.mnPosition + indexEntry.mnSize
+      );
+
+      records.push({
+        key: indexEntry.key,
+        value: getResource(indexEntry, compressedBuffer, options)
+      });
+    }
+
+    BufferFromFile.unmap(mmap);
+    return records;
+  } catch (e) {
+    BufferFromFile.unmap(mmap);
+    throw e;
   }
-
-  return;
 }
 
 //#region Types & Interfaces
