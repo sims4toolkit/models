@@ -6,6 +6,7 @@ import type { ResourceKeyPair, ResourceKey } from "../types";
 import { makeList } from "../../common/helpers";
 import RawResource from "../../resources/raw/raw-resource";
 import ResourceRegistry from "../resource-registry";
+import { DbpfFlags, DbpfHeader, IndexEntry } from "./types";
 
 try {
   var BufferFromFile = require("../../../ffi/bufferfromfile.node");
@@ -78,30 +79,6 @@ export function streamDbpf(filepath: string, options?: PackageFileReadingOptions
     throw e;
   }
 }
-
-//#region Types & Interfaces
-
-interface DbpfHeader {
-  mnIndexRecordEntryCount: number;
-  mnIndexRecordPositionLow: number;
-  mnIndexRecordPosition: bigint;
-}
-
-interface DbpfFlags {
-  constantTypeId?: number;
-  constantGroupId?: number;
-  constantInstanceIdEx?: number;
-}
-
-interface IndexEntry {
-  key: ResourceKey;
-  mnPosition: number;
-  mnSize: number;
-  mnCompressionType?: number;
-  mnSizeDecompressed: number;
-}
-
-//#endregion Types & Interfaces
 
 //#region Helpers
 
