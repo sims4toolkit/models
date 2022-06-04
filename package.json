@@ -13,9 +13,10 @@
   "main": "./models.js",
   "scripts": {
     "clean": "rm -rf ./dst/**",
-    "dev": "npm run clean ; tsc --watch",
+    "dev": "npm run clean ; npm run build:ffi; tsc --watch",
     "dev:serve": "npm run build && ts-node \"./server/app.ts\"",
-    "build": "npm run clean ; tsc ; node scripts/prepublish.cjs",
+    "build": "npm run clean ; npm run build:ffi ; tsc ; node scripts/prepublish.cjs",
+    "build:ffi": "cp -R ./src/ffi ./dst/ffi",
     "publish": "npm run build && sh scripts/publish.sh",
     "test": "mocha -r ts-node/register \"test/**/*.test.ts\"",
     "test:coverage": "nyc mocha -r ts-node/register \"test/**/*.test.ts\"",
