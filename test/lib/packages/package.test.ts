@@ -585,7 +585,83 @@ describe("Package", () => {
   });
 
   describe("static#fetchResources()", () => {
-    // TODO:
+    const filepath = path.resolve(
+      __dirname,
+      path.join("..", "..", "data", "packages", "CompleteTrait.package")
+    );
+
+    context("pointing to one resource", () => {
+      it("should extract raw resource correctly", () => {
+        const resources = Package.fetchResources<RawResource>(filepath, [
+          {
+            indexStart: 0x2C2D,
+            recordStart: 0x60,
+            recordSize: 0x2785
+          }
+        ]);
+
+        expect(resources).to.be.an("Array").with.lengthOf(1);
+        expect(resources[0].key.instance).to.equal(0x0B3417C01CCD98FEn);
+        expect(resources[0].value.encodingType).to.equal(EncodingType.Unknown);
+      });
+
+      it("should extract simdata correctly", () => {
+        const resources = Package.fetchResources<SimDataResource>(filepath, [
+          {
+            indexStart: 0x2C4D,
+            recordStart: 0x27E5,
+            recordSize: 0x237
+          }
+        ]);
+
+        expect(resources).to.be.an("Array").with.lengthOf(1);
+        const { key, value } = resources[0];
+        expect(key.instance).to.equal(0x97297134D57FE219n);
+        expect(value.encodingType).to.equal(EncodingType.DATA);
+        expect(value.instance.name).to.equal("frankkulak_LB:trait_SimlishNative");
+        expect(value.schema.columns[0].name).to.equal("ages");
+      });
+
+      it("should extract tuning correctly", () => {
+        const resources = Package.fetchResources<XmlResource>(filepath, [
+          {
+            indexStart: 0x2C6D,
+            recordStart: 0x2A1C,
+            recordSize: 0x197
+          }
+        ]);
+
+        expect(resources).to.be.an("Array").with.lengthOf(1);
+        const { key, value } = resources[0];
+        expect(key.instance).to.equal(0x97297134D57FE219n);
+        expect(value.encodingType).to.equal(EncodingType.XML);
+        expect(value.root.name).to.equal("frankkulak_LB:trait_SimlishNative");
+        expect(value.root.findChild("trait_type").innerValue).to.equal("GAMEPLAY");
+      });
+
+      it("should extract stbl correctly", () => {
+        const resources = Package.fetchResources<StringTableResource>(filepath, [
+          {
+            indexStart: 0x2C8D,
+            recordStart: 0x2BB3,
+            recordSize: 0x76
+          }
+        ]);
+
+        expect(resources).to.be.an("Array").with.lengthOf(1);
+        const { key, value } = resources[0];
+        expect(key.instance).to.equal(0x0020097334286DF8n);
+        expect(value.encodingType).to.equal(EncodingType.STBL);
+        expect(value.size).to.equal(2);
+        expect(value.get(0).value).to.equal("Simlish Native");
+      });
+    });
+
+    context("pointing to multiple resources", () => {
+      it("should extract the correct resources", () => {
+        // TODO:
+      });
+    });
   });
 
   //#endregion Initialization
