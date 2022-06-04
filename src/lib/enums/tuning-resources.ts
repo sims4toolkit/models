@@ -83,6 +83,7 @@ enum TuningResourceType {
   Scommodity = 0x51077643,
   Statistic = 0x339BC5BD,
   Strategy = 0x6224C9D6,
+  Street = 0xF6E4CB00,
   Subroot = 0xB7FF8F95,
   TagSet = 0x49395302,
   TemplateChooser = 0x48C2D5ED,
@@ -202,6 +203,7 @@ namespace TuningResourceType {
       case "scommodity": return TuningResourceType.Scommodity;
       case "statistic": return TuningResourceType.Statistic;
       case "strategy": return TuningResourceType.Strategy;
+      case "street": return TuningResourceType.Street;
       case "subroot": return TuningResourceType.Subroot;
       case "tag_set": return TuningResourceType.TagSet;
       case "template_chooser": return TuningResourceType.TemplateChooser;
@@ -312,6 +314,7 @@ namespace TuningResourceType {
       case TuningResourceType.Scommodity: return "scommodity";
       case TuningResourceType.Statistic: return "statistic";
       case TuningResourceType.Strategy: return "strategy";
+      case TuningResourceType.Street: return "street";
       case TuningResourceType.Subroot: return "subroot";
       case TuningResourceType.TagSet: return "tag_set";
       case TuningResourceType.TemplateChooser: return "template_chooser";

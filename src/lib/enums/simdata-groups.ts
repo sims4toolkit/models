@@ -68,7 +68,7 @@ enum SimDataGroup {
   Snippet = 0x00F216E1,
   Spell = 0x003413C6,
   Statistic = 0x009BC58E,
-  Street = 0x00E4CBF6, // uses TuningResourceType.Tuning
+  Street = 0x00E4CBF6,
   Subroot = 0x00FF8F22,
   Trait = 0x005FDD0C,
   Tutorial = 0x004A2443,

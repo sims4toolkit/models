@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add `limit` to PackageFileReadingOptions.
 - Add `all()` to TuningResourceType, SimDataGroup, and BinaryResourceType.
 - Add `parseAttr()` and `getAttr()` to TuningResourceType.
+- Add `TuningResourceType.Street`
 
 ## [0.4.1] - 2022/06/01
 ### Added
