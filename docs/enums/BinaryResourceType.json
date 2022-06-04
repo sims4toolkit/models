@@ -42,6 +42,21 @@
           ]
         }
       ]
+    },
+    {
+      "title": "Functions",
+      "description": "Helper functions related to binary types.",
+      "content": [
+        {
+          "displayType": "function",
+          "prefix": "static",
+          "name": "all",
+          "description": "Returns an array of all types in the enum.",
+          "returnType": {
+            "name": "BinaryResourceType[]"
+          }
+        }
+      ]
     }
   ]
 }

@@ -427,6 +427,42 @@
           "returnType": {
             "name": "TuningResourceType[]"
           }
+        },
+        {
+          "displayType": "function",
+          "prefix": "static",
+          "name": "getAttr",
+          "description": "Returns the `i` attribute to use for a tuning file of the given type.",
+          "returnType": {
+            "name": "string"
+          },
+          "arguments": [
+            {
+              "name": "type",
+              "description": "Type to get attribute for.",
+              "type": {
+                "name": "TuningResourceType"
+              }
+            }
+          ]
+        },
+        {
+          "displayType": "function",
+          "prefix": "static",
+          "name": "parseAttr",
+          "description": "Returns the TuningResourceType value for tunings with the given type attribute. This attribute is either the `n` in <R> nodes in combined tuning, or the `i` in regular tuning instances.",
+          "returnType": {
+            "name": "TuningResourceType"
+          },
+          "arguments": [
+            {
+              "name": "type",
+              "description": "Attribute to get type for",
+              "type": {
+                "name": "string"
+              }
+            }
+          ]
         }
       ]
     }

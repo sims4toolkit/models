@@ -114,7 +114,7 @@ namespace TuningResourceType {
 
   /**
    * Returns the TuningResourceType value for tunings with the given type 
-   * attribute. This attribute is either the `n` in <R> nodes in combined
+   * attribute. This attribute is either the `n` in R nodes in combined
    * tuning, or the `i` in regular tuning instances.
    * 
    * @param attr Attribute to parse as a tuning type
