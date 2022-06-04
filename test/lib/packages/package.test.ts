@@ -679,6 +679,86 @@ describe("Package", () => {
     });
   });
 
+  describe("static#indexResources()", () => {
+    const filepath = path.resolve(
+      __dirname,
+      path.join("..", "..", "data", "packages", "CompleteTrait.package")
+    );
+
+    it("should return an index of all resources if no fileter or limit", () => {
+      const index = Package.indexResources(filepath);
+      expect(index).to.be.an("Array").with.lengthOf(4);
+
+      const [first, second, third, fourth] = index;
+
+      expect(first.indexStart).to.equal(0x2C2D);
+      expect(first.recordStart).to.equal(0x60);
+      expect(first.recordSize).to.equal(0x2785);
+
+      expect(second.indexStart).to.equal(0x2C4D);
+      expect(second.recordStart).to.equal(0x27E5);
+      expect(second.recordSize).to.equal(0x237);
+
+      expect(third.indexStart).to.equal(0x2C6D);
+      expect(third.recordStart).to.equal(0x2A1C);
+      expect(third.recordSize).to.equal(0x197);
+
+      expect(fourth.indexStart).to.equal(0x2C8D);
+      expect(fourth.recordStart).to.equal(0x2BB3);
+      expect(fourth.recordSize).to.equal(0x76);
+    });
+
+    it("should not exceed the limit that is given", () => {
+      const index = Package.indexResources(filepath, { limit: 1 });
+      expect(index).to.be.an("Array").with.lengthOf(1);
+
+      const [first] = index;
+
+      expect(first.indexStart).to.equal(0x2C2D);
+      expect(first.recordStart).to.equal(0x60);
+      expect(first.recordSize).to.equal(0x2785);
+    });
+
+    it("should only return resources that pass the filter", () => {
+      const index = Package.indexResources(filepath, {
+        resourceFilter(type) {
+          return type === BinaryResourceType.SimData
+            || (type in TuningResourceType);
+        }
+      });
+
+      expect(index).to.be.an("Array").with.lengthOf(2);
+
+      const [second, third] = index;
+
+      expect(second.indexStart).to.equal(0x2C4D);
+      expect(second.recordStart).to.equal(0x27E5);
+      expect(second.recordSize).to.equal(0x237);
+
+      expect(third.indexStart).to.equal(0x2C6D);
+      expect(third.recordStart).to.equal(0x2A1C);
+      expect(third.recordSize).to.equal(0x197);
+    });
+
+    it("should only return resources that pass the filter up to the limit", () => {
+      const index = Package.indexResources(filepath, {
+        resourceFilter(type) {
+          return type === BinaryResourceType.SimData
+            || (type in TuningResourceType);
+        },
+        limit: 1
+      });
+
+      expect(index).to.be.an("Array").with.lengthOf(1);
+
+      const [second] = index;
+
+      expect(second.indexStart).to.equal(0x2C4D);
+      expect(second.recordStart).to.equal(0x27E5);
+      expect(second.recordSize).to.equal(0x237);
+    });
+  });
+
   //#endregion Initialization
 
   //#region Public Methods
