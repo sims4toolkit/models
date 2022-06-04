@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add `parseAttr()` and `getAttr()` to TuningResourceType.
 - Add `TuningResourceType.Street`.
 - Add `Package.streamResources()` and `Package.fetchResources()`.
+- Add `ResourcePosition` for use with `Package.fetchResources()`.
 
 ## [0.4.1] - 2022/06/01
 ### Added
