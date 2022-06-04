@@ -8,7 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased] - TBD
 ### Added
 - Add `limit` to PackageFileReadingOptions.
-- Add `all()` to TuningResourceType and SimDataGroup.
+- Add `all()` to TuningResourceType, SimDataGroup, and BinaryResourceType.
+- Add `parseAttr()` and `getAttr()` to TuningResourceType.
 
 ## [0.4.1] - 2022/06/01
 ### Added
