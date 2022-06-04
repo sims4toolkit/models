@@ -1,7 +1,7 @@
 import { CompressedBuffer, CompressionType, decompressBuffer } from "@s4tk/compression";
 import { BinaryDecoder } from "@s4tk/encoding";
 import type Resource from "../../resources/resource";
-import type { PackageFileReadingOptions } from "../../common/options";
+import type { PackageFileReadingOptions, ResourceFilter } from "../../common/options";
 import type { ResourceKeyPair, ResourceKey } from "../types";
 import { makeList } from "../../common/helpers";
 import RawResource from "../../resources/raw/raw-resource";
@@ -54,16 +54,12 @@ export function streamDbpf(filepath: string, options?: PackageFileReadingOptions
     const flagsPos = Number(header.mnIndexRecordPosition || header.mnIndexRecordPositionLow);
     const flagsDecoder = mmapDecoder(mmap, flagsPos, 16);
     const flags = readDbpfFlags(flagsDecoder);
-    const indexPos = flagsPos + flagsDecoder.tell();
-    const indexLength = header.mnIndexRecordEntryCount * 32; // 32 is max size
-    const indexDecoder = mmapDecoder(mmap, indexPos, indexLength);
-    // FIXME: entire index does not need to be loaded, create another fn
-    const index = readDbpfIndex(indexDecoder, header, flags, options);
+    const index = streamDbpfIndex(mmap, header, flags, options);
 
     const records: ResourceKeyPair[] = [];
     for (let i = 0; i < index.length; i++) {
       const indexEntry = index[i];
-      // FIXME: is this efficient?
+
       const compressedBuffer = mmap.slice(
         indexEntry.mnPosition,
         indexEntry.mnPosition + indexEntry.mnSize
@@ -185,39 +181,81 @@ function readDbpfIndex(
 ): IndexEntry[] {
   return makeList<IndexEntry>(
     header.mnIndexRecordEntryCount,
-    () => {
-      const key: Partial<ResourceKey> = {};
-      key.type = flags.constantTypeId ?? decoder.uint32();
-      key.group = flags.constantGroupId ?? decoder.uint32();
-      const mInstanceEx = flags.constantInstanceIdEx ?? decoder.uint32();
-      const mInstance = decoder.uint32();
-      key.instance = (BigInt(mInstanceEx) << 32n) + BigInt(mInstance);
-
-      if (
-        options?.resourceFilter
-        && !options?.resourceFilter(key.type, key.group, key.instance)
-      ) {
-        decoder.skip(4);
-        const sizeAndCompression = decoder.uint32();
-        const isCompressed = (sizeAndCompression >>> 31) === 1;
-        decoder.skip(isCompressed ? 8 : 6); // +2 for mnCompressionType
-        return;
-      } else {
-        const entry: Partial<IndexEntry> = { key: key as ResourceKey };
-        entry.mnPosition = decoder.uint32();
-        const sizeAndCompression = decoder.uint32();
-        entry.mnSize = sizeAndCompression & 0x7FFFFFFF; // 31 bits
-        const isCompressed = (sizeAndCompression >>> 31) === 1; // mbExtendedCompressionType; 1 bit
-        entry.mnSizeDecompressed = decoder.uint32();
-        if (isCompressed) entry.mnCompressionType = decoder.uint16();
-        decoder.skip(2); // mnCommitted (uint16; 2 bytes)
-        if (entry.mnCompressionType === CompressionType.DeletedRecord) return;
-        return entry as IndexEntry;
-      }
-    },
+    () => readIndexEntry(decoder, flags, options),
     true, // true to skip nulls/undefineds
     options?.limit
   );
+}
+
+/**
+ * Reads the index entries from the given decoder, only including those that
+ * pass the type filter.
+ * 
+ * @param mmap MMAP to stream index from
+ * @param header Header of DBPF that is being read
+ * @param flags Flags of DBPF that is being read
+ * @param options Optional arguments
+ */
+function streamDbpfIndex(
+  mmap: any,
+  header: DbpfHeader,
+  flags: DbpfFlags,
+  options?: PackageFileReadingOptions
+): IndexEntry[] {
+  const entries: IndexEntry[] = [];
+
+  let bytesRead = 0;
+  for (let i = 0; i < header.mnIndexRecordEntryCount; i++) {
+    const decoder = mmapDecoder(mmap, bytesRead, 32); // 32 is max
+    const indexEntry = readIndexEntry(decoder, flags, options);
+    bytesRead += decoder.tell();
+    if (indexEntry) entries.push(indexEntry);
+    if (options?.limit && entries.length >= options.limit) break;
+  }
+
+  return entries;
+}
+
+/**
+ * Reads a single index entry at the current position in the given decoder.
+ * 
+ * @param decoder Decoder to read index entry from
+ * @param flags Flags of DBPF that is being read
+ * @param options Optional arguments
+ */
+function readIndexEntry(
+  decoder: BinaryDecoder,
+  flags: DbpfFlags,
+  options?: PackageFileReadingOptions
+): IndexEntry {
+  const key: Partial<ResourceKey> = {};
+  key.type = flags.constantTypeId ?? decoder.uint32();
+  key.group = flags.constantGroupId ?? decoder.uint32();
+  const mInstanceEx = flags.constantInstanceIdEx ?? decoder.uint32();
+  const mInstance = decoder.uint32();
+  key.instance = (BigInt(mInstanceEx) << 32n) + BigInt(mInstance);
+
+  if (
+    options?.resourceFilter
+    && !options?.resourceFilter(key.type, key.group, key.instance)
+  ) {
+    decoder.skip(4);
+    const sizeAndCompression = decoder.uint32();
+    const isCompressed = (sizeAndCompression >>> 31) === 1;
+    decoder.skip(isCompressed ? 8 : 6); // +2 for mnCompressionType
+    return;
+  } else {
+    const entry: Partial<IndexEntry> = { key: key as ResourceKey };
+    entry.mnPosition = decoder.uint32();
+    const sizeAndCompression = decoder.uint32();
+    entry.mnSize = sizeAndCompression & 0x7FFFFFFF; // 31 bits
+    const isCompressed = (sizeAndCompression >>> 31) === 1; // mbExtendedCompressionType; 1 bit
+    entry.mnSizeDecompressed = decoder.uint32();
+    if (isCompressed) entry.mnCompressionType = decoder.uint16();
+    decoder.skip(2); // mnCommitted (uint16; 2 bytes)
+    if (entry.mnCompressionType === CompressionType.DeletedRecord) return;
+    return entry as IndexEntry;
+  }
 }
 
 /**
