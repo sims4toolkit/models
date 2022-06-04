@@ -541,18 +541,50 @@ describe("Package", () => {
   });
 
   describe("static#streamResources()", () => {
-    // TODO:
-  });
+    const filepath = path.resolve(
+      __dirname,
+      path.join("..", "..", "data", "packages", "CompleteTrait.package")
+    );
 
-  describe("static#streamResourcesAsync()", () => {
-    // TODO:
+    it("should read all of the resources if no filter or limit specified", () => {
+      const resources = Package.streamResources(filepath);
+      expect(resources).to.be.an("Array").with.lengthOf(4);
+      expect(resources[0].value.encodingType).to.equal(EncodingType.Unknown);
+    });
+
+    it("should read no more resources than the limit", () => {
+      const resources = Package.streamResources(filepath, { limit: 1 });
+      expect(resources).to.be.an("Array").with.lengthOf(1);
+      expect(resources[0].value.encodingType).to.equal(EncodingType.Unknown);
+    });
+
+    it("should read only resources matching the filter", () => {
+      const resources = Package.streamResources(filepath, {
+        resourceFilter(type) {
+          return type === BinaryResourceType.StringTable
+            || type === BinaryResourceType.SimData
+        }
+      });
+
+      expect(resources).to.be.an("Array").with.lengthOf(2);
+      expect(resources[0].value.encodingType).to.equal(EncodingType.DATA);
+    });
+
+    it("should read only resources matching the filter up to the limit", () => {
+      const resources = Package.streamResources(filepath, {
+        resourceFilter(type) {
+          return type === BinaryResourceType.StringTable
+            || type === BinaryResourceType.SimData
+        },
+        limit: 1
+      });
+
+      expect(resources).to.be.an("Array").with.lengthOf(1);
+      expect(resources[0].value.encodingType).to.equal(EncodingType.DATA);
+    });
   });
 
   describe("static#fetchResources()", () => {
-    // TODO:
-  });
-
-  describe("static#fetchResourcesAsync()", () => {
     // TODO:
   });
 
