@@ -61,7 +61,8 @@ export function streamDbpf(
     const flagsPos = Number(header.mnIndexRecordPosition || header.mnIndexRecordPositionLow);
     const flagsDecoder = mmapDecoder(mmap, flagsPos, 16);
     const flags = readDbpfFlags(flagsDecoder);
-    const index = streamDbpfIndex(mmap, header, flags, options);
+    const indexPos = flagsPos + flagsDecoder.tell();
+    const index = streamDbpfIndex(mmap, indexPos, header, flags, options);
 
     const records: ResourceKeyPair[] = [];
     for (let i = 0; i < index.length; i++) {
@@ -223,19 +224,21 @@ function readDbpfIndex(
  * pass the type filter.
  * 
  * @param mmap MMAP to stream index from
+ * @param start The first byte to of the first entry
  * @param header Header of DBPF that is being read
  * @param flags Flags of DBPF that is being read
  * @param options Optional arguments
  */
 function streamDbpfIndex(
   mmap: any,
+  start: number,
   header: DbpfHeader,
   flags: DbpfFlags,
   options?: PackageFileReadingOptions
 ): IndexEntry[] {
   const entries: IndexEntry[] = [];
 
-  let bytesRead = 0;
+  let bytesRead = start;
   for (let i = 0; i < header.mnIndexRecordEntryCount; i++) {
     const decoder = mmapDecoder(mmap, bytesRead, 32); // 32 is max
     const indexEntry = readIndexEntry(decoder, flags, options);
