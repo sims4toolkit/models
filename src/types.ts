@@ -1,6 +1,6 @@
 import type { BinaryFileReadingOptions, PackageFileReadingOptions, ResourceFilter, XmlExtractionOptions } from "./lib/common/options";
 import type ResourceEntry from "./lib/packages/resource-entry";
-import type { ResourceKey, ResourceKeyPair } from "./lib/packages/types";
+import type { ResourceKey, ResourceKeyPair, ResourcePosition } from "./lib/packages/types";
 import type StringEntry from "./lib/resources/stbl/string-entry";
 import type Resource from "./lib/resources/resource";
 import type { WritableModelCreationOptions, WritableModelFromOptions } from "./lib/base/writable-model";
@@ -24,5 +24,6 @@ export {
   ResourceFilter,
   ResourceKey,
   ResourceKeyPair,
+  ResourcePosition,
   StringEntry,
 }

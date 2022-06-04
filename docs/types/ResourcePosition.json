@@ -1,0 +1,45 @@
+{
+  "$schema": "https://raw.githubusercontent.com/sims4toolkit/misc/main/json-schemas/docs-item-schema.json",
+  "imports": [
+    "import type { ResourcePosition } from \"@s4tk/models/types\"; // TypeScript only"
+  ],
+  "header": {
+    "title": {
+      "prefix": "interface",
+      "name": "ResourcePosition"
+    },
+    "description": "The exact bytes within a DBPF where a resource can be found.",
+    "sourceCode": "src/lib/packages/types.ts"
+  },
+  "sections": [
+    {
+      "title": "Properties",
+      "content": [
+        {
+          "displayType": "property",
+          "name": "indexStart",
+          "description": "The byte at which a resource's index entry starts.",
+          "type": {
+            "name": "number"
+          }
+        },
+        {
+          "displayType": "property",
+          "name": "recordStart",
+          "description": "The byte at which a resource's record data starts.",
+          "type": {
+            "name": "number"
+          }
+        },
+        {
+          "displayType": "property",
+          "name": "recordSize",
+          "description": "The byte length of a resource's record data.",
+          "type": {
+            "name": "number"
+          }
+        }
+      ]
+    }
+  ]
+}

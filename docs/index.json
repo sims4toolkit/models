@@ -89,6 +89,7 @@
         "ResourceFilter",
         "ResourceKey",
         "ResourceKeyPair",
+        "ResourcePosition",
         "SimDataBigInt",
         "SimDataDto",
         "SimDataNumber",
