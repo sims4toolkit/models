@@ -5,7 +5,7 @@ import compare from "just-compare";
 import clone from "just-clone";
 import type { ResourceKey } from "../../../dst/lib/packages/types";
 import { Package, RawResource, SimDataResource, StringTableResource, XmlResource } from "../../../dst/models";
-import { BinaryResourceType, EncodingType, TuningResourceType } from "../../../dst/enums";
+import { BinaryResourceType, EncodingType, SimDataGroup, TuningResourceType } from "../../../dst/enums";
 import { PackageFileReadingOptions } from "../../../dst/lib/common/options";
 import { CompressionType } from "@s4tk/compression";
 
@@ -594,9 +594,7 @@ describe("Package", () => {
       it("should extract raw resource correctly", () => {
         const resources = Package.fetchResources<RawResource>(filepath, [
           {
-            indexStart: 0x2C2D,
-            recordStart: 0x60,
-            recordSize: 0x2785
+            indexStart: 0x2C2D
           }
         ]);
 
@@ -608,9 +606,7 @@ describe("Package", () => {
       it("should extract simdata correctly", () => {
         const resources = Package.fetchResources<SimDataResource>(filepath, [
           {
-            indexStart: 0x2C4D,
-            recordStart: 0x27E5,
-            recordSize: 0x237
+            indexStart: 0x2C4D
           }
         ]);
 
@@ -625,9 +621,7 @@ describe("Package", () => {
       it("should extract tuning correctly", () => {
         const resources = Package.fetchResources<XmlResource>(filepath, [
           {
-            indexStart: 0x2C6D,
-            recordStart: 0x2A1C,
-            recordSize: 0x197
+            indexStart: 0x2C6D
           }
         ]);
 
@@ -642,9 +636,7 @@ describe("Package", () => {
       it("should extract stbl correctly", () => {
         const resources = Package.fetchResources<StringTableResource>(filepath, [
           {
-            indexStart: 0x2C8D,
-            recordStart: 0x2BB3,
-            recordSize: 0x76
+            indexStart: 0x2C8D
           }
         ]);
 
@@ -661,14 +653,10 @@ describe("Package", () => {
       it("should extract the correct resources", () => {
         const resources = Package.fetchResources<SimDataResource>(filepath, [
           {
-            indexStart: 0x2C4D,
-            recordStart: 0x27E5,
-            recordSize: 0x237
+            indexStart: 0x2C4D
           },
           {
-            indexStart: 0x2C6D,
-            recordStart: 0x2A1C,
-            recordSize: 0x197
+            indexStart: 0x2C6D
           }
         ]);
 
@@ -692,20 +680,24 @@ describe("Package", () => {
       const [first, second, third, fourth] = index;
 
       expect(first.indexStart).to.equal(0x2C2D);
-      expect(first.recordStart).to.equal(0x60);
-      expect(first.recordSize).to.equal(0x2785);
+      expect(first.key?.type).to.equal(BinaryResourceType.DstImage);
+      expect(first.key?.group).to.equal(0);
+      expect(first.key?.instance).to.equal(0x0B3417C01CCD98FEn);
 
       expect(second.indexStart).to.equal(0x2C4D);
-      expect(second.recordStart).to.equal(0x27E5);
-      expect(second.recordSize).to.equal(0x237);
+      expect(second.key?.type).to.equal(BinaryResourceType.SimData);
+      expect(second.key?.group).to.equal(SimDataGroup.Trait);
+      expect(second.key?.instance).to.equal(0x97297134D57FE219n);
 
       expect(third.indexStart).to.equal(0x2C6D);
-      expect(third.recordStart).to.equal(0x2A1C);
-      expect(third.recordSize).to.equal(0x197);
+      expect(third.key?.type).to.equal(TuningResourceType.Trait);
+      expect(third.key?.group).to.equal(0);
+      expect(third.key?.instance).to.equal(0x97297134D57FE219n);
 
       expect(fourth.indexStart).to.equal(0x2C8D);
-      expect(fourth.recordStart).to.equal(0x2BB3);
-      expect(fourth.recordSize).to.equal(0x76);
+      expect(fourth.key?.type).to.equal(BinaryResourceType.StringTable);
+      expect(fourth.key?.group).to.equal(0x80000000);
+      expect(fourth.key?.instance).to.equal(0x0020097334286DF8n);
     });
 
     it("should not exceed the limit that is given", () => {
@@ -713,10 +705,10 @@ describe("Package", () => {
       expect(index).to.be.an("Array").with.lengthOf(1);
 
       const [first] = index;
-
       expect(first.indexStart).to.equal(0x2C2D);
-      expect(first.recordStart).to.equal(0x60);
-      expect(first.recordSize).to.equal(0x2785);
+      expect(first.key?.type).to.equal(BinaryResourceType.DstImage);
+      expect(first.key?.group).to.equal(0);
+      expect(first.key?.instance).to.equal(0x0B3417C01CCD98FEn);
     });
 
     it("should only return resources that pass the filter", () => {
@@ -732,12 +724,14 @@ describe("Package", () => {
       const [second, third] = index;
 
       expect(second.indexStart).to.equal(0x2C4D);
-      expect(second.recordStart).to.equal(0x27E5);
-      expect(second.recordSize).to.equal(0x237);
+      expect(second.key?.type).to.equal(BinaryResourceType.SimData);
+      expect(second.key?.group).to.equal(SimDataGroup.Trait);
+      expect(second.key?.instance).to.equal(0x97297134D57FE219n);
 
       expect(third.indexStart).to.equal(0x2C6D);
-      expect(third.recordStart).to.equal(0x2A1C);
-      expect(third.recordSize).to.equal(0x197);
+      expect(third.key?.type).to.equal(TuningResourceType.Trait);
+      expect(third.key?.group).to.equal(0);
+      expect(third.key?.instance).to.equal(0x97297134D57FE219n);
     });
 
     it("should only return resources that pass the filter up to the limit", () => {
@@ -752,10 +746,10 @@ describe("Package", () => {
       expect(index).to.be.an("Array").with.lengthOf(1);
 
       const [second] = index;
-
       expect(second.indexStart).to.equal(0x2C4D);
-      expect(second.recordStart).to.equal(0x27E5);
-      expect(second.recordSize).to.equal(0x237);
+      expect(second.key?.type).to.equal(BinaryResourceType.SimData);
+      expect(second.key?.group).to.equal(SimDataGroup.Trait);
+      expect(second.key?.instance).to.equal(0x97297134D57FE219n);
     });
   });
 
