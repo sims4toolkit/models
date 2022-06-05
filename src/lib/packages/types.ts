@@ -24,4 +24,5 @@ export interface ResourcePosition {
   indexStart: number;
   recordStart: number;
   recordSize: number;
+  key?: ResourceKey;
 }

@@ -136,7 +136,8 @@ export function fetchResources(
 }
 
 /**
- * Reads the index of a DBPF and returns a list of positions to resources.
+ * Reads the index of a DBPF and returns a list of positions to resources. All
+ * ResourcePositions are returned with a key.
  * 
  * @param filepath Path of file to read as a DBPF
  * @param options Optional arguments
@@ -162,6 +163,7 @@ export function getResourcePositions(
       const decoder = mmapDecoder(mmap, indexBytesRead, 32); // 32 is max
       const indexEntry = readIndexEntry(decoder, flags, options);
       if (indexEntry) positions.push({
+        key: indexEntry.key,
         indexStart: indexBytesRead,
         recordStart: indexEntry.mnPosition,
         recordSize: indexEntry.mnSize,
