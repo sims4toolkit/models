@@ -57,6 +57,27 @@ export default class DstImageResource extends StaticResource {
     return promisify(() => DstImageResource.from(buffer, options));
   }
 
+  /**
+   * Creates a new DstImageResource from the given PNG buffer.
+   * 
+   * @param buffer A buffer containing a PNG image
+   * @param options Object containing optional arguments
+   */
+  static fromPng(buffer: Buffer, options?: DstImageResourceCreationOptions): DstImageResource {
+    // TODO:
+    throw new Error("DstImage.fromPng() not implemented yet.");
+  }
+
+  /**
+   * Asynchronously creates a new DstImageResource from the given PNG buffer.
+   * 
+   * @param buffer A buffer containing a PNG image
+   * @param options Object containing optional arguments
+   */
+  static async fromPngAsync(buffer: Buffer, options?: DstImageResourceCreationOptions): Promise<DstImageResource> {
+    return promisify(() => DstImageResource.fromPng(buffer, options));
+  }
+
   //#endregion Initialization
 
   //#region Public Methods
@@ -65,6 +86,14 @@ export default class DstImageResource extends StaticResource {
     return new DstImageResource(this.bufferCache, {
       defaultCompressionType: this.defaultCompressionType,
     });
+  }
+
+  /**
+   * Returns a buffer containing PNG data that is equivalent to this DST image.
+   */
+  toPng(): Buffer {
+    // TODO:
+    throw new Error("DstImage.fromPng() not implemented yet.");
   }
 
   //#endregion Public Methods
