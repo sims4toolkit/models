@@ -93,7 +93,7 @@ export default class DstImageResource extends StaticResource {
    */
   toPng(): Buffer {
     // TODO:
-    throw new Error("DstImage.fromPng() not implemented yet.");
+    throw new Error("DstImage.toPng() not implemented yet.");
   }
 
   //#endregion Public Methods
