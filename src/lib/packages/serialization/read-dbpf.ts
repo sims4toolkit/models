@@ -117,8 +117,8 @@ export function fetchResources(
       const indexEntry = readIndexEntry(indexDecoder, flags, options);
 
       const compressedBuffer = Buffer.from(mmap.slice(
-        pos.recordStart,
-        pos.recordStart + pos.recordSize
+        indexEntry.mnPosition,
+        indexEntry.mnPosition + indexEntry.mnSize
       ));
 
       resources.push({
@@ -164,9 +164,7 @@ export function getResourcePositions(
       const indexEntry = readIndexEntry(decoder, flags, options);
       if (indexEntry) positions.push({
         key: indexEntry.key,
-        indexStart: indexBytesRead,
-        recordStart: indexEntry.mnPosition,
-        recordSize: indexEntry.mnSize,
+        indexStart: indexBytesRead
       });
       indexBytesRead += decoder.tell();
       if (options?.limit && positions.length >= options.limit) break;

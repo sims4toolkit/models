@@ -25,18 +25,16 @@
         },
         {
           "displayType": "property",
-          "name": "recordStart",
-          "description": "The byte at which a resource's record data starts.",
+          "name": "key",
+          "optional": true,
+          "description": "The key of the resource.",
           "type": {
-            "name": "number"
-          }
-        },
-        {
-          "displayType": "property",
-          "name": "recordSize",
-          "description": "The byte length of a resource's record data.",
-          "type": {
-            "name": "number"
+            "name": "ResourceKey",
+            "path": {
+              "pkg": "models",
+              "group": "types",
+              "item": "ResourceKey"
+            }
           }
         }
       ]
