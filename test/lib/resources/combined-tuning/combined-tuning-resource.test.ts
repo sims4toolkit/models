@@ -31,8 +31,8 @@ function getExtractedXmlBuffer(name: string): Buffer {
 function testExtractedXml(resource: XmlResource, name: string, id: string) {
   expect(resource.root.name).to.equal(name);
   expect(resource.root.id).to.equal(id);
-  expect(resource.dom.toXml()).to.equal(
-    getExtractedXmlBuffer(name).toString()
+  expect(resource.dom.toXml().replace(/\r?\n|\r/g, "")).to.equal(
+    getExtractedXmlBuffer(name).toString().replace(/\r?\n|\r/g, "")
   );
 }
 
@@ -56,16 +56,16 @@ describe("CombinedTuningResource", () => {
     context("binary buffer", () => {
       it("should create a DOM equal to the XML version", () => {
         const cb = CombinedTuningResource.from(binaryBuffer);
-        const domString = cb.dom.toXml();
-        expect(domString).to.equal(xmlBuffer.toString());
+        const domString = cb.dom.toXml().replace(/\r?\n|\r/g, "");
+        expect(domString).to.equal(xmlBuffer.toString().replace(/\r?\n|\r/g, ""));
       });
     });
 
     context("xml buffer", () => {
       it("should create a DOM equal to the XML version", () => {
         const cb = CombinedTuningResource.from(xmlBuffer);
-        const domString = cb.dom.toXml();
-        expect(domString).to.equal(xmlBuffer.toString());
+        const domString = cb.dom.toXml().replace(/\r?\n|\r/g, "");
+        expect(domString).to.equal(xmlBuffer.toString().replace(/\r?\n|\r/g, ""));
       });
     });
   });
