@@ -315,7 +315,7 @@
               "item": "ResourceKeyPair"
             }
           },
-          "description": "Streams resources from the file at the given location. This method is much, much more space and time efficient than extractResources() when using a resource filter and/or a limit. But, if reading an entire package, it will likely perform the same or even slower.\n\nWARNING: This method requires a C++ library that was compiled to machine code. It has only been tested on macOS, and will likely cause issues on other operating systems.",
+          "description": "Streams resources from the file at the given location. This method is much, much more space and time efficient than extractResources() when using a resource filter and/or a limit. But, if reading an entire package, it will likely perform the same or even slower.",
           "arguments": [
             {
               "name": "filepath",
@@ -366,7 +366,7 @@
               "item": "ResourceKeyPair"
             }
           },
-          "description": "Asynchronously streams resources from the file at the given location. This method is much, much more space and time efficient than extractResources() when using a resource filter and/or a limit. But, if reading an entire package, it will likely perform the same or even slower.\n\nWARNING: This method requires a C++ library that was compiled to machine code. It has only been tested on macOS, and will likely cause issues on other operating systems.",
+          "description": "Asynchronously streams resources from the file at the given location. This method is much, much more space and time efficient than extractResources() when using a resource filter and/or a limit. But, if reading an entire package, it will likely perform the same or even slower.",
           "arguments": [
             {
               "name": "filepath",
@@ -417,7 +417,7 @@
               "item": "ResourceKeyPair"
             }
           },
-          "description": "Fetches specific resources from the file at the given location. This method is incredibly fast, but requires an index to be used, which takes time to build up. Note that the filter and limit options will be ignored.\n\nWARNING: This method requires a C++ library that was compiled to machine code. It has only been tested on macOS, and will likely cause issues on other operating systems.",
+          "description": "Fetches specific resources from the file at the given location. This method is incredibly fast, but requires an index to be used, which takes time to build up. Note that the filter and limit options will be ignored.",
           "arguments": [
             {
               "name": "filepath",
@@ -480,7 +480,7 @@
               "item": "ResourceKeyPair"
             }
           },
-          "description": "Asynchronously fetches specific resources from the file at the given location. This method is incredibly fast, but requires an index to be used, which takes time to build up. Note that the filter and limit options will be ignored.\n\nWARNING: This method requires a C++ library that was compiled to machine code. It has only been tested on macOS, and will likely cause issues on other operating systems.",
+          "description": "Asynchronously fetches specific resources from the file at the given location. This method is incredibly fast, but requires an index to be used, which takes time to build up. Note that the filter and limit options will be ignored.",
           "arguments": [
             {
               "name": "filepath",
@@ -528,7 +528,7 @@
               "item": "ResourcePosition"
             }
           },
-          "description": "Returns an array of objects that can be used to quickly fetch specific resources with fetchResources().\n\nWARNING: This method requires a C++ library that was compiled to machine code. It has only been tested on macOS, and will likely cause issues on other operating systems.",
+          "description": "Returns an array of objects that can be used to quickly fetch specific resources with fetchResources().",
           "arguments": [
             {
               "name": "filepath",
@@ -564,7 +564,7 @@
               "item": "ResourcePosition"
             }
           },
-          "description": "Asynchronously returns an array of objects that can be used to quickly fetch specific resources with fetchResources().\n\nWARNING: This method requires a C++ library that was compiled to machine code. It has only been tested on macOS, and will likely cause issues on other operating systems.",
+          "description": "Asynchronously returns an array of objects that can be used to quickly fetch specific resources with fetchResources().",
           "arguments": [
             {
               "name": "filepath",

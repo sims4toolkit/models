@@ -12,7 +12,7 @@ try {
   var BufferFromFile = require("bufferfromfile");
 } catch (e) {
   var BufferFromFile;
-  console.warn("MMAPs not supported on your OS.", e);
+  console.warn("MMAPs not supported in this environment.", e);
 }
 
 /**
@@ -52,7 +52,7 @@ export function streamDbpf(
   options?: PackageFileReadingOptions
 ): ResourceKeyPair[] {
   if (!BufferFromFile)
-    throw new Error("MMAPs not supported on your OS. Use regular Buffers.");
+    throw new Error("MMAPs not supported in this environment. Use regular Buffers.");
 
   const mmap = BufferFromFile.buffer(filepath);
 
@@ -101,7 +101,7 @@ export function fetchResources(
   options?: PackageFileReadingOptions
 ): ResourceKeyPair[] {
   if (!BufferFromFile)
-    throw new Error("MMAPs not supported on your OS. Use regular Buffers.");
+    throw new Error("MMAPs not supported in this environment. Use regular Buffers.");
 
   const mmap = BufferFromFile.buffer(filepath);
 
@@ -147,7 +147,7 @@ export function getResourcePositions(
   options?: PackageFileReadingOptions
 ): ResourcePosition[] {
   if (!BufferFromFile)
-    throw new Error("MMAPs not supported on your OS. Use regular Buffers.");
+    throw new Error("MMAPs not supported in this environment. Use regular Buffers.");
 
   const mmap = BufferFromFile.buffer(filepath);
 
