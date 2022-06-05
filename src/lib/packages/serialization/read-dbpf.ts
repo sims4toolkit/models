@@ -9,7 +9,7 @@ import ResourceRegistry from "../resource-registry";
 import { DbpfFlags, DbpfHeader, IndexEntry } from "./types";
 
 try {
-  var BufferFromFile = require("../../../ffi/bufferfromfile.node");
+  var BufferFromFile = require("bufferfromfile");
 } catch (e) {
   var BufferFromFile;
   console.warn("MMAPs not supported on your OS.", e);
