@@ -46,7 +46,7 @@ export default class CombinedTuningResource extends DataResource {
     return new CombinedTuningResource(
       bufferContainsDATA(buffer)
         ? convertCombinedBinaryToXml(
-          DataResource._readBinaryDataModel(buffer, options),
+          DataResource._readBinaryDataModel(buffer, true, options),
           buffer
         )
         : XmlDocumentNode.from(buffer)
@@ -84,7 +84,7 @@ export default class CombinedTuningResource extends DataResource {
     return extractTuningFromCombinedXml(
       bufferContainsDATA(buffer)
         ? convertCombinedBinaryToXml(
-          DataResource._readBinaryDataModel(buffer),
+          DataResource._readBinaryDataModel(buffer, true),
           buffer,
           options
         )

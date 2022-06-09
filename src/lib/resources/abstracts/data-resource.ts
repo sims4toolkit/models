@@ -35,8 +35,12 @@ export default abstract class DataResource extends WritableModel implements Reso
    * @param buffer Buffer to read as DATA file
    * @param options Options to configure
    */
-  protected static _readBinaryDataModel(buffer: Buffer, options?: BinaryFileReadingOptions): BinaryDataResourceDto {
-    return readData(buffer, options);
+  protected static _readBinaryDataModel(
+    buffer: Buffer,
+    isCombined: boolean,
+    options?: BinaryFileReadingOptions
+  ): BinaryDataResourceDto {
+    return readData(buffer, isCombined, options);
   }
 }
 
@@ -106,7 +110,11 @@ export interface BinaryDataResourceDto {
  * 
  * @param buffer Buffer to read as a DATA file
  */
-function readData(buffer: Buffer, options?: BinaryFileReadingOptions): BinaryDataResourceDto {
+function readData(
+  buffer: Buffer,
+  isCombined: boolean,
+  options?: BinaryFileReadingOptions
+): BinaryDataResourceDto {
   const RELOFFSET_NULL = -0x80000000;
 
   const decoder = new BinaryDecoder(buffer);
@@ -392,7 +400,7 @@ function readData(buffer: Buffer, options?: BinaryFileReadingOptions): BinaryDat
   const mTableData: BinaryTableData[] = [];
   for (i = 0; i < mnNumTables; ++i) {
     seekToAlignment(15);
-    // seekToAlignment(mTable[i].mnRowSize - 1); // HACK: breaks combined tuning
+    if (!isCombined) seekToAlignment(mTable[i].mnRowSize - 1);
 
     const tableData: BinaryTableData = {};
     if (mTable[i].mnSchemaOffset === RELOFFSET_NULL) {
@@ -404,8 +412,7 @@ function readData(buffer: Buffer, options?: BinaryFileReadingOptions): BinaryDat
     function structTableData(): BinaryTableData {
       alignment = 1;
       for (j = 0; j < mTable[i].mnRowCount; ++j) {
-        // Some tables have no schema; these support only one
-        // data type.
+        // Some tables have no schema; these support only one data type.
         if (mTable[i].mnSchemaOffset === RELOFFSET_NULL) {
           tableData.mValue.push(readDataType(mTable[i].mnDataType));
           alignment = DataType.getAlignment(mTable[i].mnDataType);
