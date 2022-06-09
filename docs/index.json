@@ -1,7 +1,6 @@
 {
   "$schema": "https://raw.githubusercontent.com/sims4toolkit/misc/main/json-schemas/docs-index-schema.json",
   "versions": [
-    "0.4.6",
     "0.4.5",
     "0.4.4",
     "0.4.3",
