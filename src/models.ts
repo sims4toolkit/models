@@ -4,7 +4,7 @@ import RawResource from "./lib/resources/raw/raw-resource";
 import SimDataResource from "./lib/resources/simdata/simdata-resource";
 import StringTableResource from "./lib/resources/stbl/stbl-resource";
 import CombinedTuningResource from "./lib/resources/combined-tuning/combined-tuning-resource";
-import DstImageResource from "./lib/resources/dst-image/dst-image-resource";
+import DdsImageResource from "./lib/resources/dds-image/dds-image-resource";
 
 export {
   Package,
@@ -13,5 +13,5 @@ export {
   SimDataResource,
   StringTableResource,
   CombinedTuningResource,
-  DstImageResource
+  DdsImageResource
 }
