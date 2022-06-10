@@ -86,6 +86,36 @@ export default class DdsImageResource extends StaticResource {
     return promisify(() => DdsImageResource.from(buffer, options));
   }
 
+  /**
+   * Creates a new DdsImageResource from the given DdsImage object.
+   * 
+   * @param image DDS image object to create this resource from
+   * @param compression If provided, then the image is guaranteed to be in the
+   * given compression format
+   */
+  static fromDdsImage(image: DdsImage, compression?: "dxt" | "dst"): DdsImageResource {
+    if (compression)
+      image = compression === "dst"
+        ? image.toShuffled()
+        : image.toUnshuffled();
+
+    return this.from(image.buffer, {
+      initialDdsImageCache: image
+    });
+  }
+
+  /**
+   * Asynchronously creates a new DdsImageResource from the given DdsImage
+   * object.
+   * 
+   * @param image DDS image object to create this resource from
+   * @param compression If provided, then the image is guaranteed to be in the
+   * given compression format
+   */
+  static async fromDdsImageAsync(image: DdsImage, compression?: "dxt" | "dst"): Promise<DdsImageResource> {
+    return promisify(() => DdsImageResource.fromDdsImage(image, compression));
+  }
+
   //#endregion Initialization
 
   //#region Public Methods
