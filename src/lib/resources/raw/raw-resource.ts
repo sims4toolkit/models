@@ -13,7 +13,8 @@ export interface RawResourceCreationOptions extends
   }> { };
 
 /**
- * Model for resources that have not been parsed and cannot be modified.
+ * Model for resources that have not been parsed and have no interface to be
+ * modified. To edit a RawResource, you must replace the entire buffer.
  */
 export default class RawResource extends StaticResource {
   readonly encodingType: EncodingType = EncodingType.Unknown;
