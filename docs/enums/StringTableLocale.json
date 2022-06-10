@@ -160,7 +160,7 @@
           "name": "getLocaleCode",
           "description": "Returns the 5-letter code that is appended to string table packages that are shipped with the game. Returns undefined if locale is not recognized.",
           "returnType": {
-            "name": "StringTableLocale"
+            "name": "string"
           },
           "arguments": [
             {
