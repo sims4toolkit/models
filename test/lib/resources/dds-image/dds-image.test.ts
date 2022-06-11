@@ -67,7 +67,37 @@ describe("DdsImageResource", () => {
   });
 
   describe("#image", () => {
-    // TODO:
+    it("should cache the image that is returned", () => {
+      const dds = new DdsImageResource(DST_BUFFER_CACHE);
+      const image = dds.image;
+      expect(dds.image).to.equal(image);
+    });
+
+    it("should be shuffled if image is a DST", () => {
+      const dds = new DdsImageResource(DST_BUFFER_CACHE);
+      expect(dds.image.isShuffled).to.be.true;
+    });
+
+    it("should be unshuffled if image is a DXT", () => {
+      const dds = new DdsImageResource(DXT_BUFFER_CACHE);
+      expect(dds.image.isShuffled).to.be.false;
+    });
+
+    it("should uncache the owner when set", () => {
+      const owner = new MockOwner();
+      const dds = new DdsImageResource(DST_BUFFER_CACHE, { owner });
+      expect(owner.cached).to.be.true;
+      dds.image = DdsImage.from(dxtBuffer);
+      expect(owner.cached).to.be.false;
+    });
+
+    it("should reset the buffer cache when set", () => {
+      const dds = new DdsImageResource(DST_BUFFER_CACHE);
+      expect(dds.bufferCache).to.equal(DST_BUFFER_CACHE);
+      dds.image = DdsImage.from(dxtBuffer);
+      expect(dds.bufferCache).to.not.be.undefined;
+      expect(dds.bufferCache).to.not.equal(DST_BUFFER_CACHE);
+    });
   });
 
   //#endregion Properties
