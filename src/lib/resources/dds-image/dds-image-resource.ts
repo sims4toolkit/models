@@ -127,6 +127,10 @@ export default class DdsImageResource extends StaticResource {
     });
   }
 
+  isXml(): boolean {
+    return false;
+  }
+
   replaceContent(content: CompressedBuffer): void {
     super.replaceContent(content);
     delete this._ddsImageCache;
