@@ -1,0 +1,232 @@
+{
+  "$schema": "https://raw.githubusercontent.com/sims4toolkit/misc/main/json-schemas/docs-item-schema.json",
+  "imports": [
+    "import { DdsImageResource } from \"@s4tk/models\"; // ESM",
+    "const { DdsImageResource } = require(\"@s4tk/models\"); // CJS"
+  ],
+  "header": {
+    "title": {
+      "prefix": "class",
+      "name": "DdsImageResource",
+      "extends": [
+        {
+          "name": "StaticResource",
+          "path": {
+            "pkg": "models",
+            "group": "abstracts",
+            "item": "StaticResource"
+          }
+        }
+      ]
+    },
+    "description": "Model for resources that have not been parsed.",
+    "sourceCode": "src/lib/resources/dds-image/dds-image-resource.ts"
+  },
+  "sections": [
+    {
+      "title": "Properties",
+      "content": [
+        {
+          "displayType": "property",
+          "prefix": "readonly",
+          "name": "encodingType",
+          "description": "Always 'EncodingType.DDS'.",
+          "type": {
+            "name": "EncodingType",
+            "path": {
+              "pkg": "models",
+              "group": "enums",
+              "item": "EncodingType"
+            }
+          },
+          "overrides": {
+            "name": "Resource",
+            "path": {
+              "pkg": "models",
+              "group": "types",
+              "item": "Resource"
+            }
+          }
+        },
+        {
+          "displayType": "property",
+          "prefix": "get, set",
+          "name": "image",
+          "description": "Model for the DDS image in this resource. The image should be shuffled if and only if this resource's type is DST. Mutating this image object will NOT update this resource - it will only be updated when you either set the `image` property to a new DdsImage or use `replaceContent().`",
+          "type": {
+            "name": "DdsImage",
+            "path": {
+              "pkg": "images",
+              "group": "images",
+              "item": "DdsImage"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "title": "Initialization",
+      "content": [
+        {
+          "displayType": "function",
+          "name": "constructor",
+          "description": "Creates a new DdsImageResource.",
+          "returnType": {
+            "name": "DdsImageResource"
+          },
+          "arguments": [
+            {
+              "name": "bufferWrapper",
+              "type": {
+                "name": "CompressedBuffer",
+                "path": {
+                  "pkg": "compression",
+                  "group": "interfaces",
+                  "item": "CompressedBuffer"
+                }
+              },
+              "description": "The CompressedBuffer wrapper for this resource's buffer"
+            },
+            {
+              "name": "options",
+              "optional": true,
+              "type": {
+                "name": "DdsImageResourceCreationOptions",
+                "path": {
+                  "pkg": "models",
+                  "group": "types",
+                  "item": "DdsImageResourceCreationOptions"
+                }
+              },
+              "description": "Object containing optional arguments"
+            }
+          ]
+        },
+        {
+          "displayType": "function",
+          "prefix": "static",
+          "name": "from",
+          "description": "Creates a new DdsImageResource from the given buffer. The buffer is assumed to be uncompressed; passing in a compressed buffer can lead to unexpected behavior.",
+          "returnType": {
+            "name": "DdsImageResource"
+          },
+          "arguments": [
+            {
+              "name": "buffer",
+              "type": {
+                "name": "Buffer"
+              },
+              "description": "The decompressed buffer for this DdsImageResource"
+            },
+            {
+              "name": "options",
+              "type": {
+                "name": "DdsImageResourceCreationOptions",
+                "path": {
+                  "pkg": "models",
+                  "group": "types",
+                  "item": "DdsImageResourceCreationOptions"
+                }
+              },
+              "optional": true,
+              "description": "Object containing optional arguments"
+            }
+          ]
+        },
+        {
+          "displayType": "function",
+          "prefix": "static async",
+          "name": "fromAsync",
+          "description": "Asynchronously creates a new DdsImageResource from the given buffer. The buffer is assumed to be uncompressed; passing in a compressed buffer can lead to unexpected behavior.",
+          "returnType": {
+            "name": "Promise<DdsImageResource>"
+          },
+          "arguments": [
+            {
+              "name": "buffer",
+              "type": {
+                "name": "Buffer"
+              },
+              "description": "The decompressed buffer for this DdsImageResource"
+            },
+            {
+              "name": "options",
+              "type": {
+                "name": "DdsImageResourceCreationOptions",
+                "path": {
+                  "pkg": "models",
+                  "group": "types",
+                  "item": "DdsImageResourceCreationOptions"
+                }
+              },
+              "optional": true,
+              "description": "Object containing optional arguments"
+            }
+          ]
+        },
+        {
+          "displayType": "function",
+          "prefix": "static",
+          "name": "fromDdsImage",
+          "description": "Creates a new DdsImageResource from the given DdsImage object.",
+          "returnType": {
+            "name": "DdsImageResource"
+          },
+          "arguments": [
+            {
+              "name": "image",
+              "type": {
+                "name": "DdsImage",
+                "path": {
+                  "pkg": "images",
+                  "group": "images",
+                  "item": "DdsImage"
+                }
+              },
+              "description": "DDS image object to create this resource from."
+            },
+            {
+              "name": "compression",
+              "type": {
+                "name": "\"dxt\" | \"dst\""
+              },
+              "optional": true,
+              "description": "If provided, then the image is guaranteed to be in the given compression format."
+            }
+          ]
+        },
+        {
+          "displayType": "function",
+          "prefix": "static async",
+          "name": "fromDdsImageAsync",
+          "description": "Asynchronously creates a new DdsImageResource from the given DdsImage object.",
+          "returnType": {
+            "name": "Promise<DdsImageResource>"
+          },
+          "arguments": [
+            {
+              "name": "image",
+              "type": {
+                "name": "DdsImage",
+                "path": {
+                  "pkg": "images",
+                  "group": "images",
+                  "item": "DdsImage"
+                }
+              },
+              "description": "DDS image object to create this resource from."
+            },
+            {
+              "name": "compression",
+              "type": {
+                "name": "\"dxt\" | \"dst\""
+              },
+              "optional": true,
+              "description": "If provided, then the image is guaranteed to be in the given compression format."
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

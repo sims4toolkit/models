@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.5.0] - 2022/06/10
+### Added
+- Add DdsImageResource model (for both DDS and DST image resources).
+### Changed
+- StaticResources are now editable with `replaceContent()`.
+
 ## [0.4.5] - 2022/06/09
 ### Changed
 - Update dependencies on other S4TK packages.

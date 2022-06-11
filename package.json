@@ -1,6 +1,6 @@
 {
   "name": "@s4tk/models",
-  "version": "0.4.5",
+  "version": "0.5.0",
   "description": "Models for reading and writing package files and the resources they contain.",
   "repository": {
     "type": "git",
@@ -45,6 +45,7 @@
     "@s4tk/compression": "^0.2.0",
     "@s4tk/encoding": "^0.1.4",
     "@s4tk/hashing": "^0.2.1",
+    "@s4tk/images": "^0.1.0",
     "@s4tk/xml-dom": "^0.1.3",
     "bufferfromfile": "^0.4.372",
     "just-clone": "^5.0.1",

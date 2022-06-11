@@ -38,7 +38,7 @@ export interface WritableModelFromOptions extends
 export default abstract class WritableModel extends ApiModelBase {
   //#region Properties
 
-  private _bufferCache?: CompressedBuffer;
+  protected _bufferCache?: CompressedBuffer;
   private _defaultCompressionType: CompressionType;
 
   /** The current buffer cache, if there is any. */

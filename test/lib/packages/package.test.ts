@@ -4,7 +4,7 @@ import { expect } from "chai";
 import compare from "just-compare";
 import clone from "just-clone";
 import type { ResourceKey } from "../../../dst/lib/packages/types";
-import { Package, RawResource, SimDataResource, StringTableResource, XmlResource } from "../../../dst/models";
+import { DdsImageResource, Package, RawResource, SimDataResource, StringTableResource, XmlResource } from "../../../dst/models";
 import { BinaryResourceType, EncodingType, SimDataGroup, TuningResourceType } from "../../../dst/enums";
 import { PackageFileReadingOptions } from "../../../dst/lib/common/options";
 import { CompressionType } from "@s4tk/compression";
@@ -185,8 +185,8 @@ describe("Package", () => {
 
       it("should not have cached entries by default", () => {
         const dbpf = Package.from(getBuffer("CompleteTrait"));
-        dbpf.entries.forEach(entry => {
-          if (entry.resource.encodingType !== EncodingType.Unknown)
+        dbpf.entries.forEach((entry, i) => {
+          if (i > 0) // 0 is DST
             expect(entry.value.hasBufferCache).to.be.false;
         });
       });
@@ -200,16 +200,16 @@ describe("Package", () => {
 
       it("should not have cached resources within its entries if saveBuffer = false", () => {
         const dbpf = Package.from(getBuffer("CompleteTrait"), { saveBuffer: false });
-        dbpf.entries.forEach(entry => {
-          if (entry.resource.encodingType !== EncodingType.Unknown)
+        dbpf.entries.forEach((entry, i) => {
+          if (i > 0) // 0 is DST
             expect(entry.value.hasBufferCache).to.be.false;
         });
       });
 
       it("should not have cached resources within its entries by default", () => {
         const dbpf = Package.from(getBuffer("CompleteTrait"));
-        dbpf.entries.forEach(entry => {
-          if (entry.resource.encodingType !== EncodingType.Unknown)
+        dbpf.entries.forEach((entry, i) => {
+          if (i > 0) // 0 is DST
             expect(entry.value.hasBufferCache).to.be.false;
         });
       });
@@ -256,7 +256,7 @@ describe("Package", () => {
         expect(simdata.props.display_name.asAny.value).to.equal(0x4EB3C46C);
       });
 
-      it("should read raw resource correctly", () => {
+      it("should read static resource correctly", () => {
         const dbpf = getPackage("CompleteTrait");
         const entry = dbpf.get(0);
         const key = entry.key;
@@ -266,7 +266,17 @@ describe("Package", () => {
           group: 0,
           instance: 0x0B3417C01CCD98FEn
         })).to.be.true;
-        expect(image.encodingType).to.equal(EncodingType.Unknown);
+        expect(image.encodingType).to.equal(EncodingType.DDS);
+      });
+
+      it("should read DDS/DST resources correctly", () => {
+        const dbpf = getPackage("DdsImages") as Package<DdsImageResource>;
+        const dds = dbpf.get(0).resource;
+        const dst = dbpf.get(1).resource;
+        expect(dds.encodingType).to.equal(EncodingType.DDS);
+        expect(dds.image.isShuffled).to.be.false;
+        expect(dst.encodingType).to.equal(EncodingType.DDS);
+        expect(dst.image.isShuffled).to.be.true;
       });
 
       it("should read other xml resource correctly", () => {
@@ -441,7 +451,7 @@ describe("Package", () => {
           });
 
           expect(dbpf.size).to.equal(4);
-          expect(dbpf.get(0).resource.encodingType).to.equal(EncodingType.Unknown);
+          expect(dbpf.get(0).resource.encodingType).to.equal(EncodingType.DDS);
           expect(dbpf.get(1).resource.encodingType).to.equal(EncodingType.DATA);
           expect(dbpf.get(2).resource.encodingType).to.equal(EncodingType.XML);
           expect(dbpf.get(3).resource.encodingType).to.equal(EncodingType.STBL);
@@ -549,13 +559,16 @@ describe("Package", () => {
     it("should read all of the resources if no filter or limit specified", () => {
       const resources = Package.streamResources(filepath);
       expect(resources).to.be.an("Array").with.lengthOf(4);
-      expect(resources[0].value.encodingType).to.equal(EncodingType.Unknown);
+      expect(resources[0].value.encodingType).to.equal(EncodingType.DDS);
+      expect(resources[1].value.encodingType).to.equal(EncodingType.DATA);
+      expect(resources[2].value.encodingType).to.equal(EncodingType.XML);
+      expect(resources[3].value.encodingType).to.equal(EncodingType.STBL);
     });
 
     it("should read no more resources than the limit", () => {
       const resources = Package.streamResources(filepath, { limit: 1 });
       expect(resources).to.be.an("Array").with.lengthOf(1);
-      expect(resources[0].value.encodingType).to.equal(EncodingType.Unknown);
+      expect(resources[0].value.encodingType).to.equal(EncodingType.DDS);
     });
 
     it("should read only resources matching the filter", () => {
@@ -568,6 +581,7 @@ describe("Package", () => {
 
       expect(resources).to.be.an("Array").with.lengthOf(2);
       expect(resources[0].value.encodingType).to.equal(EncodingType.DATA);
+      expect(resources[1].value.encodingType).to.equal(EncodingType.STBL);
     });
 
     it("should read only resources matching the filter up to the limit", () => {
@@ -591,7 +605,7 @@ describe("Package", () => {
     );
 
     context("pointing to one resource", () => {
-      it("should extract raw resource correctly", () => {
+      it("should extract static resource correctly", () => {
         const resources = Package.fetchResources<RawResource>(filepath, [
           {
             indexStart: 0x2C2D
@@ -600,7 +614,7 @@ describe("Package", () => {
 
         expect(resources).to.be.an("Array").with.lengthOf(1);
         expect(resources[0].key.instance).to.equal(0x0B3417C01CCD98FEn);
-        expect(resources[0].value.encodingType).to.equal(EncodingType.Unknown);
+        expect(resources[0].value.encodingType).to.equal(EncodingType.DDS);
       });
 
       it("should extract simdata correctly", () => {
@@ -996,6 +1010,7 @@ describe("Package", () => {
 
     it("should return false if other is undefined", () => {
       const dbpf = getPackage("CompleteTrait");
+      //@ts-ignore
       expect(dbpf.equals(undefined)).to.be.false;
     });
   });
@@ -1023,7 +1038,7 @@ describe("Package", () => {
     it("should return the entry with the given ID", () => {
       const dbpf = getPackage("CompleteTrait");
       const image = dbpf.get(0);
-      expect(image.value.encodingType).to.equal(EncodingType.Unknown);
+      expect(image.value.encodingType).to.equal(EncodingType.DDS);
       const simdata = dbpf.get(1);
       expect(simdata.value.encodingType).to.equal(EncodingType.DATA);
       const tuning = dbpf.get(2);

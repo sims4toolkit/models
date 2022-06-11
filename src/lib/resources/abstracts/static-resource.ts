@@ -1,15 +1,17 @@
+import { CompressedBuffer } from '@s4tk/compression';
 import type Resource from '../resource';
 import WritableModel from '../../base/writable-model';
 import EncodingType from '../../enums/encoding-type';
 import { bufferContainsXml } from '../../common/helpers';
 
 /**
- * Model for resources that consist of just a buffer and cannot be modified.
+ * Model for resources that do not have an interface to be edited, and can only
+ * be modifed by replacing its buffer in its entirety.
  */
 export default abstract class StaticResource extends WritableModel implements Resource {
   abstract readonly encodingType: EncodingType;
 
-  /** Shorthand for `this.getBuffer()`, since the buffer will never change. */
+  /** Shorthand for `this.getBuffer()`. */
   get buffer(): Buffer { return this.getBuffer(); }
 
   abstract clone(): StaticResource;
@@ -27,6 +29,18 @@ export default abstract class StaticResource extends WritableModel implements Re
 
   onChange() {
     // intentionally blank
+  }
+
+  /**
+   * Replaces the actual content data in this resource with that in the given
+   * compressed buffer wrapper. This function should be used with care, as there
+   * are no safeguards in place to prevent the model from becoming corrupt.
+   * 
+   * @param content Compressed buffer wrapper to replace the cache with
+   */
+  replaceContent(content: CompressedBuffer) {
+    this._bufferCache = content;
+    this.owner?.onChange();
   }
 
   protected _clearBufferCacheIfSupported(): void {

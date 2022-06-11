@@ -19,7 +19,7 @@
         }
       ]
     },
-    "description": "Model for resources that have not been parsed.",
+    "description": "Model for resources that have not been parsed and have no interface to be modified. To edit a RawResource, you must replace the entire buffer.",
     "sourceCode": "src/lib/resources/raw/raw-resource.ts"
   },
   "sections": [
