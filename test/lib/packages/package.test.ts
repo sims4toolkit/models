@@ -4,7 +4,7 @@ import { expect } from "chai";
 import compare from "just-compare";
 import clone from "just-clone";
 import type { ResourceKey } from "../../../dst/lib/packages/types";
-import { Package, RawResource, SimDataResource, StringTableResource, XmlResource } from "../../../dst/models";
+import { DdsImageResource, Package, RawResource, SimDataResource, StringTableResource, XmlResource } from "../../../dst/models";
 import { BinaryResourceType, EncodingType, SimDataGroup, TuningResourceType } from "../../../dst/enums";
 import { PackageFileReadingOptions } from "../../../dst/lib/common/options";
 import { CompressionType } from "@s4tk/compression";
@@ -267,6 +267,16 @@ describe("Package", () => {
           instance: 0x0B3417C01CCD98FEn
         })).to.be.true;
         expect(image.encodingType).to.equal(EncodingType.DDS);
+      });
+
+      it("should read DDS/DST resources correctly", () => {
+        const dbpf = getPackage("DdsImages") as Package<DdsImageResource>;
+        const dds = dbpf.get(0).resource;
+        const dst = dbpf.get(1).resource;
+        expect(dds.encodingType).to.equal(EncodingType.DDS);
+        expect(dds.image.isShuffled).to.be.false;
+        expect(dst.encodingType).to.equal(EncodingType.DDS);
+        expect(dst.image.isShuffled).to.be.true;
       });
 
       it("should read other xml resource correctly", () => {
@@ -1000,6 +1010,7 @@ describe("Package", () => {
 
     it("should return false if other is undefined", () => {
       const dbpf = getPackage("CompleteTrait");
+      //@ts-ignore
       expect(dbpf.equals(undefined)).to.be.false;
     });
   });
