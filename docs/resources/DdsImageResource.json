@@ -163,6 +163,68 @@
               "description": "Object containing optional arguments"
             }
           ]
+        },
+        {
+          "displayType": "function",
+          "prefix": "static",
+          "name": "fromDdsImage",
+          "description": "Creates a new DdsImageResource from the given DdsImage object.",
+          "returnType": {
+            "name": "DdsImageResource"
+          },
+          "arguments": [
+            {
+              "name": "image",
+              "type": {
+                "name": "DdsImage",
+                "path": {
+                  "pkg": "images",
+                  "group": "images",
+                  "item": "DdsImage"
+                }
+              },
+              "description": "DDS image object to create this resource from."
+            },
+            {
+              "name": "compression",
+              "type": {
+                "name": "\"dxt\" | \"dst\""
+              },
+              "optional": true,
+              "description": "If provided, then the image is guaranteed to be in the given compression format."
+            }
+          ]
+        },
+        {
+          "displayType": "function",
+          "prefix": "static async",
+          "name": "fromDdsImageAsync",
+          "description": "Asynchronously creates a new DdsImageResource from the given DdsImage object.",
+          "returnType": {
+            "name": "Promise<DdsImageResource>"
+          },
+          "arguments": [
+            {
+              "name": "image",
+              "type": {
+                "name": "DdsImage",
+                "path": {
+                  "pkg": "images",
+                  "group": "images",
+                  "item": "DdsImage"
+                }
+              },
+              "description": "DDS image object to create this resource from."
+            },
+            {
+              "name": "compression",
+              "type": {
+                "name": "\"dxt\" | \"dst\""
+              },
+              "optional": true,
+              "description": "If provided, then the image is guaranteed to be in the given compression format."
+            }
+          ]
         }
       ]
     }
