@@ -35,11 +35,35 @@ describe("DdsImageResource", () => {
   //#region Properties
 
   describe("#encodingType", () => {
-    // TODO:
+    it("should be \"DDS\" when loaded", () => {
+      const dds = DdsImageResource.from(dxtBuffer);
+      expect(dds.encodingType).to.equal(EncodingType.DDS);
+    });
   });
 
   describe("#buffer", () => {
-    // TODO:
+    it("should not be assignable", () => {
+      const dds = DdsImageResource.from(dxtBuffer);
+      //@ts-expect-error The whole point is that it's an error
+      expect(() => dds.buffer = Buffer.from("hi")).to.throw();
+    });
+
+    it("should return the original buffer if uncompressed", () => {
+      const dds = DdsImageResource.from(dxtBuffer);
+      expect(dds.buffer).to.equal(dxtBuffer);
+    });
+
+    it("should decompress the buffer if compressed", () => {
+      const dds = new DdsImageResource(ZLIB_DST_BUFFER_CACHE);
+      expect(dds.buffer.compare(DST_BUFFER_CACHE.buffer)).to.equal(0);
+    });
+
+    it("should not cache the decompressed buffer if compressed", () => {
+      const dds = new DdsImageResource(ZLIB_DST_BUFFER_CACHE);
+      const firstBuffer = dds.buffer;
+      const secondBuffer = dds.buffer;
+      expect(firstBuffer).to.not.equal(secondBuffer);
+    });
   });
 
   describe("#image", () => {
