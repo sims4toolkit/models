@@ -1,12 +1,12 @@
 {
   "$schema": "https://raw.githubusercontent.com/sims4toolkit/misc/main/json-schemas/docs-item-schema.json",
   "imports": [
-    "import type { RawResourceCreationOptions } from \"@s4tk/models/types\"; // TypeScript only"
+    "import type { DdsImageResourceCreationOptions } from \"@s4tk/models/types\"; // TypeScript only"
   ],
   "header": {
     "title": {
       "prefix": "interface",
-      "name": "RawResourceCreationOptions",
+      "name": "DdsImageResourceCreationOptions",
       "extends": [
         {
           "name": "WritableModelCreationOptions",
@@ -18,8 +18,8 @@
         }
       ]
     },
-    "description": "Optional arguments for initializing RawResources.",
-    "sourceCode": "src/lib/resources/raw/raw-resource.ts"
+    "description": "Optional arguments for initializing DdsImageResources.",
+    "sourceCode": "src/lib/resources/dds-image/dds-image-resource.ts"
   },
   "sections": [
     {
@@ -27,11 +27,16 @@
       "content": [
         {
           "displayType": "property",
-          "name": "reason",
+          "name": "initialDdsImageCache",
           "optional": true,
-          "description": "Why this resource is loaded raw. Used for debugging.",
+          "description": "The DDS image to initialize this resource with, if any.",
           "type": {
-            "name": "string"
+            "name": "DdsImage",
+            "path": {
+              "pkg": "images",
+              "group": "images",
+              "item": "DdsImage"
+            }
           }
         },
         {
@@ -46,11 +51,11 @@
   "footer": {
     "seeAlso": [
       {
-        "name": "RawResource",
+        "name": "DdsImageResource",
         "path": {
           "pkg": "models",
           "group": "resources",
-          "item": "RawResource"
+          "item": "DdsImageResource"
         }
       }
     ]

@@ -86,6 +86,7 @@
         "CellCloneOptions",
         "CellEncodingOptions",
         "CellToXmlOptions",
+        "DdsImageResourceCreationOptions",
         "ObjectCellRow",
         "PackageFileReadingOptions",
         "RawResourceCreationOptions",
