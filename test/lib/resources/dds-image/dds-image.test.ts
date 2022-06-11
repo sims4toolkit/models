@@ -8,11 +8,12 @@ import { DdsImageResource } from '../../../../dst/models';
 import MockOwner from "../../../mocks/mock-owner";
 
 describe("DdsImageResource", () => {
+  //#region Testing Variables
+
   const imageSrcDir = path.resolve(__dirname, "..", "..", "..", "data", "images");
 
   const dstBuffer = fs.readFileSync(path.join(imageSrcDir, "LB-DST.dds"));
   const dxtBuffer = fs.readFileSync(path.join(imageSrcDir, "LB-DXT.dds"));
-  const pngBuffer = fs.readFileSync(path.join(imageSrcDir, "LB.png"));
 
   const DST_BUFFER_CACHE: CompressedBuffer = {
     buffer: dstBuffer,
@@ -32,6 +33,8 @@ describe("DdsImageResource", () => {
     sizeDecompressed: dstBuffer.byteLength
   };
 
+  //#endregion Testing Variables
+
   //#region Properties
 
   describe("#encodingType", () => {
@@ -45,7 +48,7 @@ describe("DdsImageResource", () => {
     it("should not be assignable", () => {
       const dds = DdsImageResource.from(dxtBuffer);
       //@ts-expect-error The whole point is that it's an error
-      expect(() => dds.buffer = Buffer.from("hi")).to.throw();
+      expect(() => dds.buffer = dstBuffer).to.throw();
     });
 
     it("should return the original buffer if uncompressed", () => {
@@ -105,11 +108,78 @@ describe("DdsImageResource", () => {
   //#region Initialization
 
   describe("#constructor", () => {
-    // TODO:
+    it("should use the provided buffer wrapper", () => {
+      const dds = new DdsImageResource(ZLIB_DST_BUFFER_CACHE);
+      expect(dds.getCompressedBuffer()).to.equal(ZLIB_DST_BUFFER_CACHE);
+    });
+
+    it("should set defaultCompressionType if option provided", () => {
+      const dds = new DdsImageResource(DST_BUFFER_CACHE, {
+        defaultCompressionType: CompressionType.InternalCompression
+      });
+
+      expect(dds.defaultCompressionType).to.equal(CompressionType.InternalCompression);
+    });
+
+    it("should use ZLIB if no defaultCompressionType provided", () => {
+      const dds = new DdsImageResource(DST_BUFFER_CACHE);
+      expect(dds.defaultCompressionType).to.equal(CompressionType.ZLIB);
+    });
+
+    it("should set owner if option provided", () => {
+      const owner = new MockOwner();
+      const dds = new DdsImageResource(DST_BUFFER_CACHE, { owner });
+      expect(dds.owner).to.equal(owner);
+    });
+
+    it("should have no owner if not provided", () => {
+      const dds = new DdsImageResource(DST_BUFFER_CACHE);
+      expect(dds.owner).to.be.undefined;
+    });
   });
 
   describe("#from()", () => {
-    // TODO:
+    it("should create a new DDS resource from the given buffer", () => {
+      const dds = DdsImageResource.from(dstBuffer);
+      expect(dds.buffer).to.equal(dstBuffer);
+    });
+
+    it("should have cache after creation", () => {
+      const dds = DdsImageResource.from(dstBuffer);
+      expect(dds.hasBufferCache).to.be.true;
+    });
+
+    it("should create a wrapper for the provided buffer", () => {
+      const dds = DdsImageResource.from(dstBuffer);
+      const wrapper = dds.getCompressedBuffer(CompressionType.Uncompressed);
+      expect(wrapper.buffer).to.equal(dstBuffer);
+      expect(wrapper.compressionType).to.equal(CompressionType.Uncompressed);
+      expect(wrapper.sizeDecompressed).to.equal(dstBuffer.byteLength);
+    });
+
+    it("should set defaultCompressionType if option provided", () => {
+      const dds = DdsImageResource.from(dstBuffer, {
+        defaultCompressionType: CompressionType.InternalCompression
+      });
+
+      expect(dds.defaultCompressionType).to.equal(CompressionType.InternalCompression);
+    });
+
+    it("should use ZLIB if defaultCompressionType not provided", () => {
+      const dds = DdsImageResource.from(dstBuffer);
+      expect(dds.defaultCompressionType).to.equal(CompressionType.ZLIB);
+    });
+
+    it("should set owner if option provided", () => {
+      const owner = new MockOwner();
+      const dds = DdsImageResource.from(dstBuffer, { owner });
+      expect(dds.owner).to.equal(owner);
+    });
+
+    it("should not have owner if not provided", () => {
+      const dds = DdsImageResource.from(dstBuffer);
+      expect(dds.owner).to.be.undefined;
+    });
   });
 
   describe("#fromAsync()", () => {
