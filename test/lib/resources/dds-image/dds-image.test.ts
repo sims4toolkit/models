@@ -183,15 +183,64 @@ describe("DdsImageResource", () => {
   });
 
   describe("#fromAsync()", () => {
-    // TODO:
+    it("should return same as from()", async () => {
+      const dds = await DdsImageResource.fromAsync(dstBuffer);
+      expect(dds.buffer).to.equal(dstBuffer);
+    });
   });
 
   describe("#fromDdsImage()", () => {
-    // TODO:
+    context("image is DXT", () => {
+      const image = DdsImage.from(dxtBuffer);
+
+      it("should use the given image if compression not provided", () => {
+        const dds = DdsImageResource.fromDdsImage(image);
+        expect(dds.image).to.equal(image);
+        expect(dds.image.isShuffled).to.equal(false);
+      });
+
+      it("should use the given image if compression is DXT", () => {
+        const dds = DdsImageResource.fromDdsImage(image, "dxt");
+        expect(dds.image).to.equal(image);
+        expect(dds.image.isShuffled).to.equal(false);
+      });
+
+      it("should create a new image if compression is DST", () => {
+        const dds = DdsImageResource.fromDdsImage(image, "dst");
+        expect(dds.image).to.not.equal(image);
+        expect(dds.image.isShuffled).to.equal(true);
+      });
+    });
+
+    context("image is DST", () => {
+      const image = DdsImage.from(dstBuffer);
+
+      it("should use the given image if compression not provided", () => {
+        const dds = DdsImageResource.fromDdsImage(image);
+        expect(dds.image).to.equal(image);
+        expect(dds.image.isShuffled).to.equal(true);
+      });
+
+      it("should use the given image if compression is DST", () => {
+        const dds = DdsImageResource.fromDdsImage(image, "dst");
+        expect(dds.image).to.equal(image);
+        expect(dds.image.isShuffled).to.equal(true);
+      });
+
+      it("should create a new image if compression is DXT", () => {
+        const dds = DdsImageResource.fromDdsImage(image, "dxt");
+        expect(dds.image).to.not.equal(image);
+        expect(dds.image.isShuffled).to.equal(false);
+      });
+    });
   });
 
   describe("#fromDdsImageAsync()", () => {
-    // TODO:
+    it("should return same as fromDdsImage()", async () => {
+      const image = DdsImage.from(dstBuffer);
+      const dds = await DdsImageResource.fromDdsImageAsync(image);
+      expect(dds.image).to.equal(image);
+    });
   });
 
   //#endregion Initialization

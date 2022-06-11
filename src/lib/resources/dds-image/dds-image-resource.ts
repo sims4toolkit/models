@@ -94,7 +94,7 @@ export default class DdsImageResource extends StaticResource {
    * given compression format
    */
   static fromDdsImage(image: DdsImage, compression?: "dxt" | "dst"): DdsImageResource {
-    if (compression)
+    if (compression && ((compression === "dst") !== (image.isShuffled === true)))
       image = compression === "dst"
         ? image.toShuffled()
         : image.toUnshuffled();
