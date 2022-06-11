@@ -251,6 +251,7 @@ describe('RawResource', function () {
 
     it("should return false if other is not provided", () => {
       const raw = new RawResource(UNCOMPRESSED_BUFFER_CACHE);
+      //@ts-ignore Sometimes complains about being null
       expect(raw.equals(null)).to.be.false;
     });
   });
@@ -292,6 +293,24 @@ describe('RawResource', function () {
       expect(raw.hasBufferCache).to.be.true;
       raw.onChange();
       expect(raw.hasBufferCache).to.be.true;
+    });
+  });
+
+  describe("#replaceContent()", () => {
+    it("should update the buffer cache", () => {
+      const owner = new MockOwner();
+      const raw = new RawResource(UNCOMPRESSED_BUFFER_CACHE, { owner });
+      expect(raw.bufferCache).to.equal(UNCOMPRESSED_BUFFER_CACHE);
+      raw.replaceContent(ZLIB_BUFFER_CACHE);
+      expect(raw.bufferCache).to.equal(ZLIB_BUFFER_CACHE);
+    });
+
+    it("should uncache the owner", () => {
+      const owner = new MockOwner();
+      const raw = new RawResource(UNCOMPRESSED_BUFFER_CACHE, { owner });
+      expect(owner.cached).to.be.true;
+      raw.replaceContent(ZLIB_BUFFER_CACHE);
+      expect(owner.cached).to.be.false;
     });
   });
 
