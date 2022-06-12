@@ -218,6 +218,70 @@
               }
             }
           ]
+        },
+        {
+          "displayType": "function",
+          "prefix": "static",
+          "name": "readBinaryDataModel",
+          "description": "Returns a DTO for a binary CombinedTuningResource.",
+          "arguments": [
+            {
+              "name": "buffer",
+              "description": "Buffer to read as DATA file.",
+              "type": {
+                "name": "Buffer"
+              }
+            },
+            {
+              "name": "options",
+              "optional": true,
+              "description": "Options to configure.",
+              "type": {
+                "name": "BinaryFileReadingOptions",
+                "path": {
+                  "pkg": "models",
+                  "group": "types",
+                  "item": "BinaryFileReadingOptions"
+                }
+              }
+            }
+          ],
+          "returnType": {
+            "name": "BinaryDataResourceDto",
+            "externalLink": "https://github.com/sims4toolkit/models/blob/main/src/lib/resources/abstracts/data-resource.ts"
+          }
+        },
+        {
+          "displayType": "function",
+          "prefix": "static async",
+          "name": "readBinaryDataModelAsync",
+          "description": "Asynchronously returns a DTO for a binary CombinedTuningResource.",
+          "arguments": [
+            {
+              "name": "buffer",
+              "description": "Buffer to read as DATA file.",
+              "type": {
+                "name": "Buffer"
+              }
+            },
+            {
+              "name": "options",
+              "optional": true,
+              "description": "Options to configure.",
+              "type": {
+                "name": "BinaryFileReadingOptions",
+                "path": {
+                  "pkg": "models",
+                  "group": "types",
+                  "item": "BinaryFileReadingOptions"
+                }
+              }
+            }
+          ],
+          "returnType": {
+            "name": "Promise<BinaryDataResourceDto>",
+            "externalLink": "https://github.com/sims4toolkit/models/blob/main/src/lib/resources/abstracts/data-resource.ts"
+          }
         }
       ]
     },

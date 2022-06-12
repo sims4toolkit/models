@@ -33,6 +33,7 @@ export default abstract class DataResource extends WritableModel implements Reso
    * Returns a bare-bones DTO for DATA resources.
    * 
    * @param buffer Buffer to read as DATA file
+   * @param isCombined Whether or not the DATA being parsed is combined tuning
    * @param options Options to configure
    */
   protected static _readBinaryDataModel(

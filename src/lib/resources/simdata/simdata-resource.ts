@@ -1,6 +1,6 @@
 import { XmlDocumentNode, XmlElementNode, XmlNode } from "@s4tk/xml-dom";
 import { formatAsHexString } from "@s4tk/hashing/formatting";
-import DataResource from "../abstracts/data-resource";
+import DataResource, { BinaryDataResourceDto } from "../abstracts/data-resource";
 import { arraysAreEqual, promisify, removeFromArray } from "../../common/helpers";
 import { SimDataInstance, SimDataSchema } from "./fragments";
 import { SimDataDto } from "./types";
@@ -10,6 +10,7 @@ import { WritableModelCreationOptions, WritableModelFromOptions } from "../../ba
 import { CompressionType } from "@s4tk/compression";
 import ResourceRegistry from "../../packages/resource-registry";
 import BinaryResourceType from "../../enums/binary-resources";
+import { BinaryFileReadingOptions } from "../../common/options";
 
 /** Arguments for SimDataResource's constructor. */
 export interface SimDataResourceCreationOptions extends
@@ -87,8 +88,11 @@ export default class SimDataResource extends DataResource implements SimDataDto 
    * @param buffer Uncompressed fuffer to create a SimData resource from
    * @param options Object of optional arguments
    */
-  static from(buffer: Buffer, options?: WritableModelFromOptions): SimDataResource {
-    const binaryModel = DataResource._readBinaryDataModel(buffer, false, options);
+  static from(
+    buffer: Buffer,
+    options?: WritableModelFromOptions
+  ): SimDataResource {
+    const binaryModel = SimDataResource.readBinaryDataModel(buffer, options);
     const dto: SimDataResourceCreationOptions = readSimData(binaryModel, buffer, options);
     dto.defaultCompressionType = options?.defaultCompressionType;
     dto.owner = options?.owner;
@@ -108,7 +112,10 @@ export default class SimDataResource extends DataResource implements SimDataDto 
    * @param buffer Uncompressed fuffer to create a SimData resource from
    * @param options Object of optional arguments
    */
-  static async fromAsync(buffer: Buffer, options?: WritableModelFromOptions): Promise<SimDataResource> {
+  static async fromAsync(
+    buffer: Buffer,
+    options?: WritableModelFromOptions
+  ): Promise<SimDataResource> {
     return promisify(() => SimDataResource.from(buffer, options));
   }
 
@@ -120,7 +127,10 @@ export default class SimDataResource extends DataResource implements SimDataDto 
    * @param xml XML string or buffer to parse as a SimData
    * @param options Object of optional arguments
    */
-  static fromXml(xml: string | Buffer, options?: WritableModelFromOptions): SimDataResource {
+  static fromXml(
+    xml: string | Buffer,
+    options?: WritableModelFromOptions
+  ): SimDataResource {
     return SimDataResource.fromXmlDocument(XmlDocumentNode.from(xml, {
       ignoreComments: true
     }), options);
@@ -134,7 +144,10 @@ export default class SimDataResource extends DataResource implements SimDataDto 
    * @param xml XML string or buffer to parse as a SimData
    * @param options Object of optional arguments
    */
-  static async fromXmlAsync(xml: string | Buffer, options?: WritableModelFromOptions): Promise<SimDataResource> {
+  static async fromXmlAsync(
+    xml: string | Buffer,
+    options?: WritableModelFromOptions
+  ): Promise<SimDataResource> {
     return promisify(() => SimDataResource.fromXml(xml, options));
   }
 
@@ -144,7 +157,10 @@ export default class SimDataResource extends DataResource implements SimDataDto 
    * @param doc XML document from which to parse SimData
    * @param options Object of optional arguments
    */
-  static fromXmlDocument(doc: XmlDocumentNode, options?: WritableModelFromOptions): SimDataResource {
+  static fromXmlDocument(
+    doc: XmlDocumentNode,
+    options?: WritableModelFromOptions
+  ): SimDataResource {
     const dom = doc.child;
     const canThrow = !(options?.recoveryMode);
 
@@ -180,8 +196,39 @@ export default class SimDataResource extends DataResource implements SimDataDto 
    * @param doc XML document from which to parse SimData
    * @param options Object of optional arguments
    */
-  static async fromXmlDocumentAsync(doc: XmlDocumentNode, options?: WritableModelFromOptions): Promise<SimDataResource> {
+  static async fromXmlDocumentAsync(
+    doc: XmlDocumentNode,
+    options?: WritableModelFromOptions
+  ): Promise<SimDataResource> {
     return promisify(() => SimDataResource.fromXmlDocument(doc, options));
+  }
+
+  /**
+   * Returns a DTO for a binary SimDataResource.
+   * 
+   * @param buffer Buffer to read as DATA file
+   * @param options Options to configure
+   */
+  static readBinaryDataModel(
+    buffer: Buffer,
+    options?: BinaryFileReadingOptions
+  ): BinaryDataResourceDto {
+    return DataResource._readBinaryDataModel(buffer, false, options);
+  }
+
+  /**
+   * Asynchronously returns a DTO for a binary SimDataResource.
+   * 
+   * @param buffer Buffer to read as DATA file
+   * @param options Options to configure
+   */
+  static async readBinaryDataModelAsync(
+    buffer: Buffer,
+    options?: BinaryFileReadingOptions
+  ): Promise<BinaryDataResourceDto> {
+    return promisify(
+      () => SimDataResource.readBinaryDataModel(buffer, options)
+    );
   }
 
   //#endregion Initialization
