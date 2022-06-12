@@ -799,6 +799,25 @@ describe("SimDataResource", () => {
 
   //#endregion Initialization
 
+  //#region Other Static Methods
+
+  describe("static#readBinaryDataModel()", () => {
+    it("should return a binary DATA model as a JSON", () => {
+      const buffer = getBuffer("buff.simdata");
+      const binaryModel = SimDataResource.readBinaryDataModel(buffer);
+      expect(binaryModel.mnVersion).to.equal(0x101);
+      expect(binaryModel.mUnused).to.equal(0);
+      expect(binaryModel.mTable).to.be.an("Array").with.lengthOf(1);
+      expect(binaryModel.mTable[0].name).to.equal("Buff_Memory_scared");
+      expect(binaryModel.mSchema).to.be.an("Array").with.lengthOf(1);
+      const schema = binaryModel.mSchema[0];
+      expect(schema.name).to.equal("Buff");
+      expect(schema.mColumn).to.be.an("Array").with.lengthOf(10);
+    });
+  });
+
+  //#endregion Other Static Methods
+
   //#region Methods
 
   describe("#equals()", () => {
