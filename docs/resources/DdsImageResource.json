@@ -19,7 +19,7 @@
         }
       ]
     },
-    "description": "Model for resources that have not been parsed.",
+    "description": "Model for DDS image resources, including ones with DST compression.",
     "sourceCode": "src/lib/resources/dds-image/dds-image-resource.ts"
   },
   "sections": [
