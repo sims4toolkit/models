@@ -64,8 +64,8 @@ function testSimData(simdata: SimDataResource, args: SimDataTestArgs) {
     return column.name === args.firstColumnName;
   });
   expect(column).to.not.be.undefined;
-  expect(column.type).to.equal(args.firstColumnType);
-  expect(column.flags).to.equal(0);
+  expect(column?.type).to.equal(args.firstColumnType);
+  expect(column?.flags).to.equal(0);
 }
 
 //#endregion Helpers
@@ -838,6 +838,7 @@ describe("SimDataResource", () => {
 
     it("should return false if the other is undefined", () => {
       const simdata = getSimDataFromBinary("buff");
+      //@ts-ignore It's complaining about undefined
       expect(simdata.equals(undefined)).to.be.false;
     });
   });
@@ -922,22 +923,22 @@ describe("SimDataResource", () => {
       const simdata = getSimDataFromBinary("buff");
       const doc = simdata.toXmlDocument();
       const instances = doc.child.children.find(node => node.tag === "Instances");
-      expect(instances.numChildren).to.equal(1);
-      expect(instances.child.tag).to.equal("I");
-      expect(instances.child.attributes.name).to.equal("Buff_Memory_scared");
-      expect(instances.child.numChildren).to.equal(10);
-      expect(instances.child.child.innerValue).to.equal("FD04E3BE-001407EC-8AF8B916CF64C646");
+      expect(instances?.numChildren).to.equal(1);
+      expect(instances?.child.tag).to.equal("I");
+      expect(instances?.child.attributes.name).to.equal("Buff_Memory_scared");
+      expect(instances?.child.numChildren).to.equal(10);
+      expect(instances?.child.child.innerValue).to.equal("FD04E3BE-001407EC-8AF8B916CF64C646");
     });
 
     it("should have a 'Schemas' section with all schemas written correctly", () => {
       const simdata = getSimDataFromBinary("mood");
       const doc = simdata.toXmlDocument();
       const schemas = doc.child.children.find(node => node.tag === "Schemas");
-      expect(schemas.numChildren).to.equal(6);
-      expect(schemas.child.tag).to.equal("Schema");
-      expect(schemas.child.child.tag).to.equal("Columns");
-      expect(schemas.child.child.numChildren).to.equal(24);
-      expect(schemas.child.child.child.attributes.name).to.equal("audio_stings_on_add");
+      expect(schemas?.numChildren).to.equal(6);
+      expect(schemas?.child.tag).to.equal("Schema");
+      expect(schemas?.child.child.tag).to.equal("Columns");
+      expect(schemas?.child.child.numChildren).to.equal(24);
+      expect(schemas?.child.child.child.attributes.name).to.equal("audio_stings_on_add");
     });
 
     it("should write cells in alphabetical order by name", () => {
@@ -1021,6 +1022,7 @@ describe("SimDataResource", () => {
     it("should throw if the current model cannot be serialized", () => {
       const simdata = new SimDataResource({
         instances: [
+          //@ts-ignore It's complaining about undefined
           new SimDataInstance("", undefined, undefined)
         ]
       });
