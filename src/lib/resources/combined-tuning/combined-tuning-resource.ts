@@ -1,10 +1,10 @@
 import { XmlDocumentNode } from "@s4tk/xml-dom";
 import { WritableModelCreationOptions, WritableModelFromOptions } from "../../base/writable-model";
 import { bufferContainsDATA, promisify } from "../../common/helpers";
-import { XmlExtractionOptions } from "../../common/options";
+import { BinaryFileReadingOptions, XmlExtractionOptions } from "../../common/options";
 import BinaryResourceType from "../../enums/binary-resources";
 import ResourceRegistry from "../../packages/resource-registry";
-import DataResource from "../abstracts/data-resource";
+import DataResource, { BinaryDataResourceDto } from "../abstracts/data-resource";
 import XmlResource from "../xml/xml-resource";
 import convertCombinedBinaryToXml from "./serialization/binary-to-xml";
 import extractTuningFromCombinedXml from "./serialization/extract-tuning";
@@ -46,7 +46,7 @@ export default class CombinedTuningResource extends DataResource {
     return new CombinedTuningResource(
       bufferContainsDATA(buffer)
         ? convertCombinedBinaryToXml(
-          DataResource._readBinaryDataModel(buffer, true, options),
+          CombinedTuningResource.readBinaryDataModel(buffer, options),
           buffer
         )
         : XmlDocumentNode.from(buffer)
@@ -84,7 +84,7 @@ export default class CombinedTuningResource extends DataResource {
     return extractTuningFromCombinedXml(
       bufferContainsDATA(buffer)
         ? convertCombinedBinaryToXml(
-          DataResource._readBinaryDataModel(buffer, true),
+          CombinedTuningResource.readBinaryDataModel(buffer),
           buffer,
           options
         )
@@ -106,6 +106,34 @@ export default class CombinedTuningResource extends DataResource {
     options?: XmlExtractionOptions
   ): Promise<XmlResource[]> {
     return promisify(() => this.extractTuning(buffer, options));
+  }
+
+  /**
+   * Returns a DTO for a binary CombinedTuningResource.
+   * 
+   * @param buffer Buffer to read as DATA file
+   * @param options Options to configure
+   */
+  static readBinaryDataModel(
+    buffer: Buffer,
+    options?: BinaryFileReadingOptions
+  ): BinaryDataResourceDto {
+    return DataResource._readBinaryDataModel(buffer, true, options);
+  }
+
+  /**
+   * Asynchronously returns a DTO for a binary CombinedTuningResource.
+   * 
+   * @param buffer Buffer to read as DATA file
+   * @param options Options to configure
+   */
+  static async readBinaryDataModelAsync(
+    buffer: Buffer,
+    options?: BinaryFileReadingOptions
+  ): Promise<BinaryDataResourceDto> {
+    return promisify(
+      () => CombinedTuningResource.readBinaryDataModel(buffer, options)
+    );
   }
 
   //#endregion Static Methods

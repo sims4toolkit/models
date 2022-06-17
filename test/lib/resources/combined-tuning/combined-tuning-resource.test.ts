@@ -162,6 +162,20 @@ describe("CombinedTuningResource", () => {
     });
   });
 
+  describe("static#readBinaryDataModel()", () => {
+    it("should return a binary DATA model as a JSON", () => {
+      const binaryModel = CombinedTuningResource.readBinaryDataModel(binaryBuffer);
+      expect(binaryModel.mnVersion).to.equal(0x101);
+      expect(binaryModel.mUnused).to.equal(0xFFFFFFFF);
+      expect(binaryModel.mTable).to.be.an("Array").with.lengthOf(7);
+      expect(binaryModel.mTable[0].name).to.equal("documents");
+      expect(binaryModel.mSchema).to.be.an("Array").with.lengthOf(3);
+      const schema = binaryModel.mSchema[0];
+      expect(schema.name).to.equal("PackedXmlDocument");
+      expect(schema.mColumn).to.be.an("Array").with.lengthOf(4);
+    });
+  });
+
   //#endregion Static Methods
 
   //#region Methods
@@ -210,10 +224,6 @@ describe("CombinedTuningResource", () => {
       testExtractedXml(resources[0], "object_Fountain_SP23", "268920");
     });
   });
-
-  //#endregion Methods
-
-  //#region Methods
 
   describe("#isxml()", () => {
     it("should be false", () => {
