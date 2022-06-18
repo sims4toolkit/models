@@ -4,6 +4,7 @@
 enum EncodingType {
   Unknown = "Unknown",
   DATA = "DATA",
+  OBJDEF = "OBJDEF",
   DDS = "DDS", // DST is a subtype of DDS
   STBL = "STBL",
   XML = "XML",
