@@ -53,7 +53,7 @@ function getPropertyValue(type: ObjectDefinitionPropertyType, decoder: BinaryDec
       return makeList(decoder.int32() / 4, () => {
         const instanceP1 = decoder.uint32();
         const instanceP2 = decoder.uint32();
-        const instance = BigInt(instanceP1) << 32n + BigInt(instanceP2); // FIXME: what order?
+        const instance = (BigInt(instanceP1) << 32n) + BigInt(instanceP2); // FIXME: what order?
         const type = decoder.uint32();
         const group = decoder.uint32();
         return { type, group, instance };
@@ -86,6 +86,7 @@ function getPropertyValue(type: ObjectDefinitionPropertyType, decoder: BinaryDec
         return decoder.byte()
       });
     default:
+      return null; // FIXME:
       throw new Error("Type not recognized"); // FIXME: throw type and check if recovery mode
   }
 }
