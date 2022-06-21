@@ -28,6 +28,7 @@
       "items": [
         "CombinedTuningResource",
         "DdsImageResource",
+        "DeletedResource",
         "RawResource",
         "SimDataResource",
         "StringTableResource",

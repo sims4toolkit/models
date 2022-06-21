@@ -5,7 +5,8 @@ import EncodingType from "../../enums/encoding-type";
 import StaticResource from "../abstracts/static-resource";
 
 /**
- * Model for resources that have been deleted.
+ * Model for resources that have been deleted. Primarily for use with extracting
+ * resources from delta packages.
  */
 export default class DeletedResource extends StaticResource {
   private static readonly _EMPTY_BUFFER_CACHE: CompressedBuffer = {

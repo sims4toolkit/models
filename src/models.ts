@@ -6,6 +6,7 @@ import StringTableResource from "./lib/resources/stbl/stbl-resource";
 import CombinedTuningResource from "./lib/resources/combined-tuning/combined-tuning-resource";
 import DdsImageResource from "./lib/resources/dds-image/dds-image-resource";
 import ObjectDefinitionResource from "./lib/resources/object-definition/object-definition-resource";
+import DeletedResource from "./lib/resources/deleted/deleted-resource";
 
 export {
   Package,
@@ -15,5 +16,6 @@ export {
   StringTableResource,
   CombinedTuningResource,
   DdsImageResource,
-  ObjectDefinitionResource
+  ObjectDefinitionResource,
+  DeletedResource,
 }
