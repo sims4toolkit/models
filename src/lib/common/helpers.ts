@@ -140,5 +140,5 @@ export function snakeToPascal(snakeCase: string): string {
  * @param pascalCase String in pascal case.
  */
 export function pascalToSnake(pascalCase: string): string {
-  return pascalCase.replace(/(?!^)[A-Z]/gm, "_$1").toLowerCase();
+  return pascalCase.split(/(?=[A-Z])/).join('_').toLowerCase();
 }

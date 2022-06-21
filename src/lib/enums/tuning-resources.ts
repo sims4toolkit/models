@@ -143,6 +143,7 @@ namespace TuningResourceType {
   export function getAttr(type: TuningResourceType): string {
     switch (type) {
       // special cases must be added to this enum manually
+      case TuningResourceType.Tuning: return null;
       case TuningResourceType.RelationshipBit: return "relbit";
       default:
         return (type in TuningResourceType)
