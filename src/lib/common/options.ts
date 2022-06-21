@@ -81,6 +81,13 @@ export interface PackageFileReadingOptions extends
      * such as all string tables and nothing else.
      */
     resourceFilter: ResourceFilter;
+
+    /**
+     * If true, then resources with the "DeletedRecord" compression type will
+     * be loaded into DeletedResource models. If false, then they will be
+     * ignored entirely. False by default.
+     */
+    keepDeletedRecords: boolean;
   }> { };
 
 

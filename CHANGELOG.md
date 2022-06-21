@@ -7,12 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.6.0] - 2022/06/21
 ### Added
+- Add DeletedResource model.
 - Add ObjectDefinitionResource model and associated types.
 - Add ObjectDefinition to BinaryResourceType.
-- Add OBJDEF to EncodingType.
+- Add OBJDEF and Null to EncodingType.
 - Add Clan and ClanValue to TuningResourceType and SimDataGroup.
-### Fixed
-- TODO:
+### Changed
+- Packages can now read deleted entries with an option.
 
 ## [0.5.1] - 2022/06/12
 ### Added
