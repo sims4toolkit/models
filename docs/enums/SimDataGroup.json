@@ -112,6 +112,14 @@
               "value": "0x00AD15C4"
             },
             {
+              "name": "Clan",
+              "value": "0x00BEE67B"
+            },
+            {
+              "name": "ClanValue",
+              "value": "0x008ED032"
+            },
+            {
               "name": "ClientCasCameraTuning",
               "value": "0x005ADEC7"
             },

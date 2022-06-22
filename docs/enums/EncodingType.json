@@ -24,12 +24,20 @@
               "value": "\"Unknown\""
             },
             {
+              "name": "Null",
+              "value": "\"Null\""
+            },
+            {
               "name": "DATA",
               "value": "\"DATA\""
             },
             {
               "name": "DDS",
               "value": "\"DDS\""
+            },
+            {
+              "name": "OBJDEF",
+              "value": "\"OBJDEF\""
             },
             {
               "name": "STBL",
