@@ -362,7 +362,101 @@ describe("ObjectDefinitionResource", () => {
   });
 
   describe("#getBuffer()", () => {
-    // TODO:
+    it("should write Components correctly", () => {
+      // TODO:
+    });
+
+    it("should write EnvironmentScoreEmotionTags correctly", () => {
+      // TODO:
+    });
+
+    it("should write EnvironmentScoreEmotionTags_32 correctly", () => {
+      // TODO:
+    });
+
+    it("should write EnvironmentScores correctly", () => {
+      // TODO:
+    });
+
+    it("should write Footprint correctly", () => {
+      // TODO:
+    });
+
+    it("should write Icon correctly", () => {
+      // TODO:
+    });
+
+    it("should write IsBaby correctly", () => {
+      // TODO:
+    });
+
+    it("should write MaterialVariant correctly", () => {
+      // TODO:
+    });
+
+    it("should write Model correctly", () => {
+      // TODO:
+    });
+
+    it("should write Name correctly", () => {
+      // TODO:
+    });
+
+    it("should write NegativeEnvironmentScore correctly", () => {
+      // TODO:
+    });
+
+    it("should write PositiveEnvironmentScore correctly", () => {
+      // TODO:
+    });
+
+    it("should write Rig correctly", () => {
+      // TODO:
+    });
+
+    it("should write SimoleonPrice correctly", () => {
+      // TODO:
+    });
+
+    it("should write Slot correctly", () => {
+      // TODO:
+    });
+
+    it("should write ThumbnailGeometryState correctly", () => {
+      // TODO:
+    });
+
+    it("should write Tuning correctly", () => {
+      // TODO:
+    });
+
+    it("should write TuningId correctly", () => {
+      // TODO:
+    });
+
+    it("should write Unknown1 correctly", () => {
+      // TODO:
+    });
+
+    it("should write Unknown2 correctly", () => {
+      // TODO:
+    });
+
+    it("should write Unknown3 correctly", () => {
+      // TODO:
+    });
+
+    it("should write Unknown4 correctly", () => {
+      // TODO:
+    });
+
+    it("should not write UnknownMisc", () => {
+      // TODO:
+    });
+
+    it("should reserialize into an object that is equal to this one", () => {
+      // TODO:
+    });
   });
 
   describe("#isXml()", () => {
