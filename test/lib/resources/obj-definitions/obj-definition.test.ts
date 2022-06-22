@@ -2,7 +2,7 @@ import fs from "fs";
 import path from "path";
 import { expect } from "chai";
 import { ObjectDefinitionResource } from "../../../../dst/models";
-import { EncodingType, ObjectDefinitionPropertyType } from "../../../../dst/enums";
+import { EncodingType, ObjectDefinitionType } from "../../../../dst/enums";
 import MockOwner from "../../../mocks/mock-owner";
 import { ObjectDefinitionProperties } from "../../../../dst/lib/resources/object-definition/types";
 
@@ -541,7 +541,7 @@ describe("ObjectDefinitionResource", () => {
       });
 
       expect(def.properties.isBaby).to.be.undefined;
-      def.setProperty(ObjectDefinitionPropertyType.IsBaby, true);
+      def.setProperty(ObjectDefinitionType.IsBaby, true);
       expect(def.properties.isBaby).to.be.true;
     });
 
@@ -552,7 +552,7 @@ describe("ObjectDefinitionResource", () => {
 
       expect(def.properties.components).to.be.an("Array").with.lengthOf(9);
       const newComponents = [1, 2, 3];
-      def.setProperty(ObjectDefinitionPropertyType.Components, newComponents);
+      def.setProperty(ObjectDefinitionType.Components, newComponents);
       expect(def.properties.components).to.equal(newComponents);
     });
 
@@ -562,7 +562,7 @@ describe("ObjectDefinitionResource", () => {
       });
 
       expect(def.hasBufferCache).to.be.true;
-      def.setProperty(ObjectDefinitionPropertyType.IsBaby, true);
+      def.setProperty(ObjectDefinitionType.IsBaby, true);
       expect(def.hasBufferCache).to.be.false;
     });
 
@@ -574,7 +574,7 @@ describe("ObjectDefinitionResource", () => {
       });
 
       expect(owner.cached).to.be.true;
-      def.setProperty(ObjectDefinitionPropertyType.IsBaby, true);
+      def.setProperty(ObjectDefinitionType.IsBaby, true);
       expect(owner.cached).to.be.false;
     });
   });

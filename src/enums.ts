@@ -4,7 +4,7 @@ import EncodingType from "./lib/enums/encoding-type";
 import SimDataGroup from "./lib/enums/simdata-groups";
 import StringTableLocale from "./lib/enums/stbl-locales";
 import TuningResourceType from "./lib/enums/tuning-resources";
-import { ObjectDefinitionPropertyType } from "./lib/resources/object-definition/types";
+import { ObjectDefinitionType } from "./lib/resources/object-definition/types";
 
 export {
   BinaryResourceType,
@@ -13,5 +13,5 @@ export {
   SimDataGroup,
   StringTableLocale,
   TuningResourceType,
-  ObjectDefinitionPropertyType,
+  ObjectDefinitionType,
 }

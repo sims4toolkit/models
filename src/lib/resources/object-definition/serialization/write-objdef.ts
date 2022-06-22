@@ -1,7 +1,7 @@
 import { BinaryEncoder } from "@s4tk/encoding";
 import { camelToPascal } from "../../../common/helpers";
 import { ResourceKey } from "../../../packages/types";
-import { ObjectDefinitionDto, ObjectDefinitionPropertyType } from "../types";
+import { ObjectDefinitionDto, ObjectDefinitionType } from "../types";
 
 /**
  * Writes an obj def DTO into a buffer.
@@ -12,8 +12,8 @@ export default function writeObjDef(dto: ObjectDefinitionDto): Buffer {
   const props: PropertyPair[] = [];
   for (const propKey in dto.properties) {
     const enumName = camelToPascal(propKey);
-    if (enumName in ObjectDefinitionPropertyType) {
-      const type = ObjectDefinitionPropertyType[enumName];
+    if (enumName in ObjectDefinitionType) {
+      const type = ObjectDefinitionType[enumName];
       props.push({ type, value: dto.properties[propKey] });
     }
   }
@@ -58,24 +58,24 @@ function writeProp(prop: PropertyPair): Buffer {
   // this is intentional, as this is how S4PE does it
 
   switch (prop.type) {
-    case ObjectDefinitionPropertyType.Name:
-    case ObjectDefinitionPropertyType.Tuning:
-    case ObjectDefinitionPropertyType.MaterialVariant:
+    case ObjectDefinitionType.Name:
+    case ObjectDefinitionType.Tuning:
+    case ObjectDefinitionType.MaterialVariant:
       length = Buffer.byteLength(prop.value as string)
       encoder = BinaryEncoder.alloc(length + 4);
       encoder.uint32(length); // string length
       encoder.charsUtf8(prop.value as string);
       break;
-    case ObjectDefinitionPropertyType.TuningId:
-    case ObjectDefinitionPropertyType.Unknown3:
+    case ObjectDefinitionType.TuningId:
+    case ObjectDefinitionType.Unknown3:
       encoder = BinaryEncoder.alloc(8);
       encoder.uint64(prop.value as bigint);
       break;
-    case ObjectDefinitionPropertyType.Icon:
-    case ObjectDefinitionPropertyType.Rig:
-    case ObjectDefinitionPropertyType.Slot:
-    case ObjectDefinitionPropertyType.Model:
-    case ObjectDefinitionPropertyType.Footprint:
+    case ObjectDefinitionType.Icon:
+    case ObjectDefinitionType.Rig:
+    case ObjectDefinitionType.Slot:
+    case ObjectDefinitionType.Model:
+    case ObjectDefinitionType.Footprint:
       length = (prop.value as Array<ResourceKey>).length;
       encoder = BinaryEncoder.alloc(length * 16 + 4);
       encoder.int32(length * 4); // num keys
@@ -87,7 +87,7 @@ function writeProp(prop: PropertyPair): Buffer {
         encoder.uint32(key.group);
       });
       break;
-    case ObjectDefinitionPropertyType.Components:
+    case ObjectDefinitionType.Components:
       length = (prop.value as Array<number>).length;
       encoder = BinaryEncoder.alloc(length * 4 + 4);
       encoder.int32(length); // num components
@@ -95,22 +95,22 @@ function writeProp(prop: PropertyPair): Buffer {
         encoder.uint32(n);
       });
       break;
-    case ObjectDefinitionPropertyType.Unknown1:
-    case ObjectDefinitionPropertyType.Unknown2:
+    case ObjectDefinitionType.Unknown1:
+    case ObjectDefinitionType.Unknown2:
       encoder = BinaryEncoder.alloc(1);
       encoder.byte(prop.value as number);
       break;
-    case ObjectDefinitionPropertyType.SimoleonPrice:
-    case ObjectDefinitionPropertyType.ThumbnailGeometryState:
+    case ObjectDefinitionType.SimoleonPrice:
+    case ObjectDefinitionType.ThumbnailGeometryState:
       encoder = BinaryEncoder.alloc(4);
       encoder.uint32(prop.value as number);
       break;
-    case ObjectDefinitionPropertyType.PositiveEnvironmentScore:
-    case ObjectDefinitionPropertyType.NegativeEnvironmentScore:
+    case ObjectDefinitionType.PositiveEnvironmentScore:
+    case ObjectDefinitionType.NegativeEnvironmentScore:
       encoder = BinaryEncoder.alloc(4);
       encoder.float(prop.value as number);
       break;
-    case ObjectDefinitionPropertyType.EnvironmentScoreEmotionTags:
+    case ObjectDefinitionType.EnvironmentScoreEmotionTags:
       length = (prop.value as Array<number>).length;
       encoder = BinaryEncoder.alloc(length * 2 + 4);
       encoder.int32(length); // count
@@ -118,7 +118,7 @@ function writeProp(prop: PropertyPair): Buffer {
         encoder.uint16(n);
       });
       break;
-    case ObjectDefinitionPropertyType.EnvironmentScoreEmotionTags_32:
+    case ObjectDefinitionType.EnvironmentScoreEmotionTags_32:
       length = (prop.value as Array<number>).length;
       encoder = BinaryEncoder.alloc(length * 4 + 4);
       encoder.int32(length); // count
@@ -126,7 +126,7 @@ function writeProp(prop: PropertyPair): Buffer {
         encoder.uint32(n);
       });
       break;
-    case ObjectDefinitionPropertyType.EnvironmentScores:
+    case ObjectDefinitionType.EnvironmentScores:
       length = (prop.value as Array<number>).length;
       encoder = BinaryEncoder.alloc(length * 4 + 4);
       encoder.uint32(length); // count
@@ -134,11 +134,11 @@ function writeProp(prop: PropertyPair): Buffer {
         encoder.float(f);
       });
       break;
-    case ObjectDefinitionPropertyType.IsBaby:
+    case ObjectDefinitionType.IsBaby:
       encoder = BinaryEncoder.alloc(1);
       encoder.boolean(prop.value as boolean);
       break;
-    case ObjectDefinitionPropertyType.Unknown4:
+    case ObjectDefinitionType.Unknown4:
       length = (prop.value as Array<number>).length;
       encoder = BinaryEncoder.alloc(length + 4);
       encoder.uint32(length); // count
@@ -158,7 +158,7 @@ function writeProp(prop: PropertyPair): Buffer {
 //#region Types
 
 interface PropertyPair {
-  type: ObjectDefinitionPropertyType;
+  type: ObjectDefinitionType;
   value: any;
 }
 

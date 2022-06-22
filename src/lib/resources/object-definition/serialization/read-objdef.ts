@@ -1,7 +1,7 @@
 import { BinaryDecoder } from "@s4tk/encoding";
 import { makeList, pascalToCamel } from "../../../common/helpers";
 import { BinaryFileReadingOptions } from "../../../common/options";
-import { ObjectDefinitionDto, ObjectDefinitionProperties, ObjectDefinitionPropertyType } from "../types";
+import { ObjectDefinitionDto, ObjectDefinitionProperties, ObjectDefinitionType } from "../types";
 
 /**
  * Reads a buffer as an object definition and returns a DTO.
@@ -27,8 +27,8 @@ export default function readObjDef(
     const type = decoder.uint32();
     const offset = decoder.uint32();
 
-    if (type in ObjectDefinitionPropertyType) {
-      const propKey = pascalToCamel(ObjectDefinitionPropertyType[type]);
+    if (type in ObjectDefinitionType) {
+      const propKey = pascalToCamel(ObjectDefinitionType[type]);
       properties[propKey] = decoder.savePos(() => {
         decoder.seek(offset);
         return getPropertyValue(type, decoder);
@@ -52,22 +52,22 @@ export default function readObjDef(
  * @param decoder Decoder from which to read value
  */
 function getPropertyValue(
-  type: ObjectDefinitionPropertyType,
+  type: ObjectDefinitionType,
   decoder: BinaryDecoder
 ): any {
   switch (type) {
-    case ObjectDefinitionPropertyType.Name:
-    case ObjectDefinitionPropertyType.Tuning:
-    case ObjectDefinitionPropertyType.MaterialVariant:
+    case ObjectDefinitionType.Name:
+    case ObjectDefinitionType.Tuning:
+    case ObjectDefinitionType.MaterialVariant:
       return decoder.slice(decoder.uint32()).toString();
-    case ObjectDefinitionPropertyType.TuningId:
-    case ObjectDefinitionPropertyType.Unknown3:
+    case ObjectDefinitionType.TuningId:
+    case ObjectDefinitionType.Unknown3:
       return decoder.uint64();
-    case ObjectDefinitionPropertyType.Icon:
-    case ObjectDefinitionPropertyType.Rig:
-    case ObjectDefinitionPropertyType.Slot:
-    case ObjectDefinitionPropertyType.Model:
-    case ObjectDefinitionPropertyType.Footprint:
+    case ObjectDefinitionType.Icon:
+    case ObjectDefinitionType.Rig:
+    case ObjectDefinitionType.Slot:
+    case ObjectDefinitionType.Model:
+    case ObjectDefinitionType.Footprint:
       return makeList(decoder.int32() / 4, () => {
         const instanceP1 = decoder.uint32();
         const instanceP2 = decoder.uint32();
@@ -76,34 +76,34 @@ function getPropertyValue(
         const group = decoder.uint32();
         return { type, group, instance };
       });
-    case ObjectDefinitionPropertyType.Components:
+    case ObjectDefinitionType.Components:
       return makeList(decoder.int32(), () => {
         return decoder.uint32()
       });
-    case ObjectDefinitionPropertyType.Unknown1:
-    case ObjectDefinitionPropertyType.Unknown2:
+    case ObjectDefinitionType.Unknown1:
+    case ObjectDefinitionType.Unknown2:
       return decoder.byte();
-    case ObjectDefinitionPropertyType.SimoleonPrice:
-    case ObjectDefinitionPropertyType.ThumbnailGeometryState:
+    case ObjectDefinitionType.SimoleonPrice:
+    case ObjectDefinitionType.ThumbnailGeometryState:
       return decoder.uint32();
-    case ObjectDefinitionPropertyType.PositiveEnvironmentScore:
-    case ObjectDefinitionPropertyType.NegativeEnvironmentScore:
+    case ObjectDefinitionType.PositiveEnvironmentScore:
+    case ObjectDefinitionType.NegativeEnvironmentScore:
       return decoder.float();
-    case ObjectDefinitionPropertyType.EnvironmentScoreEmotionTags:
+    case ObjectDefinitionType.EnvironmentScoreEmotionTags:
       return makeList(decoder.int32(), () => {
         return decoder.uint16()
       });
-    case ObjectDefinitionPropertyType.EnvironmentScoreEmotionTags_32:
+    case ObjectDefinitionType.EnvironmentScoreEmotionTags_32:
       return makeList(decoder.int32(), () => {
         return decoder.uint32()
       });
-    case ObjectDefinitionPropertyType.EnvironmentScores:
+    case ObjectDefinitionType.EnvironmentScores:
       return makeList(decoder.uint32(), () => {
         return decoder.float()
       });
-    case ObjectDefinitionPropertyType.IsBaby:
+    case ObjectDefinitionType.IsBaby:
       return decoder.boolean();
-    case ObjectDefinitionPropertyType.Unknown4:
+    case ObjectDefinitionType.Unknown4:
       return makeList(decoder.uint32(), () => {
         return decoder.byte()
       });

@@ -11,7 +11,7 @@ export interface ObjectDefinitionDto {
 /**
  * Types of properties in an object definition.
  */
-export enum ObjectDefinitionPropertyType {
+export enum ObjectDefinitionType {
   Components = 0xE6E421FB,
   EnvironmentScoreEmotionTags = 0x2172AEBE,
   EnvironmentScoreEmotionTags_32 = 0x2143974C,
@@ -38,7 +38,7 @@ export enum ObjectDefinitionPropertyType {
 
 /**
  * A mapping of property keys to values. Property keys are the camel case
- * equivalent to their associated types in ObjectDefinitionPropertyType,
+ * equivalent to their associated types in ObjectDefinitionType,
  * except for `unknownMisc` which keeps track of types not in the enum.
  */
 export type ObjectDefinitionProperties = Partial<{

@@ -9,7 +9,7 @@ import ResourceRegistry from "../../packages/resource-registry";
 import Resource from '../resource';
 import readObjDef from "./serialization/read-objdef";
 import writeObjDef from "./serialization/write-objdef";
-import { ObjectDefinitionDto, ObjectDefinitionProperties, ObjectDefinitionPropertyType } from './types';
+import { ObjectDefinitionDto, ObjectDefinitionProperties, ObjectDefinitionType } from './types';
 
 /** Arguments for SimDataResource's constructor. */
 export interface ObjectDefinitionResourceCreationOptions extends
@@ -36,7 +36,7 @@ export default class ObjectDefinitionResource
    * 
    * ```ts
    * // using setProperty()
-   * def.setProperty(ObjectDefinitionPropertyType.IsBaby, true);
+   * def.setProperty(ObjectDefinitionType.IsBaby, true);
    * 
    * // using updateProperties()
    * def.updateProperties(props => {
@@ -149,8 +149,8 @@ export default class ObjectDefinitionResource
    * 
    * @param type Type of property to get value for
    */
-  getProperty(type: ObjectDefinitionPropertyType): unknown {
-    const enumName = ObjectDefinitionPropertyType[type];
+  getProperty(type: ObjectDefinitionType): unknown {
+    const enumName = ObjectDefinitionType[type];
     const propKey = pascalToCamel(enumName);
     return this.properties[propKey];
   }
@@ -163,8 +163,8 @@ export default class ObjectDefinitionResource
    * @param type Type of property to set value of
    * @param value Value to set
    */
-  setProperty(type: ObjectDefinitionPropertyType, value: any) {
-    const enumName = ObjectDefinitionPropertyType[type];
+  setProperty(type: ObjectDefinitionType, value: any) {
+    const enumName = ObjectDefinitionType[type];
     const propKey = pascalToCamel(enumName);
     this.properties[propKey] = value;
     this.onChange();
