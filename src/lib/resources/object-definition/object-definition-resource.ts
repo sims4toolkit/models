@@ -63,7 +63,7 @@ export default class ObjectDefinitionResource
     options?: WritableModelFromOptions
   ): ObjectDefinitionResource {
     const dto = readObjDef(buffer, options);
-    return new ObjectDefinitionResource(dto.version, dto.properties);
+    return new ObjectDefinitionResource(dto.version, dto.properties, options);
   }
 
   /**

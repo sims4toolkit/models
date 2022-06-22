@@ -73,6 +73,8 @@ describe("ObjectDefinitionResource", () => {
 
       expect(owner.cached).to.be.true;
       def.version = 3;
+      console.log(def.version);
+
       expect(owner.cached).to.be.false;
     });
   });
@@ -82,15 +84,169 @@ describe("ObjectDefinitionResource", () => {
   //#region Initialization
 
   describe("#constructor", () => {
-    // TODO:
+    it("should use the provided version", () => {
+      // TODO:
+    });
+
+    it("should use the provided properties", () => {
+      // TODO:
+    });
+
+    it("should be mutated if original properties are mutated", () => {
+      // TODO:
+    });
+
+    it("should use ZLIB compression by default", () => {
+      // TODO:
+    });
+
+    it("should use the provided defaultCompressionType", () => {
+      // TODO:
+    });
+
+    it("should not have any initial cache by default", () => {
+      // TODO:
+    });
+
+    it("should use the provided initialBufferCache", () => {
+      // TODO:
+    });
+
+    it("should not have an owner by default", () => {
+      // TODO:
+    });
+
+    it("should use the provided owner", () => {
+      // TODO:
+    });
   });
 
   describe("#from()", () => {
-    // TODO:
+    it("should get the correct Name value", () => {
+      // TODO:
+    });
+
+    it("should get the correct Tuning value", () => {
+      // TODO:
+    });
+
+    it("should get the correct MaterialVariant value", () => {
+      // TODO:
+    });
+
+    it("should get the correct TuningId value", () => {
+      // TODO:
+    });
+
+    it("should get the correct Icon value", () => {
+      // TODO:
+    });
+
+    it("should get the correct Rig value", () => {
+      // TODO:
+    });
+
+    it("should get the correct Slot value", () => {
+      // TODO:
+    });
+
+    it("should get the correct Model value", () => {
+      // TODO:
+    });
+
+    it("should get the correct Footprint value", () => {
+      // TODO:
+    });
+
+    it("should get the correct Components value", () => {
+      // TODO:
+    });
+
+    it("should get the correct SimoleonPrice value", () => {
+      // TODO:
+    });
+
+    it("should get the correct ThumbnailGeometryState value", () => {
+      // TODO:
+    });
+
+    it("should get the correct PositiveEnvironmentScore value", () => {
+      // TODO:
+    });
+
+    it("should get the correct NegativeEnvironmentScore value", () => {
+      // TODO:
+    });
+
+    it("should get the correct EnvironmentScoreEmotionTags value", () => {
+      // TODO:
+    });
+
+    it("should get the correct EnvironmentScoreEmotionTags_32 value", () => {
+      // TODO:
+    });
+
+    it("should get the correct EnvironmentScores value", () => {
+      // TODO:
+    });
+
+    it("should get the correct IsBaby value", () => {
+      // TODO:
+    });
+
+    it("should not have an UnknownMisc set if there are no unknowns", () => {
+      // TODO:
+    });
+
+    it("should not include keys for any properties that aren't defined", () => {
+      // TODO:
+    });
+
+    it("should include unknown types in the UnknownMisc set", () => {
+      // TODO:
+    });
+
+    it("should use ZLIB compression by default", () => {
+      // TODO:
+    });
+
+    it("should use the provided defaultCompressionType", () => {
+      // TODO:
+    });
+
+    it("should not have an owner by default", () => {
+      // TODO:
+    });
+
+    it("should use the provided owner", () => {
+      // TODO:
+    });
+
+    it("should fail if version ≠ 2 by default", () => {
+      // TODO:
+    });
+
+    it("should not fail if version ≠ 2 but recoveryMode is true", () => {
+      // TODO:
+    });
+
+    it("should not cache the buffer by default", () => {
+      // TODO:
+    });
+
+    it("should cache the buffer if saveBuffer is true", () => {
+      // TODO:
+    });
   });
 
   describe("#fromAsync()", () => {
-    // TODO:
+    it("should return an obj def asynchronously", () => {
+      // TODO:
+    });
+
+    it("should use the given options", () => {
+      // TODO:
+    });
   });
 
   //#endregion Initialization
@@ -98,7 +254,45 @@ describe("ObjectDefinitionResource", () => {
   //#region Methods
 
   describe("#clone()", () => {
-    // TODO:
+    it("should copy the original's version", () => {
+      // TODO:
+    });
+
+    it("should copy the original's properties", () => {
+      // TODO:
+    });
+
+    it("should copy the original's buffer cache if present", () => {
+      // TODO:
+    });
+
+    it("should not have buffer cache if original doesn't", () => {
+      // TODO:
+    });
+
+    it("should copy the original's default compression type", () => {
+      // TODO:
+    });
+
+    it("should not copy the original's owner", () => {
+      // TODO:
+    });
+
+    it("should not mutate the original's version", () => {
+      // TODO:
+    });
+
+    it("should not mutate the original's properties", () => {
+      // TODO:
+    });
+
+    it("should not mutate the original's properties primitive values", () => {
+      // TODO:
+    });
+
+    it("should not mutate the original's properties mutable values", () => {
+      // TODO:
+    });
   });
 
   describe("#equals()", () => {
@@ -110,11 +304,19 @@ describe("ObjectDefinitionResource", () => {
   });
 
   describe("#isXml()", () => {
-    // TODO:
+    it("should always return false", () => {
+      // TODO:
+    });
   });
 
   describe("#onChange()", () => {
-    // TODO:
+    it("should delete the buffer cache", () => {
+      // TODO:
+    });
+
+    it("should uncache the owner", () => {
+      // TODO:
+    });
   });
 
   //#endregion Methods
