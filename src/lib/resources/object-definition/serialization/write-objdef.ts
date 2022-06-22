@@ -31,7 +31,7 @@ export default function writeObjDef(dto: ObjectDefinitionDto): Buffer {
 
   const propertiesBuffer = Buffer.concat(propertyBuffers);
   const headerEncoder = BinaryEncoder.alloc(6);
-  headerEncoder.uint16(2); // version
+  headerEncoder.uint16(dto.version);
   headerEncoder.uint32(propertiesBuffer.length + 6);
 
   return Buffer.concat([

@@ -8,7 +8,7 @@ import type { RawResourceCreationOptions } from "./lib/resources/raw/raw-resourc
 import type { SimDataResourceCreationOptions } from "./lib/resources/simdata/simdata-resource";
 import type { XmlResourceFromOptions } from "./lib/resources/xml/xml-resource";
 import type { DdsImageResourceCreationOptions } from "./lib/resources/dds-image/dds-image-resource";
-import type { ObjectDefinitionProperty } from "./lib/resources/object-definition/types";
+import type { ObjectDefinitionProperties } from "./lib/resources/object-definition/types";
 
 export {
   // options
@@ -28,6 +28,6 @@ export {
   ResourceKey,
   ResourceKeyPair,
   ResourcePosition,
-  ObjectDefinitionProperty,
+  ObjectDefinitionProperties,
   StringEntry,
 }
