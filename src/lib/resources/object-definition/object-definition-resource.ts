@@ -23,11 +23,10 @@ export default class ObjectDefinitionResource
   /** The version. This should be equal to LATEST_VERSION. */
   version: number;
 
+  // FIXME: cacheing can be done, see how simdata obj does it
   /**
    * An object of properties. Note that mutating individual properties will not
    * uncache the buffer or owning model - it must be reassigned.
-   * 
-   * FIXME: cacheing can be done, see how simdata obj does it
    */
   properties: ObjectDefinitionProperties;
 
