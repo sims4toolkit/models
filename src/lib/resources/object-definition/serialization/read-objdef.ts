@@ -1,13 +1,13 @@
 import { BinaryDecoder } from "@s4tk/encoding";
 import { makeList } from "../../../common/helpers";
 import { BinaryFileReadingOptions } from "../../../common/options";
-import { ObjectDefinitionDto, ObjectDefinitionProperty, ObjectDefinitionPropertyType } from "../types";
+import { ObjectDefinitionDto, ObjectDefinitionProperties, ObjectDefinitionPropertyType } from "../types";
 
 /**
- * TODO:
+ * Reads a buffer as an object definition and returns a DTO.
  * 
- * @param buffer TODO:
- * @param options TODO:
+ * @param buffer Buffer to read as an object definition
+ * @param options Options for reading this definition
  */
 export default function readObjDef(
   buffer: Buffer,
@@ -22,27 +22,41 @@ export default function readObjDef(
   const tablePosition = decoder.uint32();
   decoder.seek(tablePosition);
   const entryCount = decoder.uint16();
-  const properties = makeList<ObjectDefinitionProperty>(entryCount, () => {
+  const properties: ObjectDefinitionProperties = {};
+  for (let i = 0; i < entryCount; ++i) {
     const type = decoder.uint32();
     const offset = decoder.uint32();
-    const value = decoder.savePos(() => {
-      decoder.seek(offset);
-      return getPropertyValue(type, decoder);
-    });
 
-    return { type, value };
-  });
+    if (type in ObjectDefinitionPropertyType) {
+      decoder.seek(offset);
+      const value = getPropertyValue(type, decoder);
+      properties[ObjectDefinitionPropertyType[type]] = value;
+    } else if (properties.UnknownMisc) {
+      properties.UnknownMisc.add(type);
+    } else {
+      properties.UnknownMisc = new Set([type]);
+    }
+  }
 
   return { version, properties };
 }
 
-function getPropertyValue(type: ObjectDefinitionPropertyType, decoder: BinaryDecoder): any {
+/**
+ * Reads the appropriate value for the given type from the given decoder.
+ * 
+ * @param type Type to get value for
+ * @param decoder Decoder from which to read value
+ */
+function getPropertyValue(
+  type: ObjectDefinitionPropertyType,
+  decoder: BinaryDecoder
+): any {
   switch (type) {
     case ObjectDefinitionPropertyType.Name:
     case ObjectDefinitionPropertyType.Tuning:
     case ObjectDefinitionPropertyType.MaterialVariant:
       return decoder.slice(decoder.uint32()).toString();
-    case ObjectDefinitionPropertyType.TuningID:
+    case ObjectDefinitionPropertyType.TuningId:
     case ObjectDefinitionPropertyType.Unknown3:
       return decoder.uint64();
     case ObjectDefinitionPropertyType.Icon:
@@ -53,7 +67,7 @@ function getPropertyValue(type: ObjectDefinitionPropertyType, decoder: BinaryDec
       return makeList(decoder.int32() / 4, () => {
         const instanceP1 = decoder.uint32();
         const instanceP2 = decoder.uint32();
-        const instance = (BigInt(instanceP1) << 32n) + BigInt(instanceP2); // FIXME: what order?
+        const instance = (BigInt(instanceP1) << 32n) + BigInt(instanceP2);
         const type = decoder.uint32();
         const group = decoder.uint32();
         return { type, group, instance };
@@ -75,6 +89,10 @@ function getPropertyValue(type: ObjectDefinitionPropertyType, decoder: BinaryDec
       return makeList(decoder.int32(), () => {
         return decoder.uint16()
       });
+    case ObjectDefinitionPropertyType.EnvironmentScoreEmotionTags_32:
+      return makeList(decoder.int32(), () => {
+        return decoder.uint32()
+      });
     case ObjectDefinitionPropertyType.EnvironmentScores:
       return makeList(decoder.uint32(), () => {
         return decoder.float()
@@ -86,7 +104,6 @@ function getPropertyValue(type: ObjectDefinitionPropertyType, decoder: BinaryDec
         return decoder.byte()
       });
     default:
-      return null; // FIXME:
-      throw new Error("Type not recognized"); // FIXME: throw type and check if recovery mode
+      throw new Error(`Object Definition Type "${type}" not recognized. This error should never be thrown, so if you're reading this, please report the error ASAP.`);
   }
 }

@@ -1,4 +1,5 @@
 import clone from "just-clone";
+import compare from "just-compare";
 import WritableModel, { WritableModelCreationOptions, WritableModelFromOptions } from '../../base/writable-model';
 import { promisify } from '../../common/helpers';
 import BinaryResourceType from "../../enums/binary-resources";
@@ -7,7 +8,7 @@ import ResourceRegistry from "../../packages/resource-registry";
 import Resource from '../resource';
 import readObjDef from "./serialization/read-objdef";
 import writeObjDef from "./serialization/write-objdef";
-import { ObjectDefinitionDto, ObjectDefinitionProperty } from './types';
+import { ObjectDefinitionDto, ObjectDefinitionProperties } from './types';
 
 /**
  * Model for object definition resources.
@@ -23,10 +24,12 @@ export default class ObjectDefinitionResource
   version: number;
 
   /**
-   * A list of key/value properties. Note that mutating this array will not
-   * uncache its buffer or the owning model - it must be reassigned.
+   * An object of properties. Note that mutating individual properties will not
+   * uncache the buffer or owning model - it must be reassigned.
+   * 
+   * FIXME: cacheing can be done, see how simdata obj does it
    */
-  properties: ObjectDefinitionProperty[];
+  properties: ObjectDefinitionProperties;
 
   //#region Initialization
 
@@ -34,12 +37,12 @@ export default class ObjectDefinitionResource
    * Creates a new ObjectDefinitionResource from the given data.
    * 
    * @param version The version (currently 2)
-   * @param properties A list of key/value properties
+   * @param properties An object of properties
    * @param options Object containing optional arguments
    */
   constructor(
     version: number,
-    properties: ObjectDefinitionProperty[],
+    properties: ObjectDefinitionProperties,
     options?: WritableModelCreationOptions
   ) {
     super(options);
@@ -93,7 +96,7 @@ export default class ObjectDefinitionResource
   equals(other: any): boolean {
     if (other?.encodingType !== this.encodingType) return false;
     if (other?.version !== this.version) return false;
-    return true; // FIXME: test properties, order doesn't matter
+    return compare(this.properties, other.properties);
   }
 
   isXml() {
