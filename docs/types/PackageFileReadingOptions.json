@@ -36,6 +36,15 @@
         },
         {
           "displayType": "property",
+          "name": "keepDeletedRecords",
+          "optional": true,
+          "description": "If true, then resources with the \"DeletedRecord\" compression type will be loaded into DeletedResource models. If false, then they will be ignored entirely. False by default.",
+          "type": {
+            "name": "boolean"
+          }
+        },
+        {
+          "displayType": "property",
           "name": "loadRaw",
           "optional": true,
           "description": "If true, then all resources in the package will be loaded raw (i.e. just a buffer) rather than being fully parsed into their respective models. False by default.\n\nNote that raw resources remain in their original compression format by default. If decompressed resources are needed (such as when extracting files to write to disk), set decompressBuffers: true as well.",
