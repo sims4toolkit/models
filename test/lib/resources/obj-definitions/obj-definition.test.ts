@@ -5,6 +5,7 @@ import { ObjectDefinitionResource } from "../../../../dst/models";
 import { EncodingType, ObjectDefinitionType } from "../../../../dst/enums";
 import MockOwner from "../../../mocks/mock-owner";
 import { ObjectDefinitionProperties } from "../../../../dst/lib/resources/object-definition/types";
+import { CompressionType } from "@s4tk/compression";
 
 //#region Helpers & Variables
 
@@ -100,39 +101,70 @@ describe("ObjectDefinitionResource", () => {
     });
 
     it("should have empty properties if none provided", () => {
-      // TODO:
+      const def = new ObjectDefinitionResource();
+      expect(def.properties).to.be.an("Object");
+      expect(Object.keys(def.properties).length).to.equal(0);
     });
 
     it("should use the provided properties", () => {
-      // TODO:
+      const properties: ObjectDefinitionProperties = {};
+      const def = new ObjectDefinitionResource({ properties });
+      expect(def.properties.isBaby).to.be.undefined;
+      properties.isBaby = true;
+      expect(def.properties.isBaby).to.be.true;
     });
 
     it("should be mutated if original properties are mutated", () => {
-      // TODO:
+      const def = new ObjectDefinitionResource({
+        properties: {
+          isBaby: true
+        }
+      });
+
+      expect(def.properties.isBaby).to.be.true;
     });
 
     it("should use ZLIB compression by default", () => {
-      // TODO:
+      const def = new ObjectDefinitionResource();
+      expect(def.defaultCompressionType).to.equal(CompressionType.ZLIB);
     });
 
     it("should use the provided defaultCompressionType", () => {
-      // TODO:
+      const def = new ObjectDefinitionResource({
+        defaultCompressionType: CompressionType.InternalCompression
+      });
+
+      expect(def.defaultCompressionType).to.equal(CompressionType.InternalCompression);
     });
 
     it("should not have any initial cache by default", () => {
-      // TODO:
+      const def = new ObjectDefinitionResource();
+      expect(def.bufferCache).to.be.undefined;
     });
 
     it("should use the provided initialBufferCache", () => {
-      // TODO:
+      const initialBufferCache = {
+        buffer: tartosianoBuffer,
+        compressionType: CompressionType.Uncompressed,
+        sizeDecompressed: tartosianoBuffer.byteLength
+      };
+
+      const def = new ObjectDefinitionResource({
+        initialBufferCache
+      });
+
+      expect(def.bufferCache).to.equal(initialBufferCache);
     });
 
     it("should not have an owner by default", () => {
-      // TODO:
+      const def = new ObjectDefinitionResource();
+      expect(def.owner).to.be.undefined;
     });
 
     it("should use the provided owner", () => {
-      // TODO:
+      const owner = new MockOwner();
+      const def = new ObjectDefinitionResource({ owner });
+      expect(def.owner).to.equal(owner);
     });
   });
 
