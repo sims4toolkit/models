@@ -344,7 +344,19 @@ describe("ObjectDefinitionResource", () => {
     });
 
     it("should not mutate the original's properties", () => {
-      // TODO:
+      const original = new ObjectDefinitionResource({
+        properties: {
+          isBaby: true,
+        }
+      });
+
+      const clone = original.clone();
+      clone.properties = {
+        isBaby: false
+      };
+
+      expect(original.properties.isBaby).to.be.true;
+      expect(clone.properties.isBaby).to.be.false;
     });
 
     it("should not mutate the original's properties primitive values", () => {
