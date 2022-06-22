@@ -525,6 +525,28 @@ describe("ObjectDefinitionResource", () => {
     it("should set the mutable value of the property for the given type", () => {
       // TODO:
     });
+
+    it("should uncache the buffer", () => {
+      // TODO:
+    });
+
+    it("should uncache the owner", () => {
+      // TODO:
+    });
+  });
+
+  describe("#updateProperties()", () => {
+    it("should mutate the properties object", () => {
+      // TODO:
+    });
+
+    it("should uncache the buffer", () => {
+      // TODO:
+    });
+
+    it("should uncache the owner", () => {
+      // TODO:
+    });
   });
 
   //#endregion Methods

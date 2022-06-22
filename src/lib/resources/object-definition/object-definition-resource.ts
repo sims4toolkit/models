@@ -24,10 +24,28 @@ export default class ObjectDefinitionResource
   /** The version. This should be equal to LATEST_VERSION. */
   version: number;
 
-  // FIXME: cacheing can be done, see how simdata obj does it
   /**
-   * An object of properties. Note that mutating individual properties will not
-   * uncache the buffer or owning model - it must be reassigned.
+   * An object of properties. Note that mutating this object or individual
+   * properties on it will not uncache this model or its owner. To handle
+   * cacheing, there are multiple options:
+   * 
+   * ```ts
+   * // using setProperty()
+   * def.setProperty(ObjectDefinitionPropertyType.IsBaby, true);
+   * 
+   * // using updateProperties()
+   * def.updateProperties(props => {
+   *   props.isBaby = true;
+   * });
+   * 
+   * // using onChange()
+   * def.properties.isBaby = true;
+   * def.onChange();
+   *
+   * // using reassignment
+   * def.properties.isBaby = true;
+   * def.properties = def.properties;
+   * ```
    */
   properties: ObjectDefinitionProperties;
 
@@ -134,8 +152,8 @@ export default class ObjectDefinitionResource
 
   /**
    * Dynamically sets a value in the properties object. This is here for
-   * convenience, but it is recommended to set properties directly since it
-   * will be more type-safe.
+   * convenience, but it is recommended to set properties with
+   * `updateProperties()` since it will be more type-safe.
    * 
    * @param type Type of property to set value of
    * @param value Value to set
@@ -144,6 +162,19 @@ export default class ObjectDefinitionResource
     const enumName = ObjectDefinitionPropertyType[type];
     const propKey = camelToPascal(enumName);
     this.properties[propKey] = value;
+    this.onChange();
+  }
+
+  /**
+   * Provides a context in which properties can be updated in a way that is
+   * safe for cacheing. The provided function will be executed, and when it is
+   * done, the model and its owner will be uncached.
+   * 
+   * @param fn Function to perform property updates in
+   */
+  updateProperties(fn: (props: ObjectDefinitionProperties) => void) {
+    fn(this.properties);
+    this.onChange();
   }
 
   //#endregion Public Methods
