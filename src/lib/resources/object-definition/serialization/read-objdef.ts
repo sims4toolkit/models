@@ -28,9 +28,10 @@ export default function readObjDef(
     const offset = decoder.uint32();
 
     if (type in ObjectDefinitionPropertyType) {
-      decoder.seek(offset);
-      const value = getPropertyValue(type, decoder);
-      properties[ObjectDefinitionPropertyType[type]] = value;
+      properties[ObjectDefinitionPropertyType[type]] = decoder.savePos(() => {
+        decoder.seek(offset);
+        return getPropertyValue(type, decoder);
+      });
     } else if (properties.UnknownMisc) {
       properties.UnknownMisc.add(type);
     } else {
