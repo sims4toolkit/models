@@ -1,5 +1,6 @@
 import clone from "just-clone";
 import compare from "just-compare";
+import { CompressedBuffer, CompressionType } from "@s4tk/compression";
 import WritableModel, { WritableModelCreationOptions, WritableModelFromOptions } from '../../base/writable-model';
 import { promisify } from '../../common/helpers';
 import BinaryResourceType from "../../enums/binary-resources";
@@ -63,7 +64,19 @@ export default class ObjectDefinitionResource
     options?: WritableModelFromOptions
   ): ObjectDefinitionResource {
     const dto = readObjDef(buffer, options);
-    return new ObjectDefinitionResource(dto.version, dto.properties, options);
+    let initialBufferCache: CompressedBuffer;
+
+    if (options?.saveBuffer) initialBufferCache = options?.initialBufferCache ?? {
+      buffer,
+      compressionType: CompressionType.Uncompressed,
+      sizeDecompressed: buffer.byteLength
+    };
+
+    return new ObjectDefinitionResource(dto.version, dto.properties, {
+      defaultCompressionType: options?.defaultCompressionType,
+      owner: options?.owner,
+      initialBufferCache
+    });
   }
 
   /**

@@ -465,17 +465,31 @@ describe("ObjectDefinitionResource", () => {
 
   describe("#isXml()", () => {
     it("should always return false", () => {
-      // TODO:
+      const def = ObjectDefinitionResource.from(tartosianoBuffer);
+      expect(def.isXml()).to.be.false;
     });
   });
 
   describe("#onChange()", () => {
     it("should delete the buffer cache", () => {
-      // TODO:
+      const def = ObjectDefinitionResource.from(tartosianoBuffer, {
+        saveBuffer: true
+      });
+
+      expect(def.hasBufferCache).to.be.true;
+      def.onChange();
+      expect(def.hasBufferCache).to.be.false;
     });
 
     it("should uncache the owner", () => {
-      // TODO:
+      const owner = new MockOwner();
+      const def = ObjectDefinitionResource.from(tartosianoBuffer, {
+        owner
+      });
+
+      expect(owner.cached).to.be.true;
+      def.onChange();
+      expect(owner.cached).to.be.false;
     });
   });
 
