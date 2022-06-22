@@ -129,7 +129,7 @@ export function getAllEnumValues<T extends number>(enumObj: object): T[] {
  * @param snakeCase String in snake case.
  */
 export function snakeToPascal(snakeCase: string): string {
-  return snakeCase.split("_")
+  return snakeCase?.split("_")
     .map(segment => segment.charAt(0).toUpperCase() + segment.slice(1))
     .join("");
 }
@@ -140,5 +140,5 @@ export function snakeToPascal(snakeCase: string): string {
  * @param pascalCase String in pascal case.
  */
 export function pascalToSnake(pascalCase: string): string {
-  return pascalCase.split(/(?=[A-Z])/).join('_').toLowerCase();
+  return pascalCase?.split(/(?=[A-Z])/).join('_').toLowerCase();
 }
