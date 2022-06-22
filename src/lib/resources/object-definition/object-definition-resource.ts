@@ -2,14 +2,14 @@ import clone from "just-clone";
 import compare from "just-compare";
 import { CompressedBuffer, CompressionType } from "@s4tk/compression";
 import WritableModel, { WritableModelCreationOptions, WritableModelFromOptions } from '../../base/writable-model';
-import { promisify } from '../../common/helpers';
+import { camelToPascal, pascalToCamel, promisify } from '../../common/helpers';
 import BinaryResourceType from "../../enums/binary-resources";
 import EncodingType from '../../enums/encoding-type';
 import ResourceRegistry from "../../packages/resource-registry";
 import Resource from '../resource';
 import readObjDef from "./serialization/read-objdef";
 import writeObjDef from "./serialization/write-objdef";
-import { ObjectDefinitionDto, ObjectDefinitionProperties } from './types';
+import { ObjectDefinitionDto, ObjectDefinitionProperties, ObjectDefinitionPropertyType } from './types';
 
 /**
  * Model for object definition resources.
@@ -96,7 +96,7 @@ export default class ObjectDefinitionResource
 
   //#endregion Initialization
 
-  //#region Public Methods
+  //#region Overridden Methods
 
   clone(): ObjectDefinitionResource {
     return new ObjectDefinitionResource(this.version, clone(this.properties), {
@@ -113,6 +113,37 @@ export default class ObjectDefinitionResource
 
   isXml() {
     return false;
+  }
+
+  //#endregion Overridden Methods
+
+  //#region Public Methods
+
+  /**
+   * Dynamically gets a value from the properties object. This is here for
+   * convenience, but it is recommended to access properties directly since it
+   * will be more type-safe.
+   * 
+   * @param type Type of property to get value for
+   */
+  getProperty(type: ObjectDefinitionPropertyType): unknown {
+    const enumName = ObjectDefinitionPropertyType[type];
+    const propKey = pascalToCamel(enumName);
+    return this.properties[propKey];
+  }
+
+  /**
+   * Dynamically sets a value in the properties object. This is here for
+   * convenience, but it is recommended to set properties directly since it
+   * will be more type-safe.
+   * 
+   * @param type Type of property to set value of
+   * @param value Value to set
+   */
+  setProperty(type: ObjectDefinitionPropertyType, value: any) {
+    const enumName = ObjectDefinitionPropertyType[type];
+    const propKey = camelToPascal(enumName);
+    this.properties[propKey] = value;
   }
 
   //#endregion Public Methods

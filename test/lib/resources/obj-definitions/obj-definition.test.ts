@@ -473,6 +473,20 @@ describe("ObjectDefinitionResource", () => {
     });
   });
 
+  describe("#getProperty()", () => {
+    it("should get the primitive value of the property for the given type", () => {
+      // TODO:
+    });
+
+    it("should get the mutable value of the property for the given type", () => {
+      // TODO:
+    });
+
+    it("should return undefined if there is no property set for the given type", () => {
+      // TODO:
+    });
+  });
+
   describe("#isXml()", () => {
     it("should always return false", () => {
       const def = ObjectDefinitionResource.from(tartosianoBuffer);
@@ -500,6 +514,16 @@ describe("ObjectDefinitionResource", () => {
       expect(owner.cached).to.be.true;
       def.onChange();
       expect(owner.cached).to.be.false;
+    });
+  });
+
+  describe("#setProperty()", () => {
+    it("should set the primitive value of the property for the given type", () => {
+      // TODO:
+    });
+
+    it("should set the mutable value of the property for the given type", () => {
+      // TODO:
     });
   });
 
