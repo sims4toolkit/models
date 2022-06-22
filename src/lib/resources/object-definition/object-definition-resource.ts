@@ -165,7 +165,7 @@ export default class ObjectDefinitionResource
    */
   setProperty(type: ObjectDefinitionPropertyType, value: any) {
     const enumName = ObjectDefinitionPropertyType[type];
-    const propKey = camelToPascal(enumName);
+    const propKey = pascalToCamel(enumName);
     this.properties[propKey] = value;
     this.onChange();
   }

@@ -536,19 +536,46 @@ describe("ObjectDefinitionResource", () => {
 
   describe("#setProperty()", () => {
     it("should set the primitive value of the property for the given type", () => {
-      // TODO:
+      const def = ObjectDefinitionResource.from(tartosianoBuffer, {
+        saveBuffer: true
+      });
+
+      expect(def.properties.isBaby).to.be.undefined;
+      def.setProperty(ObjectDefinitionPropertyType.IsBaby, true);
+      expect(def.properties.isBaby).to.be.true;
     });
 
     it("should set the mutable value of the property for the given type", () => {
-      // TODO:
+      const def = ObjectDefinitionResource.from(tartosianoBuffer, {
+        saveBuffer: true
+      });
+
+      expect(def.properties.components).to.be.an("Array").with.lengthOf(9);
+      const newComponents = [1, 2, 3];
+      def.setProperty(ObjectDefinitionPropertyType.Components, newComponents);
+      expect(def.properties.components).to.equal(newComponents);
     });
 
     it("should uncache the buffer", () => {
-      // TODO:
+      const def = ObjectDefinitionResource.from(tartosianoBuffer, {
+        saveBuffer: true
+      });
+
+      expect(def.hasBufferCache).to.be.true;
+      def.setProperty(ObjectDefinitionPropertyType.IsBaby, true);
+      expect(def.hasBufferCache).to.be.false;
     });
 
     it("should uncache the owner", () => {
-      // TODO:
+      const owner = new MockOwner();
+      const def = ObjectDefinitionResource.from(tartosianoBuffer, {
+        owner,
+        saveBuffer: true
+      });
+
+      expect(owner.cached).to.be.true;
+      def.setProperty(ObjectDefinitionPropertyType.IsBaby, true);
+      expect(owner.cached).to.be.false;
     });
   });
 
