@@ -38,8 +38,8 @@ export enum ObjectDefinitionType {
 
 /**
  * A mapping of property keys to values. Property keys are the camel case
- * equivalent to their associated types in ObjectDefinitionType,
- * except for `unknownMisc` which keeps track of types not in the enum.
+ * equivalent to their associated types in ObjectDefinitionType, except for
+ * `unknownMisc` which keeps track of types not in the enum.
  */
 export type ObjectDefinitionProperties = Partial<{
   components: number[]; // uint32[]
