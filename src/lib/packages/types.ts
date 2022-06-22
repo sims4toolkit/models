@@ -24,4 +24,5 @@ export interface ResourceKey {
 export interface ResourcePosition {
   indexStart: number;
   key?: ResourceKey;
+  isDeleted?: boolean;
 }

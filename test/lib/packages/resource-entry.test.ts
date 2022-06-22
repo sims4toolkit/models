@@ -148,12 +148,6 @@ describe("ResourceEntry", () => {
       const second = dbpf.add(getTestKey(), new XmlResource());
       expect(first.equals(second)).to.be.false;
     });
-
-    it("should return false when other is undefined", () => {
-      const dbpf = new Package();
-      const entry = dbpf.add(getTestKey(), getTestTuning());
-      expect(entry.equals(undefined)).to.be.false;
-    });
   });
 
   describe("#keyEquals()", () => {

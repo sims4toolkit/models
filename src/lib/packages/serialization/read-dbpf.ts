@@ -167,7 +167,8 @@ export function getResourcePositions(
       const indexEntry = readIndexEntry(decoder, flags, options);
       if (indexEntry) positions.push({
         key: indexEntry.key,
-        indexStart: indexBytesRead
+        indexStart: indexBytesRead,
+        isDeleted: indexEntry.mnCompressionType === CompressionType.DeletedRecord
       });
       indexBytesRead += decoder.tell();
       if (options?.limit && positions.length >= options.limit) break;
