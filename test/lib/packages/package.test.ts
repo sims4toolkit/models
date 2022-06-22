@@ -532,6 +532,52 @@ describe("Package", () => {
           expect(entry.resource.defaultCompressionType).to.equal(CompressionType.InternalCompression);
         });
       });
+
+      context("keepDeletedRecords", () => {
+        it("should ignore deleted records if not provided", () => {
+          const pkg = getPackage("DeletedRecord");
+          expect(pkg.size).to.equal(0);
+        });
+
+        it("should ignore deleted records if false", () => {
+          const pkg = getPackage("DeletedRecord", {
+            keepDeletedRecords: false
+          });
+
+          expect(pkg.size).to.equal(0);
+        });
+
+        it("should get deleted records if true", () => {
+          const pkg = getPackage("DeletedRecord", {
+            keepDeletedRecords: true
+          });
+
+          expect(pkg.size).to.equal(1);
+          expect(pkg.get(0).value.encodingType).to.equal(EncodingType.Null);
+        });
+
+        it("should not affect packages without deleted records if false", () => {
+          const pkg = getPackage("CompleteTrait", {
+            keepDeletedRecords: false
+          });
+
+          expect(pkg.size).to.equal(4);
+          pkg.entries.forEach(entry => {
+            expect(entry.value.encodingType).to.not.equal(EncodingType.Null);
+          });
+        });
+
+        it("should not affect packages without deleted records if true", () => {
+          const pkg = getPackage("CompleteTrait", {
+            keepDeletedRecords: true
+          });
+
+          expect(pkg.size).to.equal(4);
+          pkg.entries.forEach(entry => {
+            expect(entry.value.encodingType).to.not.equal(EncodingType.Null);
+          });
+        });
+      });
     });
   });
 
