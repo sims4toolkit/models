@@ -296,7 +296,69 @@ describe("ObjectDefinitionResource", () => {
   });
 
   describe("#equals()", () => {
-    // TODO:
+    context("version is same", () => {
+      context("properties are same", () => {
+        it("should return true if all properties are exactly the same in same order", () => {
+          // TODO:
+        });
+
+        it("should return true if all properties are exactly the same in different order", () => {
+          // TODO:
+        });
+
+        it("should return true if icon key is different object but has same values", () => {
+          // TODO:
+        });
+
+        it("should return true if components list is different object, but has same values in same order", () => {
+          // TODO:
+        });
+
+        it("should return true if unknown misc set is different object, but has same values in same order", () => {
+          // TODO:
+        });
+
+        it("should return true if unknown misc set is different object, but has same values in different order", () => {
+          // TODO:
+        });
+      });
+
+      context("properties are different", () => {
+        it("should return false if a primitive value is different", () => {
+          // TODO:
+        });
+
+        it("should return false if unknown sets contain different amounts", () => {
+          // TODO:
+        });
+
+        it("should return false if this is a subset of that", () => {
+          // TODO:
+        });
+
+        it("should return false if that is a subset of this", () => {
+          // TODO:
+        });
+
+        it("should return false if components list is has same values, but in different order", () => {
+          // TODO:
+        });
+      });
+    });
+
+    context("version is different", () => {
+      context("properties are same", () => {
+        it("should return false", () => {
+          // TODO:
+        });
+      });
+
+      context("properties are different", () => {
+        it("should return false", () => {
+          // TODO:
+        });
+      });
+    });
   });
 
   describe("#getBuffer()", () => {
