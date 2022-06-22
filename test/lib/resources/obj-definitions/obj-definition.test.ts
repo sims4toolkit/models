@@ -5,12 +5,18 @@ import { ObjectDefinitionResource } from "../../../../dst/models";
 import { EncodingType, ObjectDefinitionPropertyType } from "../../../../dst/enums";
 import MockOwner from "../../../mocks/mock-owner";
 
-const tartosianoBuffer = fs.readFileSync(
+//#region Helpers & Variables
+
+const getBuffer = (filename: string) => fs.readFileSync(
   path.resolve(
     __dirname,
-    "../../../data/obj-definitions/TartosianoTextbook.binary"
+    `../../../data/obj-definitions/${filename}.binary`
   )
 );
+
+const tartosianoBuffer = getBuffer("TartosianoTextbook");
+
+//#endregion Helpers & Variables
 
 describe("ObjectDefinitionResource", () => {
   //#region Properties
