@@ -2,7 +2,7 @@ import fs from "fs";
 import path from "path";
 import { expect } from "chai";
 import { ObjectDefinitionResource } from "../../../../dst/models";
-import { EncodingType, ObjectDefinitionType } from "../../../../dst/enums";
+import { BinaryResourceType, EncodingType, ObjectDefinitionType, SimDataGroup } from "../../../../dst/enums";
 import MockOwner from "../../../mocks/mock-owner";
 import { ObjectDefinitionProperties } from "../../../../dst/lib/resources/object-definition/types";
 import { CompressionType } from "@s4tk/compression";
@@ -312,19 +312,58 @@ describe("ObjectDefinitionResource", () => {
     });
 
     it("should copy the original's properties", () => {
-      // TODO:
+      const original = new ObjectDefinitionResource({
+        properties: {
+          isBaby: true,
+          components: [1, 2, 3],
+          icon: {
+            type: 0x1234,
+            group: 0,
+            instance: 12345n
+          },
+          name: "something",
+          simoleonPrice: 500,
+        }
+      });
+
+      const clone = original.clone();
+
+      expect(Object.keys(clone.properties).length).to.equal(5);
+      expect(clone.properties.isBaby).to.be.true;
+      expect(clone.properties.components).to.be.an("Array").with.lengthOf(3);
+      expect(clone.properties.components![0]).to.equal(1);
+      expect(clone.properties.components![1]).to.equal(2);
+      expect(clone.properties.components![2]).to.equal(3);
+      expect(clone.properties.icon).to.be.an("Object");
+      expect(clone.properties.icon?.type).to.equal(0x1234);
+      expect(clone.properties.icon?.group).to.equal(0);
+      expect(clone.properties.icon?.instance).to.equal(12345n);
+      expect(clone.properties.name).to.equal("something");
+      expect(clone.properties.simoleonPrice).to.equal(500);
     });
 
     it("should copy the original's buffer cache if present", () => {
-      // TODO:
+      const original = ObjectDefinitionResource.from(tartosianoBuffer, {
+        saveBuffer: true
+      });
+
+      const clone = original.clone();
+      expect(clone.hasBufferCache).to.be.true;
     });
 
     it("should not have buffer cache if original doesn't", () => {
-      // TODO:
+      const original = new ObjectDefinitionResource();
+      const clone = original.clone();
+      expect(clone.hasBufferCache).to.be.false;
     });
 
     it("should copy the original's default compression type", () => {
-      // TODO:
+      const original = ObjectDefinitionResource.from(tartosianoBuffer, {
+        defaultCompressionType: CompressionType.InternalCompression
+      });
+
+      const clone = original.clone();
+      expect(clone.defaultCompressionType).to.equal(CompressionType.InternalCompression);
     });
 
     it("should not copy the original's owner", () => {
