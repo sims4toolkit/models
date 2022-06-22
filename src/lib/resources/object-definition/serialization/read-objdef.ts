@@ -41,6 +41,8 @@ export default function readObjDef(
   return { version, properties };
 }
 
+//#region Helpers
+
 /**
  * Reads the appropriate value for the given type from the given decoder.
  * 
@@ -107,3 +109,5 @@ function getPropertyValue(
       throw new Error(`Object Definition Type "${type}" not recognized. This error should never be thrown, so if you're reading this, please report the error ASAP.`);
   }
 }
+
+//#endregion Helpers
