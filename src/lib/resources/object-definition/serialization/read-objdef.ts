@@ -1,5 +1,5 @@
 import { BinaryDecoder } from "@s4tk/encoding";
-import { makeList } from "../../../common/helpers";
+import { makeList, pascalToCamel } from "../../../common/helpers";
 import { BinaryFileReadingOptions } from "../../../common/options";
 import { ObjectDefinitionDto, ObjectDefinitionProperties, ObjectDefinitionPropertyType } from "../types";
 
@@ -28,14 +28,15 @@ export default function readObjDef(
     const offset = decoder.uint32();
 
     if (type in ObjectDefinitionPropertyType) {
-      properties[ObjectDefinitionPropertyType[type]] = decoder.savePos(() => {
+      const propKey = pascalToCamel(ObjectDefinitionPropertyType[type]);
+      properties[propKey] = decoder.savePos(() => {
         decoder.seek(offset);
         return getPropertyValue(type, decoder);
       });
-    } else if (properties.UnknownMisc) {
-      properties.UnknownMisc.add(type);
+    } else if (properties.unknownMisc) {
+      properties.unknownMisc.add(type);
     } else {
-      properties.UnknownMisc = new Set([type]);
+      properties.unknownMisc = new Set([type]);
     }
   }
 

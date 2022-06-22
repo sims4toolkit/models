@@ -1,4 +1,5 @@
 import { BinaryEncoder } from "@s4tk/encoding";
+import { camelToPascal } from "../../../common/helpers";
 import { ResourceKey } from "../../../packages/types";
 import { ObjectDefinitionDto, ObjectDefinitionPropertyType } from "../types";
 
@@ -10,8 +11,9 @@ import { ObjectDefinitionDto, ObjectDefinitionPropertyType } from "../types";
 export default function writeObjDef(dto: ObjectDefinitionDto): Buffer {
   const props: PropertyPair[] = [];
   for (const propKey in dto.properties) {
-    if (propKey in ObjectDefinitionPropertyType) {
-      const type = ObjectDefinitionPropertyType[propKey];
+    const enumName = camelToPascal(propKey);
+    if (enumName in ObjectDefinitionPropertyType) {
+      const type = ObjectDefinitionPropertyType[enumName];
       props.push({ type, value: dto.properties[propKey] });
     }
   }

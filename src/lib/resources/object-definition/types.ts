@@ -37,32 +37,32 @@ export enum ObjectDefinitionPropertyType {
 }
 
 /**
- * A mapping of property names to values. These names align with the enum,
- * except for `UnknownMisc` which is just a set of all types that are not 
- * recognized by S4TK.
+ * A mapping of property keys to values. Property keys are the camel case
+ * equivalent to their associated types in ObjectDefinitionPropertyType,
+ * except for `unknownMisc` which keeps track of types not in the enum.
  */
 export type ObjectDefinitionProperties = Partial<{
-  Components: number[]; // uint32[]
-  EnvironmentScoreEmotionTags: number[]; // uint16
-  EnvironmentScoreEmotionTags_32: number[]; // uint32
-  EnvironmentScores: number[]; // float[]
-  Footprint: ResourceKey;
-  Icon: ResourceKey;
-  IsBaby: boolean; // byte
-  MaterialVariant: string;
-  Model: ResourceKey;
-  Name: string;
-  NegativeEnvironmentScore: number; // float
-  PositiveEnvironmentScore: number; // float
-  Rig: ResourceKey;
-  SimoleonPrice: number; // uint32
-  Slot: ResourceKey;
-  ThumbnailGeometryState: number; // uint32
-  Tuning: string;
-  TuningId: bigint; // uint64
-  Unknown1: number; // byte
-  Unknown2: number; // byte
-  Unknown3: bigint; // bigint
-  Unknown4: number[]; // byte[]
-  UnknownMisc: Set<number>;
+  components: number[]; // uint32[]
+  environmentScoreEmotionTags: number[]; // uint16
+  environmentScoreEmotionTags_32: number[]; // uint32
+  environmentScores: number[]; // float[]
+  footprint: ResourceKey;
+  icon: ResourceKey;
+  isBaby: boolean; // byte
+  materialVariant: string;
+  model: ResourceKey;
+  name: string;
+  negativeEnvironmentScore: number; // float
+  positiveEnvironmentScore: number; // float
+  rig: ResourceKey;
+  simoleonPrice: number; // uint32
+  slot: ResourceKey;
+  thumbnailGeometryState: number; // uint32
+  tuning: string;
+  tuningId: bigint; // uint64
+  unknown1: number; // byte
+  unknown2: number; // byte
+  unknown3: bigint; // bigint
+  unknown4: number[]; // byte[]
+  unknownMisc: Set<number>;
 }>;

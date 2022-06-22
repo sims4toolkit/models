@@ -37,7 +37,7 @@ describe("ObjectDefinitionResource", () => {
       });
 
       expect(owner.cached).to.be.true;
-      def.properties.IsBaby = true;
+      def.properties.isBaby = true;
       expect(owner.cached).to.be.true;
     });
 
@@ -49,7 +49,7 @@ describe("ObjectDefinitionResource", () => {
       });
 
       expect(owner.cached).to.be.true;
-      def.properties.Components!.push(123);
+      def.properties.components!.push(123);
       expect(owner.cached).to.be.true;
     });
 
@@ -365,7 +365,7 @@ describe("ObjectDefinitionResource", () => {
         it("should return false", () => {
           const def1 = new ObjectDefinitionResource(2, {});
           const def2 = new ObjectDefinitionResource(3, {
-            IsBaby: true
+            isBaby: true
           });
 
           expect(def1.properties).to.not.equal(def2.properties);
