@@ -79,8 +79,6 @@ describe("ObjectDefinitionResource", () => {
 
       expect(owner.cached).to.be.true;
       def.version = 3;
-      console.log(def.version);
-
       expect(owner.cached).to.be.false;
     });
   });
