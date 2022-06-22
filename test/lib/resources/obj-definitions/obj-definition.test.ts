@@ -4,6 +4,7 @@ import { expect } from "chai";
 import { ObjectDefinitionResource } from "../../../../dst/models";
 import { EncodingType, ObjectDefinitionPropertyType } from "../../../../dst/enums";
 import MockOwner from "../../../mocks/mock-owner";
+import { ObjectDefinitionProperties } from "../../../../dst/lib/resources/object-definition/types";
 
 //#region Helpers & Variables
 
@@ -553,17 +554,39 @@ describe("ObjectDefinitionResource", () => {
 
   describe("#updateProperties()", () => {
     it("should mutate the properties object", () => {
-      const properties = {};
+      const properties: ObjectDefinitionProperties = {};
       const def = new ObjectDefinitionResource({ properties });
-      // TODO:
+      expect(properties.isBaby).to.be.undefined;
+      def.updateProperties(props => {
+        props.isBaby = true;
+      });
+      expect(properties.isBaby).to.be.true;
     });
 
     it("should uncache the buffer", () => {
-      // TODO:
+      const def = ObjectDefinitionResource.from(tartosianoBuffer, {
+        saveBuffer: true
+      });
+
+      expect(def.hasBufferCache).to.be.true;
+      def.updateProperties(props => {
+        props.isBaby = true;
+      });
+      expect(def.hasBufferCache).to.be.false;
     });
 
     it("should uncache the owner", () => {
-      // TODO:
+      const owner = new MockOwner();
+      const def = ObjectDefinitionResource.from(tartosianoBuffer, {
+        owner,
+        saveBuffer: true
+      });
+
+      expect(owner.cached).to.be.true;
+      def.updateProperties(props => {
+        props.isBaby = true;
+      });
+      expect(owner.cached).to.be.false;
     });
   });
 
