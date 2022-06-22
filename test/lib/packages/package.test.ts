@@ -748,7 +748,7 @@ describe("Package", () => {
       path.join("..", "..", "data", "packages", "CompleteTrait.package")
     );
 
-    it("should return an index of all resources if no fileter or limit", () => {
+    it("should return an index of all resources if no filter or limit", () => {
       const index = Package.indexResources(filepath);
       expect(index).to.be.an("Array").with.lengthOf(4);
 
@@ -758,21 +758,49 @@ describe("Package", () => {
       expect(first.key?.type).to.equal(BinaryResourceType.DstImage);
       expect(first.key?.group).to.equal(0);
       expect(first.key?.instance).to.equal(0x0B3417C01CCD98FEn);
+      expect(first.isDeleted).to.be.false;
 
       expect(second.indexStart).to.equal(0x2C4D);
       expect(second.key?.type).to.equal(BinaryResourceType.SimData);
       expect(second.key?.group).to.equal(SimDataGroup.Trait);
       expect(second.key?.instance).to.equal(0x97297134D57FE219n);
+      expect(second.isDeleted).to.be.false;
 
       expect(third.indexStart).to.equal(0x2C6D);
       expect(third.key?.type).to.equal(TuningResourceType.Trait);
       expect(third.key?.group).to.equal(0);
       expect(third.key?.instance).to.equal(0x97297134D57FE219n);
+      expect(third.isDeleted).to.be.false;
 
       expect(fourth.indexStart).to.equal(0x2C8D);
       expect(fourth.key?.type).to.equal(BinaryResourceType.StringTable);
       expect(fourth.key?.group).to.equal(0x80000000);
       expect(fourth.key?.instance).to.equal(0x0020097334286DF8n);
+      expect(fourth.isDeleted).to.be.false;
+    });
+
+    it("should use isDeleted = true for deleted records if option provided", () => {
+      const filepath = path.resolve(
+        __dirname,
+        path.join("..", "..", "data", "packages", "DeletedRecord.package")
+      );
+
+      const index = Package.indexResources(filepath, {
+        keepDeletedRecords: true
+      });
+
+      expect(index).to.be.an("Array").with.lengthOf(1);
+      expect(index[0].isDeleted).to.be.true;
+    });
+
+    it("should ignore deleted records if option not provided", () => {
+      const filepath = path.resolve(
+        __dirname,
+        path.join("..", "..", "data", "packages", "DeletedRecord.package")
+      );
+
+      const index = Package.indexResources(filepath);
+      expect(index).to.be.an("Array").that.is.empty;
     });
 
     it("should not exceed the limit that is given", () => {
