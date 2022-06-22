@@ -4,7 +4,7 @@ import { expect } from "chai";
 import compare from "just-compare";
 import clone from "just-clone";
 import type { ResourceKey } from "../../../dst/lib/packages/types";
-import { DdsImageResource, Package, RawResource, SimDataResource, StringTableResource, XmlResource } from "../../../dst/models";
+import { DdsImageResource, ObjectDefinitionResource, Package, RawResource, SimDataResource, StringTableResource, XmlResource } from "../../../dst/models";
 import { BinaryResourceType, EncodingType, SimDataGroup, TuningResourceType } from "../../../dst/enums";
 import { PackageFileReadingOptions } from "../../../dst/lib/common/options";
 import { CompressionType } from "@s4tk/compression";
@@ -254,6 +254,21 @@ describe("Package", () => {
         })).to.be.true;
         expect(simdata.instance.name).to.equal("frankkulak_LB:trait_SimlishNative");
         expect(simdata.props.display_name.asAny.value).to.equal(0x4EB3C46C);
+      });
+
+      it("should read obj definition resource correctly", () => {
+        const dbpf = getPackage("TartosianoTextbook");
+        const entry = dbpf.get(0);
+        const key = entry.key;
+        const def = entry.value as unknown as ObjectDefinitionResource;
+
+        expect(compare(key, {
+          type: BinaryResourceType.ObjectDefinition,
+          group: 0x80000000,
+          instance: 0xCE7661235557D998n
+        })).to.be.true;
+
+        expect(def.encodingType).to.equal(EncodingType.OBJDEF);
       });
 
       it("should read static resource correctly", () => {
