@@ -353,13 +353,23 @@ describe("ObjectDefinitionResource", () => {
     context("version is different", () => {
       context("properties are same", () => {
         it("should return false", () => {
-          // TODO:
+          const props = {};
+          const def1 = new ObjectDefinitionResource(2, props);
+          const def2 = new ObjectDefinitionResource(3, props);
+          expect(def1.properties).to.equal(def2.properties);
+          expect(def1.equals(def2)).to.be.false;
         });
       });
 
       context("properties are different", () => {
         it("should return false", () => {
-          // TODO:
+          const def1 = new ObjectDefinitionResource(2, {});
+          const def2 = new ObjectDefinitionResource(3, {
+            IsBaby: true
+          });
+
+          expect(def1.properties).to.not.equal(def2.properties);
+          expect(def1.equals(def2)).to.be.false;
         });
       });
     });
