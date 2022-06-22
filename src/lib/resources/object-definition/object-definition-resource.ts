@@ -11,6 +11,11 @@ import readObjDef from "./serialization/read-objdef";
 import writeObjDef from "./serialization/write-objdef";
 import { ObjectDefinitionDto, ObjectDefinitionProperties, ObjectDefinitionPropertyType } from './types';
 
+/** Arguments for SimDataResource's constructor. */
+export interface ObjectDefinitionResourceCreationOptions extends
+  WritableModelCreationOptions,
+  Partial<ObjectDefinitionDto> { };
+
 /**
  * Model for object definition resources.
  */
@@ -54,18 +59,14 @@ export default class ObjectDefinitionResource
   /**
    * Creates a new ObjectDefinitionResource from the given data.
    * 
-   * @param version The version (currently 2)
-   * @param properties An object of properties
-   * @param options Object containing optional arguments
+   * @param options Object containing arguments
    */
   constructor(
-    version: number,
-    properties: ObjectDefinitionProperties,
-    options?: WritableModelCreationOptions
+    options?: ObjectDefinitionResourceCreationOptions
   ) {
     super(options);
-    this.version = version;
-    this.properties = properties;
+    this.version = options?.version ?? ObjectDefinitionResource.LATEST_VERSION;
+    this.properties = options?.properties ?? {};
     this._watchProps("version", "properties");
   }
 
@@ -90,7 +91,9 @@ export default class ObjectDefinitionResource
       sizeDecompressed: buffer.byteLength
     };
 
-    return new ObjectDefinitionResource(dto.version, dto.properties, {
+    return new ObjectDefinitionResource({
+      version: dto.version,
+      properties: dto.properties,
       defaultCompressionType: options?.defaultCompressionType,
       owner: options?.owner,
       initialBufferCache
@@ -117,7 +120,9 @@ export default class ObjectDefinitionResource
   //#region Overridden Methods
 
   clone(): ObjectDefinitionResource {
-    return new ObjectDefinitionResource(this.version, clone(this.properties), {
+    return new ObjectDefinitionResource({
+      version: this.version,
+      properties: clone(this.properties),
       defaultCompressionType: this.defaultCompressionType,
       initialBufferCache: this._bufferCache
     });
