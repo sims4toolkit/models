@@ -89,7 +89,17 @@ describe("ObjectDefinitionResource", () => {
   //#region Initialization
 
   describe("#constructor", () => {
+    it("should use latest version if not provided", () => {
+      const def = new ObjectDefinitionResource();
+      expect(def.version).to.equal(2);
+    });
+
     it("should use the provided version", () => {
+      const def = new ObjectDefinitionResource({ version: 1 });
+      expect(def.version).to.equal(1);
+    });
+
+    it("should have empty properties if none provided", () => {
       // TODO:
     });
 
@@ -208,6 +218,10 @@ describe("ObjectDefinitionResource", () => {
     });
 
     it("should include unknown types in the UnknownMisc set", () => {
+      // TODO:
+    });
+
+    it("should read an obj def with no properties", () => {
       // TODO:
     });
 
@@ -478,6 +492,10 @@ describe("ObjectDefinitionResource", () => {
     });
 
     it("should write Unknown4 correctly", () => {
+      // TODO:
+    });
+
+    it("should serialize an obj def with no properties", () => {
       // TODO:
     });
 
