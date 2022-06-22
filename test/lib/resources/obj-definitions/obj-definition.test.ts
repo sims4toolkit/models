@@ -306,7 +306,9 @@ describe("ObjectDefinitionResource", () => {
 
   describe("#clone()", () => {
     it("should copy the original's version", () => {
-      // TODO:
+      const original = new ObjectDefinitionResource({ version: 3 });
+      const clone = original.clone();
+      expect(clone.version).to.equal(3);
     });
 
     it("should copy the original's properties", () => {
@@ -326,11 +328,19 @@ describe("ObjectDefinitionResource", () => {
     });
 
     it("should not copy the original's owner", () => {
-      // TODO:
+      const owner = new MockOwner();
+      const original = new ObjectDefinitionResource({ owner });
+      const clone = original.clone();
+      expect(original.owner).to.equal(owner);
+      expect(clone.owner).to.be.undefined;
     });
 
     it("should not mutate the original's version", () => {
-      // TODO:
+      const original = new ObjectDefinitionResource({ version: 2 });
+      const clone = original.clone();
+      clone.version = 3;
+      expect(original.version).to.equal(2);
+      expect(clone.version).to.equal(3);
     });
 
     it("should not mutate the original's properties", () => {
@@ -338,11 +348,33 @@ describe("ObjectDefinitionResource", () => {
     });
 
     it("should not mutate the original's properties primitive values", () => {
-      // TODO:
+      const original = new ObjectDefinitionResource({
+        properties: {
+          isBaby: true,
+        }
+      });
+
+      const clone = original.clone();
+      clone.properties.isBaby = false;
+      expect(original.properties.isBaby).to.be.true;
+      expect(clone.properties.isBaby).to.be.false;
     });
 
     it("should not mutate the original's properties mutable values", () => {
-      // TODO:
+      const original = new ObjectDefinitionResource({
+        properties: {
+          model: {
+            type: 0x12345678,
+            group: 0,
+            instance: 12345n
+          }
+        }
+      });
+
+      const clone = original.clone();
+      clone.properties.model!.group = 8;
+      expect(original.properties.model!.group).to.equal(0);
+      expect(clone.properties.model!.group).to.equal(8);
     });
   });
 
@@ -508,22 +540,6 @@ describe("ObjectDefinitionResource", () => {
     });
 
     it("should write TuningId correctly", () => {
-      // TODO:
-    });
-
-    it("should write Unknown1 correctly", () => {
-      // TODO:
-    });
-
-    it("should write Unknown2 correctly", () => {
-      // TODO:
-    });
-
-    it("should write Unknown3 correctly", () => {
-      // TODO:
-    });
-
-    it("should write Unknown4 correctly", () => {
       // TODO:
     });
 
