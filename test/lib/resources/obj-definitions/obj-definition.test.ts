@@ -492,15 +492,22 @@ describe("ObjectDefinitionResource", () => {
 
   describe("#getProperty()", () => {
     it("should get the primitive value of the property for the given type", () => {
-      // TODO:
+      const def = ObjectDefinitionResource.from(tartosianoBuffer);
+      const name = def.getProperty(ObjectDefinitionType.Name);
+      expect(name).to.equal("frankk_LB:object_textbook_Tartosiano");
     });
 
     it("should get the mutable value of the property for the given type", () => {
-      // TODO:
+      const def = ObjectDefinitionResource.from(tartosianoBuffer);
+      const components = def.getProperty(ObjectDefinitionType.Components) as number[];
+      expect(components).to.be.an("Array").with.lengthOf(9);
+      expect(components[0]).to.equal(573464449);
     });
 
     it("should return undefined if there is no property set for the given type", () => {
-      // TODO:
+      const def = ObjectDefinitionResource.from(tartosianoBuffer);
+      const unknown4 = def.getProperty(ObjectDefinitionType.Unknown4);
+      expect(unknown4).to.be.undefined;
     });
   });
 
