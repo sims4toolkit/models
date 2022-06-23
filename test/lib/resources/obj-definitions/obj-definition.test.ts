@@ -330,12 +330,17 @@ describe("ObjectDefinitionResource", () => {
   });
 
   describe("#fromAsync()", () => {
-    it("should return an obj def asynchronously", () => {
-      // TODO:
+    it("should return an obj def asynchronously", async () => {
+      const def = await ObjectDefinitionResource.fromAsync(tartosianoBuffer);
+      expect(def.encodingType).to.equal(EncodingType.OBJDEF);
     });
 
-    it("should use the given options", () => {
-      // TODO:
+    it("should use the given options", async () => {
+      const def = await ObjectDefinitionResource.fromAsync(tartosianoBuffer, {
+        saveBuffer: true
+      });
+
+      expect(def.hasBufferCache).to.be.true;
     });
   });
 
