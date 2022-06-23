@@ -259,11 +259,17 @@ describe("ObjectDefinitionResource", () => {
     });
 
     it("should get the correct EnvironmentScoreEmotionTags value", () => {
-      // TODO:
+      const def = ObjectDefinitionResource.from(randomPropsBuffer);
+      expect(def.properties.environmentScoreEmotionTags).to.be.an("Array").with.lengthOf(2);
+      expect(def.properties.environmentScoreEmotionTags![0]).to.equal(323);
+      expect(def.properties.environmentScoreEmotionTags![1]).to.equal(1917);
     });
 
     it("should get the correct EnvironmentScoreEmotionTags_32 value", () => {
-      // TODO:
+      const def = ObjectDefinitionResource.from(randomPropsBuffer);
+      expect(def.properties.environmentScoreEmotionTags_32).to.be.an("Array").with.lengthOf(2);
+      expect(def.properties.environmentScoreEmotionTags_32![0]).to.equal(55363);
+      expect(def.properties.environmentScoreEmotionTags_32![1]).to.equal(1677);
     });
 
     it("should get the correct EnvironmentScores value", () => {
