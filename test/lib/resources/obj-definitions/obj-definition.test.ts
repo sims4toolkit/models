@@ -753,19 +753,68 @@ describe("ObjectDefinitionResource", () => {
 
   describe("#getBuffer()", () => {
     it("should write Components correctly", () => {
-      // TODO:
+      const original = new ObjectDefinitionResource({
+        properties: {
+          components: [1, 2, 3]
+        }
+      });
+
+      const buffer = original.getBuffer();
+      const def = ObjectDefinitionResource.from(buffer);
+      expect(Object.keys(def.properties).length).to.equal(1);
+      expect(def.properties.components).to.be.an("Array").with.lengthOf(3);
+      const [first, second, third] = def.properties.components!;
+      expect(first).to.equal(1);
+      expect(second).to.equal(2);
+      expect(third).to.equal(3);
     });
 
     it("should write EnvironmentScoreEmotionTags correctly", () => {
-      // TODO:
+      const original = new ObjectDefinitionResource({
+        properties: {
+          environmentScoreEmotionTags: [100, 250]
+        }
+      });
+
+      const buffer = original.getBuffer();
+      const def = ObjectDefinitionResource.from(buffer);
+      expect(Object.keys(def.properties).length).to.equal(1);
+      expect(def.properties.environmentScoreEmotionTags).to.be.an("Array").with.lengthOf(2);
+      const [first, second] = def.properties.environmentScoreEmotionTags!;
+      expect(first).to.equal(100);
+      expect(second).to.equal(250);
     });
 
     it("should write EnvironmentScoreEmotionTags_32 correctly", () => {
-      // TODO:
+      const original = new ObjectDefinitionResource({
+        properties: {
+          environmentScoreEmotionTags_32: [100, 250]
+        }
+      });
+
+      const buffer = original.getBuffer();
+      const def = ObjectDefinitionResource.from(buffer);
+      expect(Object.keys(def.properties).length).to.equal(1);
+      expect(def.properties.environmentScoreEmotionTags_32).to.be.an("Array").with.lengthOf(2);
+      const [first, second] = def.properties.environmentScoreEmotionTags_32!;
+      expect(first).to.equal(100);
+      expect(second).to.equal(250);
     });
 
     it("should write EnvironmentScores correctly", () => {
-      // TODO:
+      const original = new ObjectDefinitionResource({
+        properties: {
+          environmentScores: [1.5, -2.5]
+        }
+      });
+
+      const buffer = original.getBuffer();
+      const def = ObjectDefinitionResource.from(buffer);
+      expect(Object.keys(def.properties).length).to.equal(1);
+      expect(def.properties.environmentScores).to.be.an("Array").with.lengthOf(2);
+      const [first, second] = def.properties.environmentScores!;
+      expect(first).to.be.approximately(1.5, 0.001);
+      expect(second).to.be.approximately(-2.5, 0.001);
     });
 
     it("should write Footprint correctly", () => {
@@ -876,12 +925,30 @@ describe("ObjectDefinitionResource", () => {
       expect(def.properties.name).to.equal("something");
     });
 
-    it("should write NegativeEnvironmentScore correctly", () => {
-      // TODO:
+    it("should write PositiveEnvironmentScore correctly", () => {
+      const original = new ObjectDefinitionResource({
+        properties: {
+          positiveEnvironmentScore: 1.2
+        }
+      });
+
+      const buffer = original.getBuffer();
+      const def = ObjectDefinitionResource.from(buffer);
+      expect(Object.keys(def.properties).length).to.equal(1);
+      expect(def.properties.positiveEnvironmentScore).to.be.approximately(1.2, 0.001);
     });
 
-    it("should write PositiveEnvironmentScore correctly", () => {
-      // TODO:
+    it("should write NositiveEnvironmentScore correctly", () => {
+      const original = new ObjectDefinitionResource({
+        properties: {
+          negativeEnvironmentScore: -1.2
+        }
+      });
+
+      const buffer = original.getBuffer();
+      const def = ObjectDefinitionResource.from(buffer);
+      expect(Object.keys(def.properties).length).to.equal(1);
+      expect(def.properties.negativeEnvironmentScore).to.be.approximately(-1.2, 0.001);
     });
 
     it("should write Rig correctly", () => {
