@@ -1,0 +1,277 @@
+{
+  "$schema": "https://raw.githubusercontent.com/sims4toolkit/misc/main/json-schemas/docs-item-schema.json",
+  "imports": [
+    "import { ObjectDefinitionResource } from \"@s4tk/models\"; // ESM",
+    "const { ObjectDefinitionResource } = require(\"@s4tk/models\"); // CJS"
+  ],
+  "header": {
+    "title": {
+      "prefix": "class",
+      "name": "ObjectDefinitionResource",
+      "extends": [
+        {
+          "name": "WritableModel",
+          "path": {
+            "pkg": "models",
+            "group": "abstracts",
+            "item": "WritableModel"
+          }
+        }
+      ],
+      "implements": [
+        {
+          "name": "Resource",
+          "path": {
+            "pkg": "models",
+            "group": "types",
+            "item": "Resource"
+          }
+        }
+      ]
+    },
+    "description": "Model for string table (STBL) resources.",
+    "sourceCode": "src/lib/resources/object-definition/object-definition-resource.ts"
+  },
+  "sections": [
+    {
+      "title": "Static Properties",
+      "content": [
+        {
+          "displayType": "property",
+          "prefix": "static readonly",
+          "name": "LATEST_VERSION",
+          "description": "The most current supported version of this model.",
+          "type": {
+            "name": "number"
+          }
+        }
+      ]
+    },
+    {
+      "title": "Properties",
+      "content": [
+        {
+          "displayType": "property",
+          "prefix": "readonly",
+          "name": "encodingType",
+          "description": "Always 'EncodingType.OBJDEF'.",
+          "type": {
+            "name": "EncodingType",
+            "path": {
+              "pkg": "models",
+              "group": "enums",
+              "item": "EncodingType"
+            }
+          },
+          "overrides": {
+            "name": "Resource",
+            "path": {
+              "pkg": "models",
+              "group": "types",
+              "item": "Resource"
+            }
+          }
+        },
+        {
+          "displayType": "property",
+          "name": "properties",
+          "description": "An object of properties. Note that mutating this object or individual properties on it will not uncache this model or its owner. To handle cacheing, there are multiple options (updateProperties(), setProperty(), onChange(), or reassigning).",
+          "type": {
+            "name": "ObjectDefinitionProperties",
+            "path": {
+              "pkg": "models",
+              "group": "types",
+              "item": "ObjectDefinitionProperties"
+            }
+          }
+        },
+        {
+          "displayType": "property",
+          "name": "version",
+          "description": "The version. This should be equal to LATEST_VERSION.",
+          "type": {
+            "name": "number"
+          }
+        }
+      ]
+    },
+    {
+      "title": "Initialization",
+      "content": [
+        {
+          "displayType": "function",
+          "name": "constructor",
+          "returnType": {
+            "name": "ObjectDefinitionResource"
+          },
+          "description": "Creates a new ObjectDefinitionResource from the given data.",
+          "arguments": [
+            {
+              "description": "Object of options.",
+              "optional": true,
+              "name": "options",
+              "type": {
+                "name": "ObjectDefinitionCreationOptions",
+                "path": {
+                  "pkg": "models",
+                  "group": "types",
+                  "item": "ObjectDefinitionCreationOptions"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "displayType": "function",
+          "prefix": "static",
+          "name": "from",
+          "returnType": {
+            "name": "ObjectDefinitionResource"
+          },
+          "description": "Creates a new ObjectDefinitionResource from the given buffer. The buffer is assumed to be uncompressed; passing in a compressed buffer can lead to unexpected behavior.",
+          "arguments": [
+            {
+              "name": "buffer",
+              "description": "The decompressed buffer for this ObjectDefinitionResource.",
+              "type": {
+                "name": "Buffer"
+              }
+            },
+            {
+              "name": "options",
+              "optional": true,
+              "description": "Object containing optional arguments.",
+              "type": {
+                "name": "WritableModelFromOptions",
+                "path": {
+                  "pkg": "models",
+                  "group": "types",
+                  "item": "WritableModelFromOptions"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "displayType": "function",
+          "prefix": "static async",
+          "name": "fromAsync",
+          "returnType": {
+            "name": "Promise<ObjectDefinitionResource>"
+          },
+          "description": "Asynchronously creates a new ObjectDefinitionResource from the given buffer. The buffer is assumed to be uncompressed; passing in a compressed buffer can lead to unexpected behavior.",
+          "arguments": [
+            {
+              "name": "buffer",
+              "description": "The decompressed buffer for this ObjectDefinitionResource.",
+              "type": {
+                "name": "Buffer"
+              }
+            },
+            {
+              "name": "options",
+              "optional": true,
+              "description": "Object containing optional arguments.",
+              "type": {
+                "name": "WritableModelFromOptions",
+                "path": {
+                  "pkg": "models",
+                  "group": "types",
+                  "item": "WritableModelFromOptions"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Methods",
+      "content": [
+        {
+          "displayType": "function",
+          "name": "getProperty",
+          "returnType": {
+            "name": "unknown"
+          },
+          "description": "Dynamically gets a value from the properties object. This is here for convenience, but it is recommended to access properties directly since it will be more type-safe.",
+          "arguments": [
+            {
+              "name": "type",
+              "description": "Type of property to get value for.",
+              "type": {
+                "name": "ObjectDefinitionType",
+                "path": {
+                  "pkg": "models",
+                  "group": "enums",
+                  "item": "ObjectDefinitionType"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "displayType": "function",
+          "name": "isXml",
+          "returnType": {
+            "name": "boolean"
+          },
+          "description": "Always returns false.",
+          "overrides": {
+            "name": "Resource",
+            "path": {
+              "pkg": "models",
+              "group": "types",
+              "item": "Resource"
+            }
+          }
+        },
+        {
+          "displayType": "function",
+          "name": "setProperty",
+          "description": "Dynamically sets a value in the properties object. This is here for convenience, but it is recommended to set properties with updateProperties() since it will be more type-safe.",
+          "arguments": [
+            {
+              "name": "type",
+              "description": "Type of property to set value of.",
+              "type": {
+                "name": "ObjectDefinitionType",
+                "path": {
+                  "pkg": "models",
+                  "group": "enums",
+                  "item": "ObjectDefinitionType"
+                }
+              }
+            },
+            {
+              "name": "value",
+              "description": "Value to set.",
+              "type": {
+                "name": "any"
+              }
+            }
+          ]
+        },
+        {
+          "displayType": "function",
+          "name": "updateProperties",
+          "description": "Provides a context in which properties can be updated in a way that is safe for cacheing. The provided function will be executed, and when it is done, the model and its owner will be uncached.",
+          "arguments": [
+            {
+              "name": "fn",
+              "description": "Type of property to set value of.",
+              "type": {
+                "name": "(props: ObjectDefinitionProperties) => void",
+                "path": {
+                  "pkg": "models",
+                  "group": "types",
+                  "item": "ObjectDefinitionProperties"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

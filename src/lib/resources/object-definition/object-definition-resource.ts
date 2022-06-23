@@ -2,7 +2,7 @@ import clone from "just-clone";
 import compare from "just-compare";
 import { CompressedBuffer, CompressionType } from "@s4tk/compression";
 import WritableModel, { WritableModelCreationOptions, WritableModelFromOptions } from '../../base/writable-model';
-import { camelToPascal, pascalToCamel, promisify } from '../../common/helpers';
+import { pascalToCamel, promisify } from '../../common/helpers';
 import BinaryResourceType from "../../enums/binary-resources";
 import EncodingType from '../../enums/encoding-type';
 import ResourceRegistry from "../../packages/resource-registry";
@@ -12,7 +12,7 @@ import writeObjDef from "./serialization/write-objdef";
 import { ObjectDefinitionDto, ObjectDefinitionProperties, ObjectDefinitionType } from './types';
 
 /** Arguments for SimDataResource's constructor. */
-export interface ObjectDefinitionResourceCreationOptions extends
+export interface ObjectDefinitionCreationOptions extends
   WritableModelCreationOptions,
   Partial<ObjectDefinitionDto> { };
 
@@ -22,7 +22,7 @@ export interface ObjectDefinitionResourceCreationOptions extends
 export default class ObjectDefinitionResource
   extends WritableModel implements Resource, ObjectDefinitionDto {
 
-  static LATEST_VERSION = 2;
+  static readonly LATEST_VERSION = 2;
 
   readonly encodingType: EncodingType = EncodingType.OBJDEF;
 
@@ -62,7 +62,7 @@ export default class ObjectDefinitionResource
    * @param options Object containing arguments
    */
   constructor(
-    options?: ObjectDefinitionResourceCreationOptions
+    options?: ObjectDefinitionCreationOptions
   ) {
     super(options);
     this.version = options?.version ?? ObjectDefinitionResource.LATEST_VERSION;

@@ -9,6 +9,7 @@ import type { SimDataResourceCreationOptions } from "./lib/resources/simdata/sim
 import type { XmlResourceFromOptions } from "./lib/resources/xml/xml-resource";
 import type { DdsImageResourceCreationOptions } from "./lib/resources/dds-image/dds-image-resource";
 import type { ObjectDefinitionProperties } from "./lib/resources/object-definition/types";
+import type { ObjectDefinitionCreationOptions } from "./lib/resources/object-definition/object-definition-resource";
 
 export {
   // options
@@ -20,6 +21,7 @@ export {
   WritableModelFromOptions,
   RawResourceCreationOptions,
   SimDataResourceCreationOptions,
+  ObjectDefinitionCreationOptions,
   XmlResourceFromOptions,
   // other structs
   Resource,
