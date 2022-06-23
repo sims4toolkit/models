@@ -29,6 +29,7 @@
         "CombinedTuningResource",
         "DdsImageResource",
         "DeletedResource",
+        "ObjectDefinitionResource",
         "RawResource",
         "SimDataResource",
         "StringTableResource",
@@ -41,6 +42,7 @@
         "BinaryResourceType",
         "DataType",
         "EncodingType",
+        "ObjectDefinitionType",
         "SimDataGroup",
         "StringTableLocale",
         "TuningResourceType"
@@ -91,6 +93,7 @@
         "CellToXmlOptions",
         "DdsImageResourceCreationOptions",
         "ObjectCellRow",
+        "ObjectDefinitionProperties",
         "PackageFileReadingOptions",
         "RawResourceCreationOptions",
         "Resource",
