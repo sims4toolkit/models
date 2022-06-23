@@ -110,7 +110,7 @@ export default class ObjectDefinitionResource
    */
   static async fromAsync(
     buffer: Buffer,
-    options?: WritableModelCreationOptions
+    options?: WritableModelFromOptions
   ): Promise<ObjectDefinitionResource> {
     return promisify(() => ObjectDefinitionResource.from(buffer, options));
   }
