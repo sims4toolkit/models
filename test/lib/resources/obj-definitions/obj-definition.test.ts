@@ -191,16 +191,16 @@ describe("ObjectDefinitionResource", () => {
 
     it("should get the correct Icon value", () => {
       const def = ObjectDefinitionResource.from(tartosianoBuffer);
-      expect(def.properties.icon![0].type).to.equal(0);
-      expect(def.properties.icon![0].group).to.equal(0);
-      expect(def.properties.icon![0].instance).to.equal(0n);
+      expect(def.properties.icons![0].type).to.equal(0);
+      expect(def.properties.icons![0].group).to.equal(0);
+      expect(def.properties.icons![0].instance).to.equal(0n);
     });
 
     it("should get the correct Rig value", () => {
       const def = ObjectDefinitionResource.from(tartosianoBuffer);
-      expect(def.properties.rig![0].type).to.equal(0x8EAF13DE);
-      expect(def.properties.rig![0].group).to.equal(0);
-      expect(def.properties.rig![0].instance).to.equal(0x1AB585368F4D8687n);
+      expect(def.properties.rigs![0].type).to.equal(0x8EAF13DE);
+      expect(def.properties.rigs![0].group).to.equal(0);
+      expect(def.properties.rigs![0].instance).to.equal(0x1AB585368F4D8687n);
     });
 
     it("should get the correct Slot value", () => {
@@ -326,7 +326,7 @@ describe("ObjectDefinitionResource", () => {
         properties: {
           isBaby: true,
           components: [1, 2, 3],
-          icon: [{
+          icons: [{
             type: 0x1234,
             group: 0,
             instance: 12345n
@@ -344,10 +344,10 @@ describe("ObjectDefinitionResource", () => {
       expect(clone.properties.components![0]).to.equal(1);
       expect(clone.properties.components![1]).to.equal(2);
       expect(clone.properties.components![2]).to.equal(3);
-      expect(clone.properties.icon).to.be.an("Array").with.lengthOf(1);
-      expect(clone.properties.icon![0].type).to.equal(0x1234);
-      expect(clone.properties.icon![0].group).to.equal(0);
-      expect(clone.properties.icon![0].instance).to.equal(12345n);
+      expect(clone.properties.icons).to.be.an("Array").with.lengthOf(1);
+      expect(clone.properties.icons![0].type).to.equal(0x1234);
+      expect(clone.properties.icons![0].group).to.equal(0);
+      expect(clone.properties.icons![0].instance).to.equal(12345n);
       expect(clone.properties.name).to.equal("something");
       expect(clone.properties.simoleonPrice).to.equal(500);
     });
@@ -424,7 +424,7 @@ describe("ObjectDefinitionResource", () => {
     it("should not mutate the original's properties mutable values", () => {
       const original = new ObjectDefinitionResource({
         properties: {
-          model: [{
+          models: [{
             type: 0x12345678,
             group: 0,
             instance: 12345n
@@ -433,9 +433,9 @@ describe("ObjectDefinitionResource", () => {
       });
 
       const clone = original.clone();
-      clone.properties.model![0].group = 8;
-      expect(original.properties.model![0].group).to.equal(0);
-      expect(clone.properties.model![0].group).to.equal(8);
+      clone.properties.models![0].group = 8;
+      expect(original.properties.models![0].group).to.equal(0);
+      expect(clone.properties.models![0].group).to.equal(8);
     });
   });
 

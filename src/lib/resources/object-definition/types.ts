@@ -16,17 +16,17 @@ export enum ObjectDefinitionType {
   EnvironmentScoreEmotionTags = 0x2172AEBE,
   EnvironmentScoreEmotionTags_32 = 0x2143974C,
   EnvironmentScores = 0xDCD08394,
-  Footprint = 0x6C737AD8,
-  Icon = 0xCADED888,
+  Footprints = 0x6C737AD8,
+  Icons = 0xCADED888,
   IsBaby = 0xAEE67A1C,
   MaterialVariant = 0xECD5A95F,
-  Model = 0x8D20ACC6,
+  Models = 0x8D20ACC6,
   Name = 0xE7F07786,
   NegativeEnvironmentScore = 0x44FC7512,
   PositiveEnvironmentScore = 0x7236BEEA,
-  Rig = 0xE206AE4F,
+  Rigs = 0xE206AE4F,
   SimoleonPrice = 0xE4F4FAA4,
-  Slot = 0x8A85AFF3,
+  Slots = 0x8A85AFF3,
   ThumbnailGeometryState = 0x4233F8A0,
   Tuning = 0x790FA4BC,
   TuningId = 0xB994039B,
@@ -46,17 +46,17 @@ export type ObjectDefinitionProperties = Partial<{
   environmentScoreEmotionTags: number[]; // uint16
   environmentScoreEmotionTags_32: number[]; // uint32
   environmentScores: number[]; // float[]
-  footprint: ResourceKey[];
-  icon: ResourceKey[];
+  footprints: ResourceKey[];
+  icons: ResourceKey[];
   isBaby: boolean; // byte
   materialVariant: string;
-  model: ResourceKey[];
+  models: ResourceKey[];
   name: string;
   negativeEnvironmentScore: number; // float
   positiveEnvironmentScore: number; // float
-  rig: ResourceKey[];
+  rigs: ResourceKey[];
   simoleonPrice: number; // uint32
-  slot: ResourceKey[];
+  slots: ResourceKey[];
   thumbnailGeometryState: number; // uint32
   tuning: string;
   tuningId: bigint; // uint64

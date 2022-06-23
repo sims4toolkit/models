@@ -63,11 +63,11 @@ function getPropertyValue(
     case ObjectDefinitionType.TuningId:
     case ObjectDefinitionType.Unknown3:
       return decoder.uint64();
-    case ObjectDefinitionType.Icon:
-    case ObjectDefinitionType.Rig:
-    case ObjectDefinitionType.Slot:
-    case ObjectDefinitionType.Model:
-    case ObjectDefinitionType.Footprint:
+    case ObjectDefinitionType.Icons:
+    case ObjectDefinitionType.Rigs:
+    case ObjectDefinitionType.Slots:
+    case ObjectDefinitionType.Models:
+    case ObjectDefinitionType.Footprints:
       return makeList(decoder.int32() / 4, () => {
         const instanceP1 = decoder.uint32();
         const instanceP2 = decoder.uint32();

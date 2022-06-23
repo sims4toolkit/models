@@ -71,11 +71,11 @@ function writeProp(prop: PropertyPair): Buffer {
       encoder = BinaryEncoder.alloc(8);
       encoder.uint64(prop.value as bigint);
       break;
-    case ObjectDefinitionType.Icon:
-    case ObjectDefinitionType.Rig:
-    case ObjectDefinitionType.Slot:
-    case ObjectDefinitionType.Model:
-    case ObjectDefinitionType.Footprint:
+    case ObjectDefinitionType.Icons:
+    case ObjectDefinitionType.Rigs:
+    case ObjectDefinitionType.Slots:
+    case ObjectDefinitionType.Models:
+    case ObjectDefinitionType.Footprints:
       length = (prop.value as Array<ResourceKey>).length;
       encoder = BinaryEncoder.alloc(length * 16 + 4);
       encoder.int32(length * 4); // num keys
