@@ -20,7 +20,6 @@
           "prefix": "get, set",
           "optional": true,
           "name": "components",
-          "description": "TODO:",
           "type": {
             "name": "number[]"
           }
@@ -30,7 +29,6 @@
           "prefix": "get, set",
           "optional": true,
           "name": "environmentScoreEmotionTags",
-          "description": "TODO:",
           "type": {
             "name": "number[]"
           }
@@ -40,7 +38,6 @@
           "prefix": "get, set",
           "optional": true,
           "name": "environmentScoreEmotionTags_32",
-          "description": "TODO:",
           "type": {
             "name": "number[]"
           }
@@ -50,7 +47,6 @@
           "prefix": "get, set",
           "optional": true,
           "name": "environmentScores",
-          "description": "TODO:",
           "type": {
             "name": "number[]"
           }
@@ -60,7 +56,6 @@
           "prefix": "get, set",
           "optional": true,
           "name": "footprints",
-          "description": "TODO:",
           "type": {
             "name": "ResourceKey[]",
             "path": {
@@ -75,7 +70,6 @@
           "prefix": "get, set",
           "optional": true,
           "name": "icons",
-          "description": "TODO:",
           "type": {
             "name": "ResourceKey[]",
             "path": {
@@ -90,7 +84,6 @@
           "prefix": "get, set",
           "optional": true,
           "name": "isBaby",
-          "description": "TODO:",
           "type": {
             "name": "boolean"
           }
@@ -100,7 +93,6 @@
           "prefix": "get, set",
           "optional": true,
           "name": "materialVariant",
-          "description": "TODO:",
           "type": {
             "name": "string"
           }
@@ -110,7 +102,6 @@
           "prefix": "get, set",
           "optional": true,
           "name": "models",
-          "description": "TODO:",
           "type": {
             "name": "ResourceKey[]",
             "path": {
@@ -125,7 +116,6 @@
           "prefix": "get, set",
           "optional": true,
           "name": "name",
-          "description": "TODO:",
           "type": {
             "name": "string"
           }
@@ -135,7 +125,6 @@
           "prefix": "get, set",
           "optional": true,
           "name": "negativeEnvironmentScore",
-          "description": "TODO:",
           "type": {
             "name": "number"
           }
@@ -145,7 +134,6 @@
           "prefix": "get, set",
           "optional": true,
           "name": "positiveEnvironmentScore",
-          "description": "TODO:",
           "type": {
             "name": "number"
           }
@@ -155,7 +143,6 @@
           "prefix": "get, set",
           "optional": true,
           "name": "rigs",
-          "description": "TODO:",
           "type": {
             "name": "ResourceKey[]",
             "path": {
@@ -170,7 +157,6 @@
           "prefix": "get, set",
           "optional": true,
           "name": "simoleonPrice",
-          "description": "TODO:",
           "type": {
             "name": "number"
           }
@@ -180,7 +166,6 @@
           "prefix": "get, set",
           "optional": true,
           "name": "slots",
-          "description": "TODO:",
           "type": {
             "name": "ResourceKey[]",
             "path": {
@@ -195,7 +180,6 @@
           "prefix": "get, set",
           "optional": true,
           "name": "thumbnailGeometryState",
-          "description": "TODO:",
           "type": {
             "name": "number"
           }
@@ -205,7 +189,6 @@
           "prefix": "get, set",
           "optional": true,
           "name": "tuning",
-          "description": "TODO:",
           "type": {
             "name": "string"
           }
@@ -215,7 +198,6 @@
           "prefix": "get, set",
           "optional": true,
           "name": "tuningId",
-          "description": "TODO:",
           "type": {
             "name": "bigint"
           }
@@ -225,7 +207,6 @@
           "prefix": "get, set",
           "optional": true,
           "name": "unknown1",
-          "description": "TODO:",
           "type": {
             "name": "number"
           }
@@ -235,7 +216,6 @@
           "prefix": "get, set",
           "optional": true,
           "name": "unknown2",
-          "description": "TODO:",
           "type": {
             "name": "number"
           }
@@ -245,7 +225,6 @@
           "prefix": "get, set",
           "optional": true,
           "name": "unknown3",
-          "description": "TODO:",
           "type": {
             "name": "bigint"
           }
@@ -255,7 +234,6 @@
           "prefix": "get, set",
           "optional": true,
           "name": "unknown4",
-          "description": "TODO:",
           "type": {
             "name": "number[]"
           }
@@ -265,12 +243,23 @@
           "prefix": "get, set",
           "optional": true,
           "name": "unknownMisc",
-          "description": "TODO:",
           "type": {
             "name": "Set<number>"
           }
         }
       ]
     }
-  ]
+  ],
+  "footer": {
+    "seeAlso": [
+      {
+        "name": "ObjectDefinitionResource",
+        "path": {
+          "pkg": "models",
+          "group": "resources",
+          "item": "ObjectDefinitionResource"
+        }
+      }
+    ]
+  }
 }
