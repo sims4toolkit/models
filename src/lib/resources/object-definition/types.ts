@@ -46,17 +46,17 @@ export type ObjectDefinitionProperties = Partial<{
   environmentScoreEmotionTags: number[]; // uint16
   environmentScoreEmotionTags_32: number[]; // uint32
   environmentScores: number[]; // float[]
-  footprint: ResourceKey;
-  icon: ResourceKey;
+  footprint: ResourceKey[];
+  icon: ResourceKey[];
   isBaby: boolean; // byte
   materialVariant: string;
-  model: ResourceKey;
+  model: ResourceKey[];
   name: string;
   negativeEnvironmentScore: number; // float
   positiveEnvironmentScore: number; // float
-  rig: ResourceKey;
+  rig: ResourceKey[];
   simoleonPrice: number; // uint32
-  slot: ResourceKey;
+  slot: ResourceKey[];
   thumbnailGeometryState: number; // uint32
   tuning: string;
   tuningId: bigint; // uint64

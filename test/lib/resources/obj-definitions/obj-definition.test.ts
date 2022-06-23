@@ -2,7 +2,7 @@ import fs from "fs";
 import path from "path";
 import { expect } from "chai";
 import { ObjectDefinitionResource } from "../../../../dst/models";
-import { BinaryResourceType, EncodingType, ObjectDefinitionType, SimDataGroup } from "../../../../dst/enums";
+import { EncodingType, ObjectDefinitionType } from "../../../../dst/enums";
 import MockOwner from "../../../mocks/mock-owner";
 import { ObjectDefinitionProperties } from "../../../../dst/lib/resources/object-definition/types";
 import { CompressionType } from "@s4tk/compression";
@@ -170,27 +170,37 @@ describe("ObjectDefinitionResource", () => {
 
   describe("#from()", () => {
     it("should get the correct Name value", () => {
-      // TODO:
+      const def = ObjectDefinitionResource.from(tartosianoBuffer);
+      expect(def.properties.name).to.equal("frankk_LB:object_textbook_Tartosiano");
     });
 
     it("should get the correct Tuning value", () => {
-      // TODO:
+      const def = ObjectDefinitionResource.from(tartosianoBuffer);
+      expect(def.properties.tuning).to.equal("frankk_LB:objectTuning_textbook_Tartosiano");
     });
 
     it("should get the correct MaterialVariant value", () => {
-      // TODO:
+      const def = ObjectDefinitionResource.from(tartosianoBuffer);
+      expect(def.properties.materialVariant).to.equal("Set1-materialVariant");
     });
 
     it("should get the correct TuningId value", () => {
-      // TODO:
+      const def = ObjectDefinitionResource.from(tartosianoBuffer);
+      expect(def.properties.tuningId).to.equal(10565256321594783463n);
     });
 
     it("should get the correct Icon value", () => {
-      // TODO:
+      const def = ObjectDefinitionResource.from(tartosianoBuffer);
+      expect(def.properties.icon![0].type).to.equal(0);
+      expect(def.properties.icon![0].group).to.equal(0);
+      expect(def.properties.icon![0].instance).to.equal(0n);
     });
 
     it("should get the correct Rig value", () => {
-      // TODO:
+      const def = ObjectDefinitionResource.from(tartosianoBuffer);
+      expect(def.properties.rig![0].type).to.equal(0x8EAF13DE);
+      expect(def.properties.rig![0].group).to.equal(0);
+      expect(def.properties.rig![0].instance).to.equal(0x1AB585368F4D8687n);
     });
 
     it("should get the correct Slot value", () => {
@@ -316,11 +326,11 @@ describe("ObjectDefinitionResource", () => {
         properties: {
           isBaby: true,
           components: [1, 2, 3],
-          icon: {
+          icon: [{
             type: 0x1234,
             group: 0,
             instance: 12345n
-          },
+          }],
           name: "something",
           simoleonPrice: 500,
         }
@@ -334,10 +344,10 @@ describe("ObjectDefinitionResource", () => {
       expect(clone.properties.components![0]).to.equal(1);
       expect(clone.properties.components![1]).to.equal(2);
       expect(clone.properties.components![2]).to.equal(3);
-      expect(clone.properties.icon).to.be.an("Object");
-      expect(clone.properties.icon?.type).to.equal(0x1234);
-      expect(clone.properties.icon?.group).to.equal(0);
-      expect(clone.properties.icon?.instance).to.equal(12345n);
+      expect(clone.properties.icon).to.be.an("Array").with.lengthOf(1);
+      expect(clone.properties.icon![0].type).to.equal(0x1234);
+      expect(clone.properties.icon![0].group).to.equal(0);
+      expect(clone.properties.icon![0].instance).to.equal(12345n);
       expect(clone.properties.name).to.equal("something");
       expect(clone.properties.simoleonPrice).to.equal(500);
     });
@@ -414,18 +424,18 @@ describe("ObjectDefinitionResource", () => {
     it("should not mutate the original's properties mutable values", () => {
       const original = new ObjectDefinitionResource({
         properties: {
-          model: {
+          model: [{
             type: 0x12345678,
             group: 0,
             instance: 12345n
-          }
+          }]
         }
       });
 
       const clone = original.clone();
-      clone.properties.model!.group = 8;
-      expect(original.properties.model!.group).to.equal(0);
-      expect(clone.properties.model!.group).to.equal(8);
+      clone.properties.model![0].group = 8;
+      expect(original.properties.model![0].group).to.equal(0);
+      expect(clone.properties.model![0].group).to.equal(8);
     });
   });
 
