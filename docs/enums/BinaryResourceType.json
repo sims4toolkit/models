@@ -32,6 +32,10 @@
               "value": "0x00B2D882"
             },
             {
+              "name": "ObjectDefinition",
+              "value": "0xC0DB5AE7"
+            },
+            {
               "name": "SimData",
               "value": "0x545AC67A"
             },

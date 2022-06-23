@@ -7,12 +7,15 @@ import { makeList } from "../../common/helpers";
 import RawResource from "../../resources/raw/raw-resource";
 import ResourceRegistry from "../resource-registry";
 import { DbpfFlags, DbpfHeader, IndexEntry } from "./types";
+import DeletedResource from "../../resources/deleted/deleted-resource";
 
 try {
+  // FIXME: this here prevents S4TK from being able to be browserified - as a
+  // temporary workaround, go into node_modules and make this dependency just
+  // a single, blank js file when browserifying
   var BufferFromFile = require("bufferfromfile");
 } catch (e) {
   var BufferFromFile;
-  console.warn("MMAPs not supported in this environment.", e);
 }
 
 /**
@@ -164,7 +167,8 @@ export function getResourcePositions(
       const indexEntry = readIndexEntry(decoder, flags, options);
       if (indexEntry) positions.push({
         key: indexEntry.key,
-        indexStart: indexBytesRead
+        indexStart: indexBytesRead,
+        isDeleted: indexEntry.mnCompressionType === CompressionType.DeletedRecord
       });
       indexBytesRead += decoder.tell();
       if (options?.limit && positions.length >= options.limit) break;
@@ -341,7 +345,12 @@ function readIndexEntry(
     entry.mnSizeDecompressed = decoder.uint32();
     if (isCompressed) entry.mnCompressionType = decoder.uint16();
     decoder.skip(2); // mnCommitted (uint16; 2 bytes)
-    if (entry.mnCompressionType === CompressionType.DeletedRecord) return;
+
+    if (
+      !(options?.keepDeletedRecords) &&
+      (entry.mnCompressionType === CompressionType.DeletedRecord)
+    ) return;
+
     return entry as IndexEntry;
   }
 }
@@ -354,6 +363,9 @@ function readIndexEntry(
  * @param options Options for serialization
  */
 function getResource(entry: IndexEntry, rawBuffer: Buffer, options?: PackageFileReadingOptions): Resource {
+  if (entry.mnCompressionType === CompressionType.DeletedRecord)
+    return new DeletedResource();
+
   let bufferWrapper: CompressedBuffer;
   let rawReason: string;
 

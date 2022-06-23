@@ -25,6 +25,15 @@
         },
         {
           "displayType": "property",
+          "name": "isDeleted",
+          "optional": true,
+          "description": "Whether or not the entry at this position is a deleted record.",
+          "type": {
+            "name": "boolean"
+          }
+        },
+        {
+          "displayType": "property",
           "name": "key",
           "optional": true,
           "description": "The key of the resource.",

@@ -1,0 +1,265 @@
+{
+  "$schema": "https://raw.githubusercontent.com/sims4toolkit/misc/main/json-schemas/docs-item-schema.json",
+  "imports": [
+    "import type { ObjectDefinitionProperties } from \"@s4tk/models/types\"; // TypeScript only"
+  ],
+  "header": {
+    "title": {
+      "prefix": "interface",
+      "name": "ObjectDefinitionProperties"
+    },
+    "description": "A mapping of property keys to values. Property keys are the camel case equivalent to their associated types in ObjectDefinitionType, except for unknownMisc which keeps track of types not in the enum.",
+    "sourceCode": "src/lib/resources/object-definition/types.ts"
+  },
+  "sections": [
+    {
+      "title": "Properties",
+      "content": [
+        {
+          "displayType": "property",
+          "prefix": "get, set",
+          "optional": true,
+          "name": "components",
+          "type": {
+            "name": "number[]"
+          }
+        },
+        {
+          "displayType": "property",
+          "prefix": "get, set",
+          "optional": true,
+          "name": "environmentScoreEmotionTags",
+          "type": {
+            "name": "number[]"
+          }
+        },
+        {
+          "displayType": "property",
+          "prefix": "get, set",
+          "optional": true,
+          "name": "environmentScoreEmotionTags_32",
+          "type": {
+            "name": "number[]"
+          }
+        },
+        {
+          "displayType": "property",
+          "prefix": "get, set",
+          "optional": true,
+          "name": "environmentScores",
+          "type": {
+            "name": "number[]"
+          }
+        },
+        {
+          "displayType": "property",
+          "prefix": "get, set",
+          "optional": true,
+          "name": "footprints",
+          "type": {
+            "name": "ResourceKey[]",
+            "path": {
+              "pkg": "models",
+              "group": "types",
+              "item": "ResourceKey"
+            }
+          }
+        },
+        {
+          "displayType": "property",
+          "prefix": "get, set",
+          "optional": true,
+          "name": "icons",
+          "type": {
+            "name": "ResourceKey[]",
+            "path": {
+              "pkg": "models",
+              "group": "types",
+              "item": "ResourceKey"
+            }
+          }
+        },
+        {
+          "displayType": "property",
+          "prefix": "get, set",
+          "optional": true,
+          "name": "isBaby",
+          "type": {
+            "name": "boolean"
+          }
+        },
+        {
+          "displayType": "property",
+          "prefix": "get, set",
+          "optional": true,
+          "name": "materialVariant",
+          "type": {
+            "name": "string"
+          }
+        },
+        {
+          "displayType": "property",
+          "prefix": "get, set",
+          "optional": true,
+          "name": "models",
+          "type": {
+            "name": "ResourceKey[]",
+            "path": {
+              "pkg": "models",
+              "group": "types",
+              "item": "ResourceKey"
+            }
+          }
+        },
+        {
+          "displayType": "property",
+          "prefix": "get, set",
+          "optional": true,
+          "name": "name",
+          "type": {
+            "name": "string"
+          }
+        },
+        {
+          "displayType": "property",
+          "prefix": "get, set",
+          "optional": true,
+          "name": "negativeEnvironmentScore",
+          "type": {
+            "name": "number"
+          }
+        },
+        {
+          "displayType": "property",
+          "prefix": "get, set",
+          "optional": true,
+          "name": "positiveEnvironmentScore",
+          "type": {
+            "name": "number"
+          }
+        },
+        {
+          "displayType": "property",
+          "prefix": "get, set",
+          "optional": true,
+          "name": "rigs",
+          "type": {
+            "name": "ResourceKey[]",
+            "path": {
+              "pkg": "models",
+              "group": "types",
+              "item": "ResourceKey"
+            }
+          }
+        },
+        {
+          "displayType": "property",
+          "prefix": "get, set",
+          "optional": true,
+          "name": "simoleonPrice",
+          "type": {
+            "name": "number"
+          }
+        },
+        {
+          "displayType": "property",
+          "prefix": "get, set",
+          "optional": true,
+          "name": "slots",
+          "type": {
+            "name": "ResourceKey[]",
+            "path": {
+              "pkg": "models",
+              "group": "types",
+              "item": "ResourceKey"
+            }
+          }
+        },
+        {
+          "displayType": "property",
+          "prefix": "get, set",
+          "optional": true,
+          "name": "thumbnailGeometryState",
+          "type": {
+            "name": "number"
+          }
+        },
+        {
+          "displayType": "property",
+          "prefix": "get, set",
+          "optional": true,
+          "name": "tuning",
+          "type": {
+            "name": "string"
+          }
+        },
+        {
+          "displayType": "property",
+          "prefix": "get, set",
+          "optional": true,
+          "name": "tuningId",
+          "type": {
+            "name": "bigint"
+          }
+        },
+        {
+          "displayType": "property",
+          "prefix": "get, set",
+          "optional": true,
+          "name": "unknown1",
+          "type": {
+            "name": "number"
+          }
+        },
+        {
+          "displayType": "property",
+          "prefix": "get, set",
+          "optional": true,
+          "name": "unknown2",
+          "type": {
+            "name": "number"
+          }
+        },
+        {
+          "displayType": "property",
+          "prefix": "get, set",
+          "optional": true,
+          "name": "unknown3",
+          "type": {
+            "name": "bigint"
+          }
+        },
+        {
+          "displayType": "property",
+          "prefix": "get, set",
+          "optional": true,
+          "name": "unknown4",
+          "type": {
+            "name": "number[]"
+          }
+        },
+        {
+          "displayType": "property",
+          "prefix": "get, set",
+          "optional": true,
+          "name": "unknownMisc",
+          "type": {
+            "name": "Set<number>"
+          }
+        }
+      ]
+    }
+  ],
+  "footer": {
+    "seeAlso": [
+      {
+        "name": "ObjectDefinitionResource",
+        "path": {
+          "pkg": "models",
+          "group": "resources",
+          "item": "ObjectDefinitionResource"
+        }
+      }
+    ]
+  }
+}

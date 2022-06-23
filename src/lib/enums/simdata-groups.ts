@@ -28,6 +28,8 @@ enum SimDataGroup {
   CasStoriesAnswer = 0x00F12D97,
   CasStoriesQuestion = 0x00246B9E,
   CasStoriesTraitChooser = 0x00AD15C4,
+  Clan = 0x00BEE67B,
+  ClanValue = 0x008ED032,
   ClientCasCameraTuning = 0x005ADEC7, // No tuning type
   ClientCasLighting = 0x000A3610, // No tuning type
   ClientCasModifierTuning = 0x00ABFFCF, // No tuning type

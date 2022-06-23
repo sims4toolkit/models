@@ -1,6 +1,7 @@
 {
   "$schema": "https://raw.githubusercontent.com/sims4toolkit/misc/main/json-schemas/docs-index-schema.json",
   "versions": [
+    "0.6.0",
     "0.5.1",
     "0.5.0",
     "0.4.5",
@@ -27,6 +28,8 @@
       "items": [
         "CombinedTuningResource",
         "DdsImageResource",
+        "DeletedResource",
+        "ObjectDefinitionResource",
         "RawResource",
         "SimDataResource",
         "StringTableResource",
@@ -39,6 +42,7 @@
         "BinaryResourceType",
         "DataType",
         "EncodingType",
+        "ObjectDefinitionType",
         "SimDataGroup",
         "StringTableLocale",
         "TuningResourceType"
@@ -89,6 +93,7 @@
         "CellToXmlOptions",
         "DdsImageResourceCreationOptions",
         "ObjectCellRow",
+        "ObjectDefinitionProperties",
         "PackageFileReadingOptions",
         "RawResourceCreationOptions",
         "Resource",

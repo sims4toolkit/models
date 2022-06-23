@@ -4,7 +4,7 @@ import { expect } from "chai";
 import compare from "just-compare";
 import clone from "just-clone";
 import type { ResourceKey } from "../../../dst/lib/packages/types";
-import { DdsImageResource, Package, RawResource, SimDataResource, StringTableResource, XmlResource } from "../../../dst/models";
+import { DdsImageResource, ObjectDefinitionResource, Package, RawResource, SimDataResource, StringTableResource, XmlResource } from "../../../dst/models";
 import { BinaryResourceType, EncodingType, SimDataGroup, TuningResourceType } from "../../../dst/enums";
 import { PackageFileReadingOptions } from "../../../dst/lib/common/options";
 import { CompressionType } from "@s4tk/compression";
@@ -254,6 +254,21 @@ describe("Package", () => {
         })).to.be.true;
         expect(simdata.instance.name).to.equal("frankkulak_LB:trait_SimlishNative");
         expect(simdata.props.display_name.asAny.value).to.equal(0x4EB3C46C);
+      });
+
+      it("should read obj definition resource correctly", () => {
+        const dbpf = getPackage("TartosianoTextbook");
+        const entry = dbpf.get(0);
+        const key = entry.key;
+        const def = entry.value as unknown as ObjectDefinitionResource;
+
+        expect(compare(key, {
+          type: BinaryResourceType.ObjectDefinition,
+          group: 0x80000000,
+          instance: 0xCE7661235557D998n
+        })).to.be.true;
+
+        expect(def.encodingType).to.equal(EncodingType.OBJDEF);
       });
 
       it("should read static resource correctly", () => {
@@ -532,6 +547,52 @@ describe("Package", () => {
           expect(entry.resource.defaultCompressionType).to.equal(CompressionType.InternalCompression);
         });
       });
+
+      context("keepDeletedRecords", () => {
+        it("should ignore deleted records if not provided", () => {
+          const pkg = getPackage("DeletedRecord");
+          expect(pkg.size).to.equal(0);
+        });
+
+        it("should ignore deleted records if false", () => {
+          const pkg = getPackage("DeletedRecord", {
+            keepDeletedRecords: false
+          });
+
+          expect(pkg.size).to.equal(0);
+        });
+
+        it("should get deleted records if true", () => {
+          const pkg = getPackage("DeletedRecord", {
+            keepDeletedRecords: true
+          });
+
+          expect(pkg.size).to.equal(1);
+          expect(pkg.get(0).value.encodingType).to.equal(EncodingType.Null);
+        });
+
+        it("should not affect packages without deleted records if false", () => {
+          const pkg = getPackage("CompleteTrait", {
+            keepDeletedRecords: false
+          });
+
+          expect(pkg.size).to.equal(4);
+          pkg.entries.forEach(entry => {
+            expect(entry.value.encodingType).to.not.equal(EncodingType.Null);
+          });
+        });
+
+        it("should not affect packages without deleted records if true", () => {
+          const pkg = getPackage("CompleteTrait", {
+            keepDeletedRecords: true
+          });
+
+          expect(pkg.size).to.equal(4);
+          pkg.entries.forEach(entry => {
+            expect(entry.value.encodingType).to.not.equal(EncodingType.Null);
+          });
+        });
+      });
     });
   });
 
@@ -687,7 +748,7 @@ describe("Package", () => {
       path.join("..", "..", "data", "packages", "CompleteTrait.package")
     );
 
-    it("should return an index of all resources if no fileter or limit", () => {
+    it("should return an index of all resources if no filter or limit", () => {
       const index = Package.indexResources(filepath);
       expect(index).to.be.an("Array").with.lengthOf(4);
 
@@ -697,21 +758,49 @@ describe("Package", () => {
       expect(first.key?.type).to.equal(BinaryResourceType.DstImage);
       expect(first.key?.group).to.equal(0);
       expect(first.key?.instance).to.equal(0x0B3417C01CCD98FEn);
+      expect(first.isDeleted).to.be.false;
 
       expect(second.indexStart).to.equal(0x2C4D);
       expect(second.key?.type).to.equal(BinaryResourceType.SimData);
       expect(second.key?.group).to.equal(SimDataGroup.Trait);
       expect(second.key?.instance).to.equal(0x97297134D57FE219n);
+      expect(second.isDeleted).to.be.false;
 
       expect(third.indexStart).to.equal(0x2C6D);
       expect(third.key?.type).to.equal(TuningResourceType.Trait);
       expect(third.key?.group).to.equal(0);
       expect(third.key?.instance).to.equal(0x97297134D57FE219n);
+      expect(third.isDeleted).to.be.false;
 
       expect(fourth.indexStart).to.equal(0x2C8D);
       expect(fourth.key?.type).to.equal(BinaryResourceType.StringTable);
       expect(fourth.key?.group).to.equal(0x80000000);
       expect(fourth.key?.instance).to.equal(0x0020097334286DF8n);
+      expect(fourth.isDeleted).to.be.false;
+    });
+
+    it("should use isDeleted = true for deleted records if option provided", () => {
+      const filepath = path.resolve(
+        __dirname,
+        path.join("..", "..", "data", "packages", "DeletedRecord.package")
+      );
+
+      const index = Package.indexResources(filepath, {
+        keepDeletedRecords: true
+      });
+
+      expect(index).to.be.an("Array").with.lengthOf(1);
+      expect(index[0].isDeleted).to.be.true;
+    });
+
+    it("should ignore deleted records if option not provided", () => {
+      const filepath = path.resolve(
+        __dirname,
+        path.join("..", "..", "data", "packages", "DeletedRecord.package")
+      );
+
+      const index = Package.indexResources(filepath);
+      expect(index).to.be.an("Array").that.is.empty;
     });
 
     it("should not exceed the limit that is given", () => {

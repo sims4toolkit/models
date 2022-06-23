@@ -1,0 +1,127 @@
+{
+  "$schema": "https://raw.githubusercontent.com/sims4toolkit/misc/main/json-schemas/docs-item-schema.json",
+  "imports": [
+    "import { ObjectDefinitionType } from \"@s4tk/models/enums\"; // ESM",
+    "const { ObjectDefinitionType } = require(\"@s4tk/models/enums\"); // CJS"
+  ],
+  "header": {
+    "title": {
+      "prefix": "enum",
+      "name": "ObjectDefinitionType"
+    },
+    "description": "Types of properties in an object definition.",
+    "sourceCode": "src/lib/resources/object-definition/types.ts"
+  },
+  "sections": [
+    {
+      "title": "Values",
+      "content": [
+        {
+          "displayType": "enum",
+          "values": [
+            {
+              "name": "Components",
+              "value": "0xE6E421FB"
+            },
+            {
+              "name": "EnvironmentScoreEmotionTags",
+              "value": "0x2172AEBE"
+            },
+            {
+              "name": "EnvironmentScoreEmotionTags_32",
+              "value": "0x2143974C"
+            },
+            {
+              "name": "EnvironmentScores",
+              "value": "0xDCD08394"
+            },
+            {
+              "name": "Footprints",
+              "value": "0x6C737AD8"
+            },
+            {
+              "name": "Icons",
+              "value": "0xCADED888"
+            },
+            {
+              "name": "IsBaby",
+              "value": "0xAEE67A1C"
+            },
+            {
+              "name": "MaterialVariant",
+              "value": "0xECD5A95F"
+            },
+            {
+              "name": "Models",
+              "value": "0x8D20ACC6"
+            },
+            {
+              "name": "Name",
+              "value": "0xE7F07786"
+            },
+            {
+              "name": "NegativeEnvironmentScore",
+              "value": "0x44FC7512"
+            },
+            {
+              "name": "PositiveEnvironmentScore",
+              "value": "0x7236BEEA"
+            },
+            {
+              "name": "Rigs",
+              "value": "0xE206AE4F"
+            },
+            {
+              "name": "SimoleonPrice",
+              "value": "0xE4F4FAA4"
+            },
+            {
+              "name": "Slots",
+              "value": "0x8A85AFF3"
+            },
+            {
+              "name": "ThumbnailGeometryState",
+              "value": "0x4233F8A0"
+            },
+            {
+              "name": "Tuning",
+              "value": "0x790FA4BC"
+            },
+            {
+              "name": "TuningId",
+              "value": "0xB994039B"
+            },
+            {
+              "name": "Unknown1",
+              "value": "0xAC8E1BC0"
+            },
+            {
+              "name": "Unknown2",
+              "value": "0xEC3712E6"
+            },
+            {
+              "name": "Unknown3",
+              "value": "0x52F7F4BC"
+            },
+            {
+              "name": "Unknown4",
+              "value": "0xF3936A90"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "footer": {
+    "seeAlso": [
+      {
+        "name": "ObjectDefinitionResource",
+        "path": {
+          "pkg": "models",
+          "group": "resources",
+          "item": "ObjectDefinitionResource"
+        }
+      }
+    ]
+  }
+}

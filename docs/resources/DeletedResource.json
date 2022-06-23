@@ -1,0 +1,144 @@
+{
+  "$schema": "https://raw.githubusercontent.com/sims4toolkit/misc/main/json-schemas/docs-item-schema.json",
+  "imports": [
+    "import { DeletedResource } from \"@s4tk/models\"; // ESM",
+    "const { DeletedResource } = require(\"@s4tk/models\"); // CJS"
+  ],
+  "header": {
+    "title": {
+      "prefix": "class",
+      "name": "DeletedResource",
+      "extends": [
+        {
+          "name": "StaticResource",
+          "path": {
+            "pkg": "models",
+            "group": "abstracts",
+            "item": "StaticResource"
+          }
+        }
+      ]
+    },
+    "description": "Model for resources that have been deleted. Primarily for use with extracting resources from delta packages.",
+    "sourceCode": "src/lib/resources/deleted/deleted-resource.ts"
+  },
+  "sections": [
+    {
+      "title": "Properties",
+      "content": [
+        {
+          "displayType": "property",
+          "prefix": "readonly",
+          "name": "encodingType",
+          "description": "Always 'EncodingType.Null'.",
+          "type": {
+            "name": "EncodingType",
+            "path": {
+              "pkg": "models",
+              "group": "enums",
+              "item": "EncodingType"
+            }
+          },
+          "overrides": {
+            "name": "Resource",
+            "path": {
+              "pkg": "models",
+              "group": "types",
+              "item": "Resource"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "title": "Initialization",
+      "content": [
+        {
+          "displayType": "function",
+          "name": "constructor",
+          "description": "Creates a new DeletedResource. The only option that will be used is the owner.",
+          "returnType": {
+            "name": "DeletedResource"
+          },
+          "arguments": [
+            {
+              "name": "options",
+              "optional": true,
+              "type": {
+                "name": "WritableModelCreationOptions",
+                "path": {
+                  "pkg": "models",
+                  "group": "types",
+                  "item": "WritableModelCreationOptions"
+                }
+              },
+              "description": "Object containing optional arguments."
+            }
+          ]
+        },
+        {
+          "displayType": "function",
+          "prefix": "static",
+          "name": "from",
+          "description": "Creates a new DeletedResource, disregarding the given arguments. This only exists for parity between models.",
+          "returnType": {
+            "name": "DeletedResource"
+          },
+          "arguments": [
+            {
+              "name": "buffer",
+              "type": {
+                "name": "Buffer"
+              },
+              "description": "A buffer."
+            },
+            {
+              "name": "options",
+              "type": {
+                "name": "WritableModelFromOptions",
+                "path": {
+                  "pkg": "models",
+                  "group": "types",
+                  "item": "WritableModelFromOptions"
+                }
+              },
+              "optional": true,
+              "description": "An object."
+            }
+          ]
+        },
+        {
+          "displayType": "function",
+          "prefix": "static async",
+          "name": "fromAsync",
+          "description": "Asynchronously creates a new DeletedResource, disregarding the given arguments. This only exists for parity between models.",
+          "returnType": {
+            "name": "Promise<DeletedResource>"
+          },
+          "arguments": [
+            {
+              "name": "buffer",
+              "type": {
+                "name": "Buffer"
+              },
+              "description": "A buffer."
+            },
+            {
+              "name": "options",
+              "type": {
+                "name": "WritableModelFromOptions",
+                "path": {
+                  "pkg": "models",
+                  "group": "types",
+                  "item": "WritableModelFromOptions"
+                }
+              },
+              "optional": true,
+              "description": "An object."
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

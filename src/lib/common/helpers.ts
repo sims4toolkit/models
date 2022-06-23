@@ -122,3 +122,43 @@ export function getAllEnumValues<T extends number>(enumObj: object): T[] {
   return Object.values(enumObj)
     .filter(value => typeof value === "number") as T[];
 }
+
+/**
+ * Converts a string in snake case (like_this) to pascal case (LikeThis).
+ * 
+ * @param snakeCase String in snake case
+ */
+export function snakeToPascal(snakeCase: string): string {
+  return snakeCase?.split("_")
+    .map(segment => segment.charAt(0).toUpperCase() + segment.slice(1))
+    .join("");
+}
+
+/**
+ * Converts a string in pascal case (LikeThis) to snake case (like_this).
+ * 
+ * @param pascalCase String in pascal case
+ */
+export function pascalToSnake(pascalCase: string): string {
+  return pascalCase?.split(/(?=[A-Z])/).join('_').toLowerCase();
+}
+
+/**
+ * Converts a string in pascal case (LikeThis) to camel case (likeThis).
+ * 
+ * @param pascalCase String in pascal case
+ */
+export function pascalToCamel(pascalCase: string): string {
+  if (!pascalCase) return "";
+  return pascalCase.charAt(0).toLowerCase() + pascalCase.slice(1)
+}
+
+/**
+ * Converts a string in camel case (likeThis) to pascal case (LikeThis).
+ * 
+ * @param camelCase String in camel case
+ */
+export function camelToPascal(camelCase: string): string {
+  if (!camelCase) return "";
+  return camelCase.charAt(0).toUpperCase() + camelCase.slice(1)
+}

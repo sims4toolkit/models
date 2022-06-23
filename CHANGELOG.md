@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.6.0] - 2022/06/22
+### Added
+- Add DeletedResource model.
+- Add ObjectDefinitionResource model and associated types.
+- Add ObjectDefinition to BinaryResourceType.
+- Add OBJDEF and Null to EncodingType.
+- Add Clan and ClanValue to TuningResourceType and SimDataGroup.
+### Changed
+- Packages can now read deleted entries with an option.
+
 ## [0.5.1] - 2022/06/12
 ### Added
 - Add `readBinaryDataModel()` to SimData and CombinedTuning.

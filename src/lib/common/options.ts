@@ -51,6 +51,13 @@ export interface PackageFileReadingOptions extends
     decompressBuffers: boolean;
 
     /**
+     * If true, then resources with the "DeletedRecord" compression type will
+     * be loaded into DeletedResource models. If false, then they will be
+     * ignored entirely. False by default.
+     */
+    keepDeletedRecords: boolean;
+
+    /**
      * If true, then all resources in the package will be loaded raw (i.e. just
      * a buffer) rather than being fully parsed into their respective models.
      * False by default.
