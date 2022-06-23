@@ -29,7 +29,7 @@
         }
       ]
     },
-    "description": "Model for string table (STBL) resources.",
+    "description": "Model for object definition resources.",
     "sourceCode": "src/lib/resources/object-definition/object-definition-resource.ts"
   },
   "sections": [
