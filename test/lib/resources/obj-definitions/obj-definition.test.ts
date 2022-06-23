@@ -35,7 +35,6 @@ describe("ObjectDefinitionResource", () => {
   });
 
   describe("#properties", () => {
-    // FIXME: this should be changed eventually
     it("should not uncache the owner when mutated", () => {
       const owner = new MockOwner();
       const def = ObjectDefinitionResource.from(tartosianoBuffer, {
@@ -47,7 +46,6 @@ describe("ObjectDefinitionResource", () => {
       expect(owner.cached).to.be.true;
     });
 
-    // FIXME: this should be changed eventually
     it("should not uncache the owner when values mutated", () => {
       const owner = new MockOwner();
       const def = ObjectDefinitionResource.from(tartosianoBuffer, {

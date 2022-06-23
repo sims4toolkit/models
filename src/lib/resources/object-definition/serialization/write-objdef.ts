@@ -80,7 +80,6 @@ function writeProp(prop: PropertyPair): Buffer {
       encoder = BinaryEncoder.alloc(length * 16 + 4);
       encoder.int32(length * 4); // num keys
       (prop.value as Array<ResourceKey>).forEach(key => {
-        // FIXME: ensure order is correct
         encoder.uint32(Number(key.instance >> 32n));
         encoder.uint32(Number(key.instance & 0xFFFFFFFFn));
         encoder.uint32(key.type);
