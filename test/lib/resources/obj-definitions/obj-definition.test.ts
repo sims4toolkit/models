@@ -477,49 +477,209 @@ describe("ObjectDefinitionResource", () => {
     context("version is same", () => {
       context("properties are same", () => {
         it("should return true if all properties are exactly the same in same order", () => {
-          // TODO:
+          const def1 = new ObjectDefinitionResource({
+            properties: {
+              isBaby: true,
+              name: "something",
+            }
+          });
+
+          const def2 = new ObjectDefinitionResource({
+            properties: {
+              isBaby: true,
+              name: "something",
+            }
+          });
+
+          expect(def1.equals(def2)).to.be.true;
         });
 
         it("should return true if all properties are exactly the same in different order", () => {
-          // TODO:
+          const def1 = new ObjectDefinitionResource({
+            properties: {
+              isBaby: true,
+              name: "something",
+            }
+          });
+
+          const def2 = new ObjectDefinitionResource({
+            properties: {
+              name: "something",
+              isBaby: true,
+            }
+          });
+
+          expect(def1.equals(def2)).to.be.true;
         });
 
         it("should return true if icon key is different object but has same values", () => {
-          // TODO:
+          const def1 = new ObjectDefinitionResource({
+            properties: {
+              icons: [
+                {
+                  type: 0x12345678,
+                  group: 0,
+                  instance: 12345n
+                }
+              ]
+            }
+          });
+
+          const def2 = new ObjectDefinitionResource({
+            properties: {
+              icons: [
+                {
+                  type: 0x12345678,
+                  group: 0,
+                  instance: 12345n
+                }
+              ]
+            }
+          });
+
+          expect(def1.equals(def2)).to.be.true;
         });
 
         it("should return true if components list is different object, but has same values in same order", () => {
-          // TODO:
+          const def1 = new ObjectDefinitionResource({
+            properties: {
+              components: [1, 2, 3]
+            }
+          });
+
+          const def2 = new ObjectDefinitionResource({
+            properties: {
+              components: [1, 2, 3]
+            }
+          });
+
+          expect(def1.equals(def2)).to.be.true;
         });
 
         it("should return true if unknown misc set is different object, but has same values in same order", () => {
-          // TODO:
+          const def1 = new ObjectDefinitionResource({
+            properties: {
+              isBaby: true,
+              unknownMisc: new Set([1, 2, 3])
+            }
+          });
+
+          const def2 = new ObjectDefinitionResource({
+            properties: {
+              isBaby: true,
+              unknownMisc: new Set([1, 2, 3])
+            }
+          });
+
+          expect(def1.equals(def2)).to.be.true;
         });
 
         it("should return true if unknown misc set is different object, but has same values in different order", () => {
-          // TODO:
+          const def1 = new ObjectDefinitionResource({
+            properties: {
+              isBaby: true,
+              unknownMisc: new Set([1, 2, 3])
+            }
+          });
+
+          const def2 = new ObjectDefinitionResource({
+            properties: {
+              isBaby: true,
+              unknownMisc: new Set([3, 2, 1])
+            }
+          });
+
+          expect(def1.equals(def2)).to.be.true;
         });
       });
 
       context("properties are different", () => {
         it("should return false if a primitive value is different", () => {
-          // TODO:
+          const def1 = new ObjectDefinitionResource({
+            properties: {
+              isBaby: true,
+            }
+          });
+
+          const def2 = new ObjectDefinitionResource({
+            properties: {
+              isBaby: false,
+            }
+          });
+
+          expect(def1.equals(def2)).to.be.false;
         });
 
         it("should return false if unknown sets contain different amounts", () => {
-          // TODO:
+          const def1 = new ObjectDefinitionResource({
+            properties: {
+              isBaby: true,
+              unknownMisc: new Set([1, 2, 3])
+            }
+          });
+
+          const def2 = new ObjectDefinitionResource({
+            properties: {
+              isBaby: true,
+              unknownMisc: new Set([2, 3, 4])
+            }
+          });
+
+          expect(def1.equals(def2)).to.be.false;
         });
 
         it("should return false if this is a subset of that", () => {
-          // TODO:
+          const def1 = new ObjectDefinitionResource({
+            properties: {
+              isBaby: true,
+              name: "something"
+            }
+          });
+
+          const def2 = new ObjectDefinitionResource({
+            properties: {
+              isBaby: true,
+              name: "something",
+              components: [1, 2, 3]
+            }
+          });
+
+          expect(def1.equals(def2)).to.be.false;
         });
 
         it("should return false if that is a subset of this", () => {
-          // TODO:
+          const def1 = new ObjectDefinitionResource({
+            properties: {
+              isBaby: true,
+              name: "something"
+            }
+          });
+
+          const def2 = new ObjectDefinitionResource({
+            properties: {
+              isBaby: true,
+              name: "something",
+              components: [1, 2, 3]
+            }
+          });
+
+          expect(def2.equals(def1)).to.be.false;
         });
 
         it("should return false if components list is has same values, but in different order", () => {
-          // TODO:
+          const def1 = new ObjectDefinitionResource({
+            properties: {
+              components: [1, 2, 3]
+            }
+          });
+
+          const def2 = new ObjectDefinitionResource({
+            properties: {
+              components: [2, 1, 3]
+            }
+          });
+
+          expect(def1.equals(def2)).to.be.false;
         });
       });
     });
