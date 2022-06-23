@@ -769,27 +769,111 @@ describe("ObjectDefinitionResource", () => {
     });
 
     it("should write Footprint correctly", () => {
-      // TODO:
+      const original = new ObjectDefinitionResource({
+        properties: {
+          footprints: [
+            {
+              type: 0x12345678,
+              group: 0x80000000,
+              instance: 0x1234567890n
+            }
+          ]
+        }
+      });
+
+      const buffer = original.getBuffer();
+      const def = ObjectDefinitionResource.from(buffer);
+      expect(Object.keys(def.properties).length).to.equal(1);
+      expect(def.properties.footprints).to.be.an("Array").with.lengthOf(1);
+      const [first] = def.properties.footprints!;
+      expect(first.type).to.equal(0x12345678);
+      expect(first.group).to.equal(0x80000000);
+      expect(first.instance).to.equal(0x1234567890n);
     });
 
     it("should write Icon correctly", () => {
-      // TODO:
+      const original = new ObjectDefinitionResource({
+        properties: {
+          icons: [
+            {
+              type: 0x12345678,
+              group: 0x80000000,
+              instance: 0x1234567890n
+            }
+          ]
+        }
+      });
+
+      const buffer = original.getBuffer();
+      const def = ObjectDefinitionResource.from(buffer);
+      expect(Object.keys(def.properties).length).to.equal(1);
+      expect(def.properties.icons).to.be.an("Array").with.lengthOf(1);
+      const [first] = def.properties.icons!;
+      expect(first.type).to.equal(0x12345678);
+      expect(first.group).to.equal(0x80000000);
+      expect(first.instance).to.equal(0x1234567890n);
     });
 
     it("should write IsBaby correctly", () => {
-      // TODO:
+      const original = new ObjectDefinitionResource({
+        properties: {
+          isBaby: true
+        }
+      });
+
+      const buffer = original.getBuffer();
+      const def = ObjectDefinitionResource.from(buffer);
+      expect(Object.keys(def.properties).length).to.equal(1);
+      expect(def.properties.isBaby).to.equal(true);
     });
 
     it("should write MaterialVariant correctly", () => {
-      // TODO:
+      const original = new ObjectDefinitionResource({
+        properties: {
+          materialVariant: "material"
+        }
+      });
+
+      const buffer = original.getBuffer();
+      const def = ObjectDefinitionResource.from(buffer);
+      expect(Object.keys(def.properties).length).to.equal(1);
+      expect(def.properties.materialVariant).to.equal("material");
     });
 
     it("should write Model correctly", () => {
-      // TODO:
+      const original = new ObjectDefinitionResource({
+        properties: {
+          models: [
+            {
+              type: 0x12345678,
+              group: 0x80000000,
+              instance: 0x1234567890n
+            }
+          ]
+        }
+      });
+
+      const buffer = original.getBuffer();
+      const def = ObjectDefinitionResource.from(buffer);
+      expect(Object.keys(def.properties).length).to.equal(1);
+      expect(def.properties.models).to.be.an("Array").with.lengthOf(1);
+      const [first] = def.properties.models!;
+      expect(first.type).to.equal(0x12345678);
+      expect(first.group).to.equal(0x80000000);
+      expect(first.instance).to.equal(0x1234567890n);
     });
 
     it("should write Name correctly", () => {
-      // TODO:
+      const original = new ObjectDefinitionResource({
+        properties: {
+          name: "something"
+        }
+      });
+
+      const buffer = original.getBuffer();
+      const def = ObjectDefinitionResource.from(buffer);
+      expect(Object.keys(def.properties).length).to.equal(1);
+      expect(def.properties.name).to.equal("something");
     });
 
     it("should write NegativeEnvironmentScore correctly", () => {
@@ -801,23 +885,96 @@ describe("ObjectDefinitionResource", () => {
     });
 
     it("should write Rig correctly", () => {
-      // TODO:
+      const original = new ObjectDefinitionResource({
+        properties: {
+          rigs: [
+            {
+              type: 0x12345678,
+              group: 0x80000000,
+              instance: 0x1234567890n
+            }
+          ]
+        }
+      });
+
+      const buffer = original.getBuffer();
+      const def = ObjectDefinitionResource.from(buffer);
+      expect(Object.keys(def.properties).length).to.equal(1);
+      expect(def.properties.rigs).to.be.an("Array").with.lengthOf(1);
+      const [first] = def.properties.rigs!;
+      expect(first.type).to.equal(0x12345678);
+      expect(first.group).to.equal(0x80000000);
+      expect(first.instance).to.equal(0x1234567890n);
     });
 
     it("should write SimoleonPrice correctly", () => {
-      // TODO:
+      const original = new ObjectDefinitionResource({
+        properties: {
+          simoleonPrice: 500
+        }
+      });
+
+      const buffer = original.getBuffer();
+      const def = ObjectDefinitionResource.from(buffer);
+      expect(Object.keys(def.properties).length).to.equal(1);
+      expect(def.properties.simoleonPrice).to.equal(500);
     });
 
     it("should write Slot correctly", () => {
-      // TODO:
+      const original = new ObjectDefinitionResource({
+        properties: {
+          slots: [
+            {
+              type: 0x12345678,
+              group: 0x80000000,
+              instance: 0x1234567890n
+            },
+            {
+              type: 0x12345678,
+              group: 0x0000000,
+              instance: 0xABCDEFn
+            }
+          ]
+        }
+      });
+
+      const buffer = original.getBuffer();
+      const def = ObjectDefinitionResource.from(buffer);
+      expect(Object.keys(def.properties).length).to.equal(1);
+      expect(def.properties.slots).to.be.an("Array").with.lengthOf(2);
+      const [first, second] = def.properties.slots!;
+      expect(first.type).to.equal(0x12345678);
+      expect(first.group).to.equal(0x80000000);
+      expect(first.instance).to.equal(0x1234567890n);
+      expect(second.type).to.equal(0x12345678);
+      expect(second.group).to.equal(0x00000000);
+      expect(second.instance).to.equal(0xABCDEFn);
     });
 
     it("should write ThumbnailGeometryState correctly", () => {
-      // TODO:
+      const original = new ObjectDefinitionResource({
+        properties: {
+          thumbnailGeometryState: 12345
+        }
+      });
+
+      const buffer = original.getBuffer();
+      const def = ObjectDefinitionResource.from(buffer);
+      expect(Object.keys(def.properties).length).to.equal(1);
+      expect(def.properties.thumbnailGeometryState).to.equal(12345);
     });
 
     it("should write Tuning correctly", () => {
-      // TODO:
+      const original = new ObjectDefinitionResource({
+        properties: {
+          tuning: "something"
+        }
+      });
+
+      const buffer = original.getBuffer();
+      const def = ObjectDefinitionResource.from(buffer);
+      expect(Object.keys(def.properties).length).to.equal(1);
+      expect(def.properties.tuning).to.equal("something");
     });
 
     it("should write TuningId correctly", () => {
