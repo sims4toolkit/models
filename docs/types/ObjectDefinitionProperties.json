@@ -1,0 +1,276 @@
+{
+  "$schema": "https://raw.githubusercontent.com/sims4toolkit/misc/main/json-schemas/docs-item-schema.json",
+  "imports": [
+    "import type { ObjectDefinitionProperties } from \"@s4tk/models/types\"; // TypeScript only"
+  ],
+  "header": {
+    "title": {
+      "prefix": "interface",
+      "name": "ObjectDefinitionProperties"
+    },
+    "description": "A mapping of property keys to values. Property keys are the camel case equivalent to their associated types in ObjectDefinitionType, except for unknownMisc which keeps track of types not in the enum.",
+    "sourceCode": "src/lib/resources/object-definition/types.ts"
+  },
+  "sections": [
+    {
+      "title": "Properties",
+      "content": [
+        {
+          "displayType": "property",
+          "prefix": "get, set",
+          "optional": true,
+          "name": "components",
+          "description": "TODO:",
+          "type": {
+            "name": "number[]"
+          }
+        },
+        {
+          "displayType": "property",
+          "prefix": "get, set",
+          "optional": true,
+          "name": "environmentScoreEmotionTags",
+          "description": "TODO:",
+          "type": {
+            "name": "number[]"
+          }
+        },
+        {
+          "displayType": "property",
+          "prefix": "get, set",
+          "optional": true,
+          "name": "environmentScoreEmotionTags_32",
+          "description": "TODO:",
+          "type": {
+            "name": "number[]"
+          }
+        },
+        {
+          "displayType": "property",
+          "prefix": "get, set",
+          "optional": true,
+          "name": "environmentScores",
+          "description": "TODO:",
+          "type": {
+            "name": "number[]"
+          }
+        },
+        {
+          "displayType": "property",
+          "prefix": "get, set",
+          "optional": true,
+          "name": "footprints",
+          "description": "TODO:",
+          "type": {
+            "name": "ResourceKey[]",
+            "path": {
+              "pkg": "models",
+              "group": "types",
+              "item": "ResourceKey"
+            }
+          }
+        },
+        {
+          "displayType": "property",
+          "prefix": "get, set",
+          "optional": true,
+          "name": "icons",
+          "description": "TODO:",
+          "type": {
+            "name": "ResourceKey[]",
+            "path": {
+              "pkg": "models",
+              "group": "types",
+              "item": "ResourceKey"
+            }
+          }
+        },
+        {
+          "displayType": "property",
+          "prefix": "get, set",
+          "optional": true,
+          "name": "isBaby",
+          "description": "TODO:",
+          "type": {
+            "name": "boolean"
+          }
+        },
+        {
+          "displayType": "property",
+          "prefix": "get, set",
+          "optional": true,
+          "name": "materialVariant",
+          "description": "TODO:",
+          "type": {
+            "name": "string"
+          }
+        },
+        {
+          "displayType": "property",
+          "prefix": "get, set",
+          "optional": true,
+          "name": "models",
+          "description": "TODO:",
+          "type": {
+            "name": "ResourceKey[]",
+            "path": {
+              "pkg": "models",
+              "group": "types",
+              "item": "ResourceKey"
+            }
+          }
+        },
+        {
+          "displayType": "property",
+          "prefix": "get, set",
+          "optional": true,
+          "name": "name",
+          "description": "TODO:",
+          "type": {
+            "name": "string"
+          }
+        },
+        {
+          "displayType": "property",
+          "prefix": "get, set",
+          "optional": true,
+          "name": "negativeEnvironmentScore",
+          "description": "TODO:",
+          "type": {
+            "name": "number"
+          }
+        },
+        {
+          "displayType": "property",
+          "prefix": "get, set",
+          "optional": true,
+          "name": "positiveEnvironmentScore",
+          "description": "TODO:",
+          "type": {
+            "name": "number"
+          }
+        },
+        {
+          "displayType": "property",
+          "prefix": "get, set",
+          "optional": true,
+          "name": "rigs",
+          "description": "TODO:",
+          "type": {
+            "name": "ResourceKey[]",
+            "path": {
+              "pkg": "models",
+              "group": "types",
+              "item": "ResourceKey"
+            }
+          }
+        },
+        {
+          "displayType": "property",
+          "prefix": "get, set",
+          "optional": true,
+          "name": "simoleonPrice",
+          "description": "TODO:",
+          "type": {
+            "name": "number"
+          }
+        },
+        {
+          "displayType": "property",
+          "prefix": "get, set",
+          "optional": true,
+          "name": "slots",
+          "description": "TODO:",
+          "type": {
+            "name": "ResourceKey[]",
+            "path": {
+              "pkg": "models",
+              "group": "types",
+              "item": "ResourceKey"
+            }
+          }
+        },
+        {
+          "displayType": "property",
+          "prefix": "get, set",
+          "optional": true,
+          "name": "thumbnailGeometryState",
+          "description": "TODO:",
+          "type": {
+            "name": "number"
+          }
+        },
+        {
+          "displayType": "property",
+          "prefix": "get, set",
+          "optional": true,
+          "name": "tuning",
+          "description": "TODO:",
+          "type": {
+            "name": "string"
+          }
+        },
+        {
+          "displayType": "property",
+          "prefix": "get, set",
+          "optional": true,
+          "name": "tuningId",
+          "description": "TODO:",
+          "type": {
+            "name": "bigint"
+          }
+        },
+        {
+          "displayType": "property",
+          "prefix": "get, set",
+          "optional": true,
+          "name": "unknown1",
+          "description": "TODO:",
+          "type": {
+            "name": "number"
+          }
+        },
+        {
+          "displayType": "property",
+          "prefix": "get, set",
+          "optional": true,
+          "name": "unknown2",
+          "description": "TODO:",
+          "type": {
+            "name": "number"
+          }
+        },
+        {
+          "displayType": "property",
+          "prefix": "get, set",
+          "optional": true,
+          "name": "unknown3",
+          "description": "TODO:",
+          "type": {
+            "name": "bigint"
+          }
+        },
+        {
+          "displayType": "property",
+          "prefix": "get, set",
+          "optional": true,
+          "name": "unknown4",
+          "description": "TODO:",
+          "type": {
+            "name": "number[]"
+          }
+        },
+        {
+          "displayType": "property",
+          "prefix": "get, set",
+          "optional": true,
+          "name": "unknownMisc",
+          "description": "TODO:",
+          "type": {
+            "name": "Set<number>"
+          }
+        }
+      ]
+    }
+  ]
+}
