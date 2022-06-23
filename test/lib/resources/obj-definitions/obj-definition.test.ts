@@ -821,19 +821,75 @@ describe("ObjectDefinitionResource", () => {
     });
 
     it("should write TuningId correctly", () => {
-      // TODO:
+      const original = new ObjectDefinitionResource({
+        properties: {
+          tuningId: 0x1234567890ABCDEFn
+        }
+      });
+
+      const buffer = original.getBuffer();
+      const def = ObjectDefinitionResource.from(buffer);
+      expect(Object.keys(def.properties).length).to.equal(1);
+      expect(def.properties.tuningId).to.equal(0x1234567890ABCDEFn);
+    });
+
+    it("should write multiple properties correctly", () => {
+      const original = new ObjectDefinitionResource({
+        properties: {
+          tuningId: 0x1234567890ABCDEFn,
+          isBaby: true,
+          models: [
+            {
+              type: 1,
+              group: 2,
+              instance: 3n
+            }
+          ]
+        }
+      });
+
+      const buffer = original.getBuffer();
+      const def = ObjectDefinitionResource.from(buffer);
+      expect(Object.keys(def.properties).length).to.equal(3);
+      expect(def.properties.tuningId).to.equal(0x1234567890ABCDEFn);
+      expect(def.properties.isBaby).to.be.true
+      expect(def.properties.models).to.be.an("Array").with.lengthOf(1);
+      expect(def.properties.models![0].type).to.equal(1);
+      expect(def.properties.models![0].group).to.equal(2);
+      expect(def.properties.models![0].instance).to.equal(3n);
     });
 
     it("should serialize an obj def with no properties", () => {
-      // TODO:
+      const original = new ObjectDefinitionResource();
+      const buffer = original.getBuffer();
+      const def = ObjectDefinitionResource.from(buffer);
+      expect(Object.keys(def.properties).length).to.equal(0);
     });
 
     it("should not write UnknownMisc", () => {
-      // TODO:
+      const original = new ObjectDefinitionResource({
+        properties: {
+          unknownMisc: new Set([1, 2, 3])
+        }
+      });
+
+      const buffer = original.getBuffer();
+      const def = ObjectDefinitionResource.from(buffer);
+      expect(Object.keys(def.properties).length).to.equal(0);
     });
 
     it("should reserialize into an object that is equal to this one", () => {
-      // TODO:
+      const original = new ObjectDefinitionResource({
+        properties: {
+          isBaby: true,
+          name: "something",
+          components: [1, 2, 3]
+        }
+      });
+
+      const buffer = original.getBuffer();
+      const def = ObjectDefinitionResource.from(buffer);
+      expect(original.equals(def)).to.be.true;
     });
   });
 
