@@ -573,24 +573,6 @@ describe("ObjectDefinitionResource", () => {
 
           expect(def1.equals(def2)).to.be.true;
         });
-
-        it("should return true if unknown misc set is different object, but has same values in different order", () => {
-          const def1 = new ObjectDefinitionResource({
-            properties: {
-              isBaby: true,
-              unknownMisc: new Set([1, 2, 3])
-            }
-          });
-
-          const def2 = new ObjectDefinitionResource({
-            properties: {
-              isBaby: true,
-              unknownMisc: new Set([3, 2, 1])
-            }
-          });
-
-          expect(def1.equals(def2)).to.be.true;
-        });
       });
 
       context("properties are different", () => {
@@ -676,6 +658,24 @@ describe("ObjectDefinitionResource", () => {
           const def2 = new ObjectDefinitionResource({
             properties: {
               components: [2, 1, 3]
+            }
+          });
+
+          expect(def1.equals(def2)).to.be.false;
+        });
+
+        it("should return false if unknown misc set is different object, but has same values in different order", () => {
+          const def1 = new ObjectDefinitionResource({
+            properties: {
+              isBaby: true,
+              unknownMisc: new Set([1, 2, 3])
+            }
+          });
+
+          const def2 = new ObjectDefinitionResource({
+            properties: {
+              isBaby: true,
+              unknownMisc: new Set([3, 2, 1])
             }
           });
 
