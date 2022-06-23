@@ -17,6 +17,9 @@ const getBuffer = (filename: string) => fs.readFileSync(
 );
 
 const tartosianoBuffer = getBuffer("TartosianoTextbook");
+const emptyBuffer = getBuffer("EmptyDefinition");
+const randomPropsBuffer = getBuffer("RandomProperties");
+const badVersionBuffer = getBuffer("Version3");
 
 //#endregion Helpers & Variables
 
@@ -190,11 +193,14 @@ describe("ObjectDefinitionResource", () => {
     });
 
     it("should get the correct Icon value", () => {
-      // FIXME: get something better than 0s
-      const def = ObjectDefinitionResource.from(tartosianoBuffer);
-      expect(def.properties.icons![0].type).to.equal(0);
-      expect(def.properties.icons![0].group).to.equal(0);
-      expect(def.properties.icons![0].instance).to.equal(0n);
+      const def = ObjectDefinitionResource.from(randomPropsBuffer);
+      expect(def.properties.icons).to.be.an("Array").with.lengthOf(2);
+      expect(def.properties.icons![0].type).to.equal(0x12345678);
+      expect(def.properties.icons![0].group).to.equal(0x0000001A);
+      expect(def.properties.icons![0].instance).to.equal(0x1234567890ABCDEFn);
+      expect(def.properties.icons![1].type).to.equal(0x12345678);
+      expect(def.properties.icons![1].group).to.equal(0);
+      expect(def.properties.icons![1].instance).to.equal(0xABCDEF1234567890n);
     });
 
     it("should get the correct Rig value", () => {
@@ -240,7 +246,8 @@ describe("ObjectDefinitionResource", () => {
     });
 
     it("should get the correct ThumbnailGeometryState value", () => {
-      // TODO:
+      const def = ObjectDefinitionResource.from(randomPropsBuffer);
+      expect(def.properties.thumbnailGeometryState).to.equal(1234);
     });
 
     it("should get the correct PositiveEnvironmentScore value", () => {
@@ -260,19 +267,25 @@ describe("ObjectDefinitionResource", () => {
     });
 
     it("should get the correct EnvironmentScores value", () => {
-      // TODO:
+      const def = ObjectDefinitionResource.from(randomPropsBuffer);
+      expect(def.properties.environmentScores).to.be.an("Array").with.lengthOf(1);
+      expect(def.properties.environmentScores![0]).to.equal(5);
     });
 
     it("should get the correct IsBaby value", () => {
-      // TODO:
+      const def = ObjectDefinitionResource.from(randomPropsBuffer);
+      expect(def.properties.isBaby).to.be.true;
     });
 
     it("should not have an UnknownMisc set if there are no unknowns", () => {
-      // TODO:
+      const def = ObjectDefinitionResource.from(randomPropsBuffer);
+      expect(def.properties.unknownMisc).to.be.undefined;
     });
 
     it("should not include keys for any properties that aren't defined", () => {
-      // TODO:
+      const def = ObjectDefinitionResource.from(tartosianoBuffer);
+      expect(def.properties.isBaby).to.be.undefined;
+      expect(def.properties.thumbnailGeometryState).to.be.undefined;
     });
 
     it("should include unknown types in the UnknownMisc set", () => {
@@ -280,7 +293,8 @@ describe("ObjectDefinitionResource", () => {
     });
 
     it("should read an obj def with no properties", () => {
-      // TODO:
+      const def = ObjectDefinitionResource.from(emptyBuffer);
+      expect(Object.keys(def.properties).length).to.equal(0);
     });
 
     it("should use ZLIB compression by default", () => {
@@ -308,11 +322,13 @@ describe("ObjectDefinitionResource", () => {
     });
 
     it("should fail if version ≠ 2 by default", () => {
-      // TODO:
+      expect(() => ObjectDefinitionResource.from(badVersionBuffer)).to.throw();
     });
 
     it("should not fail if version ≠ 2 but recoveryMode is true", () => {
-      // TODO:
+      expect(() => ObjectDefinitionResource.from(badVersionBuffer, {
+        recoveryMode: true
+      })).to.not.throw();
     });
 
     it("should not cache the buffer by default", () => {
