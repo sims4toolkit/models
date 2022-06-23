@@ -190,6 +190,7 @@ describe("ObjectDefinitionResource", () => {
     });
 
     it("should get the correct Icon value", () => {
+      // FIXME: get something better than 0s
       const def = ObjectDefinitionResource.from(tartosianoBuffer);
       expect(def.properties.icons![0].type).to.equal(0);
       expect(def.properties.icons![0].group).to.equal(0);
@@ -204,23 +205,38 @@ describe("ObjectDefinitionResource", () => {
     });
 
     it("should get the correct Slot value", () => {
-      // TODO:
+      const def = ObjectDefinitionResource.from(tartosianoBuffer);
+      expect(def.properties.slots![0].type).to.equal(0xD3044521);
+      expect(def.properties.slots![0].group).to.equal(0);
+      expect(def.properties.slots![0].instance).to.equal(0x1AB585368F4D8687n);
     });
 
     it("should get the correct Model value", () => {
-      // TODO:
+      const def = ObjectDefinitionResource.from(tartosianoBuffer);
+      expect(def.properties.models![0].type).to.equal(0x01661233);
+      expect(def.properties.models![0].group).to.equal(0);
+      expect(def.properties.models![0].instance).to.equal(0x5CCFAD78FE4212BEn);
     });
 
     it("should get the correct Footprint value", () => {
-      // TODO:
+      const def = ObjectDefinitionResource.from(tartosianoBuffer);
+      expect(def.properties.footprints![0].type).to.equal(0xD382BF57);
+      expect(def.properties.footprints![0].group).to.equal(0x80000000);
+      expect(def.properties.footprints![0].instance).to.equal(0x999BE3F885903910n);
     });
 
     it("should get the correct Components value", () => {
-      // TODO:
+      const def = ObjectDefinitionResource.from(tartosianoBuffer);
+      expect(def.properties.components).to.be.an("Array").with.lengthOf(9);
+      const [first, second, , , , , , , last] = def.properties.components!;
+      expect(first).to.equal(573464449);
+      expect(second).to.equal(3994535597);
+      expect(last).to.equal(1069811801);
     });
 
     it("should get the correct SimoleonPrice value", () => {
-      // TODO:
+      const def = ObjectDefinitionResource.from(tartosianoBuffer);
+      expect(def.properties.simoleonPrice).to.equal(250);
     });
 
     it("should get the correct ThumbnailGeometryState value", () => {
@@ -268,19 +284,27 @@ describe("ObjectDefinitionResource", () => {
     });
 
     it("should use ZLIB compression by default", () => {
-      // TODO:
+      const def = ObjectDefinitionResource.from(tartosianoBuffer);
+      expect(def.defaultCompressionType).to.equal(CompressionType.ZLIB);
     });
 
     it("should use the provided defaultCompressionType", () => {
-      // TODO:
+      const def = ObjectDefinitionResource.from(tartosianoBuffer, {
+        defaultCompressionType: CompressionType.InternalCompression
+      });
+
+      expect(def.defaultCompressionType).to.equal(CompressionType.InternalCompression);
     });
 
     it("should not have an owner by default", () => {
-      // TODO:
+      const def = ObjectDefinitionResource.from(tartosianoBuffer);
+      expect(def.owner).to.be.undefined;
     });
 
     it("should use the provided owner", () => {
-      // TODO:
+      const owner = new MockOwner();
+      const def = ObjectDefinitionResource.from(tartosianoBuffer, { owner });
+      expect(def.owner).to.equal(owner);
     });
 
     it("should fail if version ≠ 2 by default", () => {
@@ -292,11 +316,16 @@ describe("ObjectDefinitionResource", () => {
     });
 
     it("should not cache the buffer by default", () => {
-      // TODO:
+      const def = ObjectDefinitionResource.from(tartosianoBuffer);
+      expect(def.hasBufferCache).to.be.false;
     });
 
     it("should cache the buffer if saveBuffer is true", () => {
-      // TODO:
+      const def = ObjectDefinitionResource.from(tartosianoBuffer, {
+        saveBuffer: true
+      });
+
+      expect(def.hasBufferCache).to.be.true;
     });
   });
 
