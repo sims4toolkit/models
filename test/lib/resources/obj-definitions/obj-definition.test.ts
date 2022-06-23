@@ -20,6 +20,7 @@ const tartosianoBuffer = getBuffer("TartosianoTextbook");
 const emptyBuffer = getBuffer("EmptyDefinition");
 const randomPropsBuffer = getBuffer("RandomProperties");
 const badVersionBuffer = getBuffer("Version3");
+const unknownsBuffer = getBuffer("UnknownTypes");
 
 //#endregion Helpers & Variables
 
@@ -251,11 +252,11 @@ describe("ObjectDefinitionResource", () => {
     });
 
     it("should get the correct PositiveEnvironmentScore value", () => {
-      // TODO:
+      // intentionally blank, replace by env scores so it's NBD
     });
 
     it("should get the correct NegativeEnvironmentScore value", () => {
-      // TODO:
+      // intentionally blank, replace by env scores so it's NBD
     });
 
     it("should get the correct EnvironmentScoreEmotionTags value", () => {
@@ -295,7 +296,10 @@ describe("ObjectDefinitionResource", () => {
     });
 
     it("should include unknown types in the UnknownMisc set", () => {
-      // TODO:
+      const def = ObjectDefinitionResource.from(unknownsBuffer);
+      expect(def.properties.unknownMisc).to.be.a("Set");
+      expect(def.properties.unknownMisc!.size).to.equal(1);
+      expect(def.properties.unknownMisc!.has(0x4D2)).to.be.true;
     });
 
     it("should read an obj def with no properties", () => {
