@@ -19,7 +19,7 @@ app.get('/binary-file', (req, res) => {
 app.get('/simdata-binary', (req, res) => {
   try {
     const simdata = SimDataResource.fromXml(req.body);
-    const result = simdata.buffer; // just to let it throw if needed
+    const result = simdata.getBuffer(); // just to let it throw if needed
     res.status(200).send(result.toString("base64"));
   } catch (err) {
     res.status(400).send(`XML could not be parsed as SimData\n\n${err}`);
@@ -29,7 +29,7 @@ app.get('/simdata-binary', (req, res) => {
 app.get('/simdata-binary-file', (req, res) => {
   try {
     const simdata = SimDataResource.fromXml(req.body);
-    const result = simdata.buffer; // just to let it throw if needed
+    const result = simdata.getBuffer(); // just to let it throw if needed
     res.writeHead(200, {
       'Content-Type': 'application/octet-stream',
       'Content-disposition': 'attachment;filename=s4tk_response.simdata',
