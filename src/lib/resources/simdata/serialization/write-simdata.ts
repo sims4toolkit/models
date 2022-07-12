@@ -9,7 +9,7 @@ import DataType from "../../../enums/data-type";
 
 const RELOFFSET_NULL = -0x80000000;
 const NO_NAME_HASH = 0x811C9DC5; // equal to fnv32('')
-const HEADER_SIZE = 28; // does not include bytes for padding
+const HEADER_SIZE = 32; // does not include bytes for padding
 const TABLE_HEADER_OFFSET = 24;
 
 //#endregion Constants
@@ -451,14 +451,6 @@ export default function writeSimData(model: SimDataDto): Buffer {
   // 3 sections combined to make alignment easier
   const headerAndTablesBuffer: Buffer = ((): Buffer => {
     let totalSize = HEADER_SIZE;
-    // As of 2022/02/15, when the only versions are 0x100 and 0x101, the header
-    // will always have 8 more bytes than the base HEADER_SIZE. For 0x101, this
-    // is 4 bytes of data and 4 bytes of padding. For 0x100, it's all padding.
-    // This should be made more flexible, but using an alignment of 15 does not
-    // work, so I'm hardcoding the bytes for now, since it works.
-    if (model.version >= 0x101) totalSize += 4; // unused
-    const headerPadding = model.version < 0x101 ? 8 : 4; // HACK: use alignment?
-    totalSize += headerPadding;
     const hasCharTable = stringsToAddToCharTable.length > 0;
     const numTables = Object.keys(rawTables).length + Object.keys(objectTables).length + (hasCharTable ? 1 : 0);
     totalSize += numTables * 28;
@@ -499,7 +491,7 @@ export default function writeSimData(model: SimDataDto): Buffer {
     encoder.int32(totalSize - encoder.tell()); // schema offset
     encoder.int32(model.schemas.length);
     if (model.version >= 0x101) encoder.uint32(model.unused ?? 0);
-    encoder.skip(headerPadding);
+    encoder.seek(HEADER_SIZE);
 
     // table header and data
     const bytesLeft = () => totalSize - encoder.tell();
