@@ -87,6 +87,9 @@ export default class Package<ResourceType extends Resource = Resource>
    * resource filter and/or a limit. But, if reading an entire package, it will
    * likely perform the same or even slower.
    * 
+   * NOTE: This function requires `@s4tk/plugin-bufferfromfile`, and will throw
+   * if you do not have it installed.
+   * 
    * @param filepath Absolute path to file to read as a package
    * @param options Options for reading the resources
    */
@@ -104,6 +107,9 @@ export default class Package<ResourceType extends Resource = Resource>
    * if reading an entire package, it will likely perform the same or even
    * slower.
    * 
+   * NOTE: This function requires `@s4tk/plugin-bufferfromfile`, and will throw
+   * if you do not have it installed.
+   * 
    * @param filepath Absolute path to file to read as a package
    * @param options Options for reading the resources
    */
@@ -118,6 +124,9 @@ export default class Package<ResourceType extends Resource = Resource>
    * Fetches specific resources from the file at the given location. This method
    * is incredibly fast, but requires an index to be used, which takes time to
    * build up. Note that the filter and limit options will be ignored.
+   * 
+   * NOTE: This function requires `@s4tk/plugin-bufferfromfile`, and will throw
+   * if you do not have it installed.
    * 
    * @param filepath Absolute path to file to read as a package
    * @param positions Array containing objects that contain exact byte locations
@@ -138,6 +147,9 @@ export default class Package<ResourceType extends Resource = Resource>
    * which takes time to build up. Note that the filter and limit options will
    * be ignored.
    * 
+   * NOTE: This function requires `@s4tk/plugin-bufferfromfile`, and will throw
+   * if you do not have it installed.
+   * 
    * @param filepath Absolute path to file to read as a package
    * @param positions Array containing objects that contain exact byte locations
    * of the resources to fetch
@@ -156,6 +168,9 @@ export default class Package<ResourceType extends Resource = Resource>
    * resources with `fetchResources()`. All ResourcePositions are returned with
    * a key.
    * 
+   * NOTE: This function requires `@s4tk/plugin-bufferfromfile`, and will throw
+   * if you do not have it installed.
+   * 
    * @param filepath Absolute path to file to read as a package
    * @param options Options for reading the resources
    */
@@ -170,6 +185,9 @@ export default class Package<ResourceType extends Resource = Resource>
    * Asynchronously returns an array of objects that can be used to quickly
    * fetch specific resources with `fetchResources()`. All ResourcePositions are
    * returned with a key.
+   * 
+   * NOTE: This function requires `@s4tk/plugin-bufferfromfile`, and will throw
+   * if you do not have it installed.
    * 
    * @param filepath Absolute path to file to read as a package
    * @param options Options for reading the resources

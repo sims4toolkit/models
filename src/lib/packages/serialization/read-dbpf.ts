@@ -8,15 +8,8 @@ import RawResource from "../../resources/raw/raw-resource";
 import ResourceRegistry from "../resource-registry";
 import { DbpfFlags, DbpfHeader, IndexEntry } from "./types";
 import DeletedResource from "../../resources/deleted/deleted-resource";
+import Plugins from "../../common/plugins";
 
-try {
-  // FIXME: this here prevents S4TK from being able to be browserified - as a
-  // temporary workaround, go into node_modules and make this dependency just
-  // a single, blank js file when browserifying
-  var BufferFromFile = require("bufferfromfile");
-} catch (e) {
-  var BufferFromFile;
-}
 
 /**
  * Reads the given buffer as a DBPF and returns a DTO for it.
@@ -54,10 +47,10 @@ export function streamDbpf(
   filepath: string,
   options?: PackageFileReadingOptions
 ): ResourceKeyPair[] {
-  if (!BufferFromFile)
-    throw new Error("MMAPs not supported in this environment. Use regular Buffers.");
+  if (!Plugins.BufferFromFile)
+    throw new Error("Must register @s4tk/plugin-bufferfromfile to use MMAPs.");
 
-  const mmap = BufferFromFile.buffer(filepath);
+  const mmap = Plugins.BufferFromFile.buffer(filepath);
 
   try {
     const header = readDbpfHeader(mmapDecoder(mmap, 0, 96));
@@ -82,10 +75,10 @@ export function streamDbpf(
       });
     }
 
-    BufferFromFile.unmap(mmap);
+    Plugins.BufferFromFile.unmap(mmap);
     return records;
   } catch (e) {
-    BufferFromFile.unmap(mmap);
+    Plugins.BufferFromFile.unmap(mmap);
     throw e;
   }
 }
@@ -103,10 +96,10 @@ export function fetchResources(
   positions: ResourcePosition[],
   options?: PackageFileReadingOptions
 ): ResourceKeyPair[] {
-  if (!BufferFromFile)
-    throw new Error("MMAPs not supported in this environment. Use regular Buffers.");
+  if (!Plugins.BufferFromFile)
+    throw new Error("Must register @s4tk/plugin-bufferfromfile to use MMAPs.");
 
-  const mmap = BufferFromFile.buffer(filepath);
+  const mmap = Plugins.BufferFromFile.buffer(filepath);
 
   try {
     const header = readDbpfHeader(mmapDecoder(mmap, 0, 96));
@@ -130,10 +123,10 @@ export function fetchResources(
       });
     }
 
-    BufferFromFile.unmap(mmap);
+    Plugins.BufferFromFile.unmap(mmap);
     return resources;
   } catch (e) {
-    BufferFromFile.unmap(mmap);
+    Plugins.BufferFromFile.unmap(mmap);
     throw e;
   }
 }
@@ -149,10 +142,10 @@ export function getResourcePositions(
   filepath: string,
   options?: PackageFileReadingOptions
 ): ResourcePosition[] {
-  if (!BufferFromFile)
-    throw new Error("MMAPs not supported in this environment. Use regular Buffers.");
+  if (!Plugins.BufferFromFile)
+    throw new Error("Must register @s4tk/plugin-bufferfromfile to use MMAPs.");
 
-  const mmap = BufferFromFile.buffer(filepath);
+  const mmap = Plugins.BufferFromFile.buffer(filepath);
 
   try {
     const header = readDbpfHeader(mmapDecoder(mmap, 0, 96));
@@ -174,10 +167,10 @@ export function getResourcePositions(
       if (options?.limit && positions.length >= options.limit) break;
     }
 
-    BufferFromFile.unmap(mmap);
+    Plugins.BufferFromFile.unmap(mmap);
     return positions;
   } catch (e) {
-    BufferFromFile.unmap(mmap);
+    Plugins.BufferFromFile.unmap(mmap);
     throw e;
   }
 }

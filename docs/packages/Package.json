@@ -315,7 +315,7 @@
               "item": "ResourceKeyPair"
             }
           },
-          "description": "Streams resources from the file at the given location. This method is much, much more space and time efficient than extractResources() when using a resource filter and/or a limit. But, if reading an entire package, it will likely perform the same or even slower.",
+          "description": "Streams resources from the file at the given location. This method is much, much more space and time efficient than extractResources() when using a resource filter and/or a limit. But, if reading an entire package, it will likely perform the same or even slower.\n\nNOTE: This function requires @s4tk/plugin-bufferfromfile, and will throw if you do not have it installed.",
           "arguments": [
             {
               "name": "filepath",
@@ -366,7 +366,7 @@
               "item": "ResourceKeyPair"
             }
           },
-          "description": "Asynchronously streams resources from the file at the given location. This method is much, much more space and time efficient than extractResources() when using a resource filter and/or a limit. But, if reading an entire package, it will likely perform the same or even slower.",
+          "description": "Asynchronously streams resources from the file at the given location. This method is much, much more space and time efficient than extractResources() when using a resource filter and/or a limit. But, if reading an entire package, it will likely perform the same or even slower.\n\nNOTE: This function requires @s4tk/plugin-bufferfromfile, and will throw if you do not have it installed.",
           "arguments": [
             {
               "name": "filepath",
@@ -417,7 +417,7 @@
               "item": "ResourceKeyPair"
             }
           },
-          "description": "Fetches specific resources from the file at the given location. This method is incredibly fast, but requires an index to be used, which takes time to build up. Note that the filter and limit options will be ignored.",
+          "description": "Fetches specific resources from the file at the given location. This method is incredibly fast, but requires an index to be used, which takes time to build up. Note that the filter and limit options will be ignored.\n\nNOTE: This function requires @s4tk/plugin-bufferfromfile, and will throw if you do not have it installed.",
           "arguments": [
             {
               "name": "filepath",
@@ -480,7 +480,7 @@
               "item": "ResourceKeyPair"
             }
           },
-          "description": "Asynchronously fetches specific resources from the file at the given location. This method is incredibly fast, but requires an index to be used, which takes time to build up. Note that the filter and limit options will be ignored.",
+          "description": "Asynchronously fetches specific resources from the file at the given location. This method is incredibly fast, but requires an index to be used, which takes time to build up. Note that the filter and limit options will be ignored.\n\nNOTE: This function requires @s4tk/plugin-bufferfromfile, and will throw if you do not have it installed.",
           "arguments": [
             {
               "name": "filepath",
@@ -528,7 +528,7 @@
               "item": "ResourcePosition"
             }
           },
-          "description": "Returns an array of objects that can be used to quickly fetch specific resources with fetchResources().",
+          "description": "Returns an array of objects that can be used to quickly fetch specific resources with fetchResources().\n\nNOTE: This function requires @s4tk/plugin-bufferfromfile, and will throw if you do not have it installed.",
           "arguments": [
             {
               "name": "filepath",
@@ -564,7 +564,7 @@
               "item": "ResourcePosition"
             }
           },
-          "description": "Asynchronously returns an array of objects that can be used to quickly fetch specific resources with fetchResources().",
+          "description": "Asynchronously returns an array of objects that can be used to quickly fetch specific resources with fetchResources().\n\nNOTE: This function requires @s4tk/plugin-bufferfromfile, and will throw if you do not have it installed.",
           "arguments": [
             {
               "name": "filepath",
@@ -624,6 +624,10 @@
           "group": "types",
           "item": "ResourceKeyPair"
         }
+      },
+      {
+        "name": "@s4tk/plugin-bufferfromfile",
+        "externalLink": "https://www.npmjs.com/package/@s4tk/plugin-bufferfromfile"
       }
     ]
   }
