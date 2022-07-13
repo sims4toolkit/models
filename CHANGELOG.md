@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Add plugin registry.
 ### Removed
-- Remove dependency on BufferFromFile, use @s4tk/plugin-bufferfromfile instead.
+- Remove dependency on BufferFromFile, use [@s4tk/plugin-bufferfromfile](https://www.npmjs.com/package/@s4tk/plugin-bufferfromfile) instead.
 
 ## [0.6.1] - 2022/07/12
 ### Fixed
