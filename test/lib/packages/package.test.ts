@@ -3,11 +3,15 @@ import path from "path";
 import { expect } from "chai";
 import compare from "just-compare";
 import clone from "just-clone";
+import BufferFromFilePlugin from "@s4tk/plugin-bufferfromfile";
 import type { ResourceKey } from "../../../dst/lib/packages/types";
 import { DdsImageResource, ObjectDefinitionResource, Package, RawResource, SimDataResource, StringTableResource, XmlResource } from "../../../dst/models";
+import { registerPlugin } from "../../../dst/plugins";
 import { BinaryResourceType, EncodingType, SimDataGroup, TuningResourceType } from "../../../dst/enums";
 import { PackageFileReadingOptions } from "../../../dst/lib/common/options";
 import { CompressionType } from "@s4tk/compression";
+
+registerPlugin(BufferFromFilePlugin);
 
 //#region Helpers
 
