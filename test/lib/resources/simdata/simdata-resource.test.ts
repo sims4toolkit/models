@@ -1061,6 +1061,10 @@ describe("SimDataResource", () => {
       testReserialization("mood.xml");
     });
 
+    it("should reserialize trait_table_order.xml correctly", () => {
+      testReserialization("trait_table_order.xml");
+    });
+
     it("should reserialize trait.xml correctly", () => {
       testReserialization("trait.xml");
     });
@@ -1110,6 +1114,12 @@ describe("SimDataResource", () => {
       const serializedBuffer = original.getBuffer();
       expect(originalBuffer).to.not.equal(serializedBuffer);
       expect(originalBuffer.toString("base64")).to.equal(serializedBuffer.toString("base64"));
+    });
+
+    it("should write raw tables in the correct order", () => {
+      const simdata = getSimDataFromXml("trait_table_order");
+      const binary = getBuffer("trait_table_order.simdata").toString('base64');
+      expect(simdata.getBuffer().toString('base64')).to.equal(binary);
     });
   });
 
