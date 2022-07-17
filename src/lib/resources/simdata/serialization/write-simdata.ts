@@ -1,3 +1,9 @@
+/*
+  WARNING: This file is gross. There are definitely better ways to serialize a
+  SimData, but unfortunately, this code is built off of about a year's worth of
+  tech debt, and hacky code has had to be put in to fix bugs. Have fun.
+*/
+
 import { BinaryEncoder } from "@s4tk/encoding";
 import { formatAsHexString } from "@s4tk/hashing/formatting";
 import { fnv32 } from "@s4tk/hashing";
@@ -160,6 +166,54 @@ export default function writeSimData(model: SimDataDto): Buffer {
 
   //#endregion  Mappings & Getters
 
+  //#region Generate Raw Table Order
+
+  const rawTablesOrder = new Set<DataType>();
+
+  function createTablesForCell(cell: cells.Cell, isRef: boolean) {
+    switch (cell.dataType) {
+      case DataType.Object:
+        createTablesForObject(cell as cells.ObjectCell);
+        break;
+      case DataType.Vector:
+        createTablesForVector(cell as cells.VectorCell, isRef);
+        break;
+      case DataType.Variant:
+        createTablesForVariant(cell as cells.VariantCell, isRef);
+        break;
+      case DataType.String:
+      case DataType.HashedString:
+        rawTablesOrder.add(DataType.Character);
+        if (isRef) rawTablesOrder.add(cell.dataType);
+        break;
+      default:
+        if (isRef) rawTablesOrder.add(cell.dataType);
+        break;
+    }
+  }
+
+  function createTablesForObject(objCell: cells.ObjectCell) {
+    for (const colName in objCell.row) {
+      const cell = objCell.row[colName];
+      createTablesForCell(cell, false);
+    }
+  }
+
+  function createTablesForVector(cell: cells.VectorCell, isRef: boolean) {
+    if (isRef) rawTablesOrder.add(DataType.Vector);
+    if (cell.length) createTablesForCell(cell.children[0], true);
+  }
+
+  function createTablesForVariant(cell: cells.VariantCell, isRef: boolean) {
+    if (isRef) rawTablesOrder.add(DataType.Variant);
+    if (cell.child) createTablesForCell(cell.child, true);
+  }
+
+  model.instances.forEach(createTablesForObject);
+  rawTablesOrder.forEach(getRawTable);
+
+  //#endregion Generate Raw Table Order
+
   //#region Prepare Schemas
 
   const serialSchemaMap: { [key: number]: SerialSchema } = {};
@@ -176,13 +230,13 @@ export default function writeSimData(model: SimDataDto): Buffer {
     // numeric order of their hash. Within objects, they must be written in a
     // an order consistent with all other SimDatas of their type. In the vast
     // majority of cases, this is ascending ASCII order of their names. However,
-    // there are some SimData groups which are in an order that is utterly
-    // chaotic. Also, padding for the largest column alignment (not necesarily
-    // the largest column) must be added to the end of the schema, and included
-    // in its size.
+    // this is not always the case. Also, padding for the largest column
+    // alignment (not necesarily the largest column) must be added to the end of
+    // the schema, and included in its size.
 
     let size = 0;
     columns.forEach(column => {
+      hashName(column);
       size += getPaddingForAlignment(size, DataType.getAlignment(column.dataType) - 1);
       column.offset = size;
       size += DataType.getBytes(column.dataType);
@@ -195,7 +249,6 @@ export default function writeSimData(model: SimDataDto): Buffer {
     });
     size += largestPadding;
 
-    columns.forEach(column => hashName(column)); // needed for when there is 1
     columns.sort((a, b) => hashName(a) - hashName(b));
 
     hashName(schema); // hash after columns to match s4s
@@ -451,8 +504,7 @@ export default function writeSimData(model: SimDataDto): Buffer {
   // 3 sections combined to make alignment easier
   const headerAndTablesBuffer: Buffer = ((): Buffer => {
     let totalSize = HEADER_SIZE;
-    const hasCharTable = stringsToAddToCharTable.length > 0;
-    const numTables = Object.keys(rawTables).length + Object.keys(objectTables).length + (hasCharTable ? 1 : 0);
+    const numTables = Object.keys(rawTables).length + Object.keys(objectTables).length;
     totalSize += numTables * 28;
 
     /** Maps schema hash to position of object table. */
@@ -470,14 +522,10 @@ export default function writeSimData(model: SimDataDto): Buffer {
       totalSize += getPaddingForAlignment(totalSize, 15);
       totalSize += getPaddingForAlignment(totalSize, DataType.getAlignment(table.dataType) - 1);
       rawTablePositions[table.dataType] = totalSize;
-      totalSize += DataType.getBytes(table.dataType) * table.row.length;
+      totalSize += table.dataType === DataType.Character
+        ? charTableLength
+        : DataType.getBytes(table.dataType) * table.row.length;
     });
-
-    if (hasCharTable) {
-      totalSize += getPaddingForAlignment(totalSize, 15);
-      rawTablePositions[DataType.Character] = totalSize;
-      totalSize += charTableLength;
-    }
 
     totalSize += getPaddingForAlignment(totalSize, 15);
     const buffer = Buffer.alloc(totalSize);
@@ -553,7 +601,6 @@ export default function writeSimData(model: SimDataDto): Buffer {
     });
 
     rawTables.forEach(table => {
-      // header
       encoder.int32(RELOFFSET_NULL);
       encoder.uint32(NO_NAME_HASH);
       encoder.int32(RELOFFSET_NULL);
@@ -561,35 +608,24 @@ export default function writeSimData(model: SimDataDto): Buffer {
       encoder.uint32(DataType.getBytes(table.dataType));
       const tableOffset = rawTablePositions[table.dataType];
       encoder.int32(tableOffset - encoder.tell());
-      encoder.uint32(table.row.length);
 
-      // data
-      encoder.savePos(() => {
-        encoder.seek(tableOffset);
-        table.row.forEach(writeCell);
-      });
-    });
-
-    if (hasCharTable) {
-      // header
-      encoder.int32(RELOFFSET_NULL);
-      encoder.uint32(NO_NAME_HASH);
-      encoder.int32(RELOFFSET_NULL);
-      encoder.uint32(DataType.Character);
-      encoder.uint32(1); // bytes for a char
-      const tableOffset = rawTablePositions[DataType.Character];
-      encoder.int32(tableOffset - encoder.tell());
-      encoder.uint32(charTableLength);
-
-      // data
-      encoder.savePos(() => {
-        encoder.seek(tableOffset);
-        stringsToAddToCharTable.forEach(string => {
-          encoder.charsUtf8(string);
-          encoder.skip(1);
+      if (table.dataType === DataType.Character) {
+        encoder.uint32(charTableLength);
+        encoder.savePos(() => {
+          encoder.seek(tableOffset);
+          stringsToAddToCharTable.forEach(string => {
+            encoder.charsUtf8(string);
+            encoder.skip(1);
+          });
         });
-      });
-    }
+      } else {
+        encoder.uint32(table.row.length);
+        encoder.savePos(() => {
+          encoder.seek(tableOffset);
+          table.row.forEach(writeCell);
+        });
+      }
+    });
 
     return buffer;
   })();
