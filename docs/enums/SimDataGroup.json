@@ -9,7 +9,7 @@
       "prefix": "enum",
       "name": "SimDataGroup"
     },
-    "description": "Group numbers to use for SimDatas of a specific tuning type. Note that tuning resources that use the generic Tuning type (such as modules and streets) do NOT have a direct mapping between tuning type and SimData group.",
+    "description": "Group numbers to use for SimDatas of a specific tuning type. Note that tuning resources that use the generic Tuning type (such as modules) do NOT have a direct mapping between tuning type and SimData group.",
     "sourceCode": "src/lib/enums/simdata-groups.ts"
   },
   "sections": [

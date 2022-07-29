@@ -103,6 +103,7 @@ enum TuningResourceType {
   WalkBy = 0x3FD6243E,
   WeatherEvent = 0x5806F5BA,
   WeatherForecast = 0x497F3271,
+  Whim = 0x749A0636,
   ZoneDirector = 0xF958A092,
   ZoneModifier = 0x3C1D8799,
 }
