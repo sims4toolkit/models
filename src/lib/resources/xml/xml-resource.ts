@@ -46,9 +46,7 @@ export default class XmlResource extends WritableModel implements Resource {
    */
   get dom(): XmlDocumentNode {
     try {
-      return this._dom ??= XmlDocumentNode.from(this.content, {
-        allowMultipleRoots: true
-      });
+      return this._dom ??= XmlDocumentNode.from(this.content);
     } catch (e) {
       throw new Error(`Failed to generate DOM from XML:\n${e}`);
     }
