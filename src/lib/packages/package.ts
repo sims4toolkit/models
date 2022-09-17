@@ -87,6 +87,30 @@ export default class Package<ResourceType extends Resource = Resource>
   }
 
   /**
+   * Returns a new Package that contains the entries of the given Packages.
+   * 
+   * @param packages Packages to merge into this one
+   */
+  static merge<T extends Resource = Resource>(
+    packages: Package<T>[]
+  ): Package<T> {
+    const entries: ResourceEntry<T>[] = [];
+    packages.forEach(pkg => entries.push(...pkg.entries));
+    return new Package(entries);
+  }
+
+  /**
+   * Returns a new Package that contains the entries of the given Packages.
+   * 
+   * @param packages Packages to merge into this one
+   */
+  static async mergeAsync<T extends Resource = Resource>(
+    packages: Package<T>[]
+  ): Promise<Package<T>> {
+    return promisify(() => Package.merge(packages));
+  }
+
+  /**
    * Streams resources from the file at the given location. This method is much,
    * much more space and time efficient than extractResources() when using a
    * resource filter and/or a limit. But, if reading an entire package, it will

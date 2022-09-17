@@ -10,7 +10,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add `minify` argument to all `getBuffer()` methods.
 - Add `writeBinary` property to CombinedTuningResource.
 - Add `combine()` and `combineAsync()` methods to CombinedTuningResource class.
-- Add `combineTuning()` method to Package class.
+- Add `combineTuning()` and `merge()` methods to Package class.
+- Add `merge()` method to StringTableResource class.
 ### Changed
 - Update dependencies on @s4tk/xml-dom and @s4tk/images.
 - CombinedTuningResource no longer throws on clone, equality check, or serialization.
