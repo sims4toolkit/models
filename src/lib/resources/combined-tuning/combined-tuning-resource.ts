@@ -259,6 +259,10 @@ export default class CombinedTuningResource extends DataResource {
   }
 
   protected _serialize(minify?: boolean): Buffer {
+    if (this.writeBinary)
+      // FIXME: remove when binary implemented
+      throw new Error("Writing CombinedTuningResource binary is not implemented. Set writeBinary = false and try again.");
+
     return Buffer.from(this.dom.toXml({
       minify,
       writeComments: !minify,

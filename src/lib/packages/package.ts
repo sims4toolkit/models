@@ -233,6 +233,9 @@ export default class Package<ResourceType extends Resource = Resource>
   combineTuning(creator: string, project: string, writeBinary = false) {
     if (!(creator && project))
       throw new Error("Creator and project names must be non-empty.");
+    if (writeBinary)
+      // FIXME: remove when binary implemented
+      throw new Error("Writing CombinedTuningResource binary is not implemented. Set writeBinary = false and try again.");
 
     const refSeed = fnv64(`${creator}_${project}:combinedTuning`);
 
