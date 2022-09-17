@@ -7,15 +7,41 @@ import ResourceRegistry from "../../packages/resource-registry";
 import DataResource, { BinaryDataResourceDto } from "../abstracts/data-resource";
 import XmlResource from "../xml/xml-resource";
 import convertCombinedBinaryToXml from "./serialization/binary-to-xml";
+import combineTunings from "./serialization/combine-xml";
 import extractTuningFromCombinedXml from "./serialization/extract-tuning";
 
+/** Arguments for CombinedTuningResource's constructor. */
+export interface CombinedTuningResourceCreationOptions extends
+  WritableModelCreationOptions,
+  Partial<{
+    /**
+     * Whether or not to write the CombinedTuningResource in binary DATA format.
+     * False by default.
+     */
+    writeBinary: boolean;
+  }> { };
+
 /**
- * Read-only model for combined tuning resources. Note that resource keys are
- * NOT specified in combined tuning - you must infer the type from the `R`
+ * Model for combined tuning resources. Note that resource keys are NOT
+ * specified in combined tuning - you must infer the type from the `R`
  * node's `n` attribute, and the group will match that of the CombinedTuning
  * that contains the resource.
  */
 export default class CombinedTuningResource extends DataResource {
+  private _writeBinary: boolean;
+
+  /** 
+   * Whether or not to write this combined tuning in binary DATA format.
+   * 
+   * NOTE: Setting this to `true` is currently unsupported. This only exists
+   * so that the model doesn't have to change when it's added.
+   */
+  get writeBinary(): boolean { return this._writeBinary; }
+  set writeBinary(value: boolean) {
+    this._clearBufferCacheIfSupported();
+    this._writeBinary = value;
+  }
+
   /**
    * Creates a new CombinedTuningResource from the given XML DOM.
    * 
@@ -24,9 +50,10 @@ export default class CombinedTuningResource extends DataResource {
    */
   constructor(
     public readonly dom: XmlDocumentNode,
-    options?: WritableModelCreationOptions
+    options?: CombinedTuningResourceCreationOptions
   ) {
     super(options);
+    this._writeBinary = options?.writeBinary ?? false;
   }
 
   //#region Static Methods
@@ -136,6 +163,55 @@ export default class CombinedTuningResource extends DataResource {
     );
   }
 
+  /**
+   * Combines the given tunings into one CombinedTuningResource. Note that
+   * combined tuning loads in a very particular manner, so some guidelines MUST
+   * be followed or you risk breaking your mod, other mods, and the game itself.
+   * 
+   * Before using this method and potentially setting the game on fire, please
+   * review this post that explains the risks of combining tuning:
+   * https://www.patreon.com/posts/72110305
+   * 
+   * @param tunings List of tunings to combine
+   * @param group Group of tunings
+   * @param refSeed Seed to use for reference IDs
+   * @param options Object of options
+   */
+  static combine(
+    tunings: XmlResource[],
+    group: number,
+    refSeed: bigint,
+    options?: WritableModelCreationOptions
+  ): CombinedTuningResource {
+    return new CombinedTuningResource(
+      combineTunings(tunings, group, refSeed),
+      options
+    );
+  }
+
+  /**
+   * Combines the given tunings into one CombinedTuningResource. Note that
+   * combined tuning loads in a very particular manner, so some guidelines MUST
+   * be followed or you risk breaking your mod, other mods, and the game itself.
+   * 
+   * Before using this method and potentially setting the game on fire, please
+   * review this post that explains the risks of combining tuning:
+   * https://www.patreon.com/posts/72110305
+   * 
+   * @param tunings List of tunings to combine
+   * @param group Group of tunings
+   * @param refSeed Seed to use for reference IDs
+   * @param options Object of options
+   */
+  static async combineAsync(
+    tunings: XmlResource[],
+    group: number,
+    refSeed: bigint,
+    options?: WritableModelCreationOptions
+  ): Promise<CombinedTuningResource> {
+    return promisify(() => CombinedTuningResource.combine(tunings, group, refSeed, options));
+  }
+
   //#endregion Static Methods
 
   //#region Public Methods
@@ -164,7 +240,7 @@ export default class CombinedTuningResource extends DataResource {
 
   //#endregion Public Methods
 
-  //#region Unsupported Methods
+  //#region Overridden Methods
 
   clone(): CombinedTuningResource {
     return new CombinedTuningResource(this.dom.clone(), {
@@ -178,11 +254,19 @@ export default class CombinedTuningResource extends DataResource {
     return this.dom.equals(other.dom);
   }
 
-  protected _serialize(): Buffer {
-    return Buffer.from(this.dom.toXml());
+  isXml(): boolean {
+    return !this._writeBinary;
   }
 
-  //#endregion Unsupported Methods
+  protected _serialize(minify?: boolean): Buffer {
+    return Buffer.from(this.dom.toXml({
+      minify,
+      writeComments: !minify,
+      writeProcessingInstructions: !minify
+    }));
+  }
+
+  //#endregion Overridden Methods
 }
 
 ResourceRegistry.registerTypes(

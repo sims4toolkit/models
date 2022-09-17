@@ -8,9 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.7.0] - 2022/09/17
 ### Added
 - Add `minify` argument to all `getBuffer()` methods.
+- Add `writeBinary` property to CombinedTuningResource.
+- Add `combine()` and `combineAsync()` methods to CombinedTuningResource.
 ### Changed
 - Update dependencies on @s4tk/xml-dom and @s4tk/images.
 - CombinedTuningResource no longer throws on clone, equality check, or serialization.
+- CombinedTuningResource.isXml() is now true when `writeBinary === false`.
 - Minor optimization when loading resources in packages.
 
 ## [0.6.5] - 2022/08/07
