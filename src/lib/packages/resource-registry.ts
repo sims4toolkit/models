@@ -1,3 +1,4 @@
+import { formatResourceType } from "@s4tk/hashing/formatting";
 import type Resource from "../resources/resource";
 import type { WritableModelFromOptions } from "../base/writable-model";
 
@@ -50,15 +51,13 @@ class _ResourceRegistry {
     options?: WritableModelFromOptions
   ): Resource {
     const cls = this.getResourceClass(type, buffer);
-    // throwing exception if "from" doesn't exist is fine, there is an option
-    // when parsing packages that will decide what to do
-    return cls["from"](buffer, options);
+    return cls ? cls["from"](buffer, options) : undefined;
   }
 
   private getResourceClass(type: number, buffer: Buffer): any {
     return this._typedClasses.get(type) ?? this._conditionalClasses.find(
       ({ condition }) => condition(type, buffer)
-    ).cls;
+    )?.cls;
   }
 }
 
