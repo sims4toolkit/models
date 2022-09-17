@@ -169,8 +169,8 @@ export default class CombinedTuningResource extends DataResource {
    * be followed or you risk breaking your mod, other mods, and the game itself.
    * 
    * Before using this method and potentially setting the game on fire, please
-   * review this post that explains the risks of combining tuning:
-   * https://www.patreon.com/posts/72110305
+   * review [this post](https://www.patreon.com/posts/72110305) that explains
+   * the risks of using combining tuning and how to do so responsibly.
    * 
    * @param tunings List of tunings to combine
    * @param group Group of tunings
@@ -181,7 +181,7 @@ export default class CombinedTuningResource extends DataResource {
     tunings: XmlResource[],
     group: number,
     refSeed: bigint,
-    options?: WritableModelCreationOptions
+    options?: CombinedTuningResourceCreationOptions
   ): CombinedTuningResource {
     return new CombinedTuningResource(
       combineTunings(tunings, group, refSeed),
@@ -195,8 +195,8 @@ export default class CombinedTuningResource extends DataResource {
    * be followed or you risk breaking your mod, other mods, and the game itself.
    * 
    * Before using this method and potentially setting the game on fire, please
-   * review this post that explains the risks of combining tuning:
-   * https://www.patreon.com/posts/72110305
+   * review [this post](https://www.patreon.com/posts/72110305) that explains
+   * the risks of using combining tuning and how to do so responsibly.
    * 
    * @param tunings List of tunings to combine
    * @param group Group of tunings
@@ -207,7 +207,7 @@ export default class CombinedTuningResource extends DataResource {
     tunings: XmlResource[],
     group: number,
     refSeed: bigint,
-    options?: WritableModelCreationOptions
+    options?: CombinedTuningResourceCreationOptions
   ): Promise<CombinedTuningResource> {
     return promisify(() => CombinedTuningResource.combine(tunings, group, refSeed, options));
   }

@@ -1,11 +1,16 @@
-import type Resource from "../resources/resource";
+import { fnv64 } from "@s4tk/hashing";
 import type { ResourceKey, ResourceKeyPair, ResourcePosition } from "./types";
-import type { PackageFileReadingOptions } from "../common/options";
+import type Resource from "../resources/resource";
 import { MappedModel } from "../base/mapped-model";
+import type { PackageFileReadingOptions } from "../common/options";
 import { arraysAreEqual, promisify } from "../common/helpers";
 import { fetchResources, getResourcePositions, readDbpf, streamDbpf } from "./serialization/read-dbpf";
 import writeDbpf from "./serialization/write-dbpf";
 import ResourceEntry from "./resource-entry";
+import BinaryResourceType from "../enums/binary-resources";
+import TuningResourceType from "../enums/tuning-resources";
+import XmlResource from "../resources/xml/xml-resource";
+import CombinedTuningResource from "../resources/combined-tuning/combined-tuning-resource";
 
 /**
  * Model for a Sims 4 package file (also called a "Database Packed File", or
@@ -205,6 +210,60 @@ export default class Package<ResourceType extends Resource = Resource>
 
   clone(): Package<ResourceType> {
     return new Package<ResourceType>(this.entries.map(entry => entry.clone()));
+  }
+
+  /**
+   * Compresses all XmlResources in this Package into CombinedTuningResources
+   * (one per group) and deletes the originals.
+   * 
+   * Before using this method and potentially setting the game on fire, please
+   * review [this post](https://www.patreon.com/posts/72110305) that explains
+   * the risks of using combining tuning and how to do so responsibly.
+   * 
+   * It is of utmost importance that the provided creator/project names are
+   * universally unique. These are not only used for the instance of the
+   * combined tuning, but also for the seed that is used for node refs.
+   * **IF YOU FAIL TO MAKE THESE UNIQUE, YOU WILL BREAK THE GAME.**
+   * 
+   * @param creator The creator of the project being combined
+   * @param project The name of the project being combined
+   * @param writeBinary Whether or not the combined tunings should be binary
+   * @throws If any tunings in this Package were loaded raw
+   */
+  combineTuning(creator: string, project: string, writeBinary = false) {
+    if (!(creator && project))
+      throw new Error("Creator and project names must be non-empty.");
+
+    const refSeed = fnv64(`${creator}_${project}:combinedTuning`);
+
+    // organizing tunings by group
+    const groupMap = new Map<number, ResourceEntry<XmlResource>[]>();
+    this.entries.forEach(entry => {
+      if (!(entry.key.type in TuningResourceType)) return;
+      if (!groupMap.has(entry.key.group)) groupMap.set(entry.key.group, []);
+      const tunings = groupMap.get(entry.key.group);
+      tunings.push(entry as unknown as ResourceEntry<XmlResource>);
+    });
+
+    // creating/adding combined tunings
+    groupMap.forEach((entries, group) => {
+      const tunings = entries.map(entry => {
+        this.delete(entry.id);
+        return entry.value;
+      });
+
+      const combined = CombinedTuningResource.combine(tunings, group, refSeed, {
+        writeBinary
+      });
+
+      const key = {
+        type: BinaryResourceType.CombinedTuning,
+        group: group,
+        instance: fnv64(`${creator}_${project}:combinedTuning_${group}`)
+      };
+
+      this.add(key, combined as unknown as ResourceType);
+    });
   }
 
   equals(other: Package): boolean {
