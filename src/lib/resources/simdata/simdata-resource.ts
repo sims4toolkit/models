@@ -339,7 +339,7 @@ export default class SimDataResource extends DataResource implements SimDataDto 
   //#endregion Protected Methods
 }
 
-ResourceRegistry.register(
+ResourceRegistry.registerTypes(
   SimDataResource,
-  type => type === BinaryResourceType.SimData
+  BinaryResourceType.SimData
 );

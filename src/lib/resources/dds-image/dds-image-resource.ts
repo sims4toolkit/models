@@ -139,10 +139,8 @@ export default class DdsImageResource extends StaticResource {
   //#endregion Public Methods
 }
 
-ResourceRegistry.register(
+ResourceRegistry.registerTypes(
   DdsImageResource,
-  type => {
-    return type === BinaryResourceType.DstImage ||
-      type === BinaryResourceType.DdsImage;
-  }
+  BinaryResourceType.DstImage,
+  BinaryResourceType.DdsImage
 );

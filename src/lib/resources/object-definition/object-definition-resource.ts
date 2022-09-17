@@ -193,7 +193,7 @@ export default class ObjectDefinitionResource
   //#endregion Protected Methods
 }
 
-ResourceRegistry.register(
+ResourceRegistry.registerTypes(
   ObjectDefinitionResource,
-  type => type === BinaryResourceType.ObjectDefinition
+  BinaryResourceType.ObjectDefinition
 );

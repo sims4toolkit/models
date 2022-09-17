@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.7.0] - 2022/09/17
+### Added
+- TODO:
+### Changed
+- Update dependency on @s4tk/xml-dom.
+- CombinedTuningResource can now be cloned, checked for equality, and serialized.
+- Minor optimization when loading resources in packages.
+
 ## [0.6.5] - 2022/08/07
 ### Changed
 - Update dependency on @s4tk/xml-dom.

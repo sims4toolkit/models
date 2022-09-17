@@ -185,7 +185,7 @@ export default class CombinedTuningResource extends DataResource {
   //#endregion Unsupported Methods
 }
 
-ResourceRegistry.register(
+ResourceRegistry.registerTypes(
   CombinedTuningResource,
-  type => type === BinaryResourceType.CombinedTuning
+  BinaryResourceType.CombinedTuning
 );

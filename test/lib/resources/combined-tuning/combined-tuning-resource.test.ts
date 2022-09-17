@@ -225,7 +225,7 @@ describe("CombinedTuningResource", () => {
     });
   });
 
-  describe("#isxml()", () => {
+  describe("#isXml()", () => {
     it("should be false", () => {
       const cb = CombinedTuningResource.from(xmlBuffer);
       expect(cb.isXml()).to.be.false;
@@ -233,23 +233,47 @@ describe("CombinedTuningResource", () => {
   });
 
   describe("#clone()", () => {
-    it("should throw an exception", () => {
+    it("should copy the resource", () => {
       const cb = CombinedTuningResource.from(xmlBuffer);
-      expect(() => cb.clone()).to.throw("Cloning CombinedTuningResource is not supported.");
+      const clone = cb.clone();
+      expect(clone).to.not.equal(cb);
+    });
+
+    it("should be equal to the original", () => {
+      const cb = CombinedTuningResource.from(xmlBuffer);
+      const clone = cb.clone();
+      expect(clone.equals(cb)).to.be.true;
+    });
+
+    it("should not mutate the original", () => {
+      const cb = CombinedTuningResource.from(xmlBuffer);
+      const clone = cb.clone();
+      clone.dom.child.tag = "not-combined";
+      expect(clone.dom.child.tag).to.equal("not-combined");
+      expect(cb.dom.child.tag).to.equal("combined");
     });
   });
 
   describe("#equals()", () => {
-    it("should throw an exception", () => {
+    it("should be true when they're the same", () => {
       const cb = CombinedTuningResource.from(xmlBuffer);
-      expect(() => cb.equals(cb)).to.throw("Comparing CombinedTuningResource is not supported.");
+      const clone = cb.clone();
+      expect(clone.equals(cb)).to.be.true;
+    });
+
+    it("should be false when they're not the same", () => {
+      const cb = CombinedTuningResource.from(xmlBuffer);
+      const clone = cb.clone();
+      clone.dom.child.tag = "not-combined";
+      expect(clone.equals(cb)).to.be.false;
     });
   });
 
   describe("#getBuffer()", () => {
-    it("should throw an exception if buffer not saved", () => {
+    it("should return an XML buffer", () => {
       const cb = CombinedTuningResource.from(xmlBuffer);
-      expect(() => cb.getBuffer()).to.throw("Serializing CombinedTuningResource is not supported.");
+      const buffer = cb.getBuffer();
+      expect(xmlBuffer.compare(buffer)).to.equal(0);
     });
   });
 

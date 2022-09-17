@@ -12,7 +12,8 @@ interface ConditionalResourceClass {
  * A singleton class that keeps track of resources and when to initialize them.
  */
 class _ResourceRegistry {
-  constructor(private _resourceClasses: ConditionalResourceClass[] = []) { }
+  private _conditionalClasses: ConditionalResourceClass[] = [];
+  private _typedClasses: Map<number, any> = new Map();
 
   /**
    * Registers a resource class so that it can be parsed in a package.
@@ -22,7 +23,17 @@ class _ResourceRegistry {
    * true if this class should be used for it
    */
   register(cls: any, condition: ResourceCondition) {
-    this._resourceClasses.push({ cls, condition });
+    this._conditionalClasses.push({ cls, condition });
+  }
+
+  /**
+   * Registers a resource class that is associated with a closed set of types.
+   * 
+   * @param cls Class that is being registered
+   * @param types The specific types associated with the given resource
+   */
+  registerTypes(cls: any, ...types: number[]) {
+    types.forEach(type => this._typedClasses.set(type, cls));
   }
 
   /**
@@ -33,11 +44,21 @@ class _ResourceRegistry {
    * @param buffer Decompressed buffer containing the resource's data
    * @param options Options to pass to the `from()` method
    */
-  generateResourceFromBuffer(type: number, buffer: Buffer, options?: WritableModelFromOptions): Resource {
-    for (let i = 0; i < this._resourceClasses.length; i++) {
-      const { cls, condition } = this._resourceClasses[i];
-      if (condition(type, buffer)) return cls['from'](buffer, options);
-    }
+  generateResourceFromBuffer(
+    type: number,
+    buffer: Buffer,
+    options?: WritableModelFromOptions
+  ): Resource {
+    const cls = this.getResourceClass(type, buffer);
+    // throwing exception if "from" doesn't exist is fine, there is an option
+    // when parsing packages that will decide what to do
+    return cls["from"](buffer, options);
+  }
+
+  private getResourceClass(type: number, buffer: Buffer): any {
+    return this._typedClasses.get(type) ?? this._conditionalClasses.find(
+      ({ condition }) => condition(type, buffer)
+    ).cls;
   }
 }
 

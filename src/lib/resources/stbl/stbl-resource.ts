@@ -144,7 +144,7 @@ export default class StringTableResource extends PrimitiveMappedModel<string, St
   //#region Protected Methods
 }
 
-ResourceRegistry.register(
+ResourceRegistry.registerTypes(
   StringTableResource,
-  type => type === BinaryResourceType.StringTable
+  BinaryResourceType.StringTable
 );
