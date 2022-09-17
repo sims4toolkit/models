@@ -8,8 +8,9 @@ const HEADER_BYTE_SIZE = 96;
  * Writes the given resource entries into a DBPF buffer.
  * 
  * @param entries DBPF entries to serialize into a buffer
+ * @param minify Whether or not resources should be minified
  */
-export default function writeDbpf(entries: ResourceKeyPair[]): Buffer {
+export default function writeDbpf(entries: ResourceKeyPair[], minify = false): Buffer {
   const entryBuffers: CompressedBuffer[] = [];
 
   const indexBuffer: Buffer = (() => {
@@ -21,7 +22,8 @@ export default function writeDbpf(entries: ResourceKeyPair[]): Buffer {
 
     let recordOffset = 0;
     entries.forEach((entry) => {
-      const entryBuffer = entry.value.getCompressedBuffer();
+      // FIXME: shouldn't there be an option to save buffers?
+      const entryBuffer = entry.value.getCompressedBuffer(undefined, undefined, minify);
       entryBuffers.push(entryBuffer);
       encoder.uint32(entry.key.type); // mType
       encoder.uint32(entry.key.group); // mGroup

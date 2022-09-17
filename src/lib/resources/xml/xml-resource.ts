@@ -181,8 +181,16 @@ export default class XmlResource extends WritableModel implements Resource {
 
   //#region Protected Methods
 
-  protected _serialize(): Buffer {
-    return Buffer.from(this.content, 'utf-8');
+  protected _serialize(minify?: boolean): Buffer {
+    const xmlContent = minify
+      ? this.dom.toXml({
+        minify: true,
+        writeComments: false,
+        writeProcessingInstructions: false
+      })
+      : this.content;
+
+    return Buffer.from(xmlContent, "utf-8");
   }
 
   //#endregion Protected Methods

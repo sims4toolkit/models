@@ -86,8 +86,10 @@ export default abstract class WritableModel extends ApiModelBase {
    * @param cache Whether or not the buffer that is returned by this method
    * should be cached. If the buffer is already cached, it will not be deleted
    * if this argument is false. False by default.
+   * @param minify Whether or not to minify the output buffer, if possible. Not
+   * all models can be minified. False by default.
    */
-  getBuffer(cache: boolean = false): Buffer {
+  getBuffer(cache = false, minify = false): Buffer {
     let decompressedBuffer: Buffer;
 
     if (this._bufferCache) {
@@ -99,7 +101,7 @@ export default abstract class WritableModel extends ApiModelBase {
         decompressedBuffer = decompressBuffer(buffer, compressionType);
       }
     } else {
-      decompressedBuffer = this._serialize();
+      decompressedBuffer = this._serialize(minify);
     }
 
     // at this point, there either is no cache or the cache isn't uncompressed, so overwrite it
@@ -121,9 +123,11 @@ export default abstract class WritableModel extends ApiModelBase {
    * @param cache Whether or not the buffer that is returned by this method
    * should be cached. If the buffer is already cached, it will not be deleted
    * if this argument is false. False by default.
+   * @param minify Whether or not to minify the output buffer, if possible. Not
+   * all models can be minified. False by default.
    */
-  async getBufferAsync(cache?: boolean): Promise<Buffer> {
-    return promisify(() => this.getBuffer(cache));
+  async getBufferAsync(cache?: boolean, minify?: boolean): Promise<Buffer> {
+    return promisify(() => this.getBuffer(cache, minify));
   }
 
   /**
@@ -136,10 +140,13 @@ export default abstract class WritableModel extends ApiModelBase {
    * @param cache Whether or not the buffer that is returned by this method
    * should be cached. If the buffer is already cached, it will not be deleted
    * if this argument is false. False by default.
+   * @param minify Whether or not to minify the output buffer, if possible. Not
+   * all models can be minified. False by default.
    */
   getCompressedBuffer(
-    targetCompressionType: CompressionType = this.defaultCompressionType,
-    cache: boolean = false,
+    targetCompressionType = this.defaultCompressionType,
+    cache = false,
+    minify = false
   ): CompressedBuffer {
     let decompressedBuffer: Buffer;
 
@@ -152,7 +159,7 @@ export default abstract class WritableModel extends ApiModelBase {
         decompressedBuffer = decompressBuffer(buffer, compressionType);
       }
     } else {
-      decompressedBuffer = this._serialize();
+      decompressedBuffer = this._serialize(minify);
     }
 
     const wrapper: CompressedBuffer = {
@@ -176,12 +183,15 @@ export default abstract class WritableModel extends ApiModelBase {
    * @param cache Whether or not the buffer that is returned by this method
    * should be cached. If the buffer is already cached, it will not be deleted
    * if this argument is false. False by default.
+   * @param minify Whether or not to minify the output buffer, if possible. Not
+   * all models can be minified. False by default.
    */
   async getCompressedBufferAsync(
     targetCompressionType?: CompressionType,
     cache?: boolean,
+    minify?: boolean
   ): Promise<CompressedBuffer> {
-    return promisify(() => this.getCompressedBuffer(targetCompressionType, cache));
+    return promisify(() => this.getCompressedBuffer(targetCompressionType, cache, minify));
   }
 
   onChange() {
@@ -203,8 +213,10 @@ export default abstract class WritableModel extends ApiModelBase {
 
   /**
    * Returns a newly serialized, decompressed buffer for this model.
+   * 
+   * @param minify Whether or not the output buffer should be minified
    */
-  protected abstract _serialize(): Buffer;
+  protected abstract _serialize(minify?: boolean): Buffer;
 
   //#endregion Protected Methods
 }

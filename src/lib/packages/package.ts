@@ -226,8 +226,8 @@ export default class Package<ResourceType extends Resource = Resource>
     return new ResourceEntry(key, value, this);
   }
 
-  protected _serialize(): Buffer {
-    return writeDbpf(this.entries);
+  protected _serialize(minify?: boolean): Buffer {
+    return writeDbpf(this.entries, minify);
   }
 
   //#endregion Protected Methods

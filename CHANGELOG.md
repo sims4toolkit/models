@@ -7,10 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.7.0] - 2022/09/17
 ### Added
-- TODO:
+- Add `minify` argument to all `getBuffer()` methods.
 ### Changed
-- Update dependency on @s4tk/xml-dom.
-- CombinedTuningResource can now be cloned, checked for equality, and serialized.
+- Update dependencies on @s4tk/xml-dom and @s4tk/images.
+- CombinedTuningResource no longer throws on clone, equality check, or serialization.
 - Minor optimization when loading resources in packages.
 
 ## [0.6.5] - 2022/08/07
