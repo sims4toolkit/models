@@ -167,15 +167,19 @@ export default class CombinedTuningResource extends DataResource {
   //#region Unsupported Methods
 
   clone(): CombinedTuningResource {
-    throw new Error("Cloning CombinedTuningResource is not supported.");
+    return new CombinedTuningResource(this.dom.clone(), {
+      defaultCompressionType: this.defaultCompressionType,
+      initialBufferCache: this.bufferCache
+    });
   }
 
-  equals(other: any): boolean {
-    throw new Error("Comparing CombinedTuningResource is not supported.");
+  equals(other: CombinedTuningResource): boolean {
+    if (!(other instanceof CombinedTuningResource)) return false;
+    return this.dom.equals(other.dom);
   }
 
   protected _serialize(): Buffer {
-    throw new Error("Serializing CombinedTuningResource is not supported.");
+    return Buffer.from(this.dom.toXml());
   }
 
   //#endregion Unsupported Methods

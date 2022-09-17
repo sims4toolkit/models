@@ -48,7 +48,7 @@
     "@s4tk/encoding": "^0.1.4",
     "@s4tk/hashing": "^0.2.1",
     "@s4tk/images": "^0.2.2",
-    "@s4tk/xml-dom": "^0.2.1",
+    "@s4tk/xml-dom": "^0.2.3",
     "just-clone": "^5.0.1",
     "just-compare": "^2.0.1"
   }
