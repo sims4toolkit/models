@@ -7,6 +7,7 @@ import { Attributes } from "@s4tk/xml-dom/lib/types";
 // this is fragile and dumb. But, it's faster and easier than generating these
 // buffers programmatically, which would provide the same result.
 const SCHEMA_STBL = "/AAAAPNPtCiAkDDRFAAAADgAAAAEAAAANQEAAOR6u/gytrkLDAAAAHAAAAADAAAAQAEAAOASDEeytoqfCAAAAJQAAAACAAAA4AAAAKtDsQEHAAAACAAAAAAAAICyAAAAnPjYfA0AAAAAAAAAAAAAgKwAAAAHr9iBDQAAAAQAAAAAAACAsgAAADtdCKgOAAAADAAAAAAAAIDOAAAA6Be8mQ0AAAAIAAAAAAAAgK8AAAA4+iuxBwAAAAAAAAAAAACAoAAAACslGcgNAAAABAAAAAAAAIC0AAAA3GPtKAcAAAAEAAAAAAAAgJsAAAD0O4svBwAAAAAAAAAAAACAUGFja2VkWG1sRG9jdW1lbnQAZmlyc3RfZWxlbWVudAB0b3BfZWxlbWVudABlbGVtZW50X2NvdW50AHN0cmluZ190YWJsZQBkb2N1bWVudHMAUGFja2VkWG1sTm9kZQB0ZXh0AGF0dHJzAGNoaWxkcmVuAABQYWNrZWRYbWxBdHRyaWJ1dGUAbmFtZQB2YWx1ZQAAAAAA";
+const SCHEMA_SIZE = 24;
 const STBL_OFFSET = 252;
 const EMPTY_LIST = [];
 
@@ -16,6 +17,7 @@ type RefIndicesTable = number[][];
 type TextAttrsChildIndicesTuple = [number, number, number];
 
 const getAttrKeyString = (pair: NameValueIndicesTuple) => `${pair[0]}=${pair[1]}`;
+const getPaddingForAlignment = (index: number, mask: number) => -index & mask;
 
 /**
  * TODO:
@@ -26,8 +28,8 @@ export default function combinedXmlToBinary(dom: XmlDocumentNode): Buffer {
   //#region Variables
 
   // tables 5 & 6 (referenced by 1 & 2)
-  let nextStringIndex = 0;
-  let nextStringOffset = 0;
+  let stringsCount = 0;
+  let stringsByteLength = 0;
   const stringMap = new Map<string, IndexOffsetTuple>();
 
   // table 2 (referenced by 4)
@@ -40,6 +42,7 @@ export default function combinedXmlToBinary(dom: XmlDocumentNode): Buffer {
   const attrListsIndexMap = new Map<string, number>();
 
   // table 1 (referenced by 3)
+  const valueNodesTable: number[] = [];
   const valueNodesIndexMap = new Map<string, number>();
   const elementNodesTable: TextAttrsChildIndicesTuple[] = [];
   const elementNodesIndexMap = new Map<string, number>();
@@ -63,9 +66,9 @@ export default function combinedXmlToBinary(dom: XmlDocumentNode): Buffer {
    */
   function addToStringMap(string: string): IndexOffsetTuple {
     if (stringMap.has(string)) return stringMap.get(string);
-    const value: IndexOffsetTuple = [nextStringIndex++, nextStringOffset];
+    const value: IndexOffsetTuple = [stringsCount++, stringsByteLength];
     stringMap.set(string, value);
-    nextStringOffset += Buffer.byteLength(string) + 1;
+    stringsByteLength += Buffer.byteLength(string) + 1;
     return value;
   }
 
@@ -154,10 +157,12 @@ export default function combinedXmlToBinary(dom: XmlDocumentNode): Buffer {
 
       return elementNodesIndexMap.get(nodeKey);
     } else { // value node (guaranteed to be string)
-      addToStringMap(node.value as string);
+      const [valueIndex] = addToStringMap(node.value as string);
 
-      if (!valueNodesIndexMap.has(node.value as string))
+      if (!valueNodesIndexMap.has(node.value as string)) {
+        valueNodesTable.push(valueIndex);
         valueNodesIndexMap.set(node.value as string, valueNodesIndexMap.size);
+      }
 
       return valueNodesIndexMap.get(node.value as string);
     }
@@ -165,33 +170,38 @@ export default function combinedXmlToBinary(dom: XmlDocumentNode): Buffer {
 
   //#endregion Functions
 
-  //#region Processing
+  //#region Preparing for Buffers
 
   const topElementRelativeIndex = processNodeAndChildren(dom.child);
-  // TODO: everything else
+  // TODO: everything else 
 
-  //#endregion Processing
+  const tableLengths: number[] = (() => {
+    let currentIndex = 240;
+    const tableLengths: number[] = [];
+
+    const nextLength = (length: number) => {
+      currentIndex += length;
+      const padding = getPaddingForAlignment(currentIndex, 15);
+      currentIndex += padding;
+      tableLengths.push(length + padding);
+    };
+
+    nextLength(20); // 0
+    nextLength((valueNodesTable.length + elementNodesTable.length) * 12); // 1
+    nextLength(attrPairsTable.length * 8); // 2
+    nextLength(childNodesTableLength * 4); // 3
+    nextLength(attrListsTableLength * 4); // 4
+    nextLength(stringsCount * 4); // 5
+    nextLength(stringsByteLength); // 6
+
+    return tableLengths;
+  })();
+
+  //#endregion Preparing for Buffers
 
   //#region Buffer Generation
 
-  const headerBuffer = (() => {
-    const encoder = BinaryEncoder.alloc(32);
-    encoder.charsUtf8("DATA"); // magic
-    encoder.uint32(0x101); // version
-    encoder.int32(24); // table offset
-    encoder.int32(7); // num tables
-    encoder.int32(0); // schema offset FIXME: calculate
-    encoder.int32(3); // num schemas
-    encoder.uint32(0xFFFFFFFF); // unused
-    // last 4 bytes intentionally blank
-    return encoder.buffer;
-  })();
-
-  const tableInfoBuffer = (() => {
-    const encoder = BinaryEncoder.alloc(0); // FIXME: size
-    // TODO: implement
-    return encoder.buffer;
-  })();
+  const schemaStblBuffer = Buffer.from(SCHEMA_STBL, "base64");
 
   const tableDataBuffer = (() => {
     const encoder = BinaryEncoder.alloc(0); // FIXME: size
@@ -199,7 +209,24 @@ export default function combinedXmlToBinary(dom: XmlDocumentNode): Buffer {
     return encoder.buffer;
   })();
 
-  const schemaStblBuffer = Buffer.from(SCHEMA_STBL, "base64");
+  const tableInfoBuffer = (() => {
+    const encoder = BinaryEncoder.alloc(208); // 7 infos * 28 bytes + 12 padding
+    // TODO: implement
+    return encoder.buffer;
+  })();
+
+  const headerBuffer = (() => {
+    const encoder = BinaryEncoder.alloc(32);
+    encoder.charsUtf8("DATA"); // magic
+    encoder.uint32(0x101); // version
+    encoder.int32(24); // table offset
+    encoder.int32(7); // num tables
+    encoder.int32(encoder.tell() + tableInfoBuffer.length + tableDataBuffer.length); // schema offset
+    encoder.int32(3); // num schemas
+    encoder.uint32(0xFFFFFFFF); // unused
+    // last 4 bytes intentionally blank
+    return encoder.buffer;
+  })();
 
   //#endregion Buffer Generation
 
