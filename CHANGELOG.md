@@ -17,6 +17,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - CombinedTuningResource no longer throws on clone, equality check, or serialization.
 - CombinedTuningResource.isXml() is now true when `writeBinary === false`.
 - Minor optimization when loading resources in packages.
+### Fixed
+- Unhandled exceptions will no longer output squish.js to the console.
 
 ## [0.6.5] - 2022/08/07
 ### Changed
