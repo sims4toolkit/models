@@ -1,23 +1,97 @@
 import { BinaryEncoder } from "@s4tk/encoding";
 import { XmlDocumentNode, XmlElementNode, XmlNode } from "@s4tk/xml-dom";
 import { Attributes } from "@s4tk/xml-dom/lib/types";
+import DataType from "../../../enums/data-type";
 
-// This string contains the base-64 encoded data for the schemas, columns, and
-// string table portion that is common to every binary combined tuning. Yes,
-// this is fragile and dumb. But, it's faster and easier than generating these
-// buffers programmatically, which would provide the same result.
-const SCHEMA_STBL = "/AAAAPNPtCiAkDDRFAAAADgAAAAEAAAANQEAAOR6u/gytrkLDAAAAHAAAAADAAAAQAEAAOASDEeytoqfCAAAAJQAAAACAAAA4AAAAKtDsQEHAAAACAAAAAAAAICyAAAAnPjYfA0AAAAAAAAAAAAAgKwAAAAHr9iBDQAAAAQAAAAAAACAsgAAADtdCKgOAAAADAAAAAAAAIDOAAAA6Be8mQ0AAAAIAAAAAAAAgK8AAAA4+iuxBwAAAAAAAAAAAACAoAAAACslGcgNAAAABAAAAAAAAIC0AAAA3GPtKAcAAAAEAAAAAAAAgJsAAAD0O4svBwAAAAAAAAAAAACAUGFja2VkWG1sRG9jdW1lbnQAZmlyc3RfZWxlbWVudAB0b3BfZWxlbWVudABlbGVtZW50X2NvdW50AHN0cmluZ190YWJsZQBkb2N1bWVudHMAUGFja2VkWG1sTm9kZQB0ZXh0AGF0dHJzAGNoaWxkcmVuAABQYWNrZWRYbWxBdHRyaWJ1dGUAbmFtZQB2YWx1ZQAAAAAA";
-const SCHEMA_SIZE = 24;
-const STBL_OFFSET = 252;
-const EMPTY_LIST = [];
+//#region Types
 
 type IndexOffsetTuple = [number, number];
 type NameValueIndicesTuple = [number, number];
 type RefIndicesTable = number[][];
 type TextAttrsChildIndicesTuple = [number, number, number];
 
+interface ConstantTableInfo {
+  relativeNameOffset: number;
+  nameHash: number;
+  relativeSchemaOffset: number;
+  dataType: DataType;
+  rowSize: number;
+}
+
+//#endregion Types
+
+//#region Constants
+
+// This string contains the base-64 encoded data for the schemas, columns, and
+// string table portion that is common to every binary combined tuning. Yes,
+// this is fragile and dumb. But, it's faster and easier than generating these
+// buffers programmatically, which would provide the same result.
+const SCHEMA_STBL = "/AAAAPNPtCiAkDDRFAAAADgAAAAEAAAANQEAAOR6u/gytrkLDAAAAHAAAAADAAAAQAEAAOASDEeytoqfCAAAAJQAAAACAAAA4AAAAKtDsQEHAAAACAAAAAAAAICyAAAAnPjYfA0AAAAAAAAAAAAAgKwAAAAHr9iBDQAAAAQAAAAAAACAsgAAADtdCKgOAAAADAAAAAAAAIDOAAAA6Be8mQ0AAAAIAAAAAAAAgK8AAAA4+iuxBwAAAAAAAAAAAACAoAAAACslGcgNAAAABAAAAAAAAIC0AAAA3GPtKAcAAAAEAAAAAAAAgJsAAAD0O4svBwAAAAAAAAAAAACAUGFja2VkWG1sRG9jdW1lbnQAZmlyc3RfZWxlbWVudAB0b3BfZWxlbWVudABlbGVtZW50X2NvdW50AHN0cmluZ190YWJsZQBkb2N1bWVudHMAUGFja2VkWG1sTm9kZQB0ZXh0AGF0dHJzAGNoaWxkcmVuAABQYWNrZWRYbWxBdHRyaWJ1dGUAbmFtZQB2YWx1ZQAAAAAA";
+const STBL_OFFSET = 252;
+const RELOFFSET_NULL = -0x80000000;
+const EMPTY_STRING_HASH = 2166136261;
+const EMPTY_LIST = [];
+
+const CONSTANT_TABLE_INFO: ConstantTableInfo[] = [
+  { // 0
+    relativeNameOffset: 0x143,
+    nameHash: 3468580057,
+    relativeSchemaOffset: 0,
+    dataType: DataType.Object,
+    rowSize: 20
+  },
+  { // 1
+    relativeNameOffset: 0x16F,
+    nameHash: EMPTY_STRING_HASH,
+    relativeSchemaOffset: 24,
+    dataType: DataType.Object,
+    rowSize: 12
+  },
+  { // 2
+    relativeNameOffset: 0x18E,
+    nameHash: EMPTY_STRING_HASH,
+    relativeSchemaOffset: 48,
+    dataType: DataType.Object,
+    rowSize: 8
+  },
+  { // 3
+    relativeNameOffset: 0x18F,
+    nameHash: EMPTY_STRING_HASH,
+    relativeSchemaOffset: RELOFFSET_NULL,
+    dataType: DataType.Object,
+    rowSize: 4
+  },
+  { // 4
+    relativeNameOffset: 0x190,
+    nameHash: EMPTY_STRING_HASH,
+    relativeSchemaOffset: RELOFFSET_NULL,
+    dataType: DataType.Object,
+    rowSize: 4
+  },
+  { // 5
+    relativeNameOffset: 0x191,
+    nameHash: EMPTY_STRING_HASH,
+    relativeSchemaOffset: RELOFFSET_NULL,
+    dataType: DataType.String,
+    rowSize: 4
+  },
+  { // 6
+    relativeNameOffset: RELOFFSET_NULL,
+    nameHash: EMPTY_STRING_HASH,
+    relativeSchemaOffset: RELOFFSET_NULL,
+    dataType: DataType.Character,
+    rowSize: 1
+  },
+];
+
+//#endregion Constants
+
+//#region Helpers
+
 const getAttrKeyString = (pair: NameValueIndicesTuple) => `${pair[0]}=${pair[1]}`;
 const getPaddingForAlignment = (index: number, mask: number) => -index & mask;
+
+//#endregion Helpers
 
 /**
  * TODO:
@@ -173,13 +247,14 @@ export default function combinedXmlToBinary(dom: XmlDocumentNode): Buffer {
   //#region Preparing for Buffers
 
   const topElementRelativeIndex = processNodeAndChildren(dom.child);
-  // TODO: everything else 
 
+  const tableStartingIndices: number[] = [];
   const tableLengths: number[] = (() => {
     let currentIndex = 240;
     const tableLengths: number[] = [];
 
     const nextLength = (length: number) => {
+      tableStartingIndices.push(currentIndex);
       currentIndex += length;
       const padding = getPaddingForAlignment(currentIndex, 15);
       currentIndex += padding;
@@ -197,6 +272,16 @@ export default function combinedXmlToBinary(dom: XmlDocumentNode): Buffer {
     return tableLengths;
   })();
 
+  const metaData = {
+    firstElement: 0, // FIXME:
+    topElement: 0, // FIXME:
+    elementCount: elementNodesTable.length,
+    stringTable: {
+      offset: 0, // FIXME:
+      count: stringsCount
+    }
+  };
+
   //#endregion Preparing for Buffers
 
   //#region Buffer Generation
@@ -204,14 +289,19 @@ export default function combinedXmlToBinary(dom: XmlDocumentNode): Buffer {
   const schemaStblBuffer = Buffer.from(SCHEMA_STBL, "base64");
 
   const tableDataBuffer = (() => {
-    const encoder = BinaryEncoder.alloc(0); // FIXME: size
+    const bufferLength = tableLengths.reduce((sum, n) => sum + n, 0);
+    const encoder = BinaryEncoder.alloc(bufferLength);
+
     // TODO: implement
+
     return encoder.buffer;
   })();
 
   const tableInfoBuffer = (() => {
     const encoder = BinaryEncoder.alloc(208); // 7 infos * 28 bytes + 12 padding
+
     // TODO: implement
+
     return encoder.buffer;
   })();
 
