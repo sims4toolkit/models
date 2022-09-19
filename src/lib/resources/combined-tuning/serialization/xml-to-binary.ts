@@ -32,7 +32,7 @@ const RELOFFSET_NULL = -0x80000000;
 const EMPTY_STRING_HASH = 2166136261;
 const EMPTY_LIST = [];
 
-const CONSTANT_TABLE_INFO: ConstantTableInfo[] = [
+const CONSTANT_TABLE_INFOS: ConstantTableInfo[] = [
   { // 0
     relativeNameOffset: 0x143,
     nameHash: 3468580057,
@@ -288,6 +288,8 @@ export default function combinedXmlToBinary(dom: XmlDocumentNode): Buffer {
 
   const schemaStblBuffer = Buffer.from(SCHEMA_STBL, "base64");
 
+  const rowOffsets: number[] = [];
+  const rowCounts: number[] = [];
   const tableDataBuffer = (() => {
     const bufferLength = tableLengths.reduce((sum, n) => sum + n, 0);
     const encoder = BinaryEncoder.alloc(bufferLength);
@@ -298,9 +300,24 @@ export default function combinedXmlToBinary(dom: XmlDocumentNode): Buffer {
   })();
 
   const tableInfoBuffer = (() => {
-    const encoder = BinaryEncoder.alloc(208); // 7 infos * 28 bytes + 12 padding
+    const startIndex = 0x20;
+    const byteLength = 208; // 7 infos * 28 bytes + 12 padding
+    const encoder = BinaryEncoder.alloc(byteLength);
 
     // TODO: implement
+
+    const bytesToData = () => byteLength - encoder.tell();
+    const bytesToSchemas = () => bytesToData() + tableDataBuffer.length;
+
+    CONSTANT_TABLE_INFOS.forEach((tableInfo, i) => {
+      encoder.int32(bytesToSchemas() + tableInfo.relativeNameOffset); // mnNameOffset
+      encoder.uint32(tableInfo.nameHash); // mnNameHash
+      encoder.int32(bytesToSchemas() + tableInfo.relativeSchemaOffset); // mnSchemaOffset
+      encoder.uint32(tableInfo.dataType); // mnDataType
+      encoder.uint32(tableInfo.rowSize); // mnRowSize
+      encoder.int32(bytesToData() + rowOffsets[i]); // mnRowOffset
+      encoder.uint32(rowCounts[i]); // mnRowCount
+    });
 
     return encoder.buffer;
   })();
