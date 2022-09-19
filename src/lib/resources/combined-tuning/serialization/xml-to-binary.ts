@@ -300,11 +300,8 @@ export default function combinedXmlToBinary(dom: XmlDocumentNode): Buffer {
   })();
 
   const tableInfoBuffer = (() => {
-    const startIndex = 0x20;
     const byteLength = 208; // 7 infos * 28 bytes + 12 padding
     const encoder = BinaryEncoder.alloc(byteLength);
-
-    // TODO: implement
 
     const bytesToData = () => byteLength - encoder.tell();
     const bytesToSchemas = () => bytesToData() + tableDataBuffer.length;
