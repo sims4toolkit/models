@@ -335,10 +335,29 @@ export default function combinedXmlToBinary(dom: XmlDocumentNode): Buffer {
     });
 
     // Table 3 - Node refs
-    // TODO: 
+    nextBuffer(encoder => {
+      childNodesTable.forEach(childNodes => {
+        childNodes.forEach(relNodeIndex => {
+          const index = relNodeIndex[1] === "v" ? relNodeIndex[0] : valueNodesTable.length + relNodeIndex[0];
+          const offset = -(encoder.tell() + tableLengths[3] + tableLengths[2] + tableLengths[1] - (index * 12));
+          encoder.uint32(offset); // FIXME: signing
+        });
+
+        encoder.uint32(RELOFFSET_NULL);
+      });
+    });
 
     // Table 4 - Attr refs
-    // TODO: 
+    nextBuffer(encoder => {
+      attrListsTable.forEach(attrsList => {
+        attrsList.forEach(attrIndex => {
+          const offset = -(encoder.tell() + tableLengths[3] + tableLengths[2] - (attrIndex * 8));
+          encoder.uint32(offset); // FIXME: signing
+        });
+
+        encoder.uint32(RELOFFSET_NULL);
+      });
+    });
 
     // Table 5 - String refs
     nextBuffer(encoder => {
