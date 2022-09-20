@@ -274,16 +274,6 @@ export default function combinedXmlToBinary(dom: XmlDocumentNode): Buffer {
     return tableLengths;
   })();
 
-  const metaData = {
-    firstElement: 0, // FIXME:
-    topElement: 0, // FIXME:
-    elementCount: elementNodesTable.length,
-    stringTable: {
-      offset: 0, // FIXME:
-      count: stringsCount
-    }
-  };
-
   //#endregion Preparing for Buffers
 
   //#region Buffer Generation
@@ -303,7 +293,14 @@ export default function combinedXmlToBinary(dom: XmlDocumentNode): Buffer {
     };
 
     // Table 0 - Meta data
-    // TODO: 
+    nextBuffer(encoder => {
+      encoder.uint32(elementNodesTable.length); // element_count
+      const firstElementIndex = valueNodesTable.length;
+      encoder.uint32(encoder.buffer.length - encoder.tell() + (firstElementIndex * 12)); // first_element
+      encoder.uint32(encoder.buffer.length - encoder.tell() + (topElementRelativeIndex[0] * 12)); // top_element
+      encoder.uint32(encoder.buffer.length - encoder.tell() + tableLengths[1] + tableLengths[2] + tableLengths[3] + tableLengths[4] + tableLengths[5]); // string_table offset
+      encoder.uint32(stringsCount); // string_table count
+    });
 
     // Table 1 - Nodes
     nextBuffer(encoder => {
