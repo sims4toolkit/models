@@ -7,8 +7,9 @@ import DataType from "../../../enums/data-type";
 
 type IndexOffsetTuple = [number, number];
 type NameValueIndicesTuple = [number, number];
-type RefIndicesTable = number[][];
 type TextAttrsChildIndicesTuple = [number, number, number];
+type NodeType = "v" | "e";
+type RelativeNodeIndex = [number, NodeType];
 
 interface ConstantTableInfo {
   relativeNameOffset: number;
@@ -112,7 +113,7 @@ export default function combinedXmlToBinary(dom: XmlDocumentNode): Buffer {
 
   // table 4 (referenced by 1)
   let attrListsTableLength = 0;
-  const attrListsTable: RefIndicesTable = [];
+  const attrListsTable: number[][] = [];
   const attrListsIndexMap = new Map<string, number>();
 
   // table 1 (referenced by 3)
@@ -123,7 +124,7 @@ export default function combinedXmlToBinary(dom: XmlDocumentNode): Buffer {
 
   // table 3 (referenced by 1)
   let childNodesTableLength = 0;
-  const childNodesTable: RefIndicesTable = [];
+  const childNodesTable: RelativeNodeIndex[][] = [];
   const childNodesIndexMap = new Map<string, number>();
 
   //#endregion Variables
@@ -171,6 +172,8 @@ export default function combinedXmlToBinary(dom: XmlDocumentNode): Buffer {
       }
     }
 
+    if (allAttrKeys.length === 0) return null;
+
     // attr lists - building table 4
     allAttrKeys.sort(); // order doesn't matter, might as well save space
     const attrListKey = allAttrKeys.join(",");
@@ -198,18 +201,17 @@ export default function combinedXmlToBinary(dom: XmlDocumentNode): Buffer {
    * @param node Node to process
    * @returns Node's index (may or may not be relative)
    */
-  function processNodeAndChildren(node: XmlNode): number {
+  function processNodeAndChildren(node: XmlNode): RelativeNodeIndex {
     if (node.tag) { // element node
       const [tagIndex] = addToStringMap(node.tag);
 
       const attrListKey = addToAttrMap(node.attributes);
 
-      const childrenIndices = node.hasChildren
-        // don't sort, child order matters
-        ? node.children.map(processNodeAndChildren)
-        : EMPTY_LIST;
+      const childrenIndices = node.children.map(processNodeAndChildren);
 
-      const childrenKey = childrenIndices.join(",");
+      const childrenKey = childrenIndices
+        .map(([index, type]) => `${index}${type}`)
+        .join(",");
 
       if (!childNodesIndexMap.has(childrenKey)) {
         childNodesTable.push(childrenIndices);
@@ -222,14 +224,14 @@ export default function combinedXmlToBinary(dom: XmlDocumentNode): Buffer {
       if (!elementNodesIndexMap.has(nodeKey)) {
         elementNodesTable.push([
           tagIndex,
-          attrListsIndexMap.get(attrListKey),
-          childNodesIndexMap.get(childrenKey)
+          attrListKey ? attrListsIndexMap.get(attrListKey) : null,
+          childrenKey ? childNodesIndexMap.get(childrenKey) : null
         ]);
 
         elementNodesIndexMap.set(nodeKey, elementNodesIndexMap.size);
       }
 
-      return elementNodesIndexMap.get(nodeKey);
+      return [elementNodesIndexMap.get(nodeKey), "e"];
     } else { // value node (guaranteed to be string)
       const [valueIndex] = addToStringMap(node.value as string);
 
@@ -238,7 +240,7 @@ export default function combinedXmlToBinary(dom: XmlDocumentNode): Buffer {
         valueNodesIndexMap.set(node.value as string, valueNodesIndexMap.size);
       }
 
-      return valueNodesIndexMap.get(node.value as string);
+      return [valueNodesIndexMap.get(node.value as string), "v"];
     }
   }
 
@@ -291,12 +293,70 @@ export default function combinedXmlToBinary(dom: XmlDocumentNode): Buffer {
   const rowOffsets: number[] = [];
   const rowCounts: number[] = [];
   const tableDataBuffer = (() => {
-    const bufferLength = tableLengths.reduce((sum, n) => sum + n, 0);
-    const encoder = BinaryEncoder.alloc(bufferLength);
+    const buffers: Buffer[] = [];
 
-    // TODO: implement
+    const nextBuffer = (fn: (encoder: BinaryEncoder) => void) => {
+      const index = buffers.length;
+      const encoder = BinaryEncoder.alloc(tableLengths[index]);
+      fn(encoder);
+      buffers.push(encoder.buffer);
+    };
 
-    return encoder.buffer;
+    // Table 0 - Meta data
+    // TODO: 
+
+    // Table 1 - Nodes
+    nextBuffer(encoder => {
+      valueNodesTable.forEach(textIndex => {
+        encoder.uint32(RELOFFSET_NULL); // children offset
+        encoder.uint32(textIndex); // text index
+        encoder.uint32(RELOFFSET_NULL); // attrs offset
+      });
+
+      elementNodesTable.forEach(([textIndex, attrsIndex, childrenIndex]) => {
+        encoder.uint32(childrenIndex == null
+          ? RELOFFSET_NULL
+          : encoder.buffer.length - encoder.tell() + tableLengths[2] + (childrenIndex * 4)); // children offset
+
+        encoder.uint32(textIndex); // text index
+
+        encoder.uint32(attrsIndex == null
+          ? RELOFFSET_NULL
+          : encoder.buffer.length - encoder.tell() + (attrsIndex * 4)); // attrs offset
+      });
+    });
+
+    // Table 2 - Attrs
+    nextBuffer(encoder => {
+      attrPairsTable.forEach(([nameIndex, valueIndex]) => {
+        encoder.uint32(valueIndex);
+        encoder.uint32(nameIndex);
+      });
+    });
+
+    // Table 3 - Node refs
+    // TODO: 
+
+    // Table 4 - Attr refs
+    // TODO: 
+
+    // Table 5 - String refs
+    nextBuffer(encoder => {
+      stringMap.forEach(([_, offset]) => {
+        const bytesToString = encoder.buffer.length - encoder.tell() + offset;
+        encoder.uint32(bytesToString);
+      });
+    });
+
+    // Table 6 - String chars
+    nextBuffer(encoder => {
+      stringMap.forEach((_, string) => {
+        encoder.charsUtf8(string);
+        encoder.skip(1); // null terminator
+      });
+    });
+
+    return Buffer.concat(buffers);
   })();
 
   const tableInfoBuffer = (() => {
