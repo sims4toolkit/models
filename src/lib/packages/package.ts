@@ -296,6 +296,31 @@ export default class Package<ResourceType extends Resource = Resource>
     return combinedTunings;
   }
 
+  /**
+   * Compresses all XmlResources in this Package into CombinedTuningResources
+   * (one per group) and deletes the originals. The combined tunings are added
+   * to this package and returned.
+   * 
+   * Before using this method and potentially setting the game on fire, please
+   * review [this post](https://www.patreon.com/posts/72110305) that explains
+   * the risks of using combining tuning and how to do so responsibly.
+   * 
+   * It is of utmost importance that the provided creator/project names are
+   * universally unique. These are not only used for the instance of the
+   * combined tuning, but also for the seed that is used for node refs.
+   * **IF YOU FAIL TO MAKE THESE UNIQUE, YOU WILL BREAK THE GAME.**
+   * 
+   * @param creator The creator of the project being combined
+   * @param project The name of the project being combined
+   * @throws If any tunings in this Package were loaded raw
+   */
+  async combineTuningAsync(
+    creator: string,
+    project: string
+  ): Promise<ResourceEntry<CombinedTuningResource>[]> {
+    return promisify(() => this.combineTuning(creator, project));
+  }
+
   equals(other: Package): boolean {
     return arraysAreEqual(this.entries, other?.entries);
   }
