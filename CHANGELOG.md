@@ -8,13 +8,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.7.0] - 2022/09/23
 ### Added
 - Add `minify` argument to all `getBuffer()` methods.
-- Add `combine()` and `combineAsync()` methods to CombinedTuningResource class.
+- Add `combine()` method to CombinedTuningResource class.
 - Add `combineTuning()` and `merge()` methods to Package class.
 - Add `merge()` method to StringTableResource class.
 ### Changed
 - Update dependencies on @s4tk/xml-dom and @s4tk/images.
-- CombinedTuningResource no longer throws on clone, equality check, or serialization.
-- CombinedTuningResource.isXml() is now true, since XML is the only supported format.
+- CombinedTuningResource's `clone()`, `equals()`, and `getBuffer()` methods are now implemented.
+- `CombinedTuningResource.isXml()` is now true, since XML is the only supported format.
 - Minor optimization when loading resources in packages.
 ### Fixed
 - Unhandled exceptions will no longer output squish.js to the console.
