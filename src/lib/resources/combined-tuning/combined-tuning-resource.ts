@@ -9,18 +9,6 @@ import XmlResource from "../xml/xml-resource";
 import convertCombinedBinaryToXml from "./serialization/binary-to-xml";
 import combineTunings from "./serialization/combine-xml";
 import extractTuningFromCombinedXml from "./serialization/extract-tuning";
-import combinedXmlToBinary from "./serialization/xml-to-binary";
-
-/** Arguments for CombinedTuningResource's constructor. */
-export interface CombinedTuningResourceCreationOptions extends
-  WritableModelCreationOptions,
-  Partial<{
-    /**
-     * Whether or not to write the CombinedTuningResource in binary DATA format.
-     * False by default.
-     */
-    writeBinary: boolean;
-  }> { };
 
 /**
  * Model for combined tuning resources. Note that resource keys are NOT
@@ -29,17 +17,6 @@ export interface CombinedTuningResourceCreationOptions extends
  * that contains the resource.
  */
 export default class CombinedTuningResource extends DataResource {
-  private _writeBinary: boolean;
-
-  /** 
-   * Whether or not to write this combined tuning in binary DATA format.
-   */
-  get writeBinary(): boolean { return this._writeBinary; }
-  set writeBinary(value: boolean) {
-    this._clearBufferCacheIfSupported();
-    this._writeBinary = value;
-  }
-
   /**
    * Creates a new CombinedTuningResource from the given XML DOM.
    * 
@@ -48,10 +25,9 @@ export default class CombinedTuningResource extends DataResource {
    */
   constructor(
     public readonly dom: XmlDocumentNode,
-    options?: CombinedTuningResourceCreationOptions
+    options?: WritableModelCreationOptions
   ) {
     super(options);
-    this._writeBinary = options?.writeBinary ?? false;
   }
 
   //#region Static Methods
@@ -68,7 +44,6 @@ export default class CombinedTuningResource extends DataResource {
     buffer: Buffer,
     options?: WritableModelFromOptions
   ): CombinedTuningResource {
-    // TODO: deduce if writeBinary should be true/false
     return new CombinedTuningResource(
       bufferContainsDATA(buffer)
         ? convertCombinedBinaryToXml(
@@ -180,7 +155,7 @@ export default class CombinedTuningResource extends DataResource {
     tunings: XmlResource[],
     group: number,
     refSeed: bigint,
-    options?: CombinedTuningResourceCreationOptions
+    options?: WritableModelCreationOptions
   ): CombinedTuningResource {
     return new CombinedTuningResource(
       combineTunings(tunings, group, refSeed),
@@ -206,7 +181,7 @@ export default class CombinedTuningResource extends DataResource {
     tunings: XmlResource[],
     group: number,
     refSeed: bigint,
-    options?: CombinedTuningResourceCreationOptions
+    options?: WritableModelCreationOptions
   ): Promise<CombinedTuningResource> {
     return promisify(() => CombinedTuningResource.combine(tunings, group, refSeed, options));
   }
@@ -254,19 +229,15 @@ export default class CombinedTuningResource extends DataResource {
   }
 
   isXml(): boolean {
-    return !this._writeBinary;
+    return true;
   }
 
   protected _serialize(minify?: boolean): Buffer {
-    if (this.writeBinary) {
-      return combinedXmlToBinary(this.dom);
-    } else {
-      return Buffer.from(this.dom.toXml({
-        minify,
-        writeComments: !minify,
-        writeProcessingInstructions: !minify
-      }));
-    }
+    return Buffer.from(this.dom.toXml({
+      minify,
+      writeComments: !minify,
+      writeProcessingInstructions: !minify
+    }));
   }
 
   //#endregion Overridden Methods

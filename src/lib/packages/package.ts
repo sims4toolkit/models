@@ -252,13 +252,11 @@ export default class Package<ResourceType extends Resource = Resource>
    * 
    * @param creator The creator of the project being combined
    * @param project The name of the project being combined
-   * @param writeBinary Whether or not the combined tunings should be binary
    * @throws If any tunings in this Package were loaded raw
    */
   combineTuning(
     creator: string,
-    project: string,
-    writeBinary = false
+    project: string
   ): ResourceEntry<CombinedTuningResource>[] {
     if (!(creator && project))
       throw new Error("Creator and project names must be non-empty.");
@@ -283,9 +281,7 @@ export default class Package<ResourceType extends Resource = Resource>
         return entry.value;
       });
 
-      const combined = CombinedTuningResource.combine(tunings, group, refSeed, {
-        writeBinary
-      });
+      const combined = CombinedTuningResource.combine(tunings, group, refSeed);
 
       const key = {
         type: BinaryResourceType.CombinedTuning,
