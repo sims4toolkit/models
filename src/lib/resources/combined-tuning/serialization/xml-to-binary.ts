@@ -29,7 +29,7 @@ interface ConstantTableInfo {
 // buffers programmatically, which would provide the same result.
 const SCHEMA_STBL = "/AAAAPNPtCiAkDDRFAAAADgAAAAEAAAANQEAAOR6u/gytrkLDAAAAHAAAAADAAAAQAEAAOASDEeytoqfCAAAAJQAAAACAAAA4AAAAKtDsQEHAAAACAAAAAAAAICyAAAAnPjYfA0AAAAAAAAAAAAAgKwAAAAHr9iBDQAAAAQAAAAAAACAsgAAADtdCKgOAAAADAAAAAAAAIDOAAAA6Be8mQ0AAAAIAAAAAAAAgK8AAAA4+iuxBwAAAAAAAAAAAACAoAAAACslGcgNAAAABAAAAAAAAIC0AAAA3GPtKAcAAAAEAAAAAAAAgJsAAAD0O4svBwAAAAAAAAAAAACAUGFja2VkWG1sRG9jdW1lbnQAZmlyc3RfZWxlbWVudAB0b3BfZWxlbWVudABlbGVtZW50X2NvdW50AHN0cmluZ190YWJsZQBkb2N1bWVudHMAUGFja2VkWG1sTm9kZQB0ZXh0AGF0dHJzAGNoaWxkcmVuAABQYWNrZWRYbWxBdHRyaWJ1dGUAbmFtZQB2YWx1ZQAAAAAA";
 const STBL_OFFSET = 252;
-const RELOFFSET_NULL = -0x80000000;
+const RELOFFSET_NULL = 0x80000000; // FIXME: pos or neg?
 const EMPTY_STRING_HASH = 2166136261;
 const EMPTY_LIST = [];
 
@@ -92,6 +92,22 @@ const CONSTANT_TABLE_INFOS: ConstantTableInfo[] = [
 const getAttrKeyString = (pair: NameValueIndicesTuple) => `${pair[0]}=${pair[1]}`;
 const getPaddingForAlignment = (index: number, mask: number) => -index & mask;
 
+function formatValue(value: number | bigint | boolean | string): string {
+  switch (typeof value) {
+    case "boolean":
+      return value ? "True" : "False";
+    case "number":
+    case "bigint":
+      return value.toString();
+    default:
+      return value;
+  }
+}
+
+function mod(n: number, m: number): number {
+  return ((n % m) + m) % m;
+}
+
 //#endregion Helpers
 
 /**
@@ -139,7 +155,8 @@ export default function combinedXmlToBinary(dom: XmlDocumentNode): Buffer {
    * @param string String to process
    * @returns Tuple containing index in table 5 and offset in table 6
    */
-  function addToStringMap(string: string): IndexOffsetTuple {
+  function addToStringMap(string: string | number | bigint | boolean): IndexOffsetTuple {
+    string = formatValue(string);
     if (stringMap.has(string)) return stringMap.get(string);
     const value: IndexOffsetTuple = [stringsCount++, stringsByteLength];
     stringMap.set(string, value);
@@ -337,7 +354,7 @@ export default function combinedXmlToBinary(dom: XmlDocumentNode): Buffer {
         childNodes.forEach(relNodeIndex => {
           const index = relNodeIndex[1] === "v" ? relNodeIndex[0] : valueNodesTable.length + relNodeIndex[0];
           const offset = -(encoder.tell() + tableLengths[3] + tableLengths[2] + tableLengths[1] - (index * 12));
-          encoder.uint32(offset); // FIXME: signing
+          encoder.uint32(mod(offset, 0xFFFFFFFF)); // FIXME: signing
         });
 
         encoder.uint32(RELOFFSET_NULL);
@@ -349,7 +366,7 @@ export default function combinedXmlToBinary(dom: XmlDocumentNode): Buffer {
       attrListsTable.forEach(attrsList => {
         attrsList.forEach(attrIndex => {
           const offset = -(encoder.tell() + tableLengths[3] + tableLengths[2] - (attrIndex * 8));
-          encoder.uint32(offset); // FIXME: signing
+          encoder.uint32(mod(offset, 0xFFFFFFFF)); // FIXME: signing
         });
 
         encoder.uint32(RELOFFSET_NULL);
@@ -383,12 +400,12 @@ export default function combinedXmlToBinary(dom: XmlDocumentNode): Buffer {
     const bytesToSchemas = () => bytesToData() + tableDataBuffer.length;
 
     CONSTANT_TABLE_INFOS.forEach((tableInfo, i) => {
-      encoder.int32(bytesToSchemas() + tableInfo.relativeNameOffset); // mnNameOffset
+      encoder.uint32(bytesToSchemas() + tableInfo.relativeNameOffset); // mnNameOffset FIXME: signing
       encoder.uint32(tableInfo.nameHash); // mnNameHash
-      encoder.int32(bytesToSchemas() + tableInfo.relativeSchemaOffset); // mnSchemaOffset
+      encoder.uint32(bytesToSchemas() + tableInfo.relativeSchemaOffset); // mnSchemaOffset FIXME: signing
       encoder.uint32(tableInfo.dataType); // mnDataType
       encoder.uint32(tableInfo.rowSize); // mnRowSize
-      encoder.int32(bytesToData() + rowOffsets[i]); // mnRowOffset
+      encoder.uint32(bytesToData() + rowOffsets[i]); // mnRowOffset FIXME: signing
       encoder.uint32(rowCounts[i]); // mnRowCount
     });
 

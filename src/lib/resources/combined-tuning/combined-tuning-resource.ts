@@ -9,6 +9,7 @@ import XmlResource from "../xml/xml-resource";
 import convertCombinedBinaryToXml from "./serialization/binary-to-xml";
 import combineTunings from "./serialization/combine-xml";
 import extractTuningFromCombinedXml from "./serialization/extract-tuning";
+import combinedXmlToBinary from "./serialization/xml-to-binary";
 
 /** Arguments for CombinedTuningResource's constructor. */
 export interface CombinedTuningResourceCreationOptions extends
@@ -32,9 +33,6 @@ export default class CombinedTuningResource extends DataResource {
 
   /** 
    * Whether or not to write this combined tuning in binary DATA format.
-   * 
-   * NOTE: Setting this to `true` is currently unsupported. This only exists
-   * so that the model doesn't have to change when it's added.
    */
   get writeBinary(): boolean { return this._writeBinary; }
   set writeBinary(value: boolean) {
@@ -70,6 +68,7 @@ export default class CombinedTuningResource extends DataResource {
     buffer: Buffer,
     options?: WritableModelFromOptions
   ): CombinedTuningResource {
+    // TODO: deduce if writeBinary should be true/false
     return new CombinedTuningResource(
       bufferContainsDATA(buffer)
         ? convertCombinedBinaryToXml(
@@ -259,15 +258,15 @@ export default class CombinedTuningResource extends DataResource {
   }
 
   protected _serialize(minify?: boolean): Buffer {
-    if (this.writeBinary)
-      // FIXME: remove when binary implemented
-      throw new Error("Writing CombinedTuningResource binary is not implemented. Set writeBinary = false and try again.");
-
-    return Buffer.from(this.dom.toXml({
-      minify,
-      writeComments: !minify,
-      writeProcessingInstructions: !minify
-    }));
+    if (this.writeBinary) {
+      return combinedXmlToBinary(this.dom);
+    } else {
+      return Buffer.from(this.dom.toXml({
+        minify,
+        writeComments: !minify,
+        writeProcessingInstructions: !minify
+      }));
+    }
   }
 
   //#endregion Overridden Methods

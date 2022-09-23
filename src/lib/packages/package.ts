@@ -238,7 +238,8 @@ export default class Package<ResourceType extends Resource = Resource>
 
   /**
    * Compresses all XmlResources in this Package into CombinedTuningResources
-   * (one per group) and deletes the originals.
+   * (one per group) and deletes the originals. The combined tunings are added
+   * to this package and returned.
    * 
    * Before using this method and potentially setting the game on fire, please
    * review [this post](https://www.patreon.com/posts/72110305) that explains
@@ -254,14 +255,17 @@ export default class Package<ResourceType extends Resource = Resource>
    * @param writeBinary Whether or not the combined tunings should be binary
    * @throws If any tunings in this Package were loaded raw
    */
-  combineTuning(creator: string, project: string, writeBinary = false) {
+  combineTuning(
+    creator: string,
+    project: string,
+    writeBinary = false
+  ): ResourceEntry<CombinedTuningResource>[] {
     if (!(creator && project))
       throw new Error("Creator and project names must be non-empty.");
-    if (writeBinary)
-      // FIXME: remove when binary implemented
-      throw new Error("Writing CombinedTuningResource binary is not implemented. Set writeBinary = false and try again.");
 
     const refSeed = fnv64(`${creator}_${project}:combinedTuning`);
+
+    const combinedTunings: ResourceEntry<CombinedTuningResource>[] = [];
 
     // organizing tunings by group
     const groupMap = new Map<number, ResourceEntry<XmlResource>[]>();
@@ -289,8 +293,11 @@ export default class Package<ResourceType extends Resource = Resource>
         instance: fnv64(`${creator}_${project}:combinedTuning_${group}`)
       };
 
-      this.add(key, combined as unknown as ResourceType);
+      const entry = this.add(key, combined as unknown as ResourceType);
+      combinedTunings.push(entry as any);
     });
+
+    return combinedTunings;
   }
 
   equals(other: Package): boolean {
