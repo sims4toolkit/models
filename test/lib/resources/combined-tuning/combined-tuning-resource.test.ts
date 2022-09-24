@@ -176,6 +176,14 @@ describe("CombinedTuningResource", () => {
     });
   });
 
+  describe("static#combine()", () => {
+    // TODO:
+  });
+
+  describe("static#combineAsync()", () => {
+    // TODO:
+  });
+
   //#endregion Static Methods
 
   //#region Methods
@@ -226,9 +234,9 @@ describe("CombinedTuningResource", () => {
   });
 
   describe("#isXml()", () => {
-    it("should be false", () => {
+    it("should be true", () => {
       const cb = CombinedTuningResource.from(xmlBuffer);
-      expect(cb.isXml()).to.be.false;
+      expect(cb.isXml()).to.be.true;
     });
   });
 
@@ -274,6 +282,10 @@ describe("CombinedTuningResource", () => {
       const cb = CombinedTuningResource.from(xmlBuffer);
       const buffer = cb.getBuffer();
       expect(xmlBuffer.compare(buffer)).to.equal(0);
+    });
+
+    it("should not include whitespace when minify = true", () => {
+      // TODO:
     });
   });
 

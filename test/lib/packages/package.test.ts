@@ -860,6 +860,14 @@ describe("Package", () => {
     });
   });
 
+  describe("static#merge()", () => {
+    // TODO:
+  });
+
+  describe("static#mergeAsync()", () => {
+    // TODO:
+  });
+
   //#endregion Initialization
 
   //#region Public Methods
@@ -1579,6 +1587,8 @@ describe("Package", () => {
       expect(tuning.encodingType).to.equal(EncodingType.XML);
       expect(tuning.root.name).to.equal("frankkulak_LB:trait_SimlishNative");
     });
+
+    // TODO: minify
   });
 
   describe("#replaceEntries()", () => {
@@ -1608,6 +1618,10 @@ describe("Package", () => {
       expect(pkg.get(0).key.instance).to.equal(12345n);
       expect(pkg.get(0).value.encodingType).to.equal(EncodingType.XML);
     });
+  });
+
+  describe("#combineTuning()", () => {
+    // TODO:
   });
 
   //#endregion Public Methods

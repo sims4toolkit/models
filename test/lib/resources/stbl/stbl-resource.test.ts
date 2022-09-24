@@ -356,6 +356,14 @@ describe("StringTableResource", () => {
     });
   });
 
+  describe("static#merge()", () => {
+    // TODO:
+  });
+
+  describe("static#mergeAsync()", () => {
+    // TODO:
+  });
+
   //#endregion Initialization
 
   //#region Methods
