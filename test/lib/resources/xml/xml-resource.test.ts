@@ -535,7 +535,12 @@ describe('XmlResource', function () {
     });
 
     it("should remove whitespace, comments, and PI tags when minify = true", () => {
-      // TODO:
+      const dom = XmlDocumentNode.from(`<L>
+        <T n="something">1234<!--Something--></T>
+        <? <T n="something_else">1234<!--Something--></T> ?>
+      </L>`);
+      const tun = new XmlResource(dom);
+      expect(tun.getBuffer(undefined, true).toString()).to.equal(`${XML_DECLARATION}<L><T n="something">1234</T></L>`);
     });
   });
 
