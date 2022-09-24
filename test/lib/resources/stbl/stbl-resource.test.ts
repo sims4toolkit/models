@@ -136,7 +136,7 @@ describe("StringTableResource", () => {
     });
 
     it("should create an empty stbl when given null", () => {
-      const stbl = new StringTableResource(null);
+      const stbl = new StringTableResource(undefined);
       expect(stbl.entries).to.be.an('Array').that.is.empty;
     });
 
@@ -155,7 +155,7 @@ describe("StringTableResource", () => {
 
     it("should use the given owner", () => {
       const owner = new MockOwner();
-      const stbl = new StringTableResource(null, { owner });
+      const stbl = new StringTableResource(undefined, { owner });
       expect(stbl.owner).to.equal(owner);
     });
 
@@ -165,7 +165,7 @@ describe("StringTableResource", () => {
     });
 
     it("should use the given defaultCompressionType", () => {
-      const stbl = new StringTableResource(null, {
+      const stbl = new StringTableResource(undefined, {
         defaultCompressionType: CompressionType.InternalCompression
       });
 
@@ -184,7 +184,7 @@ describe("StringTableResource", () => {
         compressionType: CompressionType.Uncompressed,
         sizeDecompressed: buffer.byteLength
       };
-      const stbl = new StringTableResource(null, { initialBufferCache });
+      const stbl = new StringTableResource(undefined, { initialBufferCache });
       expect(stbl.hasBufferCache).to.be.true;
       expect(stbl.getCompressedBuffer(CompressionType.Uncompressed)).to.equal(initialBufferCache);
     });
@@ -991,13 +991,13 @@ describe("StringTableResource", () => {
 
     it("should include IDs if specified", () => {
       const stbl = getStbl("Normal");
-      const json = stbl.toJsonObject(null, true);
+      const json = stbl.toJsonObject(undefined, true);
       expect(json[0].id).to.be.a("number").that.equals(0);
     });
 
     it("should include all entries", () => {
       const stbl = getStbl("Normal");
-      const json = stbl.toJsonObject(null, true);
+      const json = stbl.toJsonObject(undefined, true);
       expect(json).to.be.an("Array").with.lengthOf(3);
       expect(json[0].value).to.equal("This is a string.");
       expect(json[1].value).to.equal("This is another string!");
@@ -1006,7 +1006,7 @@ describe("StringTableResource", () => {
 
     it("should not produce an array that mutates the model", () => {
       const stbl = getStbl("Normal");
-      const json = stbl.toJsonObject(null, true);
+      const json = stbl.toJsonObject(undefined, true);
       json.push({
         id: 3,
         key: 0x12345678,
@@ -1018,7 +1018,7 @@ describe("StringTableResource", () => {
 
     it("should not produce entries that mutate the model", () => {
       const stbl = getStbl("Normal");
-      const json = stbl.toJsonObject(null, true);
+      const json = stbl.toJsonObject(undefined, true);
       json[0].value = "Changed string.";
       expect(stbl.entries[0].value).to.equal("This is a string.");
     });
