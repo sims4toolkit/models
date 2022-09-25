@@ -861,11 +861,27 @@ describe("Package", () => {
   });
 
   describe("static#merge()", () => {
-    // TODO:
+    it("should clone the one given pkg", () => {
+      // TODO:
+    });
+
+    it("should merge two pkgs", () => {
+      // TODO:
+    });
+
+    it("should merge 3+ pkgs", () => {
+      // TODO:
+    });
+
+    it("should not modify the original entries", () => {
+      // TODO:
+    });
   });
 
   describe("static#mergeAsync()", () => {
-    // TODO:
+    it("should call merge() and return the pkg in a promise", () => {
+      // TODO:
+    });
   });
 
   //#endregion Initialization
@@ -1588,7 +1604,9 @@ describe("Package", () => {
       expect(tuning.root.name).to.equal("frankkulak_LB:trait_SimlishNative");
     });
 
-    // TODO: minify
+    it("should minify any XML resources if minify = true", () => {
+      // TODO:
+    });
   });
 
   describe("#replaceEntries()", () => {
@@ -1621,7 +1639,21 @@ describe("Package", () => {
   });
 
   describe("#combineTuning()", () => {
-    // TODO:
+    it("should produce a combined tuning for all tuning in this package", () => {
+      // TODO:
+    });
+
+    it("should produce one combined tuning document per group", () => {
+      // TODO:
+    });
+
+    it("should use a different seed for each group", () => {
+      // TODO:
+    });
+
+    it("should produce a unique seed using the given arguments", () => {
+      // TODO:
+    });
   });
 
   //#endregion Public Methods

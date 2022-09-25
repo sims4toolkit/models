@@ -357,11 +357,27 @@ describe("StringTableResource", () => {
   });
 
   describe("static#merge()", () => {
-    // TODO:
+    it("should clone the one given stbl", () => {
+      // TODO:
+    });
+
+    it("should merge two stbls", () => {
+      // TODO:
+    });
+
+    it("should merge 3+ stbls", () => {
+      // TODO:
+    });
+
+    it("should not modify the original entries", () => {
+      // TODO:
+    });
   });
 
   describe("static#mergeAsync()", () => {
-    // TODO:
+    it("should call merge() and return the stbl in a promise", () => {
+      // TODO:
+    });
   });
 
   //#endregion Initialization

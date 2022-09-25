@@ -177,11 +177,19 @@ describe("CombinedTuningResource", () => {
   });
 
   describe("static#combine()", () => {
-    // TODO:
+    it("should create a new combined tuning that contains all given XMLs", () => {
+      // TODO:
+    });
+
+    it("should use the provided seed", () => {
+      // TODO:
+    });
   });
 
   describe("static#combineAsync()", () => {
-    // TODO:
+    it("should call combine() and return result in promise", () => {
+      // TODO:
+    });
   });
 
   //#endregion Static Methods
