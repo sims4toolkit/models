@@ -1694,7 +1694,12 @@ describe("Package", () => {
     });
 
     it("should minify any XML resources if minify = true", () => {
-      // TODO:
+      const original = getPackage("Trait");
+      const minifiedBuffer = original.getBuffer(undefined, true);
+      const minified = Package.from(minifiedBuffer);
+      const minifiedTraitContent = (minified.get(1).value as XmlResource).content;
+      expect(minifiedTraitContent.includes("\n")).to.be.false;
+      expect(minifiedTraitContent.includes("<!--")).to.be.false;
     });
   });
 
