@@ -358,25 +358,56 @@ describe("StringTableResource", () => {
 
   describe("static#merge()", () => {
     it("should clone the one given stbl", () => {
-      // TODO:
+      const first = getStbl("Normal");
+      const merged = StringTableResource.merge([first]);
+      expect(first.equals(merged)).to.be.true; // same contents
+      expect(first).to.not.equal(merged); // different instance
     });
 
     it("should merge two stbls", () => {
-      // TODO:
+      const first = getStbl("Normal");
+      const second = new StringTableResource();
+      second.addAndHash("Something");
+      const merged = StringTableResource.merge([first, second]);
+      expect(merged.size).to.equal(first.size + second.size);
+      for (let i = 0; i < first.size; ++i)
+        expect(merged.entries[i].value).to.equal(first.entries[i].value);
+      expect(merged.entries[first.size].value).to.equal("Something");
     });
 
     it("should merge 3+ stbls", () => {
-      // TODO:
+      const first = getStbl("Normal");
+      const second = new StringTableResource();
+      second.addAndHash("Something");
+      const third = new StringTableResource();
+      third.addAndHash("Something Else");
+      const merged = StringTableResource.merge([first, second, third]);
+      expect(merged.size).to.equal(first.size + second.size + third.size);
+      for (let i = 0; i < first.size; ++i)
+        expect(merged.entries[i].value).to.equal(first.entries[i].value);
+      expect(merged.entries[first.size].value).to.equal("Something");
+      expect(merged.entries[first.size + 1].value).to.equal("Something Else");
     });
 
     it("should not modify the original entries", () => {
-      // TODO:
+      const first = getStbl("Normal");
+      const second = new StringTableResource();
+      second.addAndHash("Something");
+      const merged = StringTableResource.merge([first, second]);
+      expect(second.get(0).value).to.equal("Something");
+      expect(merged.get(first.size).value).to.equal("Something");
+      merged.get(first.size).value = "Yeehaw";
+      expect(second.get(0).value).to.equal("Something");
+      expect(merged.get(first.size).value).to.equal("Yeehaw");
     });
   });
 
   describe("static#mergeAsync()", () => {
-    it("should call merge() and return the stbl in a promise", () => {
-      // TODO:
+    it("should call merge() and return the stbl in a promise", async () => {
+      const first = getStbl("Normal");
+      const merged = await StringTableResource.mergeAsync([first]);
+      expect(first.equals(merged)).to.be.true; // same contents
+      expect(first).to.not.equal(merged); // different instance
     });
   });
 
