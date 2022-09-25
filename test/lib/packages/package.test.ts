@@ -10,6 +10,7 @@ import { registerPlugin } from "../../../dst/plugins";
 import { BinaryResourceType, EncodingType, SimDataGroup, TuningResourceType } from "../../../dst/enums";
 import { PackageFileReadingOptions } from "../../../dst/lib/common/options";
 import { CompressionType } from "@s4tk/compression";
+import ResourceEntry from "../../../dst/lib/packages/resource-entry";
 
 registerPlugin(BufferFromFilePlugin);
 
@@ -862,25 +863,113 @@ describe("Package", () => {
 
   describe("static#merge()", () => {
     it("should clone the one given pkg", () => {
-      // TODO:
+      const first = getPackage("CompleteTrait");
+      const merged = Package.merge([first]);
+      expect(merged.equals(first)).to.be.true; // same contents
+      expect(merged).to.not.equal(first); // different instance
     });
 
     it("should merge two pkgs", () => {
-      // TODO:
+      const first = getPackage("CompleteTrait");
+      const second = getPackage("TartosianoTextbook");
+      const merged = Package.merge([first, second]);
+
+      expect(merged.size).to.equal(first.size + second.size);
+
+      for (let i = 0; i < first.size; ++i) {
+        const firstEntry = first.get(i);
+        const mergedEntry = merged.get(i);
+        expect(mergedEntry.equals(firstEntry)).to.be.true; // same contents
+        expect(mergedEntry).to.not.equal(firstEntry); // different instance
+      }
+
+      for (let i = 0; i < second.size; ++i) {
+        const secondEntry = second.get(i);
+        const mergedEntry = merged.get(first.size + i);
+        expect(mergedEntry.equals(secondEntry)).to.be.true; // same contents
+        expect(mergedEntry).to.not.equal(secondEntry); // different instance
+      }
     });
 
     it("should merge 3+ pkgs", () => {
-      // TODO:
+      const first = getPackage("CompleteTrait");
+      const second = getPackage("TartosianoTextbook");
+      const third = getPackage("Animation");
+      const merged = Package.merge([first, second, third]);
+
+      expect(merged.size).to.equal(first.size + second.size + third.size);
+
+      for (let i = 0; i < first.size; ++i) {
+        const firstEntry = first.get(i);
+        const mergedEntry = merged.get(i);
+        expect(mergedEntry.equals(firstEntry)).to.be.true; // same contents
+        expect(mergedEntry).to.not.equal(firstEntry); // different instance
+      }
+
+      for (let i = 0; i < second.size; ++i) {
+        const secondEntry = second.get(i);
+        const mergedEntry = merged.get(first.size + i);
+        expect(mergedEntry.equals(secondEntry)).to.be.true; // same contents
+        expect(mergedEntry).to.not.equal(secondEntry); // different instance
+      }
+
+      for (let i = 0; i < third.size; ++i) {
+        const thirdEntry = third.get(i);
+        const mergedEntry = merged.get(first.size + second.size + i);
+        expect(mergedEntry.equals(thirdEntry)).to.be.true; // same contents
+        expect(mergedEntry).to.not.equal(thirdEntry); // different instance
+      }
     });
 
-    it("should not modify the original entries", () => {
-      // TODO:
+    it("should modify the original keys", () => {
+      const first = getPackage("Trait");
+      const merged = Package.merge([first]);
+      const firstSimData = first.get(0) as ResourceEntry<SimDataResource>;
+      const mergedSimData = merged.get(0) as ResourceEntry<SimDataResource>;
+
+      expect(firstSimData).to.not.equal(mergedSimData);
+      expect(firstSimData.equals(mergedSimData)).to.be.true;
+
+      expect(firstSimData.key).to.equal(mergedSimData.key);
+
+      expect(firstSimData.key.instance).to.equal(0x97297134D57FE219n);
+      expect(mergedSimData.key.instance).to.equal(0x97297134D57FE219n);
+
+      mergedSimData.key.instance = 12345n;
+      expect(firstSimData.key.instance).to.equal(12345n);
+      expect(mergedSimData.key.instance).to.equal(12345n);
+
+      expect(firstSimData.equals(mergedSimData)).to.be.true;
+    });
+
+    it("should modify the original resources", () => {
+      const first = getPackage("Trait");
+      const merged = Package.merge([first]);
+      const firstSimData = first.get(0) as ResourceEntry<SimDataResource>;
+      const mergedSimData = merged.get(0) as ResourceEntry<SimDataResource>;
+
+      expect(firstSimData).to.not.equal(mergedSimData);
+      expect(firstSimData.equals(mergedSimData)).to.be.true;
+
+      expect(firstSimData.value).to.equal(mergedSimData.value);
+
+      expect(firstSimData.value.instance.name).to.equal("frankkulak_LB:trait_SimlishNative");
+      expect(mergedSimData.value.instance.name).to.equal("frankkulak_LB:trait_SimlishNative");
+
+      mergedSimData.value.instance.name = "Something";
+      expect(firstSimData.value.instance.name).to.equal("Something");
+      expect(mergedSimData.value.instance.name).to.equal("Something");
+
+      expect(firstSimData.equals(mergedSimData)).to.be.true;
     });
   });
 
   describe("static#mergeAsync()", () => {
-    it("should call merge() and return the pkg in a promise", () => {
-      // TODO:
+    it("should call merge() and return the pkg in a promise", async () => {
+      const first = getPackage("CompleteTrait");
+      const merged = await Package.mergeAsync([first]);
+      expect(merged.equals(first)).to.be.true; // same contents
+      expect(merged).to.not.equal(first); // different instance
     });
   });
 
