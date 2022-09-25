@@ -293,7 +293,12 @@ describe("CombinedTuningResource", () => {
     });
 
     it("should not include whitespace when minify = true", () => {
-      // TODO:
+      const cb = CombinedTuningResource.from(xmlBuffer);
+      const buffer = cb.getBuffer(undefined, true);
+      expect(xmlBuffer.compare(buffer)).to.not.equal(0);
+      expect(buffer.length).to.be.lessThan(xmlBuffer.length);
+      expect(xmlBuffer.includes("\n")).to.be.true;
+      expect(buffer.includes("\n")).to.be.false;
     });
   });
 
