@@ -170,6 +170,72 @@
               "code": "Package.fromAsync(buffer, {\n  saveBuffer: true\n}).then(pkg => {\n  // do stuff\n});"
             }
           ]
+        },
+        {
+          "displayType": "function",
+          "description": "Returns a new Package that contains the entries of the given Packages.",
+          "prefix": "static",
+          "name": "merge",
+          "generics": [
+            {
+              "name": "T",
+              "extends": [
+                {
+                  "name": "Resource",
+                  "path": {
+                    "pkg": "models",
+                    "group": "types",
+                    "item": "Resource"
+                  }
+                }
+              ]
+            }
+          ],
+          "arguments": [
+            {
+              "name": "packages",
+              "description": "Packages to merge into a new package",
+              "type": {
+                "name": "Package<T>[]"
+              }
+            }
+          ],
+          "returnType": {
+            "name": "Package"
+          }
+        },
+        {
+          "displayType": "function",
+          "description": "Returns a new Package that contains the entries of the given Packages.",
+          "prefix": "static async",
+          "name": "mergeAsync",
+          "generics": [
+            {
+              "name": "T",
+              "extends": [
+                {
+                  "name": "Resource",
+                  "path": {
+                    "pkg": "models",
+                    "group": "types",
+                    "item": "Resource"
+                  }
+                }
+              ]
+            }
+          ],
+          "arguments": [
+            {
+              "name": "packages",
+              "description": "Packages to merge into a new package",
+              "type": {
+                "name": "Package<T>[]"
+              }
+            }
+          ],
+          "returnType": {
+            "name": "Promise<Package>"
+          }
         }
       ]
     },
@@ -587,6 +653,70 @@
               }
             }
           ]
+        }
+      ]
+    },
+    {
+      "title": "Methods",
+      "content": [
+        {
+          "displayType": "function",
+          "description": "Compresses all XmlResources in this Package into CombinedTuningResources (one per group) and deletes the originals. The combined tunings are added to this package and returned.\n\nBefore using this method and potentially setting the game on fire, please review this post (https://www.patreon.com/posts/72110305) that explains the risks of using combining tuning and how to do so responsibly.\n\nIt is of utmost importance that the provided creator/project names are universally unique. These are not only used for the instance of the combined tuning, but also for the seed that is used for node refs. IF YOU FAIL TO MAKE THESE UNIQUE, YOU WILL BREAK THE GAME.",
+          "name": "combineTuning",
+          "arguments": [
+            {
+              "name": "creator",
+              "description": "The creator of the project being combined",
+              "type": {
+                "name": "string"
+              }
+            },
+            {
+              "name": "project",
+              "description": "The name of the project being combined",
+              "type": {
+                "name": "string"
+              }
+            }
+          ],
+          "returnType": {
+            "name": "ResourceEntry<CombinedTuningResource>[]",
+            "path": {
+              "pkg": "models",
+              "group": "resources",
+              "item": "CombinedTuningResource"
+            }
+          }
+        },
+        {
+          "displayType": "function",
+          "description": "Compresses all XmlResources in this Package into CombinedTuningResources (one per group) and deletes the originals. The combined tunings are added to this package and returned.\n\nBefore using this method and potentially setting the game on fire, please review this post (https://www.patreon.com/posts/72110305) that explains the risks of using combining tuning and how to do so responsibly.\n\nIt is of utmost importance that the provided creator/project names are universally unique. These are not only used for the instance of the combined tuning, but also for the seed that is used for node refs. IF YOU FAIL TO MAKE THESE UNIQUE, YOU WILL BREAK THE GAME.",
+          "prefix": "async",
+          "name": "combineTuningAsync",
+          "arguments": [
+            {
+              "name": "creator",
+              "description": "The creator of the project being combined",
+              "type": {
+                "name": "string"
+              }
+            },
+            {
+              "name": "project",
+              "description": "The name of the project being combined",
+              "type": {
+                "name": "string"
+              }
+            }
+          ],
+          "returnType": {
+            "name": "Promise<ResourceEntry<CombinedTuningResource>[]>",
+            "path": {
+              "pkg": "models",
+              "group": "resources",
+              "item": "CombinedTuningResource"
+            }
+          }
         }
       ]
     }

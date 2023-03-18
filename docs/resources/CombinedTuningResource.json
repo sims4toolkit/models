@@ -141,6 +141,106 @@
               }
             }
           ]
+        },
+        {
+          "displayType": "function",
+          "description": "Combines the given tunings into one CombinedTuningResource. Note that combined tuning loads in a very particular manner, so some guidelines MUST be followed or you risk breaking your mod, other mods, and the game itself.\n\nBefore using this method and potentially setting the game on fire, please review this post (https://www.patreon.com/posts/72110305) that explains the risks of using combining tuning and how to do so responsibly.",
+          "prefix": "static",
+          "name": "combine",
+          "arguments": [
+            {
+              "name": "tunings",
+              "description": "List of tunings to combine",
+              "type": {
+                "name": "XmlResource[]",
+                "path": {
+                  "pkg": "models",
+                  "group": "resources",
+                  "item": "XmlResource"
+                }
+              }
+            },
+            {
+              "name": "group",
+              "description": "Group of tunings",
+              "type": {
+                "name": "number"
+              }
+            },
+            {
+              "name": "refSeed",
+              "description": "Seed to use for reference IDs",
+              "type": {
+                "name": "bigint"
+              }
+            },
+            {
+              "name": "options",
+              "optional": true,
+              "description": "Object of options",
+              "type": {
+                "name": "WritableModelCreationOptions",
+                "path": {
+                  "pkg": "models",
+                  "group": "types",
+                  "item": "WritableModelCreationOptions"
+                }
+              }
+            }
+          ],
+          "returnType": {
+            "name": "CombinedTuningResource"
+          }
+        },
+        {
+          "displayType": "function",
+          "description": "Combines the given tunings into one CombinedTuningResource. Note that combined tuning loads in a very particular manner, so some guidelines MUST be followed or you risk breaking your mod, other mods, and the game itself.\n\nBefore using this method and potentially setting the game on fire, please review this post (https://www.patreon.com/posts/72110305) that explains the risks of using combining tuning and how to do so responsibly.",
+          "prefix": "static async",
+          "name": "combineAsync",
+          "arguments": [
+            {
+              "name": "tunings",
+              "description": "List of tunings to combine",
+              "type": {
+                "name": "XmlResource[]",
+                "path": {
+                  "pkg": "models",
+                  "group": "resources",
+                  "item": "XmlResource"
+                }
+              }
+            },
+            {
+              "name": "group",
+              "description": "Group of tunings",
+              "type": {
+                "name": "number"
+              }
+            },
+            {
+              "name": "refSeed",
+              "description": "Seed to use for reference IDs",
+              "type": {
+                "name": "bigint"
+              }
+            },
+            {
+              "name": "options",
+              "optional": true,
+              "description": "Object of options",
+              "type": {
+                "name": "WritableModelCreationOptions",
+                "path": {
+                  "pkg": "models",
+                  "group": "types",
+                  "item": "WritableModelCreationOptions"
+                }
+              }
+            }
+          ],
+          "returnType": {
+            "name": "Promise<CombinedTuningResource>"
+          }
         }
       ]
     },

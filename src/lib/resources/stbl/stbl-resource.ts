@@ -70,7 +70,7 @@ export default class StringTableResource extends PrimitiveMappedModel<string, St
    * Returns a new StringTableResource that contains the entries of the given
    * StringTableResources.
    * 
-   * @param stbls StringTableResources to merge into this one
+   * @param stbls StringTableResources to merge into a new stbl
    */
   static merge(stbls: StringTableResource[]): StringTableResource {
     const entries: KeyStringPair[] = [];
@@ -82,7 +82,7 @@ export default class StringTableResource extends PrimitiveMappedModel<string, St
    * Returns a new StringTableResource that contains the entries of the given
    * StringTableResources.
    * 
-   * @param stbls StringTableResources to merge into this one
+   * @param stbls StringTableResources to merge into a new stbl
    */
   static async mergeAsync(stbls: StringTableResource[]): Promise<StringTableResource> {
     return promisify(() => StringTableResource.merge(stbls));

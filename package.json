@@ -19,7 +19,7 @@
     "publish": "npm run build && sh scripts/publish.sh",
     "test": "mocha -r ts-node/register \"test/**/*.test.ts\"",
     "test:coverage": "nyc mocha -r ts-node/register \"test/**/*.test.ts\"",
-    "test:current": "mocha -r ts-node/register \"test/**/obj-definition.test.ts\""
+    "test:current": "mocha -r ts-node/register \"test/**/combined-tuning-resource.test.ts\""
   },
   "author": "frankkulak",
   "funding": {

@@ -89,7 +89,7 @@ export default class Package<ResourceType extends Resource = Resource>
   /**
    * Returns a new Package that contains the entries of the given Packages.
    * 
-   * @param packages Packages to merge into this one
+   * @param packages Packages to merge into a new package
    */
   static merge<T extends Resource = Resource>(
     packages: Package<T>[]
@@ -102,7 +102,7 @@ export default class Package<ResourceType extends Resource = Resource>
   /**
    * Returns a new Package that contains the entries of the given Packages.
    * 
-   * @param packages Packages to merge into this one
+   * @param packages Packages to merge into a new package
    */
   static async mergeAsync<T extends Resource = Resource>(
     packages: Package<T>[]
