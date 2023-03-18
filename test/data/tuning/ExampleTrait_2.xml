@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<I c="Trait" i="trait" m="traits.trait" n="trait_Example" s="12345">
+  <L n="ages">
+    <E>TEEN</E>
+    <E>ADULT</E>
+    <E>CHILD</E>
+    <E>ELDER</E>
+    <E>YOUNGADULT</E>
+  </L>
+  <L n="conflicting_traits"/>
+  <T n="display_name">0x12345678<!--Example--></T>
+  <T n="display_name_gender_neutral">0x12345678<!--Example--></T>
+  <T n="icon" p="InGame\UI\Icons\CAS\Traits\trait_hotheaded_cas.png">2f7d0004:00000000:c4ec3e0a68620978</T>
+  <E n="min_lod_value">MINIMUM</E>
+  <L n="species">
+    <E />
+  </L>
+  <L n="tags">
+    <E>TraitPersonality</E>
+    <E>TraitGroup_Emotional</E>
+  </L>
+  <T n="trait_description">0x87654321<!--This is an example trait.--></T>
+  <E n="trait_type">PERSONALITY</E>
+  <V n="ui_category" t="ui_trait_category_tag" />
+</I>
