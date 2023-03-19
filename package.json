@@ -26,6 +26,10 @@
     "type": "patreon",
     "url": "https://www.patreon.com/bePatron?u=40823163"
   },
+  "contributors": [
+    "frankkulak",
+    "lot51"
+  ],
   "license": "MIT",
   "devDependencies": {
     "@s4tk/plugin-bufferfromfile": "^0.1.1",
