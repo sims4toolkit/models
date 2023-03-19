@@ -158,7 +158,7 @@
           "arguments": [
             {
               "name": "buffer",
-              "description": "Uncompressed fuffer to create an XML resource from",
+              "description": "Uncompressed buffer to create an XML resource from",
               "type": {
                 "name": "Buffer"
               }
@@ -194,7 +194,7 @@
           "arguments": [
             {
               "name": "buffer",
-              "description": "Uncompressed fuffer to create an XML resource from",
+              "description": "Uncompressed buffer to create an XML resource from",
               "type": {
                 "name": "Buffer"
               }

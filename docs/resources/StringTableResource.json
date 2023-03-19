@@ -178,6 +178,42 @@
               "code": "StringTableResource.fromAsync(buffer).then(stbl => {\n  // do stuff\n});"
             }
           ]
+        },
+        {
+          "displayType": "function",
+          "description": "Returns a new StringTableResource that contains the entries of the given StringTableResources.",
+          "prefix": "static",
+          "name": "merge",
+          "arguments": [
+            {
+              "name": "stbls",
+              "description": "StringTableResources to merge into a new stbl",
+              "type": {
+                "name": "StringTableResource[]"
+              }
+            }
+          ],
+          "returnType": {
+            "name": "StringTableResource"
+          }
+        },
+        {
+          "displayType": "function",
+          "description": "Returns a new StringTableResource that contains the entries of the given StringTableResources.",
+          "prefix": "static async",
+          "name": "mergeAsync",
+          "arguments": [
+            {
+              "name": "stbls",
+              "description": "StringTableResources to merge into a new stbl",
+              "type": {
+                "name": "StringTableResource[]"
+              }
+            }
+          ],
+          "returnType": {
+            "name": "Promise<StringTableResource>"
+          }
         }
       ]
     },

@@ -170,6 +170,72 @@
               "code": "Package.fromAsync(buffer, {\n  saveBuffer: true\n}).then(pkg => {\n  // do stuff\n});"
             }
           ]
+        },
+        {
+          "displayType": "function",
+          "description": "Returns a new Package that contains the entries of the given Packages.",
+          "prefix": "static",
+          "name": "merge",
+          "generics": [
+            {
+              "name": "T",
+              "extends": [
+                {
+                  "name": "Resource",
+                  "path": {
+                    "pkg": "models",
+                    "group": "types",
+                    "item": "Resource"
+                  }
+                }
+              ]
+            }
+          ],
+          "arguments": [
+            {
+              "name": "packages",
+              "description": "Packages to merge into a new package",
+              "type": {
+                "name": "Package<T>[]"
+              }
+            }
+          ],
+          "returnType": {
+            "name": "Package"
+          }
+        },
+        {
+          "displayType": "function",
+          "description": "Returns a new Package that contains the entries of the given Packages.",
+          "prefix": "static async",
+          "name": "mergeAsync",
+          "generics": [
+            {
+              "name": "T",
+              "extends": [
+                {
+                  "name": "Resource",
+                  "path": {
+                    "pkg": "models",
+                    "group": "types",
+                    "item": "Resource"
+                  }
+                }
+              ]
+            }
+          ],
+          "arguments": [
+            {
+              "name": "packages",
+              "description": "Packages to merge into a new package",
+              "type": {
+                "name": "Package<T>[]"
+              }
+            }
+          ],
+          "returnType": {
+            "name": "Promise<Package>"
+          }
         }
       ]
     },

@@ -1,7 +1,7 @@
 import * as fs from "fs";
 import * as path from "path";
 import { expect } from "chai";
-import { XmlDocumentNode, XmlElementNode, XmlValueNode } from "@s4tk/xml-dom";
+import { XmlDocumentNode, XmlElementNode, XmlNode, XmlValueNode } from "@s4tk/xml-dom";
 import { CompressedBuffer, CompressionType } from "@s4tk/compression";
 import { XmlResource } from '../../../../dst/models';
 import { EncodingType } from "../../../../dst/enums";
@@ -372,7 +372,7 @@ describe('XmlResource', function () {
       expect(tun.root.children[16].name).to.equal("whim_set");
 
       // searching
-      const buffReplacements = tun.root.children.find(child => child.name === "buff_replacements");
+      const buffReplacements = tun.root.children.find(child => child.name === "buff_replacements") as XmlNode;
       expect(buffReplacements.numChildren).to.equal(3);
       expect(buffReplacements.child.tag).to.equal("U");
       expect(buffReplacements.child.child.tag).to.equal("T");
@@ -532,6 +532,15 @@ describe('XmlResource', function () {
       const dom = XmlDocumentNode.from("<T>50</T>");
       const tun = new XmlResource(dom);
       expect(tun.getBuffer().toString()).to.equal(`${XML_DECLARATION}\n<T>50</T>`);
+    });
+
+    it("should remove whitespace, comments, and PI tags when minify = true", () => {
+      const dom = XmlDocumentNode.from(`<L>
+        <T n="something">1234<!--Something--></T>
+        <? <T n="something_else">1234<!--Something--></T> ?>
+      </L>`);
+      const tun = new XmlResource(dom);
+      expect(tun.getBuffer(undefined, true).toString()).to.equal(`${XML_DECLARATION}<L><T n="something">1234</T></L>`);
     });
   });
 

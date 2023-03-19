@@ -10,8 +10,8 @@ import convertCombinedBinaryToXml from "./serialization/binary-to-xml";
 import extractTuningFromCombinedXml from "./serialization/extract-tuning";
 
 /**
- * Read-only model for combined tuning resources. Note that resource keys are
- * NOT specified in combined tuning - you must infer the type from the `R`
+ * Model for combined tuning resources. Note that resource keys are NOT
+ * specified in combined tuning - you must infer the type from the `R`
  * node's `n` attribute, and the group will match that of the CombinedTuning
  * that contains the resource.
  */
@@ -164,24 +164,36 @@ export default class CombinedTuningResource extends DataResource {
 
   //#endregion Public Methods
 
-  //#region Unsupported Methods
+  //#region Overridden Methods
 
   clone(): CombinedTuningResource {
-    throw new Error("Cloning CombinedTuningResource is not supported.");
+    return new CombinedTuningResource(this.dom.clone(), {
+      defaultCompressionType: this.defaultCompressionType,
+      initialBufferCache: this.bufferCache
+    });
   }
 
-  equals(other: any): boolean {
-    throw new Error("Comparing CombinedTuningResource is not supported.");
+  equals(other: CombinedTuningResource): boolean {
+    if (!(other instanceof CombinedTuningResource)) return false;
+    return this.dom.equals(other.dom);
   }
 
-  protected _serialize(): Buffer {
-    throw new Error("Serializing CombinedTuningResource is not supported.");
+  isXml(): boolean {
+    return true;
   }
 
-  //#endregion Unsupported Methods
+  protected _serialize(minify?: boolean): Buffer {
+    return Buffer.from(this.dom.toXml({
+      minify,
+      writeComments: !minify,
+      writeProcessingInstructions: !minify
+    }));
+  }
+
+  //#endregion Overridden Methods
 }
 
-ResourceRegistry.register(
+ResourceRegistry.registerTypes(
   CombinedTuningResource,
-  type => type === BinaryResourceType.CombinedTuning
+  BinaryResourceType.CombinedTuning
 );

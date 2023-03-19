@@ -1,7 +1,7 @@
-import type Resource from "../resources/resource";
 import type { ResourceKey, ResourceKeyPair, ResourcePosition } from "./types";
-import type { PackageFileReadingOptions } from "../common/options";
+import type Resource from "../resources/resource";
 import { MappedModel } from "../base/mapped-model";
+import type { PackageFileReadingOptions } from "../common/options";
 import { arraysAreEqual, promisify } from "../common/helpers";
 import { fetchResources, getResourcePositions, readDbpf, streamDbpf } from "./serialization/read-dbpf";
 import writeDbpf from "./serialization/write-dbpf";
@@ -79,6 +79,30 @@ export default class Package<ResourceType extends Resource = Resource>
     options?: PackageFileReadingOptions
   ): Promise<ResourceKeyPair<T>[]> {
     return promisify(() => Package.extractResources<T>(buffer, options));
+  }
+
+  /**
+   * Returns a new Package that contains the entries of the given Packages.
+   * 
+   * @param packages Packages to merge into a new package
+   */
+  static merge<T extends Resource = Resource>(
+    packages: Package<T>[]
+  ): Package<T> {
+    const entries: ResourceEntry<T>[] = [];
+    packages.forEach(pkg => entries.push(...pkg.entries));
+    return new Package(entries);
+  }
+
+  /**
+   * Returns a new Package that contains the entries of the given Packages.
+   * 
+   * @param packages Packages to merge into a new package
+   */
+  static async mergeAsync<T extends Resource = Resource>(
+    packages: Package<T>[]
+  ): Promise<Package<T>> {
+    return promisify(() => Package.merge(packages));
   }
 
   /**
@@ -226,8 +250,8 @@ export default class Package<ResourceType extends Resource = Resource>
     return new ResourceEntry(key, value, this);
   }
 
-  protected _serialize(): Buffer {
-    return writeDbpf(this.entries);
+  protected _serialize(minify?: boolean): Buffer {
+    return writeDbpf(this.entries, minify);
   }
 
   //#endregion Protected Methods

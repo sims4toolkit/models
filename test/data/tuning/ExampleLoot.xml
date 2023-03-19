@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<I c="FKLBLootActions" i="action" m="fklb.tuning.lb_loots" n="frankk_LB:lbLoot_command_OnCommunication" s="15623930869482391909">
+  <L n="loot_actions">
+    <V t="lb_command">
+      <U n="lb_command">
+        <T n="command">on_communication</T>
+        <L n="arguments">
+          <V t="participant">
+            <E n="participant">Actor</E>
+          </V>
+          <V t="participant">
+            <E n="participant">TargetSim</E>
+          </V>
+        </L>
+      </U>
+    </V>
+  </L>
+</I>

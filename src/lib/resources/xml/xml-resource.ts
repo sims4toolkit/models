@@ -94,7 +94,7 @@ export default class XmlResource extends WritableModel implements Resource {
    * assumed to be uncompressed; providing a compressed buffer will lead to
    * unexpected behavior.
    * 
-   * @param buffer Uncompressed fuffer to create an XML resource from
+   * @param buffer Uncompressed buffer to create an XML resource from
    * @param options Object of optional arguments
    */
   static from(buffer: Buffer, options?: XmlResourceFromOptions): XmlResource {
@@ -117,7 +117,7 @@ export default class XmlResource extends WritableModel implements Resource {
    * buffer is assumed to be uncompressed; providing a compressed buffer will
    * lead to unexpected behavior.
    * 
-   * @param buffer Uncompressed fuffer to create an XML resource from
+   * @param buffer Uncompressed buffer to create an XML resource from
    * @param options Object of optional arguments
    */
   static async fromAsync(buffer: Buffer, options?: XmlResourceFromOptions): Promise<XmlResource> {
@@ -181,8 +181,16 @@ export default class XmlResource extends WritableModel implements Resource {
 
   //#region Protected Methods
 
-  protected _serialize(): Buffer {
-    return Buffer.from(this.content, 'utf-8');
+  protected _serialize(minify?: boolean): Buffer {
+    const xmlContent = minify
+      ? this.dom.toXml({
+        minify: true,
+        writeComments: false,
+        writeProcessingInstructions: false
+      })
+      : this.content;
+
+    return Buffer.from(xmlContent, "utf-8");
   }
 
   //#endregion Protected Methods

@@ -5,6 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.6.6] - 2023/03/19
+### Added
+- Add `minify` argument to all `getBuffer()` methods.
+- Add `merge()` method to Package class.
+- Add `merge()` method to StringTableResource class.
+### Changed
+- Update dependencies on @s4tk/xml-dom and @s4tk/images.
+- CombinedTuningResource's `clone()`, `equals()`, and `getBuffer()` methods are now implemented.
+- `CombinedTuningResource.isXml()` is now true, since XML is the only supported format.
+- Minor optimization when loading resources in packages.
+### Fixed
+- Unhandled exceptions will no longer output squish.js to the console.
+
 ## [0.6.5] - 2022/08/07
 ### Changed
 - Update dependency on @s4tk/xml-dom.

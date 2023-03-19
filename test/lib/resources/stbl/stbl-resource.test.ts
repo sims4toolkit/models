@@ -136,7 +136,7 @@ describe("StringTableResource", () => {
     });
 
     it("should create an empty stbl when given null", () => {
-      const stbl = new StringTableResource(null);
+      const stbl = new StringTableResource(undefined);
       expect(stbl.entries).to.be.an('Array').that.is.empty;
     });
 
@@ -155,7 +155,7 @@ describe("StringTableResource", () => {
 
     it("should use the given owner", () => {
       const owner = new MockOwner();
-      const stbl = new StringTableResource(null, { owner });
+      const stbl = new StringTableResource(undefined, { owner });
       expect(stbl.owner).to.equal(owner);
     });
 
@@ -165,7 +165,7 @@ describe("StringTableResource", () => {
     });
 
     it("should use the given defaultCompressionType", () => {
-      const stbl = new StringTableResource(null, {
+      const stbl = new StringTableResource(undefined, {
         defaultCompressionType: CompressionType.InternalCompression
       });
 
@@ -184,7 +184,7 @@ describe("StringTableResource", () => {
         compressionType: CompressionType.Uncompressed,
         sizeDecompressed: buffer.byteLength
       };
-      const stbl = new StringTableResource(null, { initialBufferCache });
+      const stbl = new StringTableResource(undefined, { initialBufferCache });
       expect(stbl.hasBufferCache).to.be.true;
       expect(stbl.getCompressedBuffer(CompressionType.Uncompressed)).to.equal(initialBufferCache);
     });
@@ -353,6 +353,61 @@ describe("StringTableResource", () => {
       return StringTableResource.fromAsync(getBuffer("Corrupt")).then().catch(err => {
         expect(err).to.be.instanceOf(Error);
       });
+    });
+  });
+
+  describe("static#merge()", () => {
+    it("should clone the one given stbl", () => {
+      const first = getStbl("Normal");
+      const merged = StringTableResource.merge([first]);
+      expect(first.equals(merged)).to.be.true; // same contents
+      expect(first).to.not.equal(merged); // different instance
+    });
+
+    it("should merge two stbls", () => {
+      const first = getStbl("Normal");
+      const second = new StringTableResource();
+      second.addAndHash("Something");
+      const merged = StringTableResource.merge([first, second]);
+      expect(merged.size).to.equal(first.size + second.size);
+      for (let i = 0; i < first.size; ++i)
+        expect(merged.entries[i].value).to.equal(first.entries[i].value);
+      expect(merged.entries[first.size].value).to.equal("Something");
+    });
+
+    it("should merge 3+ stbls", () => {
+      const first = getStbl("Normal");
+      const second = new StringTableResource();
+      second.addAndHash("Something");
+      const third = new StringTableResource();
+      third.addAndHash("Something Else");
+      const merged = StringTableResource.merge([first, second, third]);
+      expect(merged.size).to.equal(first.size + second.size + third.size);
+      for (let i = 0; i < first.size; ++i)
+        expect(merged.entries[i].value).to.equal(first.entries[i].value);
+      expect(merged.entries[first.size].value).to.equal("Something");
+      expect(merged.entries[first.size + 1].value).to.equal("Something Else");
+    });
+
+    it("should not modify the original entries", () => {
+      const first = getStbl("Normal");
+      const second = new StringTableResource();
+      second.addAndHash("Something");
+      const merged = StringTableResource.merge([first, second]);
+      expect(second.get(0).value).to.equal("Something");
+      expect(merged.get(first.size).value).to.equal("Something");
+      merged.get(first.size).value = "Yeehaw";
+      expect(second.get(0).value).to.equal("Something");
+      expect(merged.get(first.size).value).to.equal("Yeehaw");
+    });
+  });
+
+  describe("static#mergeAsync()", () => {
+    it("should call merge() and return the stbl in a promise", async () => {
+      const first = getStbl("Normal");
+      const merged = await StringTableResource.mergeAsync([first]);
+      expect(first.equals(merged)).to.be.true; // same contents
+      expect(first).to.not.equal(merged); // different instance
     });
   });
 
@@ -991,13 +1046,13 @@ describe("StringTableResource", () => {
 
     it("should include IDs if specified", () => {
       const stbl = getStbl("Normal");
-      const json = stbl.toJsonObject(null, true);
+      const json = stbl.toJsonObject(undefined, true);
       expect(json[0].id).to.be.a("number").that.equals(0);
     });
 
     it("should include all entries", () => {
       const stbl = getStbl("Normal");
-      const json = stbl.toJsonObject(null, true);
+      const json = stbl.toJsonObject(undefined, true);
       expect(json).to.be.an("Array").with.lengthOf(3);
       expect(json[0].value).to.equal("This is a string.");
       expect(json[1].value).to.equal("This is another string!");
@@ -1006,7 +1061,7 @@ describe("StringTableResource", () => {
 
     it("should not produce an array that mutates the model", () => {
       const stbl = getStbl("Normal");
-      const json = stbl.toJsonObject(null, true);
+      const json = stbl.toJsonObject(undefined, true);
       json.push({
         id: 3,
         key: 0x12345678,
@@ -1018,7 +1073,7 @@ describe("StringTableResource", () => {
 
     it("should not produce entries that mutate the model", () => {
       const stbl = getStbl("Normal");
-      const json = stbl.toJsonObject(null, true);
+      const json = stbl.toJsonObject(undefined, true);
       json[0].value = "Changed string.";
       expect(stbl.entries[0].value).to.equal("This is a string.");
     });

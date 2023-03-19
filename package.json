@@ -1,6 +1,6 @@
 {
   "name": "@s4tk/models",
-  "version": "0.6.5",
+  "version": "0.6.6",
   "description": "Models for reading and writing package files and the resources they contain.",
   "repository": {
     "type": "git",
@@ -19,7 +19,7 @@
     "publish": "npm run build && sh scripts/publish.sh",
     "test": "mocha -r ts-node/register \"test/**/*.test.ts\"",
     "test:coverage": "nyc mocha -r ts-node/register \"test/**/*.test.ts\"",
-    "test:current": "mocha -r ts-node/register \"test/**/obj-definition.test.ts\""
+    "test:current": "mocha -r ts-node/register \"test/**/combined-tuning-resource.test.ts\""
   },
   "author": "frankkulak",
   "funding": {
@@ -47,8 +47,8 @@
     "@s4tk/compression": "^0.2.0",
     "@s4tk/encoding": "^0.1.4",
     "@s4tk/hashing": "^0.2.1",
-    "@s4tk/images": "^0.2.2",
-    "@s4tk/xml-dom": "^0.2.1",
+    "@s4tk/images": "^0.2.3",
+    "@s4tk/xml-dom": "^0.2.4",
     "just-clone": "^5.0.1",
     "just-compare": "^2.0.1"
   }

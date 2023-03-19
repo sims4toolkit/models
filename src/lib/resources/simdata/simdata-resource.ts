@@ -85,7 +85,7 @@ export default class SimDataResource extends DataResource implements SimDataDto 
    * This buffer is assumed to be uncompressed; providing a compressed buffer
    * will lead to unexpected behavior.
    * 
-   * @param buffer Uncompressed fuffer to create a SimData resource from
+   * @param buffer Uncompressed buffer to create a SimData resource from
    * @param options Object of optional arguments
    */
   static from(
@@ -109,7 +109,7 @@ export default class SimDataResource extends DataResource implements SimDataDto 
    * SimData data. This buffer is assumed to be uncompressed; providing a
    * compressed buffer will lead to unexpected behavior.
    * 
-   * @param buffer Uncompressed fuffer to create a SimData resource from
+   * @param buffer Uncompressed buffer to create a SimData resource from
    * @param options Object of optional arguments
    */
   static async fromAsync(
@@ -339,7 +339,7 @@ export default class SimDataResource extends DataResource implements SimDataDto 
   //#endregion Protected Methods
 }
 
-ResourceRegistry.register(
+ResourceRegistry.registerTypes(
   SimDataResource,
-  type => type === BinaryResourceType.SimData
+  BinaryResourceType.SimData
 );
