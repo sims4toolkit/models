@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add `minify` argument to all `getBuffer()` methods.
 - Add `merge()` method to Package class.
 - Add `merge()` method to StringTableResource class.
+- Add `DevelopmentalMilestone` tuning type and SimData group.
 ### Changed
 - Update dependencies on @s4tk/xml-dom and @s4tk/images.
 - CombinedTuningResource's `clone()`, `equals()`, and `getBuffer()` methods are now implemented.
