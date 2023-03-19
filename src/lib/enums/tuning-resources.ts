@@ -38,6 +38,7 @@ enum TuningResourceType {
   ClubSeed = 0x2F59B437,
   ConditionalLayer = 0x9183DC91,
   DetectiveClue = 0x537449F6,
+  DevelopmentalMilestone = 0xC5224F94,
   DramaNode = 0x2553F435,
   Ensemble = 0xB9881120,
   GameRuleset = 0xE1477E18,
@@ -117,11 +118,11 @@ namespace TuningResourceType {
   }
 
   /**
-   * Returns the TuningResourceType value for tunings with the given type 
+   * Returns the TuningResourceType value for tunings with the given type
    * attribute. This attribute is either the `n` in R nodes in combined
    * tuning, or the `i` in regular tuning instances. If there is no type for
    * the given attribute, `Tuning` is assumed.
-   * 
+   *
    * @param attr Attribute to parse as a tuning type
    */
   export function parseAttr(attr: string): TuningResourceType {
@@ -138,7 +139,7 @@ namespace TuningResourceType {
   /**
    * Returns the `i` attribute to use for a tuning file of the given type. If
    * there is no attribute for the given type, result is null.
-   * 
+   *
    * @param type Tuning type to get attribute for
    */
   export function getAttr(type: TuningResourceType): string {
