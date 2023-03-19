@@ -19,13 +19,6 @@ const xmlBuffer = fs.readFileSync(
   )
 );
 
-const getTuningBuffer = (name: string) => fs.readFileSync(
-  path.resolve(
-    __dirname,
-    `../../../data/tuning/${name}.xml`
-  )
-);
-
 function getExtractedXmlBuffer(name: string): Buffer {
   return fs.readFileSync(
     path.resolve(
