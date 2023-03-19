@@ -183,34 +183,6 @@ describe("CombinedTuningResource", () => {
     });
   });
 
-  describe("static#combine()", () => {
-    it("should create a new combined tuning that contains all given XMLs", () => {
-      const trait = XmlResource.from(getTuningBuffer("ExampleTrait"));
-      const trait2 = XmlResource.from(getTuningBuffer("ExampleTrait_2"));
-      const cbt = CombinedTuningResource.combine([trait, trait2], 0, 0x1234567890ABCEFn);
-
-      const gNode = cbt.dom.child.child;
-      expect(gNode.tag).to.equal("g");
-      expect(gNode.child.attributes.x).to.equal(8626492237610745873n);
-
-      const rTrait = cbt.dom.child.findChild("trait");
-      expect(rTrait.numChildren).to.equal(2);
-      const [hothead, example] = rTrait.children;
-      expect(hothead.name).to.equal("trait_HotHeaded");
-      expect(example.name).to.equal("trait_Example");
-      expect(hothead.findChild("ages").attributes.x).to.equal(8626492237610745873n);
-      expect(example.findChild("ages").attributes.x).to.equal(8626492237610745873n);
-    });
-
-    it("should use the provided seed", () => {
-      // TODO:
-    });
-
-    // TODO: more tests
-
-    // Unit tests are tricky for combined tuning, they should be tested in-game
-  });
-
   //#endregion Static Methods
 
   //#region Methods

@@ -1732,23 +1732,5 @@ describe("Package", () => {
     });
   });
 
-  describe("#combineTuning()", () => {
-    it("should produce a combined tuning for all tuning in this package", () => {
-      // TODO:
-    });
-
-    it("should produce one combined tuning document per group", () => {
-      // TODO:
-    });
-
-    it("should use a different seed for each group", () => {
-      // TODO:
-    });
-
-    it("should produce a unique seed using the given arguments", () => {
-      // TODO:
-    });
-  });
-
   //#endregion Public Methods
 });

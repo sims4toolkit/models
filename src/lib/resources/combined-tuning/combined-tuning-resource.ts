@@ -7,7 +7,6 @@ import ResourceRegistry from "../../packages/resource-registry";
 import DataResource, { BinaryDataResourceDto } from "../abstracts/data-resource";
 import XmlResource from "../xml/xml-resource";
 import convertCombinedBinaryToXml from "./serialization/binary-to-xml";
-import combineTunings from "./serialization/combine-xml";
 import extractTuningFromCombinedXml from "./serialization/extract-tuning";
 
 /**
@@ -135,55 +134,6 @@ export default class CombinedTuningResource extends DataResource {
     return promisify(
       () => CombinedTuningResource.readBinaryDataModel(buffer, options)
     );
-  }
-
-  /**
-   * Combines the given tunings into one CombinedTuningResource. Note that
-   * combined tuning loads in a very particular manner, so some guidelines MUST
-   * be followed or you risk breaking your mod, other mods, and the game itself.
-   * 
-   * Before using this method and potentially setting the game on fire, please
-   * review [this post](https://www.patreon.com/posts/72110305) that explains
-   * the risks of using combining tuning and how to do so responsibly.
-   * 
-   * @param tunings List of tunings to combine
-   * @param group Group of tunings
-   * @param refSeed Seed to use for reference IDs
-   * @param options Object of options
-   */
-  static combine(
-    tunings: XmlResource[],
-    group: number,
-    refSeed: bigint,
-    options?: WritableModelCreationOptions
-  ): CombinedTuningResource {
-    return new CombinedTuningResource(
-      combineTunings(tunings, group, refSeed),
-      options
-    );
-  }
-
-  /**
-   * Combines the given tunings into one CombinedTuningResource. Note that
-   * combined tuning loads in a very particular manner, so some guidelines MUST
-   * be followed or you risk breaking your mod, other mods, and the game itself.
-   * 
-   * Before using this method and potentially setting the game on fire, please
-   * review [this post](https://www.patreon.com/posts/72110305) that explains
-   * the risks of using combining tuning and how to do so responsibly.
-   * 
-   * @param tunings List of tunings to combine
-   * @param group Group of tunings
-   * @param refSeed Seed to use for reference IDs
-   * @param options Object of options
-   */
-  static async combineAsync(
-    tunings: XmlResource[],
-    group: number,
-    refSeed: bigint,
-    options?: WritableModelCreationOptions
-  ): Promise<CombinedTuningResource> {
-    return promisify(() => CombinedTuningResource.combine(tunings, group, refSeed, options));
   }
 
   //#endregion Static Methods
