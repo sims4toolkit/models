@@ -58,17 +58,19 @@ export default class XmlResource extends WritableModel implements Resource {
   }
 
   /**
-   * Shorthand for `dom.child`, since most XML resources should have one child.
-   * To mutate the root and keep it in sync with the content/buffer, either use
-   * the `updateRoot()` method, or set the root equal to itself when finished
+   * Returns the first element node in `dom.children`. To mutate the root and
+   * keep it in sync with the content/buffer, either use the `updateRoot()`
+   * method, or set the root equal to itself when finished
    * (EX: `resource.root = resource.root`).
    */
-  get root(): XmlNode { return this.dom.child; }
+  get root(): XmlNode { return this.dom.children[this._rootIndex]; }
   set root(node: XmlNode) {
     this.updateDom(dom => {
-      dom.child = node;
+      dom.children[this._rootIndex] = node;
     });
   }
+
+  private get _rootIndex(): number { return this.dom.children.findIndex(n => n.tag) ?? 0; }
 
   //#region Initialization
 

@@ -161,6 +161,12 @@ describe('XmlResource', function () {
         expect(tun.root.tag).to.equal("T");
         expect(tun.root.innerValue).to.equal("Hi");
       });
+
+      it("should return the second child of the DOM if the first is a comment", function () {
+        const tun = new XmlResource("<!--Comment--><T>Hi</T>");
+        expect(tun.root.tag).to.equal("T");
+        expect(tun.root.innerValue).to.equal("Hi");
+      });
     });
 
     context('setting', function () {
@@ -175,6 +181,18 @@ describe('XmlResource', function () {
         });
         expect(dom.child.tag).to.equal("E");
         expect(dom.child.innerValue).to.equal("VALUE");
+      });
+
+      it("should update the second child if the first is a comment", function () {
+        const tun = new XmlResource("<!--Comment--><T>Hi</T>");
+        tun.root = new XmlElementNode({
+          tag: "E",
+          children: [
+            new XmlValueNode("VALUE")
+          ]
+        });
+        expect(tun.dom.children[1].tag).to.equal("E");
+        expect(tun.dom.children[1].innerValue).to.equal("VALUE");
       });
 
       it("should uncache the buffer", function () {

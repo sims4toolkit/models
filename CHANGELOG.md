@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.6.7] - 2023/05/08
+### Changed
+- XmlResource.dom.root now finds the first child that is an element node, rather
+  than just the first child. This is a breaking change, and is for compatibility
+  with XML files that have a comment on top.
+- Update dependency on @s4tk/images to resolve vulnerabilities.
+
 ## [0.6.6] - 2023/03/19
 ### Added
 - Add `minify` argument to all `getBuffer()` methods.
