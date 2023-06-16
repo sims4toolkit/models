@@ -6,3 +6,4 @@ pocs/
 .VSCodeCounter/
 .vscode/settings.json
 .nyc_output/
+.DS_Store
