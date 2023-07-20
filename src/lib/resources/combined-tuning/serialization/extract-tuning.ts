@@ -33,7 +33,11 @@ export default function extractTuningFromCombinedXml(
 
           if (child.name) {
             ref = ref.clone();
-            ref.name = child.name;
+            const attrs: { [key: string]: string; } = { n: child.name };
+            for (const attr in ref.attributes) {
+              attrs[attr] = ref.attributes[attr];
+            }
+            ref.attributes = attrs;
           }
 
           node.children[i] = ref;
