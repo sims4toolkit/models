@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <I c="GameObject" i="object" m="objects.game_object" n="object_lightFloor_SP23ISLlantern" s="268934">
   <U n="_components">
-    <V t="enabled" n="focus">
+    <V n="focus" t="enabled">
       <U n="enabled">
         <V n="_focus_score" t="globally">
           <U n="globally">

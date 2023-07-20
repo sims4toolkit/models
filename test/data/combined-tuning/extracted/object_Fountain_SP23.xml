@@ -10,7 +10,7 @@
         </V>
       </U>
     </V>
-    <V t="enabled" n="retail_component">
+    <V n="retail_component" t="enabled">
       <V n="enabled" t="reference">
         <T n="reference">110393</T>
       </V>

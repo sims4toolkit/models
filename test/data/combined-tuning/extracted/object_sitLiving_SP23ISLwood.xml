@@ -19,7 +19,7 @@
     </U>
   </V>
   <U n="_components">
-    <V t="enabled" n="focus">
+    <V n="focus" t="enabled">
       <U n="enabled">
         <V n="_focus_score" t="globally">
           <U n="globally">
@@ -28,7 +28,7 @@
         </V>
       </U>
     </V>
-    <V t="enabled" n="line_of_sight"/>
+    <V n="line_of_sight" t="enabled"/>
     <V n="portal" t="enabled">
       <U n="enabled">
         <L n="_portal_data">
@@ -41,7 +41,7 @@
         <T n="reference">115890</T>
       </V>
     </V>
-    <V t="enabled" n="state">
+    <V n="state" t="enabled">
       <U n="enabled">
         <L n="state_triggers">
           <U>
@@ -135,7 +135,7 @@
         </L>
       </U>
     </V>
-    <V t="enabled" n="tooltip_component"/>
+    <V n="tooltip_component" t="enabled"/>
   </U>
   <L n="_super_affordances">
     <T>13328</T>
@@ -199,7 +199,7 @@
           </U>
         </U>
       </L>
-      <V t="apply_on_interaction_to_participant" n="subject">
+      <V n="subject" t="apply_on_interaction_to_participant">
         <V n="apply_on_interaction_to_participant" t="enabled">
           <L n="enabled">
             <E>Actor</E>
@@ -221,5 +221,5 @@
       </U>
     </L>
   </U>
-  <V t="enabled" n="social_clustering"/>
+  <V n="social_clustering" t="enabled"/>
 </I>

@@ -19,7 +19,7 @@
     </U>
   </V>
   <U n="_components">
-    <V t="enabled" n="focus">
+    <V n="focus" t="enabled">
       <U n="enabled">
         <V n="_focus_score" t="globally">
           <U n="globally">
@@ -28,7 +28,7 @@
         </V>
       </U>
     </V>
-    <V t="enabled" n="line_of_sight"/>
+    <V n="line_of_sight" t="enabled"/>
     <V n="portal" t="enabled">
       <U n="enabled">
         <L n="_portal_data">
@@ -37,12 +37,12 @@
         </L>
       </U>
     </V>
-    <V t="enabled" n="retail_component">
+    <V n="retail_component" t="enabled">
       <V n="enabled" t="reference">
         <T n="reference">110393</T>
       </V>
     </V>
-    <V t="enabled" n="state">
+    <V n="state" t="enabled">
       <U n="enabled">
         <L n="state_triggers">
           <U>
@@ -136,7 +136,7 @@
         </L>
       </U>
     </V>
-    <V t="enabled" n="tooltip_component"/>
+    <V n="tooltip_component" t="enabled"/>
   </U>
   <U n="_components_native">
     <V n="Slot" t="disabled"/>
@@ -148,7 +148,7 @@
         <L n="adjacent_parts">
           <T>Sit_0</T>
         </L>
-        <V t="enabled" n="is_mirrored"/>
+        <V n="is_mirrored" t="enabled"/>
         <L n="overlapping_parts">
           <T>Sit_0</T>
           <T>Sit_1</T>
@@ -173,7 +173,7 @@
         <L n="adjacent_parts">
           <T>Sit_1</T>
         </L>
-        <V t="enabled" n="is_mirrored">
+        <V n="is_mirrored" t="enabled">
           <T n="enabled">True</T>
         </V>
         <L n="overlapping_parts">
@@ -192,7 +192,7 @@
           <T>Pet_Child_11</T>
         </L>
         <T n="part_definition">28881</T>
-        <V t="enabled" n="subroot_index">
+        <V n="subroot_index" t="enabled">
           <T n="enabled">1</T>
         </V>
       </U>
@@ -203,7 +203,7 @@
         <L n="adjacent_parts">
           <T>Sit_1</T>
         </L>
-        <V t="enabled" n="is_mirrored"/>
+        <V n="is_mirrored" t="enabled"/>
         <L n="overlapping_parts">
           <T>Sit_1</T>
           <T>Sit_2</T>
@@ -220,7 +220,7 @@
           <T>Nap_0</T>
         </L>
         <T n="part_definition">28881</T>
-        <V t="enabled" n="subroot_index">
+        <V n="subroot_index" t="enabled">
           <T n="enabled">1</T>
         </V>
       </U>
@@ -231,7 +231,7 @@
         <L n="adjacent_parts">
           <T>Sit_2</T>
         </L>
-        <V t="enabled" n="is_mirrored">
+        <V n="is_mirrored" t="enabled">
           <T n="enabled">True</T>
         </V>
         <L n="overlapping_parts">
@@ -250,7 +250,7 @@
           <T>Nap_0</T>
         </L>
         <T n="part_definition">28881</T>
-        <V t="enabled" n="subroot_index">
+        <V n="subroot_index" t="enabled">
           <T n="enabled">2</T>
         </V>
       </U>
@@ -261,7 +261,7 @@
         <L n="adjacent_parts">
           <T>Sit_2</T>
         </L>
-        <V t="enabled" n="is_mirrored">
+        <V n="is_mirrored" t="enabled">
           <T n="enabled">True</T>
         </V>
         <L n="overlapping_parts">
@@ -323,7 +323,7 @@
           <T>Pet_Small_6</T>
           <T>Pet_Small_7</T>
         </L>
-        <V t="enabled" n="is_mirrored">
+        <V n="is_mirrored" t="enabled">
           <T n="enabled">True</T>
         </V>
         <L n="overlapping_parts">
@@ -348,7 +348,7 @@
           <T>Sit_2</T>
           <T>Pet_Small_8</T>
         </L>
-        <V t="enabled" n="is_mirrored">
+        <V n="is_mirrored" t="enabled">
           <T n="enabled">True</T>
         </V>
         <L n="overlapping_parts">
@@ -463,7 +463,7 @@
           <T>Pet_Child_11</T>
         </L>
         <T n="part_definition">14798</T>
-        <V t="enabled" n="subroot_index">
+        <V n="subroot_index" t="enabled">
           <T n="enabled">1</T>
         </V>
       </U>
@@ -486,7 +486,7 @@
           <T>Pet_Child_12</T>
         </L>
         <T n="part_definition">14798</T>
-        <V t="enabled" n="subroot_index">
+        <V n="subroot_index" t="enabled">
           <T n="enabled">2</T>
         </V>
       </U>
@@ -572,7 +572,7 @@
           </U>
         </U>
       </L>
-      <V t="apply_on_interaction_to_participant" n="subject">
+      <V n="subject" t="apply_on_interaction_to_participant">
         <V n="apply_on_interaction_to_participant" t="enabled">
           <L n="enabled">
             <E>Actor</E>
@@ -597,5 +597,5 @@
       </U>
     </L>
   </U>
-  <V t="enabled" n="social_clustering"/>
+  <V n="social_clustering" t="enabled"/>
 </I>
