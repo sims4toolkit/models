@@ -93,7 +93,6 @@ enum TuningResourceType {
   Street = 0xF6E4CB00,
   Subroot = 0xB7FF8F95,
   TagSet = 0x49395302,
-  TdescDebug = 0x6A17611C,
   TemplateChooser = 0x48C2D5ED,
   TestBasedScore = 0x4F739CEE,
   Topic = 0x738E6C56,
