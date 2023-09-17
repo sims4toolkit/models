@@ -6,8 +6,8 @@ import { getAllEnumValues, pascalToSnake, snakeToPascal } from "../common/helper
 enum TuningResourceType {
   Achievement = 0x78559E9E,
   AchievementCategory = 0x2451C101,
-  AchievementCollection = 0x4D2B465,
-  Action = 0xC772E27,
+  AchievementCollection = 0x04D2B465,
+  Action = 0x0C772E27,
   Animation = 0xEE17C6AD,
   Aspiration = 0x28B64675,
   AspirationCategory = 0xE350DBD8,
@@ -26,11 +26,11 @@ enum TuningResourceType {
   CareerLevel = 0x2C70ADF8,
   CareerTrack = 0x48C75CE3,
   CasMenu = 0x935A83C2,
-  CasMenuItem = 0xCBA50F4,
+  CasMenuItem = 0x0CBA50F4,
   CasPreferenceCategory = 0xCE04FC4B,
   CasPreferenceItem = 0xEC68FD22,
   CasStoriesAnswer = 0x80F12D17,
-  CasStoriesQuestion = 0x3246B9D,
+  CasStoriesQuestion = 0x03246B9D,
   CasStoriesTraitChooser = 0x8DAD1549,
   Clan = 0xDEBEE6A5,
   ClanValue = 0x998ED0AB,
@@ -44,7 +44,7 @@ enum TuningResourceType {
   GameRuleset = 0xE1477E18,
   GuidanceTip = 0xD4A09ABD,
   Headline = 0xF401205D,
-  HolidayDefinition = 0xE316F6D,
+  HolidayDefinition = 0x0E316F6D,
   HolidayTradition = 0x3FCD2486,
   HouseholdMilestone = 0x3972E6F3,
   Interaction = 0xE882D22F,
@@ -58,24 +58,24 @@ enum TuningResourceType {
   Object = 0xB61DE6B4,
   ObjectPart = 0x7147A350,
   ObjectState = 0x5B02819E,
-  Objective = 0x69453E,
+  Objective = 0x0069453E,
   OpenStreetDirector = 0x4B6FDEC4,
-  PieMenuCategory = 0x3E9D964,
+  PieMenuCategory = 0x03E9D964,
   Posture = 0xAD6FDF1F,
   RabbitHole = 0xB16AD2FA,
   Recipe = 0xEB97F823,
   Region = 0x51E7A18D,
-  RelationshipBit = 0x904DF10,
+  RelationshipBit = 0x0904DF10,
   RelationshipLock = 0xAE34E673,
   Reward = 0x6FA49828,
-  RoleState = 0xE4D15FB,
+  RoleState = 0x0E4D15FB,
   Royalty = 0x37EF2EE7,
   Season = 0xC98DD45E,
   ServiceNpc = 0x9CC21262,
   Sickness = 0xC3FBD8DE,
   SimFilter = 0x6E0DDA9F,
   SimInfoFixup = 0xE2581892,
-  SimTemplate = 0xCA4C78B,
+  SimTemplate = 0x0CA4C78B,
   Situation = 0xFBC3AEEB,
   SituationGoal = 0x598F28E7,
   SituationGoalSet = 0x9DF2F1F2,
@@ -98,7 +98,7 @@ enum TuningResourceType {
   TestBasedScore = 0x4F739CEE,
   Topic = 0x738E6C56,
   Trait = 0xCB5FDDC7,
-  Tuning = 0x3B33DDF,
+  Tuning = 0x03B33DDF,
   Tutorial = 0xE04A24A3,
   TutorialTip = 0x8FB3E0B1,
   University = 0xD958D5B1,
@@ -154,8 +154,8 @@ namespace TuningResourceType {
     switch (type) {
       // special cases must be added to this enum manually
       case TuningResourceType.Tuning: return null;
-      case TuningResourceType.RelationshipBit: return "relbit"
-      case TuningResourceType.StaticCommodity: return "scommodity"
+      case TuningResourceType.RelationshipBit: return "relbit";
+      case TuningResourceType.StaticCommodity: return "scommodity";
       default:
         return (type in TuningResourceType)
           ? pascalToSnake(TuningResourceType[type])
