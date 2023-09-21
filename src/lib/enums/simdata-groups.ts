@@ -48,6 +48,7 @@ enum SimDataGroup {
   ClubSeed = 0x0059B418,
   DevelopmentalMilestone = 0x00224F51,
   DramaNode = 0x0053F410,
+  GuidanceTip = 0x00A09A69,
   Headline = 0x000120A9,
   HolidayTradition = 0x00CD24B9,
   HouseholdMilestone = 0x0072E6CA,
