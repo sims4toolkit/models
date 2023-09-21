@@ -102,7 +102,6 @@ enum TuningResourceType {
   TutorialTip = 0x8FB3E0B1,
   University = 0xD958D5B1,
   UniversityCourseData = 0x291CAFBE,
-  UniversityCourseSchedule = 0x988C2AF5,
   UniversityMajor = 0x2758B34B,
   UserInterfaceInfo = 0xB8BF1A63,
   Venue = 0xE6BBD7DE,
