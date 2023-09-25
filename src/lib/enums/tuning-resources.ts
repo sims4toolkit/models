@@ -70,6 +70,7 @@ enum TuningResourceType {
   Reward = 0x6FA49828,
   RoleState = 0x0E4D15FB,
   Royalty = 0x37EF2EE7,
+  Scommodity = 0x51077643,
   Season = 0xC98DD45E,
   ServiceNpc = 0x9CC21262,
   Sickness = 0xC3FBD8DE,
@@ -85,7 +86,6 @@ enum TuningResourceType {
   Snippet = 0x7DF2169C,
   SocialGroup = 0x2E47A104,
   Spell = 0x1F3413D9,
-  StaticCommodity = 0x51077643,
   Statistic = 0x339BC5BD,
   StoryArc = 0x602B1DAD,
   StoryChapter = 0x4A864A3A,
@@ -133,7 +133,6 @@ namespace TuningResourceType {
     switch (attr) {
       // special cases must be added to this enum manually
       case "relbit": return TuningResourceType.RelationshipBit;
-      case "scommodity": return TuningResourceType.StaticCommodity;
       case "tun": return TuningResourceType.Tuning;
       default:
         const enumName = snakeToPascal(attr);
@@ -153,7 +152,6 @@ namespace TuningResourceType {
       // special cases must be added to this enum manually
       case TuningResourceType.Tuning: return null;
       case TuningResourceType.RelationshipBit: return "relbit";
-      case TuningResourceType.StaticCommodity: return "scommodity";
       default:
         return (type in TuningResourceType)
           ? pascalToSnake(TuningResourceType[type])
