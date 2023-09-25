@@ -284,6 +284,10 @@
               "value": "0x37EF2EE7"
             },
             {
+              "name": "Scommodity",
+              "value": "0x51077643"
+            },
+            {
               "name": "Season",
               "value": "0xC98DD45E"
             },
@@ -342,10 +346,6 @@
             {
               "name": "Spell",
               "value": "0x1F3413D9"
-            },
-            {
-              "name": "StaticCommodity",
-              "value": "0x51077643"
             },
             {
               "name": "Statistic",
