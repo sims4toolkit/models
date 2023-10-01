@@ -1,6 +1,6 @@
 {
   "name": "@s4tk/models",
-  "version": "0.6.9",
+  "version": "0.6.10",
   "description": "Models for reading and writing package files and the resources they contain.",
   "repository": {
     "type": "git",
@@ -28,7 +28,8 @@
   },
   "contributors": [
     "frankkulak",
-    "lot51"
+    "lot51",
+    "mycroftjr"
   ],
   "license": "MIT",
   "devDependencies": {
