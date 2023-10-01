@@ -12,14 +12,15 @@
   },
   "main": "./models.js",
   "scripts": {
-    "clean": "rm -rf ./dst/**",
-    "dev": "npm run clean ; tsc --watch",
+    "clean": "rm -rf ./dst/** || true",
+    "dev": "npm run clean && tsc --watch",
     "dev:serve": "npm run build && ts-node \"./server/app.ts\"",
-    "build": "npm run clean ; tsc ; node scripts/prepublish.cjs",
+    "build": "npm run clean && tsc && node scripts/prepublish.cjs",
     "publish": "npm run build && sh scripts/publish.sh",
     "test": "mocha -r ts-node/register \"test/**/*.test.ts\"",
     "test:coverage": "nyc mocha -r ts-node/register \"test/**/*.test.ts\"",
-    "test:current": "mocha -r ts-node/register \"test/**/combined-tuning-resource.test.ts\""
+    "test:current": "mocha -r ts-node/register \"test/**/combined-tuning-resource.test.ts\"",
+    "extractsimdata": "npm run build && ts-node \"./scripts/extract-simdata-types.ts\""
   },
   "author": "frankkulak",
   "funding": {
