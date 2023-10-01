@@ -192,6 +192,10 @@
               "value": "0x0053F410"
             },
             {
+              "name": "GuidanceTip",
+              "value": "0x00A09A69"
+            },
+            {
               "name": "Headline",
               "value": "0x000120A9"
             },

@@ -40,16 +40,16 @@
               "value": "0xEE17C6AD"
             },
             {
+              "name": "Aspiration",
+              "value": "0x28B64675"
+            },
+            {
               "name": "AspirationCategory",
               "value": "0xE350DBD8"
             },
             {
               "name": "AspirationTrack",
               "value": "0xC020FCAD"
-            },
-            {
-              "name": "Aspiration",
-              "value": "0x28B64675"
             },
             {
               "name": "AwayAction",
@@ -80,12 +80,36 @@
               "value": "0x75D807F3"
             },
             {
-              "name": "CasMenuItem",
-              "value": "0x0CBA50F4"
+              "name": "CallToAction",
+              "value": "0xF537B2E0"
+            },
+            {
+              "name": "Career",
+              "value": "0x73996BEB"
+            },
+            {
+              "name": "CareerEvent",
+              "value": "0x94420322"
+            },
+            {
+              "name": "CareerGig",
+              "value": "0xCCDB0EDD"
+            },
+            {
+              "name": "CareerLevel",
+              "value": "0x2C70ADF8"
+            },
+            {
+              "name": "CareerTrack",
+              "value": "0x48C75CE3"
             },
             {
               "name": "CasMenu",
               "value": "0x935A83C2"
+            },
+            {
+              "name": "CasMenuItem",
+              "value": "0x0CBA50F4"
             },
             {
               "name": "CasPreferenceCategory",
@@ -106,30 +130,6 @@
             {
               "name": "CasStoriesTraitChooser",
               "value": "0x8DAD1549"
-            },
-            {
-              "name": "CallToAction",
-              "value": "0xF537B2E0"
-            },
-            {
-              "name": "CareerEvent",
-              "value": "0x94420322"
-            },
-            {
-              "name": "CareerGig",
-              "value": "0xCCDB0EDD"
-            },
-            {
-              "name": "CareerLevel",
-              "value": "0x2C70ADF8"
-            },
-            {
-              "name": "CareerTrack",
-              "value": "0x48C75CE3"
-            },
-            {
-              "name": "Career",
-              "value": "0x73996BEB"
             },
             {
               "name": "Clan",
@@ -172,6 +172,10 @@
               "value": "0xE1477E18"
             },
             {
+              "name": "GuidanceTip",
+              "value": "0xD4A09ABD"
+            },
+            {
               "name": "Headline",
               "value": "0xF401205D"
             },
@@ -192,16 +196,20 @@
               "value": "0xE882D22F"
             },
             {
-              "name": "LotDecorationPreset",
-              "value": "0xDE1EF8FB"
-            },
-            {
               "name": "LotDecoration",
               "value": "0xFE2DB1AB"
             },
             {
+              "name": "LotDecorationPreset",
+              "value": "0xDE1EF8FB"
+            },
+            {
               "name": "LotTuning",
               "value": "0xD8800D66"
+            },
+            {
+              "name": "LunarCycle",
+              "value": "0x55493B18"
             },
             {
               "name": "Mood",
@@ -216,16 +224,16 @@
               "value": "0x9902FA76"
             },
             {
+              "name": "Object",
+              "value": "0xB61DE6B4"
+            },
+            {
               "name": "ObjectPart",
               "value": "0x7147A350"
             },
             {
               "name": "ObjectState",
               "value": "0x5B02819E"
-            },
-            {
-              "name": "Object",
-              "value": "0xB61DE6B4"
             },
             {
               "name": "Objective",
@@ -276,6 +284,10 @@
               "value": "0x37EF2EE7"
             },
             {
+              "name": "Scommodity",
+              "value": "0x51077643"
+            },
+            {
               "name": "Season",
               "value": "0xC98DD45E"
             },
@@ -300,28 +312,28 @@
               "value": "0x0CA4C78B"
             },
             {
-              "name": "SituationGoalSet",
-              "value": "0x9DF2F1F2"
+              "name": "Situation",
+              "value": "0xFBC3AEEB"
             },
             {
               "name": "SituationGoal",
               "value": "0x598F28E7"
             },
             {
+              "name": "SituationGoalSet",
+              "value": "0x9DF2F1F2"
+            },
+            {
               "name": "SituationJob",
               "value": "0x9C07855F"
             },
             {
-              "name": "Situation",
-              "value": "0xFBC3AEEB"
+              "name": "SlotType",
+              "value": "0x69A5DAA4"
             },
             {
               "name": "SlotTypeSet",
               "value": "0x3F163505"
-            },
-            {
-              "name": "SlotType",
-              "value": "0x69A5DAA4"
             },
             {
               "name": "Snippet",
@@ -336,12 +348,16 @@
               "value": "0x1F3413D9"
             },
             {
-              "name": "Scommodity",
-              "value": "0x51077643"
-            },
-            {
               "name": "Statistic",
               "value": "0x339BC5BD"
+            },
+            {
+              "name": "StoryArc",
+              "value": "0x602B1DAD"
+            },
+            {
+              "name": "StoryChapter",
+              "value": "0x4A864A3A"
             },
             {
               "name": "Strategy",
@@ -380,12 +396,16 @@
               "value": "0x03B33DDF"
             },
             {
+              "name": "Tutorial",
+              "value": "0xE04A24A3"
+            },
+            {
               "name": "TutorialTip",
               "value": "0x8FB3E0B1"
             },
             {
-              "name": "Tutorial",
-              "value": "0xE04A24A3"
+              "name": "University",
+              "value": "0xD958D5B1"
             },
             {
               "name": "UniversityCourseData",
@@ -394,10 +414,6 @@
             {
               "name": "UniversityMajor",
               "value": "0x2758B34B"
-            },
-            {
-              "name": "University",
-              "value": "0xD958D5B1"
             },
             {
               "name": "UserInterfaceInfo",
@@ -430,7 +446,7 @@
             {
               "name": "ZoneModifier",
               "value": "0x3C1D8799"
-            }
+            },
           ]
         }
       ]
