@@ -20,6 +20,22 @@
           "displayType": "enum",
           "values": [
             {
+              "name": "AnimationStateMachine",
+              "value": "0x02D5DF13"
+            },
+            {
+              "name": "CasPart",
+              "value": "0x034AEECB"
+            },
+            {
+              "name": "CasPartThumbnail",
+              "value": "0x3C1AF1F2"
+            },
+            {
+              "name": "CasPreset",
+              "value": "0xEAA32ADD"
+            },
+            {
               "name": "CombinedTuning",
               "value": "0x62E94D38"
             },
@@ -32,16 +48,88 @@
               "value": "0x00B2D882"
             },
             {
+              "name": "Footprint",
+              "value": "0xD382BF57"
+            },
+            {
+              "name": "Light",
+              "value": "0x03B4C61D"
+            },
+            {
+              "name": "Model",
+              "value": "0x01661233"
+            },
+            {
+              "name": "ModelLod",
+              "value": "0x01D10F34"
+            },
+            {
+              "name": "NameMap",
+              "value": "0166038C"
+            },
+            {
+              "name": "ObjectCatalog",
+              "value": "0x319E4F1D"
+            },
+            {
+              "name": "ObjectCatalogSet",
+              "value": "0xFF56010C"
+            },
+            {
               "name": "ObjectDefinition",
               "value": "0xC0DB5AE7"
+            },
+            {
+              "name": "OpenTypeFont",
+              "value": "0x25796DCA"
+            },
+            {
+              "name": "PngImage",
+              "value": "0x2F7D0004"
+            },
+            {
+              "name": "RegionDescription",
+              "value": "0xD65DAFF9"
+            },
+            {
+              "name": "RegionMap",
+              "value": "0xAC16FBEC"
+            },
+            {
+              "name": "Rle2Image",
+              "value": "0x3453CF95"
+            },
+            {
+              "name": "RlesImage",
+              "value": "0xBA856C78"
+            },
+            {
+              "name": "Rig",
+              "value": "0x8EAF13DE"
             },
             {
               "name": "SimData",
               "value": "0x545AC67A"
             },
             {
+              "name": "SimInfo",
+              "value": "0x025ED6F4"
+            },
+            {
+              "name": "Slot",
+              "value": "0xD3044521"
+            },
+            {
               "name": "StringTable",
               "value": "0x220557DA"
+            },
+            {
+              "name": "TrayItem",
+              "value": "0x2A8A5E22"
+            },
+            {
+              "name": "TrueTypeFont",
+              "value": "0x276CA4B9"
             }
           ]
         }

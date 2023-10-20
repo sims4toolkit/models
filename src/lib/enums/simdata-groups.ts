@@ -57,6 +57,7 @@ enum SimDataGroup {
   Mood = 0x007B6002,
   NativeBuildBuy = 0x0094E9AE, // No tuning type
   NativeSeasonsWeather = 0x003A5A65, // No tuning type
+  Object = 0x001DE602,
   Objective = 0x0069453E,
   PieMenuCategory = 0x00E9D967,
   Recipe = 0x0097F8C8,
