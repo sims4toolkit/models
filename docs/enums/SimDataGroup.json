@@ -64,6 +64,10 @@
               "value": "0x00D80786"
             },
             {
+              "name": "BusinessRule",
+              "value": "0x00E58CD4"
+            },
+            {
               "name": "Career",
               "value": "0x00996B98"
             },
@@ -148,6 +152,10 @@
               "value": "0x004B5265"
             },
             {
+              "name": "ClientPubertyTuning",
+              "value": "0x00190805"
+            },
+            {
               "name": "ClientRegionSortTuning",
               "value": "0x0057C8BA"
             },
@@ -166,6 +174,10 @@
             {
               "name": "ClientTagsTraitGroupMetadata",
               "value": "0x003E4215"
+            },
+            {
+              "name": "ClientThriftStoreTuning",
+              "value": "0x00FDCFE0"
             },
             {
               "name": "ClientThumbnailPoses",
