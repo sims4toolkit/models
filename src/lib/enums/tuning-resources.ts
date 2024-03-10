@@ -19,6 +19,7 @@ enum TuningResourceType {
   BucksPerk = 0xEC3DA10E,
   Buff = 0x6017E896,
   Business = 0x75D807F3,
+  BusinessRule = 0xB8E58C6C,
   CallToAction = 0xF537B2E0,
   Career = 0x73996BEB,
   CareerEvent = 0x94420322,
